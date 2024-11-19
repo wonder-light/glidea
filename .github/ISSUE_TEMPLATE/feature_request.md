@@ -1,29 +1,23 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
+about: 想让我们为 Glidea 增加什么功能吗？
 title: ''
 labels: ''
 assignees: ''
 ---
 
-## Feature 
+## 概述 
 
-concise description of what the problem.
-
-
-
-## Solution
-
-concise description of what you want to happen. 
+对这个新功能的一段描述
 
 
 
-## Alternative scheme
+## 动机
 
-concise description of any alternative solutions or features you've considered. 
+为什么你希望在 Gridea 中使用这个功能？
 
 
 
-## Additional context
+## 详细解释
 
-Add any other context or screenshots about the feature request here.
+详细描述这个新功能。 如果这是一个小功能，你可以忽略这部分。

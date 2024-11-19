@@ -1,42 +1,48 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: 事情不像预期的那样工作吗？
 title: ''
 labels: ''
 assignees: ''
 ---
 
-## Describe the bug
+<!--
+  你好！感谢你正在考虑为 Glidea 提交一个 bug。请花一点点时间尽量详细地回答以下基础问题。
+
+  如果你不确定这是一个 Glidea 的 bug，请加入我们的用户群去讨论。
+
+  谢谢！
+-->
+
+## 描述 bug
 
 关于bug是什么的清晰而简洁的描述
 
-A clear and concise description of what the bug is.
 
+## 复现步骤
 
-## To Reproduce
-
-Steps to reproduce the behavior: 
+重现行为的步骤: 
 1. Go to '...' 
 2. Click on '....' 
 3. Scroll down to '....' 
 4. See error 
 
 
-## Expected behavior
+## 预期行为
 
-A clear and concise description of what you expected to happen. 
-
-
-## Screenshots
-
-If applicable, add screenshots to help explain your problem. 
+你期望会发生什么？
 
 
-## logs
+## 截图
 
-Generate log output for this bug 
+如果可以的话，添加截图来帮助解释你的问题
 
 
-## Additional context
+## 日志
 
-Add any other context about the problem here.
+如果可以的话，添加产生这个bug的日志输出
+
+
+## 额外的行为
+
+在这里添加有关该问题的任何其他上下文
