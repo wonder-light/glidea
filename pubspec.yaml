@@ -44,9 +44,9 @@ dependencies:
   device_preview: ^1.2.0
   logger: ^2.5.0
   responsive_framework: ^1.5.1
-  feedback: ^3.1.0
+  feedback: ^3.1.0            # 用于获取更好反馈的 Flutter 包
   flutter_image_compress: ^2.3.0
-  jiffy: ^6.3.1
+  jiffy: ^6.3.1               # Jiffy 是一个 Flutter（Android、IOS 和 Web）日期时间包，用于解析、操作、查询和格式化日期和时间
   upgrader: ^11.3.0
   markdown: ^7.2.2            # 一个用 Dart 编写的可移植 Markdown 库
   markdown_widget: ^2.3.2+6   # 一个简单易用的 markdown 渲染组件
@@ -143,3 +143,23 @@ flutter_native_splash:
   ios: true
   web: true
   fullscreen: true
+
+# 构建 build
+# dart run build_runner build --delete-conflicting-outputs
+# dart run build_runner watch --delete-conflicting-outputs
+targets:
+  $default:
+    builders:
+      # 这一部分配置 dart_json_mapper 生成器
+      dart_json_mapper:
+        options:
+          # 默认为 List, Set, 当你想为其他可迭代对象（如 HashSet<Car>, UnmodifiableListView<Car> ）提供一个实例化支持时，你可以将它们添加到这个选项的列表中
+          iterables: List, Set, Map, HashSet, UnmodifiableListView
+        generate_for:
+          - lib/**/*.dart
+
+      # 这部分需要告诉原始的可反射构建器远离它，它将可反射构建器的默认选项覆盖为一组空文件
+      reflectable:
+        generate_for:
+          - no/files
+
