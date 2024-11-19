@@ -37,7 +37,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   get: ^5.0.0-release-candidate-9.2.1
   flutter_bloc: ^8.1.6
-  flutter_native_splash: ^2.4.3
   animations: ^2.0.11
   dio: ^5.7.0
   path_provider: ^2.1.5
@@ -67,6 +66,7 @@ dev_dependencies:
   icons_launcher: ^3.0.0
   mockito: ^5.4.4
   build_runner: ^2.4.13
+  flutter_native_splash: ^2.4.3
 
 dependency_overrides:
   path: ^1.9.1
@@ -133,3 +133,13 @@ icons_launcher:
       enable: true
     windows:
       enable: true
+
+# 应用闪屏页
+# dart run flutter_native_splash:create
+flutter_native_splash:
+  background_image: "assets/images/glidea-splash.png"
+  background_image_dark: "assets/images/glidea-splash.png"
+  android: true
+  ios: true
+  web: true
+  fullscreen: true
