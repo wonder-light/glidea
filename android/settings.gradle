@@ -13,6 +13,12 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven {
+            allowInsecureProtocol = true
+            url 'https://maven.aliyun.com/nexus/content/groups/public'
+        }
     }
 }
 
