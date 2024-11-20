@@ -1,12 +1,18 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:glidea/routes/bindings.dart';
 
 class AppRouter {
+  /// 首页路由路径
+  static const String homeRoute = '/';
+
+  /// 路由路线集合
   static final List<GetPage<Widget>> routes = [
     GetPage(
-      name: '/',
+      name: AppRouter.homeRoute,
       title: 'main',
       page: () => const Home(),
+      binding: SiteBind(),
       children: [
         GetPage(name: '/articles', title: 'articles', page: () => const Articles()),
         GetPage(name: '/menu', title: 'menu', page: () => const Menu()),
@@ -19,4 +25,3 @@ class AppRouter {
     ),
   ];
 }
-

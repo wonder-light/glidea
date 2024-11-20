@@ -20,6 +20,10 @@ class ApplicationDb {
   @JsonProperty()
   List<Menu> menus = [];
 
+  ///主题李彪
+  @JsonProperty()
+  List<String> themes = [];
+
   ///主题配置
   @JsonProperty()
   Theme themeConfig = Theme();
@@ -39,6 +43,10 @@ class ApplicationDb {
   ///当前主题配置
   @JsonProperty()
   Map<String, Object> currentThemeConfig = {};
+
+  ///其它主题配置
+  @JsonProperty()
+  Map<String, Object> config = {};
 }
 
 /// APP 应用
