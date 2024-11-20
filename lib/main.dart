@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'helpers/log.dart';
 import 'lang/translations.dart';
 import 'routes/router.dart';
 
@@ -17,13 +18,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Glidea',
-      theme: Get.isDarkMode? ThemeData.dark(): ThemeData.light(),
+      theme: Get.isDarkMode ? ThemeData.dark() : ThemeData.light(),
       translations: TranslationsService(),
       locale: Get.deviceLocale,
-      fallbackLocale: const Locale('zh', 'CN'),
+      fallbackLocale: TranslationsService.fallbackLocale,
       initialRoute: AppRouter.homeRoute,
       getPages: AppRouter.routes,
       enableLog: true,
+      logWriterCallback: Log.logWriter,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
