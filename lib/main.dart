@@ -1,5 +1,8 @@
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 import 'helpers/log.dart';
 import 'lang/translations.dart';
@@ -7,11 +10,15 @@ import 'routes/router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+
+  runApp(DevicePreview(
+    enabled: !kReleaseMode,
+    builder: (context) => const App(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class App extends StatelessWidget {
+  const App({super.key});
 
   // This widget is the root of your application.
   @override
@@ -27,6 +34,13 @@ class MyApp extends StatelessWidget {
       enableLog: true,
       logWriterCallback: Log.logWriter,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      builder: (context, child) => ResponsiveBreakpoints.builder(
+        child: child!,
+        breakpoints: [
+          const Breakpoint(start: 0, end: 800, name: MOBILE),
+          const Breakpoint(start: 801, end: double.infinity, name: DESKTOP),
+        ],
+      ),
     );
   }
 }
