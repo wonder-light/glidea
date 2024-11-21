@@ -1,5 +1,5 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, JsonProperty;
-import 'package:glidea/enum/platform.dart';
+import 'package:glidea/enum/enums.dart';
 
 /// 设置
 @jsonSerializable

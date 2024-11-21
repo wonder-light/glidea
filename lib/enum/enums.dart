@@ -1,6 +1,5 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, JsonProperty;
 
-
 /// 部署的平台
 @jsonSerializable
 enum DeployPlatform {
@@ -17,4 +16,16 @@ enum ProxyWay {
   direct,
   proxy,
   none,
+}
+
+@jsonSerializable
+enum MenuTypes {
+  internal,
+  external,
+}
+
+@jsonSerializable
+enum UrlFormats {
+  Slug,
+  ShortId,
 }
