@@ -8,7 +8,7 @@
   'theme': '主 题',
   'remote': '远 程',
   'system': '系 统',
-  'setting': '设置',
+  'setting': '设 置',
   'visitSite': '访问网站',
   'renderSuccess': '渲染完毕，快去预览吧！',
   'renderError': '渲染失败，请检查 hosts 文件中 127.0.0.1 是否指向 localhost。确认配置正确后，尝试重启应用。',

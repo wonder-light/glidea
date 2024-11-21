@@ -8,7 +8,7 @@
   'theme': '主 題',
   'remote': '遠 程',
   'system': '系 統',
-  'setting': '設置',
+  'setting': '設 置',
   'visitSite': '訪問網站',
   'renderSuccess': '渲染完毕，快去预览吧！',
   'renderError': '渲染失敗，請檢查 hosts 文件中 127.0.0.1 是否指向 localhost。確認配置正確後，嘗試重啟應用。',
