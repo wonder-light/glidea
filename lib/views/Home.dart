@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, Obx, Trans, IntExtension, StringExtension, GetNavigationExt;
+import 'package:glidea/interfaces/types.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -25,7 +26,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   var routerIndex = '/articles'.obs;
 
   /// 菜单数据
-  final List<({String route, String name, IconData icon})> menus = [
+  final List<TRouterData> menus = [
     (name: 'article', route: '/articles', icon: PhosphorIconsRegular.article),
     (name: 'menu', route: '/menu', icon: PhosphorIconsRegular.list),
     (name: 'tag', route: '/tags', icon: PhosphorIconsRegular.tag),
@@ -34,7 +35,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   ];
 
   /// 预览和发布
-  final List<({String name, VoidCallback call, IconData icon})> actions = [];
+  final List<TActionData> actions = [];
 
   @override
   void initState() {
