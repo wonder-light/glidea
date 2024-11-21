@@ -1,7 +1,11 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Obx, Trans, IntExtension, StringExtension, GetNavigationExt;
+import 'package:get/get.dart' show Get, Obx, Trans, Inst, StringExtension, IntExtension, GetNavigationExt;
+import 'package:glidea/controller/site.dart';
+import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:responsive_framework/responsive_framework.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key, this.title = '首页'});
@@ -22,8 +26,17 @@ class HomeWidget extends StatefulWidget {
 }
 
 class _HomeWidgetState extends State<HomeWidget> {
-  var selectedIndex = 0.obs;
+  /// 关于当前屏幕的响应性数据
+  ResponsiveBreakpointsData breakpoints = const ResponsiveBreakpointsData();
+
+  /// 当前路由索引
   var routerIndex = '/articles'.obs;
+
+  /// 底部导航落地当前索引
+  var currentIndex = 0.obs;
+
+  /// 站点控制器
+  final siteController = Get.find<SiteController>(tag: 'site');
 
   /// 菜单数据
   final List<TRouterData> menus = [
@@ -34,38 +47,47 @@ class _HomeWidgetState extends State<HomeWidget> {
     (name: 'remote', route: '/remote', icon: PhosphorIconsRegular.hardDrives),
   ];
 
+  /// 移动端的底部导航栏菜单
+  final List<TRouterData> mobileMenus = [];
+
   /// 预览和发布
   final List<TActionData> actions = [];
 
   @override
   void initState() {
     super.initState();
-    var p = PhosphorIconsFill.acorn;
     // 预览和发布两个操作按钮
     actions.add((name: 'preview', call: preview, icon: PhosphorIconsRegular.eye));
     actions.add((name: 'publishSite', call: publish, icon: PhosphorIconsRegular.cloudArrowUp));
     // 下面一行的按钮
     actions.add((name: 'setting'.tr, call: openSetting, icon: PhosphorIconsRegular.slidersHorizontal));
-    actions.add((name: 'visitSite'.tr, call: openSetting, icon: PhosphorIconsRegular.globe));
-    actions.add((name: 'starSupport'.tr, call: openSetting, icon: PhosphorIconsRegular.githubLogo));
+    actions.add((name: 'visitSite'.tr, call: openWebSite, icon: PhosphorIconsRegular.globe));
+    actions.add((name: 'starSupport'.tr, call: starSupport, icon: PhosphorIconsRegular.githubLogo));
+
+    mobileMenus.addAll(menus.take(3));
+    mobileMenus.add((name: 'setting', route: '/setting', icon: PhosphorIconsRegular.slidersHorizontal));
   }
 
   @override
   Widget build(BuildContext context) {
+    // 获取断点数据
+    breakpoints = ResponsiveBreakpoints.of(context);
+    // 构建控件
     return Scaffold(
       body: SafeArea(
-        child: Row(
-          children: [
-            _buildLeftPanel(),
-            const VerticalDivider(thickness: 1, width: 1),
-            Expanded(
-              child: Container(
-                color: Colors.amber,
-              ),
-            ),
-          ],
-        ),
+        child: breakpoints.isDesktop
+            ? Row(
+                children: [
+                  _buildLeftPanel(),
+                  const VerticalDivider(thickness: 1, width: 1),
+                  Expanded(
+                    child: _buildBody(),
+                  ),
+                ],
+              )
+            : _buildBody(),
       ),
+      bottomNavigationBar: breakpoints.isDesktop ? null : _buildMobileBottomNav(),
     );
   }
 
@@ -118,7 +140,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                 },
                 leading: Icon(item.icon),
                 title: Text(item.name.tr),
-                trailing: const Text('10'),
+                trailing: Text(siteController.getHomeLeftPanelNum(item.name)),
                 selected: routerIndex.value == item.route,
                 selectedColor: colorScheme.surfaceContainerLow,
                 selectedTileColor: colorScheme.primary,
@@ -178,21 +200,67 @@ class _HomeWidgetState extends State<HomeWidget> {
     );
   }
 
+  /// 构建移动端的底部导航栏
+  Widget _buildMobileBottomNav() {
+    return Obx(
+      () => BottomNavigationBar(
+        items: [
+          for (var item in mobileMenus)
+            BottomNavigationBarItem(
+              icon: Icon(item.icon),
+              label: item.name.tr,
+            ),
+        ],
+        currentIndex: currentIndex.value,
+        onTap: (index) {
+          currentIndex.value = index;
+          // TODO: 更新路由
+        },
+        type: BottomNavigationBarType.shifting,
+      ),
+    );
+  }
+
+  //
+  Widget _buildBody() {
+    return Container(
+      color: Colors.amber,
+    );
+  }
+
   /// 预览网页
-  void preview() {}
+  void preview() {
+    // TODO: 预览网页
+  }
 
   /// 发布网页
-  void publish() {}
+  void publish() {
+    // TODO: 发布网页
+  }
 
   /// 打开设置
-  void openSetting() {}
+  void openSetting() {
+    // TODO: 打开设置, 使用抽屉或者其他方式
+  }
 
   /// 打开发布在网站
-  void openWebSite() {}
+  void openWebSite() async {
+    var domain = siteController.domain;
+    if (domain.isEmpty) {
+      Log.i('当前网址的空的，无法打开哦！');
+      return;
+    }
+    final success = await launchUrlString(domain);
+    if (!success) {
+      Log.i('网站打开失败 $domain');
+    }
+  }
 
   /// 给个 start 支持
-  void starSupport() {}
-
-  /// 浏览主题市场
-  void browseThemes() {}
+  void starSupport() async {
+    final success = await launchUrlString('https://github.com/wonder-light/glidea');
+    if (!success) {
+      Log.i('github 打开失败');
+    }
+  }
 }
