@@ -1,6 +1,5 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show GetPage;
-import 'package:glidea/routes/bindings.dart';
 import 'package:glidea/views/Articles.dart';
 import 'package:glidea/views/Home.dart';
 import 'package:glidea/views/Loading.dart';
@@ -9,6 +8,7 @@ import 'package:glidea/views/Setting.dart';
 import 'package:glidea/views/Tags.dart';
 import 'package:glidea/views/Theme.dart';
 import 'package:glidea/views/notfound.dart';
+import 'package:glidea/views/remote.dart';
 
 class AppRouter {
   /// 首页路由路径
@@ -25,7 +25,8 @@ class AppRouter {
         GetPage(name: '/menu', title: 'menu', page: () => const MenuWidget()),
         GetPage(name: '/tags', title: 'tags', page: () => const TagsWidget()),
         GetPage(name: '/theme', title: 'theme', page: () => const ThemeWidget()),
-        GetPage(name: '/remote', title: 'remote', page: () => const SettingWidget()),
+        GetPage(name: '/remote', title: 'remote', page: () => const RemoteWidget()),
+        GetPage(name: '/setting', title: 'remote', page: () => const SettingWidget()), // 移动端才有设置页面
         GetPage(name: '/loading', title: 'loading', page: () => const LoadingWidget()),
       ],
     ),
