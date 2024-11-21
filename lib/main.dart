@@ -36,7 +36,6 @@ class App extends StatelessWidget {
       binds: SiteBind.bings,
       enableLog: true,
       logWriterCallback: Log.logWriter,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
       builder: (context, child) => ResponsiveBreakpoints.builder(
         child: child!,
         breakpoints: [
