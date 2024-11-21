@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' show Get, Translations, GetNavigationExt;
 
 import 'en_US.dart';
 import 'fr_FR.dart';

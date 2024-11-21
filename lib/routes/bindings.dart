@@ -1,5 +1,5 @@
-﻿import 'package:get/get.dart';
-import 'package:glidea/controller/site.dart';
+﻿import 'package:glidea/controller/site.dart';
+import 'package:get/get.dart' show Binding, Bind;
 
 /// 站点 bind
 class SiteBind extends Binding {

@@ -1,16 +1,12 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt;
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/theme.dart';
 import 'package:glidea/lang/translations.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-
-import 'helpers/log.dart';
-import 'lang/translations.dart';
-import 'routes/router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

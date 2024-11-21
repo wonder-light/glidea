@@ -1,7 +1,7 @@
 ﻿import 'dart:io';
 
 import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper;
-import 'package:get/get.dart';
+import 'package:get/get.dart' show GetxController, StateMixin;
 import 'package:glidea/models/application.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
