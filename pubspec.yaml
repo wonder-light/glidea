@@ -53,6 +53,7 @@ dependencies:
   markdown_widget: ^2.3.2+6   # 一个简单易用的 markdown 渲染组件
   flutter_quill: ^10.8.5      # Flutter Quill 是一个富文本编辑器
   dart_json_mapper: ^2.2.14
+  flex_color_scheme: ^8.0.1
 
 dev_dependencies:
   flutter_test:

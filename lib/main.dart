@@ -2,6 +2,10 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:glidea/helpers/log.dart';
+import 'package:glidea/helpers/theme.dart';
+import 'package:glidea/lang/translations.dart';
+import 'package:glidea/routes/router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 import 'helpers/log.dart';
@@ -25,7 +29,9 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Glidea',
-      theme: Get.isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: Get.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       translations: TranslationsService(),
       locale: Get.deviceLocale,
       fallbackLocale: TranslationsService.fallbackLocale,
