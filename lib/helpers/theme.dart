@@ -57,6 +57,8 @@ sealed class AppTheme {
     ),
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
+  ).copyWith(
+    iconTheme: const IconThemeData(size: 18)
   );
   // The defined dark theme.
   static ThemeData dark = FlexThemeData.dark(
@@ -93,5 +95,7 @@ sealed class AppTheme {
     ),
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
+  ).copyWith(
+      iconTheme: const IconThemeData(size: 18)
   );
 }
