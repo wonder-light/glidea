@@ -12,12 +12,12 @@ import 'package:glidea/views/notfound.dart';
 
 class AppRouter {
   /// 首页路由路径
-  static const String homeRoute = '/';
+  static const String home = '/';
 
   /// 路由路线集合
   static final List<GetPage<Widget>> routes = [
     GetPage(
-      name: AppRouter.homeRoute,
+      name: AppRouter.home,
       title: 'main',
       page: () => const HomeWidget(),
       children: [
@@ -25,7 +25,7 @@ class AppRouter {
         GetPage(name: '/menu', title: 'menu', page: () => const MenuWidget()),
         GetPage(name: '/tags', title: 'tags', page: () => const TagsWidget()),
         GetPage(name: '/theme', title: 'theme', page: () => const ThemeWidget()),
-        GetPage(name: '/setting', title: 'setting', page: () => const SettingWidget()),
+        GetPage(name: '/remote', title: 'remote', page: () => const SettingWidget()),
         GetPage(name: '/loading', title: 'loading', page: () => const LoadingWidget()),
       ],
     ),

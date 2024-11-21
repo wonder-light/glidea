@@ -33,7 +33,7 @@ class App extends StatelessWidget {
       translations: TranslationsService(),
       fallbackLocale: TranslationsService.fallbackLocale,
       getPages: AppRouter.routes,
-      initialRoute: AppRouter.homeRoute,
+      initialRoute: AppRouter.home,
       binds: SiteBind.bings,
       enableLog: true,
       logWriterCallback: Log.logWriter,
