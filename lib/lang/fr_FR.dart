@@ -1,6 +1,6 @@
 ﻿const Map<String, String> fr = {
   'preview': 'Aperçu',
-  'syncSite': 'Synchroniser',
+  'publishSite': 'Publier un site',
   'newVersion': 'Nouvelle version',
   'article': 'Article',
   'menu': 'Menu',
@@ -8,6 +8,8 @@
   'theme': 'Thème',
   'remote': 'Serveur',
   'system': 'Système',
+  'setting': 'La mise en place',
+  'visitSite': 'Visitez le site',
   'renderSuccess': 'Félicitations, le rendu est terminé et regardez en avant-première.',
   'renderError':
   'Le rendu a échoué, veuillez vérifier si 127.0.0.1 dans le fichier hosts pointe vers localhost. Après avoir vérifié que la configuration est correcte, essayez de redémarrer l\'application.',
@@ -100,7 +102,7 @@
   'back': 'Retour',
   'savedIn': 'Sauvegardé dans',
   'or': 'ou',
-  'starSupport': 'Donnez-nous une étoile !',
+  'starSupport': '🌟 Donnez-nous une étoile !',
   'showAllPost': 'Afficher tout les postes',
   'showAbstract': 'Afficher uniquement le résumé',
   'unsavedWarning': 'Vous allez perdre tous les changements non sauvegardés, voulez-vous continuer ?',

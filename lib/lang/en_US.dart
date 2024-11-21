@@ -1,6 +1,6 @@
 ﻿const Map<String, String> en = {
   'preview': 'Preview',
-  'syncSite': 'Sync Website',
+  'publishSite': 'Publish Website',
   'newVersion': 'New version',
   'article': 'Article',
   'menu': 'Menu',
@@ -8,6 +8,8 @@
   'theme': 'Theme',
   'remote': 'Server',
   'system': 'System',
+  'setting': 'settings',
+  'visitSite': 'Visit the website',
   'renderSuccess': 'Congratulations, the rendering is complete, go ahead and preview.',
   'renderError':
   'Rendering failed, please check whether 127.0.0.1 in the hosts file points to localhost. After confirming that the configuration is correct, try to restart the application.',
@@ -99,7 +101,7 @@
   'back': 'Back',
   'savedIn': 'Saved in',
   'or': 'or',
-  'starSupport': 'Give us a star!',
+  'starSupport': '🌟 Give us a star!',
   'showAllPost': 'Show full content',
   'showAbstract': 'Show abstract only',
   'unsavedWarning': 'You will lose all unsaved changes, do you want to continue?',
