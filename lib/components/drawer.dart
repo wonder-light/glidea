@@ -2,16 +2,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetInterface, GetNavigationExt;
+import 'package:glidea/helpers/log.dart';
 
 /// 这个类用于关闭抽屉
-class DrawerController extends ValueNotifier<bool> {
+class DraController extends ValueNotifier<bool> {
   /// 任意抽屉控制器构造函数
-  DrawerController() : super(true);
+  DraController() : super(true);
 
   /// 关上抽屉
   void close() {
     value = false;
     notifyListeners();
+    Log.d('close');
   }
 }
 
@@ -24,7 +26,7 @@ extension DrawerExt on GetInterface {
   ///
   /// [constraints] - 抽屉的布局大小
   ///
-  /// [controller] - [DrawerController] 抽屉控制器, 用于关闭抽屉
+  /// [controller] - [DraController] 抽屉控制器, 用于关闭抽屉
   ///
   /// [shape] - 抽屉的形状
   ///
@@ -40,7 +42,7 @@ extension DrawerExt on GetInterface {
     double opacity = 0.5,
     Color? opacityColor,
     BoxConstraints? constraints,
-    DrawerController? controller,
+    DraController? controller,
     ShapeBorder? shape,
     Alignment align = Alignment.centerRight,
     Duration duration = const Duration(milliseconds: 400),
@@ -70,7 +72,7 @@ extension DrawerExt on GetInterface {
     final navigatorState = Navigator.of(Get.overlayContext!, rootNavigator: false);
     final overlayState = navigatorState.overlay!;
     // 控制器
-    final internalController = controller ?? DrawerController();
+    final internalController = controller ?? DraController();
     // 动画控制器
     final animationController = AnimationController(
       vsync: overlayState,
@@ -153,15 +155,21 @@ extension DrawerExt on GetInterface {
     overlayState.insert(overlayEntry);
 
     // 监听变化
-    internalController.addListener(() {
+    void listener() {
       if (internalController.value) return;
       if (animationController.isAnimating) return;
       animationController.reverse().whenCompleteOrCancel(() {
+        Log.d('complete');
         // 关闭叠层实体
         overlayEntry
           ..remove()
           ..dispose();
+        // 移除监听函数
+        internalController.removeListener(listener);
       });
-    });
+    }
+
+    // 添加监听函数
+    internalController.addListener(listener);
   }
 }
