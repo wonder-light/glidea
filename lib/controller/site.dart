@@ -20,6 +20,12 @@ class SiteController extends GetxController with StateMixin<Application> {
     await initData();
   }
 
+  @override
+  void dispose() async {
+    super.dispose();
+    await this.saveSiteData();
+  }
+
   /// 初始化数据
   Future<void> initData() async {
     var data = Application();
@@ -38,10 +44,9 @@ class SiteController extends GetxController with StateMixin<Application> {
     final appConfigFolderOld = FS.join(home, '.hve-notes');
     final appConfigFolder = FS.join(home, '.glidea');
     final appConfigPath = FS.join(appConfigFolder, 'config.json');
-    final defaultAppDir = FS.join(document, 'glidea');
 
     data.baseDir = FS.normalize(Directory.current.path);
-    data.appDir = defaultAppDir;
+    data.appDir = FS.join(document, 'glidea');
     data.buildDir = FS.join(appConfigFolder, 'output');
 
     try {
@@ -52,6 +57,9 @@ class SiteController extends GetxController with StateMixin<Application> {
       // 创建默认目录 '.glidea'
       if (!FS.pathExistsSync(appConfigFolder)) {
         FS.createDirSync(appConfigFolder);
+      }
+      // 创建 config.json 文件
+      if (!FS.pathExistsSync(appConfigPath)) {
         FS.writeStringSync(appConfigPath, '{"sourceFolder": "${data.appDir}"}');
       }
       // 输出目录
@@ -62,33 +70,29 @@ class SiteController extends GetxController with StateMixin<Application> {
       final appConfig = FS.readStringSync(appConfigPath).deserialize<Map<String, dynamic>>()!;
       data.appDir = FS.normalize(appConfig['sourceFolder']);
 
-      // 网站文件夹已存在
-      if (FS.pathExistsSync(data.appDir)) {
-        final items = ['images', 'config', 'post-images', 'posts', 'themes', 'static'];
-        for (var folder in items) {
-          final folderPath = FS.join(data.appDir, folder);
-          if (!FS.pathExistsSync(folderPath)) {
-            FS.copySync(FS.join(data.baseDir, '', 'assets/public/default-files', folder), folderPath);
-          }
-        }
-
-        // 复制 output/favicon.ico 到 Glidea/favicon.ico
-        final outputFavicon = FS.join(data.buildDir, 'favicon.ico');
-        final sourceFavicon = FS.join(data.appDir, 'favicon.ico');
-        if (FS.pathExistsSync(outputFavicon) && !FS.pathExistsSync(sourceFavicon)) {
-          FS.copyFileSync(outputFavicon, sourceFavicon);
-        }
-
+      // 网站文件夹不存在
+      if (!FS.pathExistsSync(data.appDir)) {
+        FS.createDirSync(data.appDir);
+        FS.writeStringSync(appConfigPath, '{"sourceFolder": "${data.appDir}"}');
+        FS.copySync(FS.join(data.baseDir, '', 'assets/public/default-files'), data.appDir);
         return;
       }
 
-      // 网站文件夹不存在
-      data.appDir = defaultAppDir;
-      final jsonString = '{"sourceFolder": "${data.appDir}"}';
-      FS.writeStringSync(appConfigPath, jsonString);
-      FS.createDirSync(data.appDir);
+      // 网站文件夹存在
+      final items = ['images', 'config', 'post-images', 'posts', 'themes', 'static'];
+      for (var folder in items) {
+        final folderPath = FS.join(data.appDir, folder);
+        if (!FS.pathExistsSync(folderPath)) {
+          FS.copySync(FS.join(data.baseDir, '', 'assets/public/default-files', folder), folderPath);
+        }
+      }
 
-      FS.copySync(FS.join(data.baseDir, '', 'assets/public/default-files'), data.appDir);
+      // 复制 output/favicon.ico 到 Glidea/favicon.ico
+      final outputFavicon = FS.join(data.buildDir, 'favicon.ico');
+      final sourceFavicon = FS.join(data.appDir, 'favicon.ico');
+      if (FS.pathExistsSync(outputFavicon) && !FS.pathExistsSync(sourceFavicon)) {
+        FS.copyFileSync(outputFavicon, sourceFavicon);
+      }
     } catch (e) {
       Log.w(e);
     }
@@ -96,21 +100,68 @@ class SiteController extends GetxController with StateMixin<Application> {
 
   /// 加载配置
   Future<Application> loadSiteData(Application data) async {
-    final postPath = FS.join(data.appDir, 'config/posts.json');
-    final remotePath = FS.join(data.appDir, 'config/setting.json');
-    final themePath = FS.join(data.appDir, 'config/theme.json');
-    // 获取配置
-    final posts = FS.readStringSync(postPath).deserialize<Map<String, dynamic>>()!;
-    final remote = FS.readStringSync(remotePath).deserialize<Map<String, dynamic>>()!;
-    final theme = FS.readStringSync(themePath).deserialize<Map<String, dynamic>>()!;
-    // 将配置全部合并到 data 中
-    final config = JsonMapper.mergeMaps(theme, JsonMapper.mergeMaps(posts, remote));
-    return data.copyWith<Application>(config)!;
+    final configPath = FS.join(data.appDir, 'config/config.json');
+    Map<String, dynamic> config = {};
+
+    // 兼容 Gridea
+    if (FS.pathExistsSync(configPath)) {
+      // 获取配置
+      config = FS.readStringSync(configPath).deserialize<Map<String, dynamic>>()!;
+    } else {
+      final postPath = FS.join(data.appDir, 'config/posts.json');
+      final remotePath = FS.join(data.appDir, 'config/setting.json');
+      final themePath = FS.join(data.appDir, 'config/theme.json');
+      // 获取配置
+      final posts = FS.readStringSync(postPath).deserialize<Map<String, dynamic>>()!;
+      final remote = FS.readStringSync(remotePath).deserialize<Map<String, dynamic>>()!;
+      final theme = FS.readStringSync(themePath).deserialize<Map<String, dynamic>>()!;
+      // 修改 json 中的部分名称
+      if (remote.containsKey('setting')) {
+        remote['remote'] = remote.remove('setting');
+      }
+      if (theme.containsKey('config')) {
+        theme['themeConfig'] = theme.remove('config');
+      }
+      if (theme.containsKey('customConfig')) {
+        theme['themeCustomConfig'] = theme.remove('customConfig');
+      }
+      // 合并数据
+      config = theme.mergeMaps(posts).mergeMaps(remote);
+    }
+
+    // 将配置全部合并到 base 中
+    data.db = data.db.copyWithObj(config.fromMap<ApplicationDb>()!)!;
+    // 主题名列表
+    var themeConfig = data.db.themeConfig;
+    var themes = data.db.themes = FS.subDir(FS.join(data.appDir, 'themes'));
+    // 设置使用的主题名
+    if (!themes.contains(themeConfig.themeName)) {
+      themeConfig.themeName = themes.first;
+    }
+    // 合并选定主题数据
+    var themePath = FS.join(data.appDir, 'config', 'theme.${themeConfig.themeName}.config.json');
+    if (FS.pathExistsSync(themePath)) {
+      final customConfig = FS.readStringSync(themePath).deserialize<Map<String, dynamic>>()!;
+      data.db.themeCustomConfig = data.db.themeCustomConfig.mergeMaps(customConfig);
+    }
+    // 返回数据
+    return data;
   }
 
   /// 保存配置到文件
   Future<void> saveSiteData() async {
-    // TODO: 保存配置
+    final site = state;
+    final data = site.db;
+    final configPath = FS.join(site.appDir, 'config');
+    // 自定义主题配置
+    if (data.themeCustomConfig.isNotEmpty) {
+      final customThemePath = FS.join(configPath, 'theme.${data.themeConfig.themeName}.config.json');
+      FS.writeStringSync(customThemePath, data.themeCustomConfig.toJson());
+    }
+    // 更新应用配置
+    FS.writeStringSync(FS.join(configPath, 'config.json'), (data as ApplicationBase).toJson());
+    // 更新设置
+    FS.writeStringSync(site.buildDir, '{"sourceFolder": "${site.appDir}"}');
   }
 
   /// 更新站点的全部数据
