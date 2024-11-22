@@ -1,0 +1,65 @@
+﻿{
+  "posts": [],
+  "tags": [],
+  "menus": [
+    {
+      "link": "/",
+      "name": "首页",
+      "openType": "Internal"
+    },
+    {
+      "link": "/archives",
+      "name": "归档",
+      "openType": "Internal"
+    },
+    {
+      "link": "/tags",
+      "name": "标签",
+      "openType": "Internal"
+    },
+    {
+      "link": "/post/about",
+      "name": "关于",
+      "openType": "Internal"
+    }
+  ],
+  "remote": {
+    "platform": "github",
+    "domain": "",
+    "repository": "",
+    "branch": "",
+    "username": "",
+    "email": "",
+    "token": ""
+  },
+  "comment": {
+    "commentPlatform": "gitalk",
+    "disqusSetting": {
+      "api": "",
+      "apikey": "",
+      "shortname": ""
+    },
+    "gitalkSetting": {
+      "clientId": "",
+      "clientSecret": "",
+      "owner": "",
+      "repository": ""
+    },
+    "showComment": false
+  },
+  "themeConfig": {
+    "footerInfo": "Powered by <a href=\"https://github.com/wonder-light/glidea\" target=\"_blank\">Glidea</a>",
+    "postPageSize": 10,
+    "archivesPageSize": 50,
+    "showFeatureImage": true,
+    "siteDescription": "温故而知新",
+    "siteName": "Glidea",
+    "themeName": "notes",
+    "dateFormat": "YYYY-MM-DD",
+    "postUrlFormat": "SLUG",
+    "tagUrlFormat": "SHORT_ID",
+    "feedCount": 10,
+    "feedFullText": true
+  },
+  "themeCustomConfig": {}
+}
