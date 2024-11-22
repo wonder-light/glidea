@@ -30,7 +30,7 @@ class ApplicationDb {
 
   ///自定义主题配置
   @JsonProperty()
-  Map<String, Object> themeCustomConfig = {};
+  Map<String, dynamic> themeCustomConfig = {};
 
   ///设置
   @JsonProperty()
@@ -42,11 +42,11 @@ class ApplicationDb {
 
   ///当前主题配置
   @JsonProperty()
-  Map<String, Object> currentThemeConfig = {};
+  Map<String, dynamic> currentThemeConfig = {};
 
   ///其它主题配置
   @JsonProperty()
-  Map<String, Object> config = {};
+  Map<String, dynamic> config = {};
 }
 
 /// APP 应用
