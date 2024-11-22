@@ -4,14 +4,19 @@ import 'package:get/get.dart' show GetxController, StateMixin, StatusDataExt;
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
+import 'package:glidea/helpers/uid.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
+import 'package:glidea/models/tag.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// 站点控制器
 class SiteController extends GetxController with StateMixin<Application> {
   /// 发布的网址
   String get domain => state.themeConfig.domain;
+
+  // 标签
+  List<Tag> get tags => state.tags;
 
   @override
   void onInit() async {
@@ -127,9 +132,9 @@ class SiteController extends GetxController with StateMixin<Application> {
         theme['themeCustomConfig'] = theme.remove('customConfig');
       }
       // 扁平化 post 中的 data 字段
-      if (posts.containsKey('post') && posts['post'] is List<TJsonMap>){
-        for(var item in posts['post'] as List<TJsonMap>){
-          if(!item.containsKey('data')) continue;
+      if (posts.containsKey('post') && posts['post'] is List<TJsonMap>) {
+        for (var item in posts['post'] as List<TJsonMap>) {
+          if (!item.containsKey('data')) continue;
           // 扁平化
           item.addAll(item.remove('data'));
         }
@@ -189,5 +194,10 @@ class SiteController extends GetxController with StateMixin<Application> {
       'tag' => '${state.tags.length}',
       _ => '',
     };
+  }
+
+  /// 创建标签, 需要保证 slug 唯一
+  Tag createTag() {
+    return Tag()..slug = Uid.shortId;
   }
 }

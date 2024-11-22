@@ -3,7 +3,7 @@ import 'package:get/get.dart' show Get, Obx, Trans, Inst, StringExtension, IntEx
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -222,7 +222,7 @@ class _HomeWidgetState extends State<HomeWidget> {
     );
   }
 
-  //
+  // 构建主体路由
   Widget _buildBody() {
     return GetRouterOutlet(
       initialRoute: '/articles',
