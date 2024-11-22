@@ -1,7 +1,7 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt;
+import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt, Transition;
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/theme.dart';
 import 'package:glidea/lang/translations.dart';
@@ -34,6 +34,7 @@ class App extends StatelessWidget {
       fallbackLocale: TranslationsService.fallbackLocale,
       getPages: AppRouter.routes,
       initialRoute: AppRouter.home,
+      defaultTransition: Transition.fadeIn,
       binds: SiteBind.bings,
       enableLog: true,
       logWriterCallback: Log.logWriter,
