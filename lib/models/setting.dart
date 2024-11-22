@@ -1,9 +1,9 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, JsonProperty;
 import 'package:glidea/enum/enums.dart';
 
-/// 设置
+/// 远程设置
 @jsonSerializable
-class Setting {
+class RemoteSetting {
   /// 部署平台
   @JsonProperty()
   DeployPlatform platform = DeployPlatform.github;
