@@ -2,6 +2,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt, Transition;
+import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/theme.dart';
 import 'package:glidea/lang/translations.dart';
@@ -9,8 +10,13 @@ import 'package:glidea/routes/bindings.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import 'main.reflectable.dart' show initializeReflectable;
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  initializeReflectable();
+  JsonHelp.initialized();
 
   runApp(DevicePreview(
     enabled: !kReleaseMode,
@@ -48,4 +54,3 @@ class App extends StatelessWidget {
     );
   }
 }
-
