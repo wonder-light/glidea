@@ -4,6 +4,7 @@ import 'package:get/get.dart' show GetxController, StateMixin, StatusDataExt;
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
+import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -124,6 +125,14 @@ class SiteController extends GetxController with StateMixin<Application> {
       }
       if (theme.containsKey('customConfig')) {
         theme['themeCustomConfig'] = theme.remove('customConfig');
+      }
+      // 扁平化 post 中的 data 字段
+      if (posts.containsKey('post') && posts['post'] is List<TJsonMap>){
+        for(var item in posts['post'] as List<TJsonMap>){
+          if(!item.containsKey('data')) continue;
+          // 扁平化
+          item.addAll(item.remove('data'));
+        }
       }
       // 合并数据
       config = theme.mergeMaps(posts).mergeMaps(remote);
