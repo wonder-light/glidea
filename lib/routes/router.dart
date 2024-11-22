@@ -23,15 +23,15 @@ class AppRouter {
       participatesInRootNavigator: true,
       preventDuplicates: true,
       children: [
-        GetPage(name: '/articles', title: 'articles', page: () => const ArticlesWidget()),
-        GetPage(name: '/menu', title: 'menu', page: () => const MenuWidget()),
-        GetPage(name: '/tags', title: 'tags', page: () => const TagsWidget()),
-        GetPage(name: '/theme', title: 'theme', page: () => const ThemeWidget()),
-        GetPage(name: '/remote', title: 'remote', page: () => const RemoteWidget()),
-        GetPage(name: '/setting', title: 'remote', page: () => const SettingWidget()), // 移动端才有设置页面
-        GetPage(name: '/loading', title: 'loading', page: () => const LoadingWidget()),
+        GetPage(name: '/articles', title: 'articles', page: () => const ArticlesWidget(), preventDuplicates: true),
+        GetPage(name: '/menu', title: 'menu', page: () => const MenuWidget(), preventDuplicates: true),
+        GetPage(name: '/tags', title: 'tags', page: () => const TagsWidget(), preventDuplicates: true),
+        GetPage(name: '/theme', title: 'theme', page: () => const ThemeWidget(), preventDuplicates: true),
+        GetPage(name: '/remote', title: 'remote', page: () => const RemoteWidget(), preventDuplicates: true),
+        GetPage(name: '/setting', title: 'remote', page: () => const SettingWidget(), preventDuplicates: true), // 移动端才有设置页面
+        GetPage(name: '/loading', title: 'loading', page: () => const LoadingWidget(), preventDuplicates: true),
       ],
     ),
-    GetPage(name: '/*', page: () => const NotfoundWidget()),
+    GetPage(name: '/*', page: () => const NotfoundWidget(), preventDuplicates: true),
   ];
 }
