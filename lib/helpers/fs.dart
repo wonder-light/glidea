@@ -4,7 +4,13 @@ import 'package:path/path.dart' as p;
 
 class FS {
   /// 同步查询该路径下的文件系统实体是否存在
-  static bool pathExistsSync(String path) => Directory(path).existsSync();
+  static bool pathExistsSync(String path) => dirExistsSync(path) || fileExistsSync(path);
+
+  /// 同步查询该路径下的文件是否存在
+  static bool fileExistsSync(String path) => File(path).existsSync();
+
+  /// 同步查询该路径下的目录是否存在
+  static bool dirExistsSync(String path) => Directory(path).existsSync();
 
   /// 同步重命名此目录
   static void renameDirSync(String path, String newPath) => Directory(path).renameSync(newPath);
@@ -33,6 +39,12 @@ class FS {
 
   /// 同步复制此文件
   static void copyFileSync(String src, String target) => File(src).copySync(target);
+
+  /// 获取指定文件夹中子目录的属性
+  static List<Directory> subDirInfo(String path) => Directory(path).listSync().whereType<Directory>().toList();
+
+  /// 获取指定文件夹中子目录的名称
+  static List<String> subDir(String path) => subDirInfo(path).map((f) => p.basename(f.path)).toList();
 
   /// 链接路径
   static String join(String part1, [String? part2, String? part3, String? part4, String? part5]) {
