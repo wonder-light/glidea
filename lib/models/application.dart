@@ -5,45 +5,38 @@ import 'package:glidea/models/setting.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:glidea/models/theme.dart';
 
-/// 应用 Db
+/// 需要序列化存储的应用配置
 @jsonSerializable
-class ApplicationDb {
+class ApplicationBase {
   ///文章列表
   @JsonProperty()
   List<PostDb> posts = [];
-
   ///标签列表
   @JsonProperty()
   List<Tag> tags = [];
-
   ///菜单列表
   @JsonProperty()
   List<Menu> menus = [];
-
-  ///主题李彪
-  @JsonProperty()
-  List<String> themes = [];
-
   ///主题配置
   @JsonProperty()
   Theme themeConfig = Theme();
-
   ///自定义主题配置
   @JsonProperty()
   Map<String, dynamic> themeCustomConfig = {};
-
-  ///设置
+  ///远程设置
   @JsonProperty()
-  Setting setting = Setting();
-
+  RemoteSetting remote = RemoteSetting();
   ///评论设置
   @JsonProperty()
-  CommentSetting commentSetting = CommentSetting();
+  CommentSetting comment = CommentSetting();
+}
 
-  ///当前主题配置
+/// 应用 Db
+@jsonSerializable
+class ApplicationDb extends ApplicationBase {
+  ///主题文件夹下存在的主题名字列表
   @JsonProperty()
-  Map<String, dynamic> currentThemeConfig = {};
-
+  List<String> themes = [];
   ///其它主题配置
   @JsonProperty()
   Map<String, dynamic> config = {};
