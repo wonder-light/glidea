@@ -11,7 +11,6 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return const Text('文章');
   }
 }

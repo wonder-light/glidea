@@ -1,12 +1,12 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show GetPage;
-import 'package:glidea/views/Articles.dart';
-import 'package:glidea/views/Home.dart';
-import 'package:glidea/views/Loading.dart';
-import 'package:glidea/views/Menu.dart';
-import 'package:glidea/views/Setting.dart';
-import 'package:glidea/views/Tags.dart';
-import 'package:glidea/views/Theme.dart';
+import 'package:glidea/views/articles.dart';
+import 'package:glidea/views/home.dart';
+import 'package:glidea/views/loading.dart';
+import 'package:glidea/views/menu.dart';
+import 'package:glidea/views/setting.dart';
+import 'package:glidea/views/tags.dart';
+import 'package:glidea/views/theme.dart';
 import 'package:glidea/views/notfound.dart';
 import 'package:glidea/views/remote.dart';
 

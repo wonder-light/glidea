@@ -11,8 +11,6 @@ class _MenuWidgetState extends State<MenuWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    // 嵌套导航: GetRouterOutlet
-    throw UnimplementedError();
+    return const Text('菜单');
   }
 }

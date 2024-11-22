@@ -11,7 +11,6 @@ class _RemoteWidgetState extends State<RemoteWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return const Text('远程');
   }
 }
