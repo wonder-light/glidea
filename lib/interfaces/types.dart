@@ -2,3 +2,4 @@
 
 typedef TRouterData = ({String route, String name, IconData icon});
 typedef TActionData = ({String name, VoidCallback call, IconData icon});
+typedef TJsonMap = Map<String, dynamic>;

@@ -63,6 +63,7 @@ class RemoteSetting {
   String netlifySiteId = '';
 }
 
+/// disqus 评论设置
 @jsonSerializable
 class DisqusSetting {
   /// API 键
@@ -78,6 +79,7 @@ class DisqusSetting {
   String shortname = '';
 }
 
+/// gitalk 评论设置
 @jsonSerializable
 class GitalkSetting {
   /// ID
@@ -97,6 +99,7 @@ class GitalkSetting {
   String owner = '';
 }
 
+/// 评论设置 评论设置
 @jsonSerializable
 class CommentSetting {
   /// 评论平台

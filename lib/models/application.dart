@@ -10,22 +10,28 @@ import 'package:glidea/models/theme.dart';
 class ApplicationBase {
   ///文章列表
   @JsonProperty()
-  List<PostDb> posts = [];
+  List<Post> posts = [];
+
   ///标签列表
   @JsonProperty()
   List<Tag> tags = [];
+
   ///菜单列表
   @JsonProperty()
   List<Menu> menus = [];
+
   ///主题配置
   @JsonProperty()
   Theme themeConfig = Theme();
+
   ///自定义主题配置
   @JsonProperty()
   Map<String, dynamic> themeCustomConfig = {};
+
   ///远程设置
   @JsonProperty()
   RemoteSetting remote = RemoteSetting();
+
   ///评论设置
   @JsonProperty()
   CommentSetting comment = CommentSetting();
@@ -37,14 +43,15 @@ class ApplicationDb extends ApplicationBase {
   ///主题文件夹下存在的主题名字列表
   @JsonProperty()
   List<String> themes = [];
+
   ///其它主题配置
   @JsonProperty()
   Map<String, dynamic> config = {};
 }
 
-/// APP 应用
+/// APP 应用设置
 @jsonSerializable
-class Application {
+mixin class ApplicationSetting {
   ///基本目录
   @JsonProperty()
   String baseDir = '';
@@ -56,8 +63,8 @@ class Application {
   ///构建输出目录
   @JsonProperty()
   String buildDir = '';
-
-  ///APP db
-  @JsonProperty()
-  ApplicationDb db = ApplicationDb();
 }
+
+/// APP 应用
+@jsonSerializable
+class Application extends ApplicationDb with ApplicationSetting {}

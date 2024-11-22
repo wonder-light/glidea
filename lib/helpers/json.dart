@@ -18,7 +18,7 @@ extension JsonObjectExtend on Object {
   /// 复制 T 类型的 Dart 对象并将其与 other 合并
   T? copyWith<T>(Map<String, dynamic> other) => JsonMapper.copyWith<T>(this as T, other);
 
-  T? copyWithObj<T>(T other) => JsonMapper.copyWith<T>(this as T, JsonMapper.toMap(other)!);
+  T? copyWithObj<T, S>(S other) => JsonMapper.copyWith<T>(this as T, JsonMapper.toMap(other)!);
 
   /// 将 JSON [String] 或 [Object] 或 [Map<String, dynamic>] 类型转换为 T 类型的 Dart 对象实例
   T? deserialize<T>([DeserializationOptions? options]) => JsonMapper.deserialize(this, options);
@@ -45,9 +45,11 @@ class JsonHelp {
     JsonMapper().useAdapter(
       JsonMapperAdapter(
         valueDecorators: {
-          typeOf<List<PostDb>>(): (value) => value.cast<PostDb>(),
+          typeOf<List<Post>>(): (value) => value.cast<Post>(),
           typeOf<List<Tag>>(): (value) => value.cast<Tag>(),
           typeOf<List<Menu>>(): (value) => value.cast<Menu>(),
+          typeOf<List<PostRender>>(): (value) => value.cast<PostRender>(),
+          typeOf<List<TagRender>>(): (value) => value.cast<TagRender>()
         },
         converters: {},
         enumValues: {

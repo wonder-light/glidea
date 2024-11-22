@@ -13,7 +13,7 @@ class Tag {
 
   /// 简链
   @JsonProperty()
-  String? slug;
+  String slug = '';
 
   /// 标签索引
   @JsonProperty()
@@ -22,15 +22,11 @@ class Tag {
 
 /// 标签渲染数据
 @jsonSerializable
-class TagRenderData extends Tag {
+class TagRender extends Tag {
   /// 标签链接
   @JsonProperty()
   String link = '';
-}
 
-/// 站点标签数据
-@jsonSerializable
-class SiteTagsData extends TagRenderData {
   /// 标签数量
   @JsonProperty()
   int count = 0;
