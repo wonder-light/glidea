@@ -215,7 +215,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         currentIndex: currentIndex.value,
         onTap: (index) {
           currentIndex.value = index;
-          Get.toNamed(routerIndex.value);
+          Get.toNamed(mobileMenus[index].route);
         },
         type: BottomNavigationBarType.shifting,
       ),
@@ -224,12 +224,9 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   //
   Widget _buildBody() {
-    return Container(
-      color: Colors.amber,
-      child: GetRouterOutlet(
-        initialRoute: '/articles',
-        anchorRoute: '/',
-      ),
+    return GetRouterOutlet(
+      initialRoute: '/articles',
+      anchorRoute: '/',
     );
   }
 
