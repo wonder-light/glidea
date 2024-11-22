@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Obx, Trans, Inst, StringExtension, IntExtension, GetNavigationExt;
+import 'package:get/get.dart' show Get, Obx, Trans, Inst, StringExtension, IntExtension, GetNavigationExt, GetRouterOutlet;
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
@@ -137,6 +137,7 @@ class _HomeWidgetState extends State<HomeWidget> {
               () => ListTile(
                 onTap: () {
                   routerIndex.value = item.route;
+                  Get.toNamed(routerIndex.value);
                 },
                 leading: Icon(item.icon),
                 title: Text(item.name.tr),
@@ -214,7 +215,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         currentIndex: currentIndex.value,
         onTap: (index) {
           currentIndex.value = index;
-          // TODO: 更新路由
+          Get.toNamed(routerIndex.value);
         },
         type: BottomNavigationBarType.shifting,
       ),
@@ -225,6 +226,10 @@ class _HomeWidgetState extends State<HomeWidget> {
   Widget _buildBody() {
     return Container(
       color: Colors.amber,
+      child: GetRouterOutlet(
+        initialRoute: '/articles',
+        anchorRoute: '/',
+      ),
     );
   }
 

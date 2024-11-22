@@ -20,6 +20,8 @@ class AppRouter {
       name: AppRouter.home,
       title: 'main',
       page: () => const HomeWidget(),
+      participatesInRootNavigator: true,
+      preventDuplicates: true,
       children: [
         GetPage(name: '/articles', title: 'articles', page: () => const ArticlesWidget()),
         GetPage(name: '/menu', title: 'menu', page: () => const MenuWidget()),
