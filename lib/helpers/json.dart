@@ -20,7 +20,7 @@ extension JsonObjectExtend on Object {
 
   T? copyWithObj<T>(T other) => JsonMapper.copyWith<T>(this as T, JsonMapper.toMap(other)!);
 
-  /// 将JSON字符串或对象或Map<String, dynamic>转换为T类型的Dart对象实例
+  /// 将 JSON [String] 或 [Object] 或 [Map<String, dynamic>] 类型转换为 T 类型的 Dart 对象实例
   T? deserialize<T>([DeserializationOptions? options]) => JsonMapper.deserialize(this, options);
 }
 
@@ -28,6 +28,14 @@ extension JsonObjectExtend on Object {
 extension JsonStringExtend on String {
   /// 将 json 字符串转换为类型为 T 的 Dart 对象
   T? fromJson<T>([DeserializationOptions? options]) => JsonMapper.fromJson<T>(this, options);
+}
+
+extension MapExtend on Map<String, dynamic> {
+  /// 将 [Map<String, dynamic> ] 转换为类型 T 的 Dart 对象实例
+  T? fromMap<T>([DeserializationOptions? options]) => JsonMapper.fromMap<T>(this, options);
+
+  /// 递归深度合并两个映射
+  Map<String, dynamic> mergeMaps(Map<String, dynamic> map) => JsonMapper.mergeMaps(this, map);
 }
 
 /// Json 序列化帮助类
