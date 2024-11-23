@@ -122,6 +122,7 @@
   'pathContainHttps': 'Ссылка должна содержать либо http, либо https',
   'articleUrlPath': 'URL-адрес записи',
   'concise': 'Компактный вид',
+  'tagUrl': 'Пометка URL',
   'tagUrlPath': 'URL-адрес тега',
   'archivePathPrefix': 'Префикс для архива',
   'showFullText': 'Отображать содержимое полностью',

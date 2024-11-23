@@ -121,6 +121,7 @@
   'pathContainHttps': 'The path must contain either http or https',
   'articleUrlPath': 'Article URL path',
   'concise': 'concise',
+  'tagUrl': 'Tag URL',
   'tagUrlPath': 'Tag URL path',
   'archivePathPrefix': 'Archive path prefix',
   'showFullText': 'Show full text',

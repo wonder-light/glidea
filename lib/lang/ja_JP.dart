@@ -120,6 +120,7 @@
   'pathContainHttps': 'パスは必ずhttpまたはhttpsを含めます',
   'articleUrlPath': '文書のURLのパス',
   'concise': '簡素化',
+  'tagUrl': 'タグURLです',
   'tagUrlPath': 'タグURLのパス',
   'archivePathPrefix': 'アーカイブのパスの接頭辞',
   'showFullText': '全文を表示します',

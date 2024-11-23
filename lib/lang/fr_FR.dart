@@ -122,6 +122,7 @@
   'pathContainHttps': 'L\'URL doit contenir soit \'http\' ou \'https\'',
   'articleUrlPath': 'URL des articles',
   'concise': 'simplifié',
+  'tagUrl': 'URL du label',
   'tagUrlPath': 'URL des tags',
   'archivePathPrefix': 'Préfix du chemin des Archives',
   'showFullText': 'Tout afficher',
