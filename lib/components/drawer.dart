@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetInterface, GetNavigationExt;
-import 'package:glidea/helpers/log.dart';
 
 /// 这个类用于关闭抽屉
 class DraController extends ValueNotifier<bool> {
@@ -13,7 +12,6 @@ class DraController extends ValueNotifier<bool> {
   void close() {
     value = false;
     notifyListeners();
-    Log.d('close');
   }
 }
 
@@ -52,7 +50,7 @@ extension DrawerExt on GetInterface {
     // 背景颜色
     opacityColor ??= theme.colorScheme.outlineVariant;
     // 范围
-    constraints ??= BoxConstraints.tightFor(height: Get.height, width: Get.width * 0.4);
+    constraints ??= BoxConstraints.tightFor(height: Get.height, width: Get.width * 0.35);
     // 形状
     shape ??= const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.zero),
@@ -159,7 +157,6 @@ extension DrawerExt on GetInterface {
       if (internalController.value) return;
       if (animationController.isAnimating) return;
       animationController.reverse().whenCompleteOrCancel(() {
-        Log.d('complete');
         // 关闭叠层实体
         overlayEntry
           ..remove()
