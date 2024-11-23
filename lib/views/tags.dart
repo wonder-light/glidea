@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Trans, Inst, StringExtension;
+import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/drawer.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/log.dart';
@@ -40,10 +40,14 @@ class _TagsWidgetState extends State<TagsWidget> {
           const Divider(thickness: 1, height: 1),
           Container(
             margin: const EdgeInsets.only(top: 16),
-            child: Row(
-              children: [
-                for (var tag in siteController.tags) _buildTagButton(tag),
-              ],
+            child: Obx(
+              () => Wrap(
+                spacing: 16,
+                runSpacing: 12,
+                children: [
+                  for (var tag in siteController.tags) _buildTagButton(tag),
+                ],
+              ),
             ),
           ),
         ],

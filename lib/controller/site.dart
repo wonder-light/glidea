@@ -1,6 +1,6 @@
 ﻿import 'dart:io';
 
-import 'package:get/get.dart' show GetxController, StateMixin, StatusDataExt;
+import 'package:get/get.dart' show FirstWhereOrNullExt, StateController, StatusDataExt;
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
@@ -11,7 +11,7 @@ import 'package:glidea/models/tag.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// 站点控制器
-class SiteController extends GetxController with StateMixin<Application> {
+class SiteController extends StateController<Application> {
   /// 发布的网址
   String get domain => state.themeConfig.domain;
 
@@ -21,8 +21,7 @@ class SiteController extends GetxController with StateMixin<Application> {
   @override
   void onInit() async {
     super.onInit();
-    setLoading();
-    await initData();
+    futurize(initData);
   }
 
   @override
@@ -32,11 +31,10 @@ class SiteController extends GetxController with StateMixin<Application> {
   }
 
   /// 初始化数据
-  Future<void> initData() async {
+  Future<Application> initData() async {
     var site = Application();
     await checkDir(site);
-    site = await loadSiteData(site);
-    setSuccess(site);
+    return await loadSiteData(site);
   }
 
   /// 检查 .glidea 文件夹是否存在，如果不存在，则将其初始化

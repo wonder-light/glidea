@@ -141,7 +141,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                 },
                 leading: Icon(item.icon),
                 title: Text(item.name.tr),
-                trailing: Text(siteController.getHomeLeftPanelNum(item.name)),
+                trailing: Obx(() => Text(siteController.getHomeLeftPanelNum(item.name))),
                 selected: routerIndex.value == item.route,
                 selectedColor: colorScheme.surfaceContainerLow,
                 selectedTileColor: colorScheme.primary,
