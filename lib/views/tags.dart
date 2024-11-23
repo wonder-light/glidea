@@ -1,8 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/drawer.dart';
+import 'package:glidea/components/tagEditor.dart';
 import 'package:glidea/controller/site.dart';
-import 'package:glidea/helpers/log.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -20,13 +20,12 @@ class _TagsWidgetState extends State<TagsWidget> {
   /// 站点控制器
   final siteController = Get.find<SiteController>(tag: 'site');
 
-  /// 抽屉控制器
-
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
             alignment: Alignment.centerRight,
@@ -91,22 +90,72 @@ class _TagsWidgetState extends State<TagsWidget> {
 
   // 添加新标签
   void addNewTag() {
-    Get.showDrawer(
-      builder: (context) {
-        return Container(
-          width: 40,
-          height: 40,
-          child: Text('1213132132'),
-        );
-      },
-    );
+    editorTag(siteController.createTag());
   }
 
   // 编辑标签
   void editorTag(Tag tag) {
-    Log.d('编辑中');
+    /// 抽屉控制器
+    final drawerController = DraController();
+
+    Get.showDrawer(
+      controller: drawerController,
+      builder: (context) => TagEditorWidget(
+        tag: tag,
+        controller: drawerController,
+      ),
+    );
   }
 
   // 删除标签
-  void deleteTag(Tag tag) {}
+  void deleteTag(Tag tag) {
+    Get.dialog(
+      Dialog(
+        insetPadding: EdgeInsets.zero,
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          width: Get.width * 0.8,
+          height: 160,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('warning'.tr),
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    child: Text('deleteWarning'.tr),
+                  ),
+                ],
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        Get.backLegacy();
+                      },
+                      child: Text('cancel'.tr),
+                    ),
+                    Container(width: 10),
+                    OutlinedButton(
+                      onPressed: () {
+                        siteController.removeTag(tag);
+                        Get.backLegacy();
+                      },
+                      child: Text('save'.tr),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
