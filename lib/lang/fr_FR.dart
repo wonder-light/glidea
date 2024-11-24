@@ -30,6 +30,7 @@
   'warning': 'Attention',
   'articleDelete': 'Article supprimé',
   'cancel': 'Annuler',
+  'confirm': 'Confirmer',
   'select': 'Selectionner',
   'featureImage': 'Image de fond',
   'saveDraft': 'Enregristrer en brouillon',

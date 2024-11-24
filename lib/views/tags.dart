@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
+import 'package:glidea/components/dialog.dart';
 import 'package:glidea/components/drawer.dart';
 import 'package:glidea/components/tagEditor.dart';
 import 'package:glidea/controller/site.dart';
@@ -54,7 +55,7 @@ class _TagsWidgetState extends State<TagsWidget> {
     );
   }
 
-  // 构建标签按钮
+  /// 构建标签按钮
   Widget _buildTagButton(Tag tag) {
     // 使用中不可删除
     final select = tag.used ? [false] : [false, false];
@@ -88,12 +89,12 @@ class _TagsWidgetState extends State<TagsWidget> {
     );
   }
 
-  // 添加新标签
+  /// 添加新标签
   void addNewTag() {
     editorTag(siteController.createTag());
   }
 
-  // 编辑标签
+  /// 编辑标签
   void editorTag(Tag tag) {
     /// 抽屉控制器
     final drawerController = DraController();
@@ -107,55 +108,17 @@ class _TagsWidgetState extends State<TagsWidget> {
     );
   }
 
-  // 删除标签
+  /// 删除标签
   void deleteTag(Tag tag) {
-    Get.dialog(
-      Dialog(
-        insetPadding: EdgeInsets.zero,
-        child: Container(
-          padding: const EdgeInsets.all(18),
-          width: Get.width * 0.8,
-          height: 160,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('warning'.tr),
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    child: Text('deleteWarning'.tr),
-                  ),
-                ],
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 24),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    OutlinedButton(
-                      onPressed: () {
-                        Get.backLegacy();
-                      },
-                      child: Text('cancel'.tr),
-                    ),
-                    Container(width: 10),
-                    OutlinedButton(
-                      onPressed: () {
-                        siteController.removeTag(tag);
-                        Get.backLegacy();
-                      },
-                      child: Text('save'.tr),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    // 弹窗
+    Get.dialog(DialogWidget(
+      onCancel: () {
+        Get.backLegacy();
+      },
+      onConfirm: () {
+        siteController.removeTag(tag);
+        Get.backLegacy();
+      },
+    ));
   }
 }

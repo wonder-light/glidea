@@ -30,6 +30,7 @@
   'warning': 'Warning',
   'articleDelete': 'Article deleted',
   'cancel': 'Cancel',
+  'confirm': 'Confirm',
   'select': 'Select',
   'featureImage': 'Feature Image',
   'saveDraft': 'Save as Draft',

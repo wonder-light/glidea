@@ -29,6 +29,7 @@
   'warning': '警告',
   'articleDelete': '文章已刪除',
   'cancel': '取 消',
+  'confirm': '確 認',
   'select': '選 擇',
   'featureImage': '封面圖',
   'saveDraft': '存草稿',

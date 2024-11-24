@@ -29,6 +29,7 @@
   'warning': 'ウォーニング',
   'articleDelete': '文書を削除しました。',
   'cancel': '取り消す',
+  'confirm': 'かくにん',
   'select': '選択',
   'featureImage': '表紙イメージ',
   'saveDraft': '下書き保存',
