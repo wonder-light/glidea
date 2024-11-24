@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Obx, Trans, Inst, BoolExtension, IntExtension, GetNavigationExt, GetRouterOutlet;
+import 'package:get/get.dart' show Get, Obx, Trans, Inst, BoolExtension;
 import 'package:glidea/components/drawer.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/models/tag.dart';
@@ -54,7 +54,7 @@ class _TagEditorWidgetState extends State<TagEditorWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('tag'.tr),
+          Text('tag'.tr, textScaler: const TextScaler.linear(1.2)),
           IconButton(
             onPressed: close,
             icon: const Icon(PhosphorIconsRegular.x),
@@ -98,9 +98,9 @@ class _TagEditorWidgetState extends State<TagEditorWidget> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
+                Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(item.name.tr),
+                  child: Text(item.name.tr, textScaler: const TextScaler.linear(1.2)),
                 ),
                 TextField(
                   controller: item.controller,
