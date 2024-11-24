@@ -29,6 +29,9 @@ class _HomeWidgetState extends State<HomeWidget> {
   /// 关于当前屏幕的响应性数据
   ResponsiveBreakpointsData breakpoints = const ResponsiveBreakpointsData();
 
+  /// 侦听器，可用于侦听应用程序生命周期中的更改
+  late final AppLifecycleListener lifecycle;
+
   /// 当前路由索引
   var routerIndex = '/articles'.obs;
 
@@ -66,6 +69,8 @@ class _HomeWidgetState extends State<HomeWidget> {
 
     mobileMenus.addAll(menus.take(3));
     mobileMenus.add((name: 'setting', route: '/setting', icon: PhosphorIconsRegular.slidersHorizontal));
+
+    lifecycle = AppLifecycleListener(onStateChange: onStateChange);
   }
 
   @override
@@ -229,6 +234,9 @@ class _HomeWidgetState extends State<HomeWidget> {
       anchorRoute: '/',
     );
   }
+
+  /// 应用程序生命周期更改时的回调
+  void onStateChange(AppLifecycleState state){}
 
   /// 预览网页
   void preview() {
