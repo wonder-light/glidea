@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
+import 'package:get/get.dart' show Trans;
 
 class DialogWidget extends StatelessWidget {
   const DialogWidget({super.key, this.onConfirm, this.onCancel});
@@ -17,54 +17,57 @@ class DialogWidget extends StatelessWidget {
       visualDensity: VisualDensity(horizontal: -2, vertical: -2),
       alignment: Alignment.center,
     );
+    // 头部
+    Widget header = Padding(
+      padding: const EdgeInsets.all(18),
+      child: Text('⚠️${"warning".tr}', textScaler: const TextScaler.linear(1.2)),
+    );
+    // 内容
+    Widget content = Flexible(
+      fit: FlexFit.tight,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18),
+        child: Text('deleteWarning'.tr),
+      ),
+    );
+    // 操作按钮
+    Widget actions = Padding(
+      padding: const EdgeInsets.only(top: 24, bottom: 18, left: 18, right: 18),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          OutlinedButton(
+            onPressed: onCancel,
+            style: style,
+            child: Text("cancel".tr),
+          ),
+          Container(width: 10),
+          FilledButton(
+            onPressed: onConfirm,
+            style: style,
+            child: Text('confirm'.tr),
+          ),
+        ],
+      ),
+    );
+    // 弹窗
+    Widget dialogChild = IntrinsicWidth(
+      stepWidth: 60,
+      stepHeight: 60,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          header,
+          content,
+          actions,
+        ],
+      ),
+    );
     // 控件
     return Dialog(
-      insetPadding: EdgeInsets.zero,
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        constraints: const BoxConstraints(
-          minHeight: 160,
-          minWidth: 300,
-          maxHeight: 260,
-          maxWidth: 400,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('⚠️${"warning".tr}', textScaler: const TextScaler.linear(1.2)),
-                Container(
-                  margin: const EdgeInsets.only(top: 12),
-                  child: Text('deleteWarning'.tr),
-                ),
-              ],
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 24),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  OutlinedButton(
-                    onPressed: onCancel,
-                    style: style,
-                    child: Text("cancel".tr),
-                  ),
-                  Container(width: 10),
-                  FilledButton(
-                    onPressed: onConfirm,
-                    style: style,
-                    child: Text('confirm'.tr),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      // insetPadding: EdgeInsets.zero, 与屏幕边缘保留的距离
+      child: dialogChild,
     );
   }
 }
-
