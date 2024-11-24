@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetInterface, GetNavigationExt;
+import 'package:responsive_framework/responsive_framework.dart';
 
 /// 这个类用于关闭抽屉
 class DraController extends ValueNotifier<bool> {
@@ -22,8 +23,6 @@ extension DrawerExt on GetInterface {
   ///
   /// [opacityColor] - 背景颜色
   ///
-  /// [constraints] - 抽屉的布局大小
-  ///
   /// [controller] - [DraController] 抽屉控制器, 用于关闭抽屉
   ///
   /// [shape] - 抽屉的形状
@@ -35,22 +34,31 @@ extension DrawerExt on GetInterface {
   /// [blur] - 背景应用模糊效果
   ///
   /// [decoration] - 抽屉的装饰器, 控制阴影等
+  ///
+  /// [stepWidth] - 如果非空，则强制子元素的宽度为该值的倍数。如果为 null 或 0.0，子元素的宽度将与其最大固有宽度相同。该值不能为负值。
+  ///
+  /// [stepHeight] - 如果非空，则强制子元素的宽度为该值的倍数。只在移动端生效。
   void showDrawer({
     required WidgetBuilder builder,
     double opacity = 0.5,
     Color? opacityColor,
-    BoxConstraints? constraints,
     DraController? controller,
     ShapeBorder? shape,
-    Alignment align = Alignment.centerRight,
+    Alignment? align,
     Duration duration = const Duration(milliseconds: 400),
     bool blur = true,
     Decoration? decoration,
+    double? stepWidth = 60,
+    double? stepHeight,
   }) {
+    // 获取断点数据
+    final breakpoints = ResponsiveBreakpoints.of(Get.context!);
+    // 设置 stepHeight
+    stepHeight = breakpoints.isDesktop ? null : (stepHeight ?? 60);
+    // 设置 align
+    align ??= breakpoints.isDesktop ? Alignment.centerRight : Alignment.center;
     // 背景颜色
     opacityColor ??= theme.colorScheme.outlineVariant;
-    // 范围
-    constraints ??= BoxConstraints.tightFor(height: Get.height, width: Get.width * 0.35);
     // 形状
     shape ??= const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.zero),
@@ -110,12 +118,12 @@ extension DrawerExt on GetInterface {
         ),
       );
 
-      // 内容
+      // 创建抽屉内容
       Widget drawer = Align(
-        alignment: align,
-        child: Container(
-          constraints: constraints,
-          decoration: decoration,
+        alignment: align!,
+        child: IntrinsicWidth(
+          stepWidth: stepWidth,
+          stepHeight: stepHeight,
           child: Drawer(
             shape: shape,
             child: builder(context),
@@ -123,19 +131,29 @@ extension DrawerExt on GetInterface {
         ),
       );
 
-      // 创建抽屉
-      drawer = SlideTransition(
-        position: Tween<Offset>(
-          begin: Offset(align.x, align.y),
-          end: Offset.zero,
-        ).animate(
-          CurvedAnimation(
+      // 创建抽屉动画
+      if (align.x == 0 && align.y == 0) {
+        drawer = FadeTransition(
+          opacity: CurvedAnimation(
             parent: animationController,
             curve: Curves.easeInOut,
           ),
-        ),
-        child: drawer,
-      );
+          child: drawer,
+        );
+      } else {
+        drawer = SlideTransition(
+          position: Tween<Offset>(
+            begin: Offset(align.x, align.y),
+            end: Offset.zero,
+          ).animate(
+            CurvedAnimation(
+              parent: animationController,
+              curve: Curves.easeInOut,
+            ),
+          ),
+          child: drawer,
+        );
+      }
 
       // 执行动画
       animationController.forward();
