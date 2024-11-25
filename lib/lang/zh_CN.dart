@@ -117,6 +117,7 @@
   'platform': '平 台',
   'topArticles': '置顶文章',
   'default': '默认',
+  'internal': '内链',
   'external': '外链',
   'pathContainHttps': '路径必须包含 http 或 https',
   'articleUrlPath': '文章 URL 路径',

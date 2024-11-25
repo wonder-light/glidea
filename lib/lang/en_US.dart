@@ -118,6 +118,7 @@
   'platform': 'Platform',
   'topArticles': 'Top articles',
   'default': 'Default',
+  'internal': 'Internal',
   'external': 'External',
   'pathContainHttps': 'The path must contain either http or https',
   'articleUrlPath': 'Article URL path',

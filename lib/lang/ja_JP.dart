@@ -117,6 +117,7 @@
   'platform': 'プラットホーム',
   'topArticles': '固定文書',
   'default': 'デフォルト',
+  'internal': '内部リンクです',
   'external': '外部リンク',
   'pathContainHttps': 'パスは必ずhttpまたはhttpsを含めます',
   'articleUrlPath': '文書のURLのパス',

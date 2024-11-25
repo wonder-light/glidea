@@ -119,6 +119,7 @@
   'platform': 'Plate-forme',
   'topArticles': 'Articles en tête',
   'default': 'Par défaut',
+  'internal': 'Interne',
   'external': 'Externe',
   'pathContainHttps': 'L\'URL doit contenir soit \'http\' ou \'https\'',
   'articleUrlPath': 'URL des articles',
