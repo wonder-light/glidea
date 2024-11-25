@@ -1,0 +1,191 @@
+﻿import 'package:flutter/material.dart';
+import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxT, StringExtension, Trans;
+import 'package:glidea/components/drawerEditor.dart';
+import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/log.dart';
+import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/models/menu.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
+
+class MenuEditor extends DrawerEditor<Menu> {
+  const MenuEditor({
+    super.key,
+    required super.entity,
+    required super.controller,
+    super.onClose,
+    super.onSave,
+    super.header = 'menu',
+  });
+
+  @override
+  MenuEditorState createState() => MenuEditorState();
+}
+
+class MenuEditorState extends DrawerEditorState<Menu> {
+  /// 内链后或者外链类型
+  var openType = MenuTypes.internal.obs;
+
+  /// 标签名控制器
+  final TextEditingController nameController = TextEditingController();
+
+  /// 标签 URL 控制器
+  final TextEditingController urlController = TextEditingController();
+
+  /// 可以引用的链接
+  final List<TLinkData> linkData = [];
+
+  /// 链接字段的全局键
+  final GlobalKey _key = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    // 初始化文本
+    nameController.text = widget.entity.name;
+    urlController.text = widget.entity.link;
+    nameController.addListener(updateTagState);
+    urlController.addListener(updateTagState);
+    openType.value = widget.entity.openType;
+    linkData.addAll(siteController.getReferenceLink());
+  }
+
+  @override
+  List<Widget> buildContent(BuildContext context) {
+    // 名称控件
+    final nameWidget = wrapperField(
+      name: 'name',
+      child: TextField(
+        controller: nameController,
+        decoration: const InputDecoration(
+          isDense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+          hoverColor: Colors.transparent, // 悬停时的背景色
+        ),
+      ),
+    );
+    // 选择按钮
+    final selectWidget = wrapperField(
+      child: Obx(
+        () => ToggleButtons(
+          borderRadius: BorderRadius.circular(8),
+          //constraints: const BoxConstraints(),  // 取消最小高度
+          isSelected: [
+            openType.value == MenuTypes.internal,
+            openType.value == MenuTypes.external,
+          ],
+          children: [
+            for (var item in MenuTypes.values)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(item.name.tr),
+              ),
+          ],
+          onPressed: (index) {
+            openType.value = index <= 0 ? MenuTypes.internal : MenuTypes.external;
+          },
+        ),
+      ),
+    );
+    // 链接控件
+    final linkWidget = wrapperField(
+      name: 'link',
+      child: Autocomplete<TLinkData>(
+        displayStringForOption: (option) => option.link,
+        optionsBuilder: _getOptions,
+        onSelected: (value) => urlController.text = value.link,
+        optionsViewBuilder: _buildOptionsView,
+        fieldViewBuilder: _buildFieldView,
+      ),
+    );
+    return [
+      nameWidget,
+      selectWidget,
+      linkWidget,
+    ];
+  }
+
+  /// 构建列表选项组件
+  Widget _buildOptionsView<T extends TLinkData>(BuildContext context, AutocompleteOnSelected<T> onSelected, Iterable<T> options) {
+    final maxWidth = _key.currentContext?.findRenderObject()?.semanticBounds.width ?? double.infinity;
+    return Align(
+      alignment: AlignmentDirectional.topStart,
+      child: Material(
+        elevation: 10,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: 260,
+            maxWidth: maxWidth,
+          ),
+          child: ListView.separated(
+            padding: EdgeInsets.zero,
+            shrinkWrap: true,
+            itemCount: options.length,
+            itemBuilder: (BuildContext context, int index) {
+              final option = options.elementAt(index);
+              return ListTile(
+                leading: const Icon(PhosphorIconsRegular.link),
+                onTap: () {
+                  onSelected(option);
+                },
+                title: Text(option.name),
+                subtitle: Text(option.link),
+                dense: true,
+                visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+              );
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return const Divider(height: 1, thickness: 1);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 构建字段组件
+  Widget _buildFieldView(BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
+    return TextFormField(
+      key: _key,
+      focusNode: focusNode,
+      controller: textEditingController,
+      onFieldSubmitted: (_) => onFieldSubmitted(),
+      decoration: const InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        hoverColor: Colors.transparent, // 悬停时的背景色
+      ),
+      onChanged: (str) => urlController.text = str,
+    );
+  }
+
+  /// 更新标签状态
+  void updateTagState() {
+    var name = nameController.text;
+    var url = urlController.text;
+    // 确保都有效
+    var pop1 = name.isNotEmpty && url.isNotEmpty;
+    // 任意一个改变即可
+    var pop2 = pop1 && (name != widget.entity.name || url != widget.entity.name);
+    canSave.value = pop2;
+
+    Log.d(canSave.value);
+  }
+
+  @override
+  void onSave() {
+    if (canSave.value) {
+      var newMenu = Menu()
+        ..name = nameController.text
+        ..link = urlController.text;
+      siteController.updateMenu(newMenu: newMenu, oldMenu: widget.entity);
+    }
+    super.onSave();
+  }
+
+  /// 获取选项
+  Iterable<TLinkData> _getOptions(TextEditingValue textEditingValue) {
+    var text = textEditingValue.text;
+    if (text.isEmpty) return linkData;
+    return linkData.where((t) => t.name.contains(text) || t.link.contains(text));
+  }
+}
