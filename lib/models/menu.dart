@@ -1,4 +1,5 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, JsonProperty;
+import 'package:glidea/enum/enums.dart';
 
 @jsonSerializable
 class Menu {
@@ -8,7 +9,7 @@ class Menu {
 
   /// 内链后或者外链类型
   @JsonProperty()
-  String openType = '';
+  MenuTypes openType = MenuTypes.internal;
 
   /// 链接
   @JsonProperty()

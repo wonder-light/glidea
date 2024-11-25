@@ -10,6 +10,13 @@ enum DeployPlatform {
   netlify,
 }
 
+/// 评论平台
+@jsonSerializable
+enum CommentPlatform {
+  gitalk,
+  disqus,
+}
+
 /// 代理方式
 @jsonSerializable
 enum ProxyWay {
@@ -18,6 +25,7 @@ enum ProxyWay {
   none,
 }
 
+/// 内链后或者外链类型
 @jsonSerializable
 enum MenuTypes {
   internal,
@@ -26,6 +34,6 @@ enum MenuTypes {
 
 @jsonSerializable
 enum UrlFormats {
-  Slug,
-  ShortId,
+  slug,
+  shortId,
 }

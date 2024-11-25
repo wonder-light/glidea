@@ -54,6 +54,7 @@ class JsonHelp {
         converters: {},
         enumValues: {
           DeployPlatform: DeployPlatform.values,
+          CommentPlatform: CommentPlatform.values,
           ProxyWay: ProxyWay.values,
           MenuTypes: MenuTypes.values,
           UrlFormats: UrlFormats.values,

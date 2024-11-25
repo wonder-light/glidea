@@ -104,7 +104,7 @@ class GitalkSetting {
 class CommentSetting {
   /// 评论平台
   @JsonProperty()
-  String commentPlatform = 'gitalk';
+  CommentPlatform commentPlatform = CommentPlatform.gitalk;
 
   // 显示评论
   @JsonProperty()

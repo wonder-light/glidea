@@ -1,4 +1,5 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, JsonProperty;
+import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 
 @jsonSerializable
@@ -37,11 +38,11 @@ class Theme {
 
   /// 文章 URL 格式
   @JsonProperty()
-  String postUrlFormat = 'SLUG';
+  UrlFormats postUrlFormat = UrlFormats.slug;
 
   /// 标签 URL 格式
   @JsonProperty()
-  String tagUrlFormat = 'SLUG';
+  UrlFormats tagUrlFormat = UrlFormats.shortId;
 
   /// 时间格式
   @JsonProperty()
