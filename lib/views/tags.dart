@@ -2,6 +2,7 @@
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/dialog.dart';
 import 'package:glidea/components/drawer.dart';
+import 'package:glidea/components/pageAction.dart';
 import 'package:glidea/components/tagEditor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/models/tag.dart';
@@ -23,34 +24,22 @@ class _TagsWidgetState extends State<TagsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 7),
-            child: IconButton(
-              onPressed: addNewTag,
-              icon: const Icon(PhosphorIconsRegular.plus),
-              tooltip: 'newTag'.tr,
-            ),
-          ),
-          const Divider(thickness: 1, height: 1),
-          Container(
-            margin: const EdgeInsets.only(top: 16),
-            child: Obx(
-              () => Wrap(
-                spacing: 16,
-                runSpacing: 12,
-                children: [
-                  for (var tag in siteController.tags) _buildTagButton(tag),
-                ],
-              ),
-            ),
-          ),
-        ],
+    return PageAction(
+      actions: [
+        IconButton(
+          onPressed: addNewTag,
+          icon: const Icon(PhosphorIconsRegular.plus),
+          tooltip: 'newTag'.tr,
+        ),
+      ],
+      child: Obx(
+        () => Wrap(
+          spacing: 16,
+          runSpacing: 12,
+          children: [
+            for (var tag in siteController.tags) _buildTagButton(tag),
+          ],
+        ),
       ),
     );
   }
