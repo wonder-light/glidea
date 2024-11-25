@@ -10,8 +10,10 @@ class PageAction extends StatelessWidget {
 
   /// 前面的操作控件
   final Widget? leading;
+
   /// 后面的操作按钮
   final List<Widget> actions;
+
   /// 分割线下的内容控件
   final Widget child;
 
@@ -46,9 +48,11 @@ class PageAction extends StatelessWidget {
           child: childWidget,
         ),
         const Divider(thickness: 1, height: 1),
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: child,
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: child,
+          ),
         ),
       ],
     );
