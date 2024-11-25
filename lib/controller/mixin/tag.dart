@@ -14,15 +14,15 @@ mixin TagSite on StateController<Application> {
   }
 
   /// 更新标签
-  void updateTag({required Tag newTag, Tag? oldTag}) {
-    oldTag = state.tags.firstWhereOrNull((t) => t == oldTag);
-    if (oldTag == null) {
+  void updateTag({required Tag newData, Tag? oldData}) {
+    oldData = state.tags.firstWhereOrNull((t) => t == oldData);
+    if (oldData == null) {
       // 添加标签
-      state.tags.add(newTag);
+      state.tags.add(newData);
     } else {
       // 更新
-      oldTag.name = newTag.name;
-      oldTag.slug = newTag.slug;
+      oldData.name = newData.name;
+      oldData.slug = newData.slug;
     }
     refresh();
   }

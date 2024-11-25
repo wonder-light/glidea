@@ -84,7 +84,7 @@ class TagEditorState extends DrawerEditorState<Tag> {
       var newTag = Tag()
         ..name = nameController.text
         ..slug = urlController.text;
-      siteController.updateTag(newTag: newTag, oldTag: widget.entity);
+      widget.onSave?.call(newTag);
     }
     super.onSave();
   }

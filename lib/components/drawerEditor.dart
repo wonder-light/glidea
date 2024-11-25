@@ -25,7 +25,7 @@ abstract class DrawerEditor<T> extends StatefulWidget {
   final VoidCallback? onClose;
 
   /// 保存
-  final VoidCallback? onSave;
+  final ValueSetter<T>? onSave;
 
   /// 菜单头部
   final String header;
@@ -75,18 +75,15 @@ abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
 
   /// 构建菜单头部
   Widget buildHeader(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(widget.header.tr, textScaler: const TextScaler.linear(1.2)),
-          IconButton(
-            onPressed: onClose,
-            icon: const Icon(PhosphorIconsRegular.x),
-          ),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(widget.header.tr, textScaler: const TextScaler.linear(1.2)),
+        IconButton(
+          onPressed: onClose,
+          icon: const Icon(PhosphorIconsRegular.x),
+        ),
+      ],
     );
   }
 
@@ -98,8 +95,7 @@ abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
   /// 包装字段
   Widget wrapperField({required Widget child, String? name}) {
     return Container(
-      padding: const EdgeInsets.only(bottom: 8),
-      margin: const EdgeInsets.only(bottom: 24),
+      margin: const EdgeInsets.only(top: 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -117,7 +113,7 @@ abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
   /// 构建底部操作按钮
   Widget buildActions(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -146,7 +142,7 @@ abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
   /// 保存
   void onSave() {
     if (!canSave.value) return;
-    widget.onSave?.call();
+    //widget.onSave?.call();
     widget.controller.close();
   }
 }

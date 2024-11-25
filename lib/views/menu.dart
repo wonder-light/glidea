@@ -101,6 +101,9 @@ class _MenuWidgetState extends State<MenuWidget> {
       builder: (context) => MenuEditor(
         entity: menu,
         controller: drawerController,
+        onSave: (data) {
+          siteController.updateMenu(newData: data, oldData: menu);
+        },
       ),
     );
   }

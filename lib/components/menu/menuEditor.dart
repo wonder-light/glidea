@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxT, StringExtension, Trans;
+import 'package:get/get.dart' show Obx, RxT, Trans;
 import 'package:glidea/components/drawerEditor.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/log.dart';
@@ -106,6 +106,7 @@ class MenuEditorState extends DrawerEditorState<Menu> {
 
   /// 构建列表选项组件
   Widget _buildOptionsView<T extends TLinkData>(BuildContext context, AutocompleteOnSelected<T> onSelected, Iterable<T> options) {
+    // 获取链接字段的宽度
     final maxWidth = _key.currentContext?.findRenderObject()?.semanticBounds.width ?? double.infinity;
     return Align(
       alignment: AlignmentDirectional.topStart,
@@ -177,7 +178,7 @@ class MenuEditorState extends DrawerEditorState<Menu> {
       var newMenu = Menu()
         ..name = nameController.text
         ..link = urlController.text;
-      siteController.updateMenu(newMenu: newMenu, oldMenu: widget.entity);
+      widget.onSave?.call(newMenu);
     }
     super.onSave();
   }

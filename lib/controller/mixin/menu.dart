@@ -13,16 +13,16 @@ mixin MenuSite on StateController<Application> {
   Menu createMenu() => Menu();
 
   /// 更新菜单
-  void updateMenu({required Menu newMenu, Menu? oldMenu}) {
-    oldMenu = state.menus.firstWhereOrNull((m) => m == oldMenu);
-    if (oldMenu == null) {
+  void updateMenu({required Menu newData, Menu? oldData}) {
+    oldData = state.menus.firstWhereOrNull((m) => m == oldData);
+    if (oldData == null) {
       // 添加标签
-      state.menus.add(newMenu);
+      state.menus.add(newData);
     } else {
       // 更新
-      oldMenu.name = newMenu.name;
-      oldMenu.openType = newMenu.openType;
-      oldMenu.link = newMenu.link;
+      oldData.name = newData.name;
+      oldData.openType = newData.openType;
+      oldData.link = newData.link;
     }
     refresh();
   }

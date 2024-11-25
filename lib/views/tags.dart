@@ -93,6 +93,9 @@ class _TagsWidgetState extends State<TagsWidget> {
       builder: (context) => TagEditor(
         entity: tag,
         controller: drawerController,
+        onSave: (data) {
+          siteController.updateTag(newData: data, oldData: tag);
+        },
       ),
     );
   }
