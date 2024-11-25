@@ -3,7 +3,7 @@ import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst,
 import 'package:glidea/components/dialog.dart';
 import 'package:glidea/components/drawer.dart';
 import 'package:glidea/components/pageAction.dart';
-import 'package:glidea/components/tagEditor.dart';
+import 'package:glidea/components/tag/tagEditor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
@@ -90,8 +90,8 @@ class _TagsWidgetState extends State<TagsWidget> {
 
     Get.showDrawer(
       controller: drawerController,
-      builder: (context) => TagEditorWidget(
-        tag: tag,
+      builder: (context) => TagEditor(
+        entity: tag,
         controller: drawerController,
       ),
     );
