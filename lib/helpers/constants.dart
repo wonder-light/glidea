@@ -10,17 +10,17 @@
     },
   ];
 
-  static const int DEFAULT_POST_PAGE_SIZE = 10;
+  static const int defaultPostPageSize = 10;
 
-  static const int DEFAULT_ARCHIVES_PAGE_SIZE = 50;
+  static const int defaultArchivesPageSize = 50;
 
-  static const int DEFAULT_FEED_COUNT = 10;
+  static const int defaultFeedCount = 10;
 
-  static const String DEFAULT_ARCHIVES_PATH = 'archives';
+  static const String defaultArchivesPath = 'archives';
 
-  static const String DEFAULT_POST_PATH = 'post';
+  static const String defaultPostPath = 'post';
 
-  static const String DEFAULT_TAG_PATH = 'tag';
+  static const String defaultTagPath = 'tag';
 
-  static const String DEFAULT_ROBOTS_TEXT = 'User-agent: *\nDisallow:';
+  static const String defaultRobotsPath = 'User-agent: *\nDisallow:';
 }
