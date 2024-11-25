@@ -142,7 +142,7 @@ class _HomeWidgetState extends State<HomeWidget> {
               () => ListTile(
                 onTap: () {
                   routerIndex.value = item.route;
-                  Get.toNamed(routerIndex.value);
+                  Get.offNamed(routerIndex.value);
                 },
                 leading: Icon(item.icon),
                 title: Text(item.name.tr),

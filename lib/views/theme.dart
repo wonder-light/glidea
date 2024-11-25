@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:get/get.dart' show Get, GetNavigationExt;
 
 class ThemeWidget extends StatefulWidget {
   const ThemeWidget({super.key});
@@ -8,9 +9,11 @@ class ThemeWidget extends StatefulWidget {
 }
 
 class _ThemeWidgetState extends State<ThemeWidget> {
-
   @override
   Widget build(BuildContext context) {
-    return const Text('主题');
+    return Container(
+      color: Get.theme.scaffoldBackgroundColor,
+      child: const Text('主题'),
+    );
   }
 }

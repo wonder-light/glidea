@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:get/get.dart' show Get, GetNavigationExt;
 
 class RemoteWidget extends StatefulWidget {
   const RemoteWidget({super.key});
@@ -8,9 +9,11 @@ class RemoteWidget extends StatefulWidget {
 }
 
 class _RemoteWidgetState extends State<RemoteWidget> {
-
   @override
   Widget build(BuildContext context) {
-    return const Text('远程');
+    return Container(
+      color: Get.theme.scaffoldBackgroundColor,
+      child: const Text('远程'),
+    );
   }
 }

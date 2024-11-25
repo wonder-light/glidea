@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:get/get.dart' show Get, GetNavigationExt;
 
 class PageAction extends StatelessWidget {
   const PageAction({
@@ -40,21 +41,24 @@ class PageAction extends StatelessWidget {
       ],
     );
     // 加上分割线, 以及内容
-    childWidget = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16).copyWith(bottom: 8),
-          child: childWidget,
-        ),
-        const Divider(thickness: 1, height: 1),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: child,
+    childWidget = Container(
+      color: Get.theme.scaffoldBackgroundColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16).copyWith(bottom: 8),
+            child: childWidget,
           ),
-        ),
-      ],
+          const Divider(thickness: 1, height: 1),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: child,
+            ),
+          ),
+        ],
+      ),
     );
     // 返回控件
     return childWidget;

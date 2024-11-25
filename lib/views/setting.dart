@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:get/get.dart' show Get, GetNavigationExt;
 
 class SettingWidget extends StatefulWidget {
   const SettingWidget({super.key});
@@ -8,9 +9,11 @@ class SettingWidget extends StatefulWidget {
 }
 
 class _SettingWidgetState extends State<SettingWidget> {
-
   @override
   Widget build(BuildContext context) {
-    return const Text('设置');
+    return Container(
+      color: Get.theme.scaffoldBackgroundColor,
+      child: const Text('设置'),
+    );
   }
 }
