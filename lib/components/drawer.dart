@@ -33,7 +33,7 @@ extension DrawerExt on GetInterface {
   ///
   /// [blur] - 背景应用模糊效果
   ///
-  /// [decoration] - 抽屉的装饰器, 控制阴影等
+  /// [elevation] - 放置该材料相对于其父材料的 z 坐标
   ///
   /// [stepWidth] - 如果非空，则强制子元素的宽度为该值的倍数。如果为 null 或 0.0，子元素的宽度将与其最大固有宽度相同。该值不能为负值。
   ///
@@ -47,9 +47,10 @@ extension DrawerExt on GetInterface {
     Alignment? align,
     Duration duration = const Duration(milliseconds: 400),
     bool blur = true,
-    Decoration? decoration,
+    double elevation = 40,
     double? stepWidth = 60,
     double? stepHeight,
+    BuildContext? context
   }) {
     // 获取断点数据
     final breakpoints = ResponsiveBreakpoints.of(Get.context!);
@@ -62,17 +63,6 @@ extension DrawerExt on GetInterface {
     // 形状
     shape ??= const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.zero),
-    );
-    // 盒子的装饰器
-    decoration ??= BoxDecoration(
-      boxShadow: [
-        BoxShadow(
-          color: theme.colorScheme.outline.withOpacity(0.5),
-          offset: const Offset(-10, 10),
-          blurRadius: 45,
-          spreadRadius: 0,
-        ),
-      ],
     );
     // 叠层
     final navigatorState = Navigator.of(Get.overlayContext!, rootNavigator: false);
@@ -121,12 +111,15 @@ extension DrawerExt on GetInterface {
       // 创建抽屉内容
       Widget drawer = Align(
         alignment: align!,
-        child: IntrinsicWidth(
-          stepWidth: stepWidth,
-          stepHeight: stepHeight,
-          child: Drawer(
-            shape: shape,
-            child: builder(context),
+        child: Material(
+          elevation: 40,
+          child: IntrinsicWidth(
+            stepWidth: stepWidth,
+            stepHeight: stepHeight,
+            child: Drawer(
+              shape: shape,
+              child: builder(context),
+            ),
           ),
         ),
       );
