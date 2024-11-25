@@ -20,7 +20,7 @@ class _TagsWidgetState extends State<TagsWidget> {
   var selectedTag = ''.obs;
 
   /// 站点控制器
-  final siteController = Get.find<SiteController>(tag: 'site');
+  final siteController = Get.find<SiteController>(tag: SiteController.tag);
 
   @override
   Widget build(BuildContext context) {

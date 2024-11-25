@@ -39,7 +39,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   var currentIndex = 0.obs;
 
   /// 站点控制器
-  final siteController = Get.find<SiteController>(tag: 'site');
+  final siteController = Get.find<SiteController>(tag: SiteController.tag);
 
   /// 菜单数据
   final List<TRouterData> menus = [
@@ -146,7 +146,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                 },
                 leading: Icon(item.icon),
                 title: Text(item.name.tr),
-                trailing: Obx(() => Text(siteController.getHomeLeftPanelNum(item.name))),
+                trailing: Text(siteController.getHomeLeftPanelNum(item.name)),
                 selected: routerIndex.value == item.route,
                 selectedColor: colorScheme.surfaceContainerLow,
                 selectedTileColor: colorScheme.primary,

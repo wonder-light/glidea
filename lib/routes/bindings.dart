@@ -4,7 +4,7 @@ import 'package:glidea/controller/site.dart';
 /// 站点 bind
 class SiteBind extends Binding {
   static final bings = [
-    Bind.put<SiteController>(SiteController(), tag: 'site', permanent: true),
+    Bind.put<SiteController>(SiteController(), tag: SiteController.tag, permanent: true),
   ];
 
   @override
