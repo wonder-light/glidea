@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart' show Obx, RxT, Trans;
 import 'package:glidea/components/drawerEditor.dart';
 import 'package:glidea/enum/enums.dart';
@@ -54,7 +55,7 @@ class MenuEditorState extends DrawerEditorState<Menu> {
     // 名称控件
     final nameWidget = wrapperField(
       name: 'name',
-      child: TextField(
+      child: TextFormField(
         controller: nameController,
         decoration: const InputDecoration(
           isDense: true,
@@ -144,6 +145,16 @@ class MenuEditorState extends DrawerEditorState<Menu> {
   }
 
   /// 构建字段组件
+  ///
+  /// (?<=Expression)逆序肯定环视，表示所在位置左侧能够匹配Expression
+  ///
+  /// (?<!Expression)逆序否定环视，表示所在位置左侧不能匹配Expression
+  ///
+  /// (?=Expression)顺序肯定环视，表示所在位置右侧能够匹配Expression
+  ///
+  /// (?!Expression)顺序否定环视，表示所在位置右侧不能匹配Expression
+  ///
+  /// see https://www.zhihu.com/question/21015580
   Widget _buildFieldView(BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
     return TextFormField(
       key: _key,
@@ -156,6 +167,9 @@ class MenuEditorState extends DrawerEditorState<Menu> {
         hoverColor: Colors.transparent, // 悬停时的背景色
       ),
       onChanged: (str) => urlController.text = str,
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'(/(?!/)[a-zA-Z0-9-_.]*)+')),
+      ],
     );
   }
 

@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Trans;
+import 'package:flutter/services.dart';
 import 'package:glidea/components/drawerEditor.dart';
 import 'package:glidea/models/tag.dart';
 
@@ -39,7 +39,7 @@ class TagEditorState extends DrawerEditorState<Tag> {
     // 名称控件
     final nameWidget = wrapperField(
       name: 'tagName',
-      child: TextField(
+      child: TextFormField(
         controller: nameController,
         decoration: const InputDecoration(
           isDense: true,
@@ -51,13 +51,16 @@ class TagEditorState extends DrawerEditorState<Tag> {
     // 连接控件
     final linkWidget = wrapperField(
       name: 'tagUrl',
-      child: TextField(
+      child: TextFormField(
         controller: urlController,
         decoration: const InputDecoration(
           isDense: true,
           contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
           hoverColor: Colors.transparent, // 悬停时的背景色
         ),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9-]+')),
+        ],
       ),
     );
 
