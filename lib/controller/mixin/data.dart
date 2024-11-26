@@ -13,9 +13,13 @@ mixin DataProcess on StateController<Application> {
   /// 初始化数据
   Future<Application> initData() async {
     var site = Application();
-    await checkDir(site);
-    var data = await loadSiteData(site);
-    return data;
+    try {
+      await checkDir(site);
+      var data = await loadSiteData(site);
+      return data;
+    } catch (e) {
+      return site;
+    }
   }
 
   /// 检查 .glidea 文件夹是否存在，如果不存在，则将其初始化
