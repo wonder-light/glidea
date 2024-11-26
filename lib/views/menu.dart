@@ -50,8 +50,8 @@ class _MenuWidgetState extends State<MenuWidget> {
     return ListTile(
       shape: ContinuousRectangleBorder(
         side: BorderSide(
-          color: colors.outlineVariant,
-          width: 0.4,
+          color: colors.onSurface,
+          width: 0.15,
         ),
         borderRadius: BorderRadius.circular(10.0),
       ),
