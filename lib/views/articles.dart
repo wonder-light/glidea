@@ -1,10 +1,11 @@
 ﻿import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxT, StatusDataExt, Tra, Trans;
+import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxT, Trans;
 import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/components/pageAction.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/post.dart';
 import 'package:jiffy/jiffy.dart';
@@ -70,6 +71,10 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
   Widget _buildListItem(Post post) {
     // 主题配置
     final ThemeData(:textTheme, :colorScheme) = Get.theme;
+
+    /// 判断是否是桌面端
+    final isDesktop = Get.isDesktop;
+
     // 子列表
     final lists = <TIconData>[
       // 发布
@@ -77,6 +82,21 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
       // 日期
       (name: Jiffy.parse(post.date).format(pattern: site.themeConfig.dateFormat), icon: PhosphorIconsRegular.calendarDots),
     ];
+
+    // 头部组件
+    final leading = isDesktop
+        ? Image.file(
+            File(site.getFeaturePath(data: post)),
+            fit: BoxFit.cover,
+            height: double.infinity,
+          )
+        : null;
+
+    //内容边距
+    final contentPadding = isDesktop ? const EdgeInsets.only(right: 16) : null;
+
+    // 大小
+    final constraints = isDesktop ? const BoxConstraints(maxHeight: 80) : const BoxConstraints(minHeight: 100);
 
     return ListItem(
       shape: ContinuousRectangleBorder(
@@ -86,13 +106,9 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
         ),
         borderRadius: BorderRadius.circular(10.0),
       ),
-      contentPadding: const EdgeInsets.only(right: 16),
-      constraints: const BoxConstraints(maxHeight: 80),
-      leading: Image.file(
-        File(site.getFeaturePath(data: post)),
-        fit: BoxFit.cover,
-        height: double.infinity,
-      ),
+      contentPadding: contentPadding,
+      constraints: constraints,
+      leading: leading,
       title: Text(
         post.title,
       ),

@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
+import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/components/dialog.dart';
 import 'package:glidea/components/drawer.dart';
