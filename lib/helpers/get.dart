@@ -37,6 +37,8 @@ extension GetExt on GetInterface {
       message.tr,
       maxWidth: 240,
       borderRadius: 10,
+      duration: const Duration(seconds: 2),
+      animationDuration: const Duration(milliseconds: 400),
       backgroundColor: backgroundColor ?? colorScheme.onPrimary,
       titleText: Container(),
       icon: Icon(
