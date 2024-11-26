@@ -33,13 +33,22 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
   Widget build(BuildContext context) {
     return PageAction(
       actions: [
-        TextFormField(
-          controller: textController,
-          decoration: const InputDecoration(
-            isDense: true,
-            constraints: BoxConstraints(maxWidth: 150),
-            contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-            hoverColor: Colors.transparent, // 悬停时的背景色
+        MediaQuery(
+          data: Get.mediaQuery.copyWith(textScaler: const TextScaler.linear(0.9)),
+          child: TextFormField(
+            controller: textController,
+            decoration: InputDecoration(
+              isDense: true,
+              isCollapsed: true,
+              hoverColor: Colors.transparent,
+              // 悬停时的背景色
+              constraints: const BoxConstraints(maxWidth: 200, minHeight: 0),
+              contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              suffixIcon: const Icon(PhosphorIconsRegular.magnifyingGlass),
+              suffixIconConstraints: const BoxConstraints(minWidth: 48),
+              // 覆盖 suffixIcon 的约束
+              labelText: 'searchArticle'.tr,
+            ),
             onChanged: searchPost,
           ),
         ),
