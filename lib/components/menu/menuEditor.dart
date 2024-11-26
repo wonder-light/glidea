@@ -156,6 +156,9 @@ class MenuEditorState extends DrawerEditorState<Menu> {
   ///
   /// see https://www.zhihu.com/question/21015580
   Widget _buildFieldView(BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
+    // 设置初始值
+    // TODO: TextFormField 无法选择文本
+    textEditingController.text = urlController.text;
     return TextFormField(
       key: _key,
       focusNode: focusNode,
