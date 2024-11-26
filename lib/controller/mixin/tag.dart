@@ -1,4 +1,5 @@
-﻿import 'package:get/get.dart' show FirstWhereOrNullExt, StateController;
+﻿import 'package:get/get.dart' show FirstWhereOrNullExt, Get, StateController;
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/uid.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/tag.dart';
@@ -25,14 +26,17 @@ mixin TagSite on StateController<Application> {
       oldData.slug = newData.slug;
     }
     refresh();
+    Get.success('tagSuccess');
   }
 
   /// 删除新标签
   void removeTag(Tag tag) {
     if (tag.used) return;
-    if (state.tags.remove(tag)) {
-      refresh();
-      // TODO: 保存标签
+    if (!state.tags.remove(tag)) {
+      Get.error('tagDeleteFailure');
     }
+
+    refresh();
+    Get.success('tagDelete');
   }
 }

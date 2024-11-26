@@ -1,5 +1,6 @@
-﻿import 'package:get/get.dart' show FirstWhereOrNullExt, StateController;
+﻿import 'package:get/get.dart' show FirstWhereOrNullExt, Get, StateController;
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
@@ -25,14 +26,18 @@ mixin MenuSite on StateController<Application> {
       oldData.link = newData.link;
     }
     refresh();
+    Get.success('menuSuccess');
   }
 
   /// 删除新标签
   void removeMenu(Menu menu) {
-    if (state.menus.remove(menu)) {
-      refresh();
-      // TODO: 保存菜单
+    if (!state.menus.remove(menu)) {
+      Get.error('menuDeleteFailure');
+      return;
     }
+
+    refresh();
+    Get.success('menuDelete');
   }
 
   /// 获取可以引用的链接
