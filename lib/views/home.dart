@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, Obx, Trans, Inst, StringExtension, IntExtension, GetNavigationExt, GetRouterOutlet;
+import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
@@ -139,7 +140,7 @@ class _HomeWidgetState extends State<HomeWidget> {
           Container(
             margin: const EdgeInsets.only(top: 4, bottom: 8, right: 10, left: 10),
             child: Obx(
-              () => ListTile(
+              () => ListItem(
                 onTap: () {
                   routerIndex.value = item.route;
                   Get.offNamed(routerIndex.value);
@@ -152,9 +153,6 @@ class _HomeWidgetState extends State<HomeWidget> {
                 selectedTileColor: colorScheme.primary,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                 dense: true,
-                minLeadingWidth: 0,
-                minTileHeight: 0,
-                visualDensity: const VisualDensity(horizontal: -4, vertical: 0),
               ),
             ),
           ),

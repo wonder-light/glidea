@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' show Obx, RxT, Trans;
+import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/components/drawerEditor.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/log.dart';
@@ -124,7 +125,7 @@ class MenuEditorState extends DrawerEditorState<Menu> {
             itemCount: options.length,
             itemBuilder: (BuildContext context, int index) {
               final option = options.elementAt(index);
-              return ListTile(
+              return ListItem(
                 leading: const Icon(PhosphorIconsRegular.link),
                 onTap: () {
                   onSelected(option);
@@ -132,7 +133,6 @@ class MenuEditorState extends DrawerEditorState<Menu> {
                 title: Text(option.name),
                 subtitle: Text(option.link),
                 dense: true,
-                visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
               );
             },
             separatorBuilder: (BuildContext context, int index) {

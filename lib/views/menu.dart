@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
+import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/components/dialog.dart';
 import 'package:glidea/components/drawer.dart';
 import 'package:glidea/components/menu/menuEditor.dart';
@@ -47,7 +48,7 @@ class _MenuWidgetState extends State<MenuWidget> {
   Widget _buildMenuItem(Menu menu) {
     // 配色方案
     final colors = Get.theme.colorScheme;
-    return ListTile(
+    return ListItem(
       shape: ContinuousRectangleBorder(
         side: BorderSide(
           color: colors.onSurface,
@@ -55,7 +56,7 @@ class _MenuWidgetState extends State<MenuWidget> {
         ),
         borderRadius: BorderRadius.circular(10.0),
       ),
-      visualDensity: const VisualDensity(vertical: 4),
+      leadingMargin: const EdgeInsets.only(right: 18, left: 12),
       leading: const Icon(PhosphorIconsRegular.starFour),
       title: Text(
         menu.name,

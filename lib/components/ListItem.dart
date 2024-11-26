@@ -9,7 +9,7 @@ class ListItem extends StatelessWidget {
     this.leading,
     this.trailing,
     this.onTap,
-    this.dense,
+    this.dense = false,
     this.shape,
     this.contentPadding,
     this.enabled = true,
@@ -19,6 +19,10 @@ class ListItem extends StatelessWidget {
     this.titleTextStyle,
     this.subtitleTextStyle,
     this.constraints,
+    this.leadingMargin,
+    this.trailingMargin,
+    this.selectedColor,
+    this.leadingAndTrailingTextStyle,
   });
 
   ///列表平铺的主要内容
@@ -39,7 +43,7 @@ class ListItem extends StatelessWidget {
   final GestureTapCallback? onTap;
 
   /// 此列表平铺是否为垂直密集列表的一部分
-  final bool? dense;
+  final bool dense;
 
   ///定义贴图的 [InkWell.customBorder] 和 [Ink.decoration] 的形状。
   final ShapeBorder? shape;
@@ -57,6 +61,9 @@ class ListItem extends StatelessWidget {
   /// 如果此平铺也 [enabled]，则图标和文本以相同的颜色呈现
   final bool selected;
 
+  /// 定义选择列表平铺时图标和文本使用的颜色
+  final Color? selectedColor;
+
   /// 当 [selected] 为 false 时，定义 ListTile 的背景颜色
   final Color? tileColor;
 
@@ -69,12 +76,29 @@ class ListItem extends StatelessWidget {
   /// [ListItem] 的 [subtitle] 的文本样式
   final TextStyle? subtitleTextStyle;
 
-  /// [ListItem] 的 宽高约束
+  /// [ListItem] 的 [leading] 和 [trailing] 的文本样式
+  final TextStyle? leadingAndTrailingTextStyle;
+
+  /// [ListItem] 的宽高约束
   ///
   /// 默认:
   ///
   ///     BoxConstraints(minHeight: 80, maxHeight: 150)
   final BoxConstraints? constraints;
+
+  /// [leading] 的外边距
+  ///
+  /// 默认:
+  ///
+  ///     EdgeInsets.only(right: 16)
+  final EdgeInsetsGeometry? leadingMargin;
+
+  /// [trailing] 的外边距
+  ///
+  /// 默认:
+  ///
+  ///     EdgeInsets.only(left: 16)
+  final EdgeInsetsGeometry? trailingMargin;
 
   @override
   Widget build(BuildContext context) {
@@ -83,18 +107,48 @@ class ListItem extends StatelessWidget {
     final colorScheme = Get.theme.colorScheme;
     final textTheme = Get.theme.textTheme;
     final ListTileThemeData defaults = theme.listTileTheme;
-
+    // 标题样式
+    var titleStyle = titleTextStyle ?? (dense ? textTheme.bodyMedium! : textTheme.bodyLarge!.apply(fontSizeFactor: 1.2));
+    if (selected) {
+      titleStyle = titleStyle.copyWith(color: selectedColor);
+    }
+    // 子标题样式
+    var subtitleStyle = subtitleTextStyle ?? textTheme.bodySmall!;
+    if (selected) {
+      subtitleStyle = subtitleStyle.copyWith(color: selectedColor);
+    }
+    // [leading] And [trailing] 样式
+    var leadingAndTrailingStyle = leadingAndTrailingTextStyle ?? defaults.leadingAndTrailingTextStyle ?? textTheme.bodyMedium!;
+    if (selected) {
+      leadingAndTrailingStyle = leadingAndTrailingStyle.copyWith(color: selectedColor);
+    }
+    // 图标样式
+    var iconTheme = theme.iconTheme;
+    if (selected) {
+      iconTheme = iconTheme.copyWith(color: selectedColor);
+    }
+    // 构建 [leading] And [trailing]
+    Widget buildLeadingAndTrailing(Widget child, {bool isLeading = true}) {
+      return Container(
+        margin: leadingMargin ?? (isLeading ? EdgeInsets.only(right: dense ? 10 : 16) : EdgeInsets.only(left: dense ? 10 : 16)),
+        child: AnimatedDefaultTextStyle(
+          style: leadingAndTrailingStyle,
+          duration: kThemeChangeDuration,
+          child: IconTheme(
+            data: iconTheme,
+            child: child,
+          ),
+        ),
+      );
+    }
+    // 子控件内容
     Widget childWidget = Container(
-      padding: contentPadding ?? const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      constraints: constraints ?? const BoxConstraints(minHeight: 80, maxHeight: 150),
+      padding: contentPadding ?? EdgeInsets.symmetric(vertical: dense ? 10 : 16, horizontal: dense ? 10 : 12),
+      constraints: constraints ?? BoxConstraints(minHeight: dense ? 50 : 80, maxHeight: dense ? 120 : 150),
       child: IntrinsicHeight(
         child: Row(
           children: [
-            if (leading != null)
-              Container(
-                margin: const EdgeInsets.only(right: 16),
-                child: leading!,
-              ),
+            if (leading != null) buildLeadingAndTrailing(leading!, isLeading: true),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -102,29 +156,25 @@ class ListItem extends StatelessWidget {
                 children: [
                   if (title != null)
                     AnimatedDefaultTextStyle(
-                      style: titleTextStyle ?? textTheme.bodyLarge!.apply(fontSizeFactor: 1.2),
+                      style: titleStyle,
                       duration: kThemeChangeDuration,
                       child: title!,
                     ),
                   if (subtitle != null)
                     AnimatedDefaultTextStyle(
-                      style: subtitleTextStyle ?? textTheme.bodySmall!,
+                      style: subtitleStyle,
                       duration: kThemeChangeDuration,
                       child: subtitle!,
                     ),
                 ],
               ),
             ),
-            if (trailing != null)
-              Container(
-                margin: const EdgeInsets.only(left: 16),
-                child: trailing!,
-              ),
+            if (trailing != null) buildLeadingAndTrailing(trailing!, isLeading: false),
           ],
         ),
       ),
     );
-
+    // 子控件装饰
     childWidget = InkWell(
       customBorder: shape ?? defaults.shape,
       onTap: enabled ? onTap : null,
