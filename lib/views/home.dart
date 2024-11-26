@@ -143,7 +143,7 @@ class _HomeWidgetState extends State<HomeWidget> {
               () => ListItem(
                 onTap: () {
                   routerIndex.value = item.route;
-                  Get.offNamed(routerIndex.value);
+                  toRouter(item.route);
                 },
                 leading: Icon(item.icon),
                 title: Text(item.name.tr),
@@ -218,7 +218,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         currentIndex: currentIndex.value,
         onTap: (index) {
           currentIndex.value = index;
-          Get.toNamed(mobileMenus[index].route);
+          toRouter(mobileMenus[index].route, mobile: true);
         },
         type: BottomNavigationBarType.shifting,
       ),
@@ -234,7 +234,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   /// 应用程序生命周期更改时的回调
-  void onStateChange(AppLifecycleState state){}
+  void onStateChange(AppLifecycleState state) {}
 
   /// 预览网页
   void preview() {
@@ -270,5 +270,10 @@ class _HomeWidgetState extends State<HomeWidget> {
     if (!success) {
       Log.i('github 打开失败');
     }
+  }
+
+  /// 转到路由
+  void toRouter(String name, {bool mobile = false}) {
+    Get.toNamed(name);
   }
 }
