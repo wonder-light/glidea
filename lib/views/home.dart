@@ -1,9 +1,11 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Obx, Trans, Inst, StringExtension, IntExtension, GetNavigationExt, GetRouterOutlet;
+import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StringExtension, Trans;
 import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -33,11 +35,14 @@ class _HomeWidgetState extends State<HomeWidget> {
   /// 侦听器，可用于侦听应用程序生命周期中的更改
   late final AppLifecycleListener lifecycle;
 
-  /// 当前路由索引
-  var routerIndex = '/articles'.obs;
+  /// 桌面端的当前路由索引
+  var routerIndex = AppRouter.article.obs;
 
-  /// 底部导航落地当前索引
+  /// 移动端的当前路由索引
   var currentIndex = 0.obs;
+
+  /// 当前显示的路由
+  var showRouter = AppRouter.article;
 
   /// 站点控制器
   final siteController = Get.find<SiteController>(tag: SiteController.tag);
@@ -72,6 +77,17 @@ class _HomeWidgetState extends State<HomeWidget> {
     mobileMenus.add((name: 'setting', route: '/setting', icon: PhosphorIconsRegular.slidersHorizontal));
 
     lifecycle = AppLifecycleListener(onStateChange: onStateChange);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 获取匹配的路由
+    final route = Get.isDesktop ? routerIndex.value : mobileMenus[currentIndex.value].route;
+    // 路由不相同时更新路由
+    if (showRouter != route) {
+      toRouter(route);
+    }
   }
 
   @override
@@ -228,13 +244,22 @@ class _HomeWidgetState extends State<HomeWidget> {
   // 构建主体路由
   Widget _buildBody() {
     return GetRouterOutlet(
-      initialRoute: '/articles',
-      anchorRoute: '/',
+      initialRoute: AppRouter.article,
+      anchorRoute: AppRouter.home,
+      filterPages: filterPages,
     );
   }
 
   /// 应用程序生命周期更改时的回调
   void onStateChange(AppLifecycleState state) {}
+
+  /// 过滤页面
+  Iterable<GetPage> filterPages(Iterable<GetPage> afterAnchor) {
+    if (afterAnchor.isNotEmpty) {
+      return afterAnchor.take(1);
+    }
+    return [];
+  }
 
   /// 预览网页
   void preview() {
@@ -274,6 +299,7 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   /// 转到路由
   void toRouter(String name, {bool mobile = false}) {
+    showRouter = name;
     Get.toNamed(name);
   }
 }

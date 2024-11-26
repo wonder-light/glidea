@@ -14,6 +14,9 @@ class AppRouter {
   /// 首页路由路径
   static const String home = '/';
 
+  /// 文章路由路径
+  static const String article = '/articles';
+
   /// 路由路线集合
   static final List<GetPage<Widget>> routes = [
     GetPage(
