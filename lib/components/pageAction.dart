@@ -24,7 +24,7 @@ class PageAction extends StatelessWidget {
     List<Widget> actionList = [
       for (var item in actions)
         Padding(
-          padding: const EdgeInsets.only(left: 8),
+          padding: const EdgeInsets.only(right: 12),
           child: item,
         ),
     ];
