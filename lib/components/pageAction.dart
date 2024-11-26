@@ -41,7 +41,7 @@ class PageAction extends StatelessWidget {
       ],
     );
     // 加上分割线, 以及内容
-    childWidget = Container(
+    childWidget = Material(
       color: Get.theme.scaffoldBackgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
