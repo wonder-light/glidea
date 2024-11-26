@@ -71,7 +71,7 @@ class PostData extends PostDataBase {
 
   /// 标签
   @JsonProperty()
-  List<String> tags = [];
+  List<Tag> tags = [];
 }
 
 /// 文章

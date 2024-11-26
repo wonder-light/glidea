@@ -170,10 +170,16 @@ mixin DataProcess on StateController<Application> {
     }
     // 扁平化 post 中的 data 字段
     if (data.containsKey('posts') && data['posts'] is List<TJsonMap>) {
+      // 标签
+      var tags = (data.containsKey('tags') && data['tags'] is List<TJsonMap>) ? data['tags'] as List<TJsonMap> : <TJsonMap>[];
       for (var item in data['post'] as List<TJsonMap>) {
         if (!item.containsKey('data')) continue;
         // 扁平化
         item.addAll(item.remove('data'));
+        // 更改 tags 的内容
+        if (item.containsKey('tags') && item['tags'] is List<String>) {
+          item['tags'] = (item['tags'] as List<String>).map((t) => tags.firstWhere((m) => m['name'] == t)).toList();
+        }
       }
     }
     // 将字符串格式化

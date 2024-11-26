@@ -132,7 +132,7 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
             for (var tag in post.tags)
               Padding(
                 padding: const EdgeInsets.only(right: 4),
-                child: Text(tag),
+                child: Text(tag.name),
               ),
           ],
         ],

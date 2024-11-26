@@ -19,7 +19,11 @@
       "title": "Hello Gridea",
       "date": "2018-12-12 00:00:00",
       "tags": [
-        "gridea"
+        {
+          "name": "gridea",
+          "slug": "XOdYO2KzMQ",
+          "used": true
+        }
       ],
       "published": true,
       "hideInList": true,
