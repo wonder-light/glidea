@@ -1,7 +1,7 @@
 ﻿import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxT, Trans;
+import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxT, Trans;
 import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/components/pageAction.dart';
 import 'package:glidea/controller/site.dart';
@@ -154,7 +154,18 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
   void editorPost(Post post) {}
 
   /// 删除文章
-  void deletePost(Post post) {}
+  void deletePost(Post post) {
+    // 弹窗
+    Get.dialog(DialogWidget(
+      onCancel: () {
+        Get.backLegacy();
+      },
+      onConfirm: () {
+        site.removePost(post);
+        Get.backLegacy();
+      },
+    ));
+  }
 
   /// 搜索文章
   void searchPost() {}

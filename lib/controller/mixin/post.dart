@@ -1,11 +1,9 @@
-﻿import 'package:get/get.dart' show StateController, StatusDataExt;
+﻿import 'package:get/get.dart' show Get, StateController;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/fs.dart';
-import 'package:glidea/helpers/log.dart';
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/post.dart';
-
-import 'package:path/path.dart' as p;
 
 /// 混合 - 文章
 mixin PostSite on StateController<Application> {
@@ -16,13 +14,37 @@ mixin PostSite on StateController<Application> {
   Post createPost() => Post();
 
   /// 获取文章封面图片的路径
-  String getFeaturePath({required Post data, bool isWeb = false}){
+  String getFeaturePath({required Post data, bool isWeb = false}) {
     var feature = data.feature.isNotEmpty ? data.feature : Constants.defaultPostFeaturePath;
     // 去掉开头的 /
-    if(feature.startsWith('/')){
+    if (feature.startsWith('/')) {
       feature = feature.substring(1);
     }
-    if(isWeb) return FS.join(state.themeConfig.domain, Constants.defaultPostPath, feature);
+    if (isWeb) return FS.join(state.themeConfig.domain, Constants.defaultPostPath, feature);
     return FS.join(state.appDir, feature);
+  }
+
+  /// 删除新标签
+  void removePost(Post data) {
+    if (!state.posts.remove(data)) {
+      Get.error('articleDeleteFailure');
+      // 删除失败
+      return;
+    }
+    // 标签
+    var tags = data.tags;
+    if (tags.isNotEmpty) {
+      // 查看 posts 中是否还有相同的标签存在
+      for (var tag in tags) {
+        var value = state.posts.any((p) => p.tags.any((t) => t.slug == tag.slug));
+        if (!value) {
+          tag = state.tags.firstWhere((t) => t.slug == tag.slug);
+          tag.used = false;
+        }
+      }
+    }
+    refresh();
+    // 菜单中的列表不必管
+    Get.success('articleDelete');
   }
 }
