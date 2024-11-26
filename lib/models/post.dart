@@ -1,4 +1,5 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, JsonProperty;
+import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/tag.dart';
 
 /// 文章基本要素
@@ -30,7 +31,7 @@ mixin class PostDataBase {
 
   /// 封面图
   @JsonProperty()
-  String feature = '';
+  String feature = Constants.defaultPostFeaturePath;
 
   /// 隐藏
   @JsonProperty()

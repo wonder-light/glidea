@@ -15,7 +15,6 @@ mixin DataProcess on StateController<Application> {
     var site = Application();
     await checkDir(site);
     var data = await loadSiteData(site);
-    Log.d(data);
     return data;
   }
 

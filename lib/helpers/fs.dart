@@ -47,6 +47,9 @@ class FS {
   static List<String> subDir(String path) => subDirInfo(path).map((f) => p.basename(f.path)).toList();
 
   /// 链接路径
+  ///
+  ///     p. join('path', 'to', 'foo'); // -> 'path/to/foo'
+  ///     p. join('path', '/to', 'foo'); // -> '/to/foo'
   static String join(String part1, [String? part2, String? part3, String? part4, String? part5]) {
     return FS.normalize(p.join(part1, part2, part3, part4, part5));
   }

@@ -22,5 +22,7 @@
 
   static const String defaultTagPath = 'tag';
 
+  static const String defaultPostFeaturePath = '/post-images/post-feature.jpg';
+
   static const String defaultRobotsPath = 'User-agent: *\nDisallow:';
 }
