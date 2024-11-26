@@ -24,6 +24,23 @@ mixin PostSite on StateController<Application> {
     return FS.join(state.appDir, feature);
   }
 
+  /// 筛选文章
+  ///
+  /// [include]
+  ///
+  ///     false: 从 [Post.title] 中搜索数据
+  ///     true: 从 [Post.title] 和 [Post.content] 中搜索数据
+  List<Post> filterPost(String data, {bool include = false}) {
+    if (data.isEmpty) return [...state.posts];
+
+    bool compare(Post p) {
+      final reg = RegExp(data, caseSensitive: false);
+      return p.title.contains(reg) || (include && p.content.contains(reg));
+    }
+
+    return state.posts.where(compare).toList();
+  }
+
   /// 删除新标签
   void removePost(Post data) {
     if (!state.posts.remove(data)) {
