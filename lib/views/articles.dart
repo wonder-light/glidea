@@ -1,7 +1,7 @@
 ﻿import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxT, Trans;
+import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/components/dialog.dart';
 import 'package:glidea/components/pageAction.dart';
@@ -20,20 +20,14 @@ class ArticlesWidget extends StatefulWidget {
 }
 
 class _ArticlesWidgetState extends State<ArticlesWidget> {
-  /// 需要删除的文章
-  final deletePosts = [].obs;
+  /// 筛选文章的文本内容
+  final filterText = ''.obs;
 
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
   /// 文章搜索控制器
   final TextEditingController textController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    textController.addListener(searchPost);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +40,7 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
             constraints: BoxConstraints(maxWidth: 150),
             contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
             hoverColor: Colors.transparent, // 悬停时的背景色
+            onChanged: searchPost,
           ),
         ),
         IconButton(
@@ -55,15 +50,18 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
         ),
       ],
       child: Obx(
-        () => ListView.separated(
-          itemBuilder: (BuildContext context, int index) {
-            return _buildListItem(site.posts[index]);
-          },
-          itemCount: site.posts.length,
-          separatorBuilder: (BuildContext context, int index) {
-            return Container(height: 10);
-          },
-        ),
+        () {
+          final filterPosts = site.filterPost(filterText.value);
+          return ListView.separated(
+            itemBuilder: (BuildContext context, int index) {
+              return _buildListItem(filterPosts[index]);
+            },
+            itemCount: filterPosts.length,
+            separatorBuilder: (BuildContext context, int index) {
+              return Container(height: 10);
+            },
+          );
+        },
       ),
     );
   }
@@ -169,5 +167,7 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
   }
 
   /// 搜索文章
-  void searchPost() {}
+  void searchPost(String str) {
+    filterText.value = str;
+  }
 }
