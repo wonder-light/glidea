@@ -49,6 +49,14 @@ void main() {
     'value': true,
     'note': '帮助文本',
   };
+  final TJsonMap sliderMaps = {
+    'name': 'test',
+    'label': '测试',
+    'type': 'slider',
+    'value': 0,
+    'max': 100,
+    'note': '帮助文本',
+  };
   final TJsonMap arrayMaps = {
     'name': 'test',
     'label': '测试',
@@ -60,6 +68,7 @@ void main() {
       selectMaps,
       radioMaps,
       toggleMaps,
+      sliderMaps,
     ],
   };
 
@@ -224,6 +233,7 @@ void main() {
       expect(config.arrayItems[1] is SelectConfig, isTrue);
       expect(config.arrayItems[2] is RadioConfig, isTrue);
       expect(config.arrayItems[3] is ToggleConfig, isTrue);
+      expect(config.arrayItems[4] is SliderConfig, isTrue);
 
       expect(config.type, FieldType.array);
       expect(config.value, isEmpty);

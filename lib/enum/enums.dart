@@ -46,6 +46,7 @@ enum FieldType {
   textarea,
   radio,
   toggle,
+  slider,
   picture,
   //markdown,
   array,
