@@ -1,7 +1,10 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/log.dart';
+import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:glidea/models/post.dart';
+import 'package:glidea/models/render.dart';
 import 'package:glidea/models/tag.dart';
 
 /// 对象上的 json 扩展
@@ -42,6 +45,7 @@ extension MapExtend on Map<String, dynamic> {
 class JsonHelp {
   /// JsonMapper 在项目中的初始化
   static void initialized() {
+    // 初始适配器
     JsonMapper().useAdapter(
       JsonMapperAdapter(
         valueDecorators: {
@@ -49,17 +53,49 @@ class JsonHelp {
           typeOf<List<Tag>>(): (value) => value.cast<Tag>(),
           typeOf<List<Menu>>(): (value) => value.cast<Menu>(),
           typeOf<List<PostRender>>(): (value) => value.cast<PostRender>(),
-          typeOf<List<TagRender>>(): (value) => value.cast<TagRender>()
+          typeOf<List<TagRender>>(): (value) => value.cast<TagRender>(),
+          typeOf<List<ConfigBase>>(): (value) => value.cast<ConfigBase>(),
+          typeOf<List<SelectOption>>(): (value) => value.cast<SelectOption>(),
+          typeOf<List<TJsonMap>>(): (value) => value.cast<TJsonMap>(),
         },
-        converters: {},
+        converters: {
+          FieldType: FieldTypeConverter(),
+          InputCardType: InputCardConverter(),
+        },
         enumValues: {
           DeployPlatform: DeployPlatform.values,
           CommentPlatform: CommentPlatform.values,
           ProxyWay: ProxyWay.values,
           MenuTypes: MenuTypes.values,
           UrlFormats: UrlFormats.values,
+          FieldType: FieldType.values,
+          InputCardType: InputCardType.values,
         },
       ),
     );
+  }
+}
+
+/// FieldType 枚举转换
+class FieldTypeConverter extends EnumConverterShort {
+  @override
+  Object? fromJSON(jsonValue, DeserializationContext context) {
+    // 从 field-type => fieldType
+    // transformIdentifierCaseStyle(jsonValue, CaseStyle.camel, CaseStyle.kebab)
+    jsonValue = switch (jsonValue) {
+      'switch' => 'toggle',
+      'picture-upload' => 'picture',
+      _ => jsonValue,
+    };
+    // context.transformIdentifier(value)
+    return super.fromJSON(jsonValue, context);
+  }
+}
+
+/// InputCard 枚举转换
+class InputCardConverter extends EnumConverterShort {
+  @override
+  Object? fromJSON(jsonValue, DeserializationContext context) {
+    return super.fromJSON(jsonValue, context) ?? InputCardType.none;
   }
 }

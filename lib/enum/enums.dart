@@ -1,4 +1,4 @@
-﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, JsonProperty;
+﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, Json, CaseStyle, JsonProperty;
 
 /// 部署的平台
 @jsonSerializable
@@ -36,4 +36,25 @@ enum MenuTypes {
 enum UrlFormats {
   slug,
   shortId,
+}
+
+/// 输入字段类型
+@jsonSerializable
+enum FieldType {
+  input,
+  select,
+  textarea,
+  radio,
+  toggle,
+  picture,
+  //markdown,
+  array,
+}
+
+/// InputCard 的类型
+@jsonSerializable
+enum InputCardType {
+  card,
+  post,
+  none,
 }
