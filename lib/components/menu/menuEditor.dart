@@ -1,11 +1,11 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' show Obx, RxT, Trans;
+import 'package:glidea/components/Common/Autocomplete.dart';
 import 'package:glidea/components/Common/ListItem.dart';
 import 'package:glidea/components/Common/drawerEditor.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
-import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
@@ -92,12 +92,15 @@ class MenuEditorState extends DrawerEditorState<Menu> {
     // 链接控件
     final linkWidget = wrapperField(
       name: 'link',
-      child: Autocomplete<TLinkData>(
-        displayStringForOption: (option) => option.link,
+      child: AutocompleteField(
+        controller: urlController,
         optionsBuilder: _getOptions,
-        onSelected: (value) => urlController.text = value.link,
         optionsViewBuilder: _buildOptionsView,
-        fieldViewBuilder: _buildFieldView,
+        displayStringForOption: (option) => option.link,
+        onSelected: (value) => urlController.text = value.link,
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'(/(?!/)[a-zA-Z0-9-_.]*)+')),
+        ],
       ),
     );
     return [
@@ -145,38 +148,6 @@ class MenuEditorState extends DrawerEditorState<Menu> {
     );
   }
 
-  /// 构建字段组件
-  ///
-  /// (?<=Expression)逆序肯定环视，表示所在位置左侧能够匹配Expression
-  ///
-  /// (?<!Expression)逆序否定环视，表示所在位置左侧不能匹配Expression
-  ///
-  /// (?=Expression)顺序肯定环视，表示所在位置右侧能够匹配Expression
-  ///
-  /// (?!Expression)顺序否定环视，表示所在位置右侧不能匹配Expression
-  ///
-  /// see https://www.zhihu.com/question/21015580
-  Widget _buildFieldView(BuildContext context, TextEditingController textEditingController, FocusNode focusNode, VoidCallback onFieldSubmitted) {
-    // 设置初始值
-    // TODO: TextFormField 无法选择文本
-    textEditingController.text = urlController.text;
-    return TextFormField(
-      key: _key,
-      focusNode: focusNode,
-      controller: textEditingController,
-      onFieldSubmitted: (_) => onFieldSubmitted(),
-      decoration: InputDecoration(
-        isDense: true,
-        contentPadding: kVer8Hor12,
-        hoverColor: Colors.transparent, // 悬停时的背景色
-      ),
-      onChanged: (str) => urlController.text = str,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'(/(?!/)[a-zA-Z0-9-_.]*)+')),
-      ],
-    );
-  }
-
   /// 更新标签状态
   void updateTagState() {
     var name = nameController.text;
@@ -186,8 +157,6 @@ class MenuEditorState extends DrawerEditorState<Menu> {
     // 任意一个改变即可
     var pop2 = pop1 && (name != widget.entity.name || url != widget.entity.name);
     canSave.value = pop2;
-
-    Log.d(canSave.value);
   }
 
   @override
