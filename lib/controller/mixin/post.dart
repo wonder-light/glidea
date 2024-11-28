@@ -15,12 +15,12 @@ mixin PostSite on StateController<Application> {
 
   /// 获取文章封面图片的路径
   String getFeaturePath({required Post data, bool isWeb = false}) {
-    var feature = data.feature.isNotEmpty ? data.feature : Constants.defaultPostFeaturePath;
+    var feature = data.feature.isNotEmpty ? data.feature : defaultPostFeaturePath;
     // 去掉开头的 /
     if (feature.startsWith('/')) {
       feature = feature.substring(1);
     }
-    if (isWeb) return FS.join(state.themeConfig.domain, Constants.defaultPostPath, feature);
+    if (isWeb) return FS.join(state.themeConfig.domain, defaultPostPath, feature);
     return FS.join(state.appDir, feature);
   }
 

@@ -5,6 +5,7 @@ import 'package:glidea/components/drawer.dart';
 import 'package:glidea/components/pageAction.dart';
 import 'package:glidea/components/tag/tagEditor.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -20,7 +21,7 @@ class _TagsWidgetState extends State<TagsWidget> {
   var selectedTag = ''.obs;
 
   /// 站点控制器
-  final siteController = Get.find<SiteController>(tag: SiteController.tag);
+  final site = Get.find<SiteController>(tag: SiteController.tag);
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +35,10 @@ class _TagsWidgetState extends State<TagsWidget> {
       ],
       child: Obx(
         () => Wrap(
-          spacing: 16,
-          runSpacing: 12,
+          spacing: kAllPadding16.right,
+          runSpacing: kHorPadding12.right,
           children: [
-            for (var tag in siteController.tags) _buildTagButton(tag),
+            for (var tag in site.tags) _buildTagButton(tag),
           ],
         ),
       ),
@@ -48,23 +49,23 @@ class _TagsWidgetState extends State<TagsWidget> {
   Widget _buildTagButton(Tag tag) {
     // 使用中不可删除
     final select = tag.used ? [false] : [false, false];
+    // 边距
+    final padding = kHorPadding8 + kVerPadding4;
     // 按钮
     final buttons = [
       Container(
-        padding: const EdgeInsets.only(left: 12, right: 16, top: 6, bottom: 6),
+        padding: padding * 1.5,
         child: Row(
           children: [
             const Icon(PhosphorIconsRegular.tag),
-            Container(
-              margin: const EdgeInsets.only(left: 4),
-              child: Text(tag.name),
-            )
+            Container(padding: kRightPadding4),
+            Text(tag.name),
           ],
         ),
       ),
       if (!tag.used)
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: padding,
           child: const Icon(PhosphorIconsRegular.trash),
         ),
     ];
@@ -80,7 +81,7 @@ class _TagsWidgetState extends State<TagsWidget> {
 
   /// 添加新标签
   void addNewTag() {
-    editorTag(siteController.createTag());
+    editorTag(site.createTag());
   }
 
   /// 编辑标签
@@ -94,7 +95,7 @@ class _TagsWidgetState extends State<TagsWidget> {
         entity: tag,
         controller: drawerController,
         onSave: (data) {
-          siteController.updateTag(newData: data, oldData: tag);
+          site.updateTag(newData: data, oldData: tag);
         },
       ),
     );
@@ -108,7 +109,7 @@ class _TagsWidgetState extends State<TagsWidget> {
         Get.backLegacy();
       },
       onConfirm: () {
-        siteController.removeTag(tag);
+        site.removeTag(tag);
         Get.backLegacy();
       },
     ));

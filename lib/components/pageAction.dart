@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt;
+import 'package:glidea/helpers/constants.dart';
 
 class PageAction extends StatelessWidget {
   const PageAction({
@@ -24,7 +25,7 @@ class PageAction extends StatelessWidget {
     List<Widget> actionList = [
       for (var item in actions)
         Padding(
-          padding: const EdgeInsets.only(right: 12),
+          padding: kRightPadding8,
           child: item,
         ),
     ];
@@ -47,13 +48,13 @@ class PageAction extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.all(16).copyWith(bottom: 8),
+            padding: kAllPadding16.copyWith(bottom: 8),
             child: childWidget,
           ),
           const Divider(thickness: 1, height: 1),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: kAllPadding16,
               child: child,
             ),
           ),

@@ -6,6 +6,7 @@ import 'package:glidea/components/drawer.dart';
 import 'package:glidea/components/menu/menuEditor.dart';
 import 'package:glidea/components/pageAction.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -18,7 +19,7 @@ class MenuWidget extends StatefulWidget {
 
 class _MenuWidgetState extends State<MenuWidget> {
   /// 站点控制器
-  final siteController = Get.find<SiteController>(tag: SiteController.tag);
+  final site = Get.find<SiteController>(tag: SiteController.tag);
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +28,17 @@ class _MenuWidgetState extends State<MenuWidget> {
         IconButton(
           onPressed: addNewMenu,
           icon: const Icon(PhosphorIconsRegular.plus),
-          tooltip: 'newTag'.tr,
+          tooltip: 'newMenu'.tr,
         ),
       ],
       child: Obx(
         () => ListView.separated(
           itemBuilder: (BuildContext context, int index) {
-            return _buildMenuItem(siteController.menus[index]);
+            return _buildMenuItem(site.menus[index]);
           },
-          itemCount: siteController.menus.length,
+          itemCount: site.menus.length,
           separatorBuilder: (BuildContext context, int index) {
-            return Container(height: 10);
+            return Container(height: listSeparated);
           },
         ),
       ),
@@ -48,6 +49,7 @@ class _MenuWidgetState extends State<MenuWidget> {
   Widget _buildMenuItem(Menu menu) {
     // 配色方案
     final colors = Get.theme.colorScheme;
+
     return ListItem(
       shape: ContinuousRectangleBorder(
         side: BorderSide(
@@ -56,17 +58,14 @@ class _MenuWidgetState extends State<MenuWidget> {
         ),
         borderRadius: BorderRadius.circular(10.0),
       ),
-      leadingMargin: const EdgeInsets.only(right: 18, left: 12),
+      constraints: const BoxConstraints(minHeight: 80),
+      contentPadding: kVerPadding8 + kHorPadding16,
+      leadingMargin: kRightPadding16,
       leading: const Icon(PhosphorIconsRegular.starFour),
-      title: Text(
-        menu.name,
-        textScaler: const TextScaler.linear(1.2),
-      ),
+      title: Text(menu.name),
       subtitle: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            margin: const EdgeInsets.only(right: 16),
+          DecoratedBox(
             decoration: BoxDecoration(
               color: colors.surfaceContainerLow,
               border: Border.all(
@@ -74,8 +73,12 @@ class _MenuWidgetState extends State<MenuWidget> {
                 width: 0.4,
               ),
             ),
-            child: Text(menu.openType.name),
+            child: Padding(
+              padding: kHorPadding8,
+              child: Text(menu.openType.name.tr),
+            ),
           ),
+          Container(padding: kRightPadding16),
           Text(menu.link),
         ],
       ),
@@ -89,7 +92,7 @@ class _MenuWidgetState extends State<MenuWidget> {
 
   /// 添加新菜单
   void addNewMenu() {
-    editorMenu(siteController.createMenu());
+    editorMenu(site.createMenu());
   }
 
   /// 编辑菜单
@@ -103,7 +106,7 @@ class _MenuWidgetState extends State<MenuWidget> {
         entity: menu,
         controller: drawerController,
         onSave: (data) {
-          siteController.updateMenu(newData: data, oldData: menu);
+          site.updateMenu(newData: data, oldData: menu);
         },
       ),
     );
@@ -117,7 +120,7 @@ class _MenuWidgetState extends State<MenuWidget> {
         Get.backLegacy();
       },
       onConfirm: () {
-        siteController.removeMenu(menu);
+        site.removeMenu(menu);
         Get.backLegacy();
       },
     ));

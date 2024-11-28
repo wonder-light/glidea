@@ -32,10 +32,14 @@ class SelectWidget extends StatelessWidget {
       hint: Text(select.note.tr),
       isDense: true,
       isExpanded: true,
-      decoration: kInputDecoration,
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding: kVer8Hor12,
+        hoverColor: Colors.transparent, // 悬停时的背景色
+      ),
       menuItemStyleData: const MenuItemStyleData(
         height: 40,
-        padding: kHorizontalPadding,
+        padding: kHorPadding16,
       ),
       buttonStyleData: const ButtonStyleData(
         width: 0,
@@ -56,7 +60,7 @@ class SelectWidget extends StatelessWidget {
         Flexible(
             flex: base,
             child: Padding(
-              padding: labelPadding ?? kLabelPadding,
+              padding: labelPadding ?? kRightPadding16,
               child: Text(select.label),
             )),
         Flexible(

@@ -1,7 +1,8 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Obx, Trans, Inst, BoolExtension;
+import 'package:get/get.dart' show BoolExtension, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/drawer.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/helpers/constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 abstract class DrawerEditor<T> extends StatefulWidget {
@@ -51,7 +52,7 @@ abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
     List<Widget> content = buildContent(context);
     // 字段
     Widget widgets = Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: kAllPadding16 + kVerPadding8,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -95,13 +96,13 @@ abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
   /// 包装字段
   Widget wrapperField({required Widget child, String? name}) {
     return Container(
-      margin: const EdgeInsets.only(top: 18),
+      margin: kTopPadding8 * 2.25,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (name != null)
             Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: kTopPadding8.flipped,
               child: Text(name.tr),
             ),
           child,
@@ -113,7 +114,7 @@ abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
   /// 构建底部操作按钮
   Widget buildActions(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      padding: kAllPadding16 + kVerPadding8,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -121,7 +122,7 @@ abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
             onPressed: onClose,
             child: Text('cancel'.tr),
           ),
-          Container(width: 8),
+          Container(padding: kRightPadding8),
           Obx(
             () => FilledButton(
               onPressed: canSave.value ? onSave : null,

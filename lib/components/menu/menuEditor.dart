@@ -4,6 +4,7 @@ import 'package:get/get.dart' show Obx, RxT, Trans;
 import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/components/drawerEditor.dart';
 import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/menu.dart';
@@ -58,9 +59,9 @@ class MenuEditorState extends DrawerEditorState<Menu> {
       name: 'name',
       child: TextFormField(
         controller: nameController,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           isDense: true,
-          contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+          contentPadding: kVer8Hor12,
           hoverColor: Colors.transparent, // 悬停时的背景色
         ),
       ),
@@ -78,7 +79,7 @@ class MenuEditorState extends DrawerEditorState<Menu> {
           children: [
             for (var item in MenuTypes.values)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: kHorPadding16,
                 child: Text(item.name.tr),
               ),
           ],
@@ -164,9 +165,9 @@ class MenuEditorState extends DrawerEditorState<Menu> {
       focusNode: focusNode,
       controller: textEditingController,
       onFieldSubmitted: (_) => onFieldSubmitted(),
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         isDense: true,
-        contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+        contentPadding: kVer8Hor12,
         hoverColor: Colors.transparent, // 悬停时的背景色
       ),
       onChanged: (str) => urlController.text = str,

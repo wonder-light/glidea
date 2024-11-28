@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:glidea/components/drawerEditor.dart';
+import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/tag.dart';
 
 class TagEditor extends DrawerEditor<Tag> {
@@ -41,9 +42,9 @@ class TagEditorState extends DrawerEditorState<Tag> {
       name: 'tagName',
       child: TextFormField(
         controller: nameController,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           isDense: true,
-          contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+          contentPadding: kVer8Hor12,
           hoverColor: Colors.transparent, // 悬停时的背景色
         ),
       ),
@@ -53,9 +54,9 @@ class TagEditorState extends DrawerEditorState<Tag> {
       name: 'tagUrl',
       child: TextFormField(
         controller: urlController,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           isDense: true,
-          contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+          contentPadding: kVer8Hor12,
           hoverColor: Colors.transparent, // 悬停时的背景色
         ),
         inputFormatters: [

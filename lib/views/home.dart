@@ -2,6 +2,7 @@
 import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StringExtension, Trans;
 import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
@@ -11,18 +12,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class HomeWidget extends StatefulWidget {
-  const HomeWidget({super.key, this.title = '首页'});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const HomeWidget({super.key});
 
   @override
   State<HomeWidget> createState() => _HomeWidgetState();
@@ -30,30 +20,30 @@ class HomeWidget extends StatefulWidget {
 
 class _HomeWidgetState extends State<HomeWidget> {
   /// 关于当前屏幕的响应性数据
-  ResponsiveBreakpointsData breakpoints = const ResponsiveBreakpointsData();
+  late ResponsiveBreakpointsData breakpoints;
 
   /// 侦听器，可用于侦听应用程序生命周期中的更改
   late final AppLifecycleListener lifecycle;
 
   /// 桌面端的当前路由索引
-  var routerIndex = AppRouter.article.obs;
+  var desktopRouter = AppRouter.articles.obs;
 
   /// 移动端的当前路由索引
-  var currentIndex = 0.obs;
+  var mobileIndex = 0.obs;
 
   /// 当前显示的路由
-  var showRouter = AppRouter.article;
+  var showRouter = AppRouter.articles;
 
   /// 站点控制器
-  final siteController = Get.find<SiteController>(tag: SiteController.tag);
+  final site = Get.find<SiteController>(tag: SiteController.tag);
 
   /// 菜单数据
   final List<TRouterData> menus = [
-    (name: 'article', route: '/articles', icon: PhosphorIconsRegular.article),
-    (name: 'menu', route: '/menu', icon: PhosphorIconsRegular.list),
-    (name: 'tag', route: '/tags', icon: PhosphorIconsRegular.tag),
-    (name: 'theme', route: '/theme', icon: PhosphorIconsRegular.tShirt),
-    (name: 'remote', route: '/remote', icon: PhosphorIconsRegular.hardDrives),
+    (name: 'article', route: AppRouter.articles, icon: PhosphorIconsRegular.article),
+    (name: 'menu', route: AppRouter.menu, icon: PhosphorIconsRegular.list),
+    (name: 'tag', route: AppRouter.tags, icon: PhosphorIconsRegular.tag),
+    (name: 'theme', route: AppRouter.theme, icon: PhosphorIconsRegular.tShirt),
+    (name: 'remote', route: AppRouter.remote, icon: PhosphorIconsRegular.hardDrives),
   ];
 
   /// 移动端的底部导航栏菜单
@@ -69,12 +59,12 @@ class _HomeWidgetState extends State<HomeWidget> {
     actions.add((name: 'preview', call: preview, icon: PhosphorIconsRegular.eye));
     actions.add((name: 'publishSite', call: publish, icon: PhosphorIconsRegular.cloudArrowUp));
     // 下面一行的按钮
-    actions.add((name: 'setting'.tr, call: openSetting, icon: PhosphorIconsRegular.slidersHorizontal));
-    actions.add((name: 'visitSite'.tr, call: openWebSite, icon: PhosphorIconsRegular.globe));
-    actions.add((name: 'starSupport'.tr, call: starSupport, icon: PhosphorIconsRegular.githubLogo));
+    actions.add((name: 'setting', call: openSetting, icon: PhosphorIconsRegular.slidersHorizontal));
+    actions.add((name: 'visitSite', call: openWebSite, icon: PhosphorIconsRegular.globe));
+    actions.add((name: 'starSupport', call: starSupport, icon: PhosphorIconsRegular.githubLogo));
 
     mobileMenus.addAll(menus.take(3));
-    mobileMenus.add((name: 'setting', route: '/setting', icon: PhosphorIconsRegular.slidersHorizontal));
+    mobileMenus.add((name: 'setting', route: AppRouter.setting, icon: PhosphorIconsRegular.slidersHorizontal));
 
     lifecycle = AppLifecycleListener(onStateChange: onStateChange);
   }
@@ -83,7 +73,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // 获取匹配的路由
-    final route = Get.isDesktop ? routerIndex.value : mobileMenus[currentIndex.value].route;
+    final route = Get.isDesktop ? desktopRouter.value : mobileMenus[mobileIndex.value].route;
     // 路由不相同时更新路由
     if (showRouter != route) {
       toRouter(route);
@@ -117,8 +107,8 @@ class _HomeWidgetState extends State<HomeWidget> {
   Widget _buildLeftPanel() {
     return Container(
       constraints: const BoxConstraints(
-        minWidth: 200,
-        maxWidth: 200,
+        minWidth: kPanelWidth,
+        maxWidth: kPanelWidth,
       ),
       child: Flex(
         direction: Axis.vertical,
@@ -146,28 +136,28 @@ class _HomeWidgetState extends State<HomeWidget> {
           child: const ClipOval(
             child: Image(
               image: AssetImage('assets/images/logo.png'),
-              width: 64,
-              height: 64,
+              width: kLogSize,
+              height: kLogSize,
             ),
           ),
         ),
         // 菜单列表
         for (var item in menus)
           Container(
-            margin: const EdgeInsets.only(top: 4, bottom: 8, right: 10, left: 10),
+            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
             child: Obx(
               () => ListItem(
                 onTap: () {
-                  routerIndex.value = item.route;
+                  desktopRouter.value = item.route;
                   toRouter(item.route);
                 },
                 leading: Icon(item.icon),
                 title: Text(item.name.tr),
-                trailing: Text(siteController.getHomeLeftPanelNum(item.name)),
-                selected: routerIndex.value == item.route,
+                trailing: Text(site.getHomeLeftPanelNum(item.name)),
+                selected: desktopRouter.value == item.route,
                 selectedColor: colorScheme.surfaceContainerLow,
                 selectedTileColor: colorScheme.primary,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                contentPadding: kHorPadding16,
                 dense: true,
               ),
             ),
@@ -178,29 +168,34 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   /// 构建面板的下部分
   Widget _buildPanelBottom() {
+    Widget getButton(int i) {
+      var item = actions[i];
+      Widget childWidget = Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            margin: kRightPadding8,
+            child: Icon(item.icon),
+          ),
+          Text(item.name.tr),
+        ],
+      );
+      childWidget = i < 1 ? OutlinedButton(onPressed: item.call, child: childWidget) : FilledButton(onPressed: item.call, child: childWidget);
+      childWidget = Container(
+        margin: kVerPadding8,
+        child: childWidget,
+      );
+      return childWidget;
+    }
+
     return Container(
       padding: const EdgeInsets.only(left: 32, right: 32, top: 24, bottom: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // 两个操作按钮
-          for (var item in actions.take(2))
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              child: OutlinedButton(
-                onPressed: item.call,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(right: 8),
-                      child: Icon(item.icon),
-                    ),
-                    Text(item.name.tr),
-                  ],
-                ),
-              ),
-            ),
+          getButton(0),
+          getButton(1),
           // 一行的其它操作按钮
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -211,7 +206,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                   visualDensity: VisualDensity.comfortable,
                   onPressed: item.call,
                   icon: Icon(item.icon),
-                  tooltip: item.name,
+                  tooltip: item.name.tr,
                 ),
             ],
           )
@@ -231,9 +226,9 @@ class _HomeWidgetState extends State<HomeWidget> {
               label: item.name.tr,
             ),
         ],
-        currentIndex: currentIndex.value,
+        currentIndex: mobileIndex.value,
         onTap: (index) {
-          currentIndex.value = index;
+          mobileIndex.value = index;
           toRouter(mobileMenus[index].route, mobile: true);
         },
         type: BottomNavigationBarType.shifting,
@@ -244,7 +239,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   // 构建主体路由
   Widget _buildBody() {
     return GetRouterOutlet(
-      initialRoute: AppRouter.article,
+      initialRoute: AppRouter.articles,
       anchorRoute: AppRouter.home,
       filterPages: filterPages,
     );
@@ -278,7 +273,7 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   /// 打开发布在网站
   void openWebSite() async {
-    var domain = siteController.domain;
+    var domain = site.domain;
     if (domain.isEmpty) {
       Log.i('当前网址的空的，无法打开哦！');
       return;

@@ -10,11 +10,11 @@ class Theme {
 
   /// 首页每一页显示的文章数量
   @JsonProperty()
-  int postPageSize = Constants.defaultPostPageSize;
+  int postPageSize = defaultPostPageSize;
 
   /// 归档每一页显示的文章数量
   @JsonProperty()
-  int archivesPageSize = Constants.defaultArchivesPageSize;
+  int archivesPageSize = defaultArchivesPageSize;
 
   /// 站点名
   @JsonProperty()
@@ -54,19 +54,19 @@ class Theme {
 
   /// Feed 的文章数量
   @JsonProperty()
-  int feedCount = Constants.defaultFeedCount;
+  int feedCount = defaultFeedCount;
 
   /// 归档路径
   @JsonProperty()
-  String archivesPath = Constants.defaultArchivesPath;
+  String archivesPath = defaultArchivesPath;
 
   /// 文章路径
   @JsonProperty()
-  String postPath = Constants.defaultPostPath;
+  String postPath = defaultPostPath;
 
   /// 标签路径
   @JsonProperty()
-  String tagPath = Constants.defaultTagPath;
+  String tagPath = defaultTagPath;
 
   /// 创建站点地图
   @JsonProperty()
@@ -74,5 +74,5 @@ class Theme {
 
   /// robots 文本
   @JsonProperty()
-  String robotsText = Constants.defaultRobotsPath;
+  String robotsText = defaultRobotsPath;
 }

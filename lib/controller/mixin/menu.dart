@@ -45,10 +45,10 @@ mixin MenuSite on StateController<Application> {
     // 可以引用的链接
     var links = state.menus.map<TLinkData>((m) => (name: m.name, link: m.link)).toList();
     // 含有 post 文章的链接
-    var postMenus = links.where((t) => t.link.contains('/${Constants.defaultPostPath}/')).toList();
+    var postMenus = links.where((t) => t.link.contains('/$defaultPostPath/')).toList();
     // 冲 posts 中去除含有 postMenus 的文章
     var posts = state.posts
-        .map<TLinkData>((p) => (name: p.title, link: '/${Constants.defaultPostPath}/${p.fileName}'))
+        .map<TLinkData>((p) => (name: p.title, link: '/$defaultPostPath/${p.fileName}'))
         .where((p) => !postMenus.any((t) => t.link == p.link))
         .toList();
     // 合并

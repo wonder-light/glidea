@@ -31,7 +31,7 @@ mixin class PostDataBase {
 
   /// 封面图
   @JsonProperty()
-  String feature = Constants.defaultPostFeaturePath;
+  String feature = defaultPostFeaturePath;
 
   /// 隐藏
   @JsonProperty()

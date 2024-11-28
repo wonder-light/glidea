@@ -6,6 +6,7 @@ import 'package:glidea/components/ListItem.dart';
 import 'package:glidea/components/dialog.dart';
 import 'package:glidea/components/pageAction.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/post.dart';
@@ -34,7 +35,7 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
     return PageAction(
       actions: [
         MediaQuery(
-          data: Get.mediaQuery.copyWith(textScaler: const TextScaler.linear(0.9)),
+          data: Get.mediaQuery.copyWith(textScaler: const TextScaler.linear(0.8)),
           child: TextFormField(
             controller: textController,
             decoration: InputDecoration(
@@ -42,11 +43,11 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
               isCollapsed: true,
               hoverColor: Colors.transparent,
               // 悬停时的背景色
-              constraints: const BoxConstraints(maxWidth: 200, minHeight: 0),
-              contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              constraints: const BoxConstraints(maxWidth: kPanelWidth, minHeight: 0),
+              contentPadding: kVerPadding8 + kHorPadding16,
               suffixIcon: const Icon(PhosphorIconsRegular.magnifyingGlass),
-              suffixIconConstraints: const BoxConstraints(minWidth: 48),
               // 覆盖 suffixIcon 的约束
+              suffixIconConstraints: const BoxConstraints(minWidth: kMinInteractiveDimension),
               labelText: 'searchArticle'.tr,
             ),
             onChanged: searchPost,
@@ -55,7 +56,7 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
         IconButton(
           onPressed: addNewPost,
           icon: const Icon(PhosphorIconsRegular.plus),
-          tooltip: 'newTag'.tr,
+          tooltip: 'newArticle'.tr,
         ),
       ],
       child: Obx(
@@ -67,7 +68,7 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
             },
             itemCount: filterPosts.length,
             separatorBuilder: (BuildContext context, int index) {
-              return Container(height: 10);
+              return Container(height: listSeparated);
             },
           );
         },
@@ -101,7 +102,7 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
         : null;
 
     //内容边距
-    final contentPadding = isDesktop ? const EdgeInsets.only(right: 16) : null;
+    final contentPadding = isDesktop ? kRightPadding16 : null;
 
     // 大小
     final constraints = isDesktop ? const BoxConstraints(maxHeight: 80) : const BoxConstraints(minHeight: 100);
@@ -117,29 +118,27 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
       contentPadding: contentPadding,
       constraints: constraints,
       leading: leading,
-      title: Text(
-        post.title,
-      ),
+      title: Text(post.title),
       subtitle: Row(
         children: [
           for (var item in lists) ...[
             Padding(
-              padding: const EdgeInsets.only(right: 4),
+              padding: kRightPadding4,
               child: Icon(item.icon),
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: kRightPadding8,
               child: Text(item.name.tr),
             ),
           ],
           if (post.tags.isNotEmpty) ...[
             const Padding(
-              padding: EdgeInsets.only(right: 4),
+              padding: kRightPadding4,
               child: Icon(PhosphorIconsRegular.tag),
             ),
             for (var tag in post.tags)
               Padding(
-                padding: const EdgeInsets.only(right: 4),
+                padding: kRightPadding4,
                 child: Text(tag.name),
               ),
           ],
