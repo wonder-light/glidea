@@ -4,38 +4,36 @@ import 'package:get/get.dart' show Trans;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/render.dart';
 
-class SelectWidget extends StatelessWidget {
+import 'base.dart';
+
+class SelectWidget extends ConfigBaseWidget<SelectConfig> {
   const SelectWidget({
     super.key,
-    required this.select,
+    required super.config,
+    super.isTop,
+    super.ratio,
+    super.labelPadding,
+    super.contentPadding,
     this.onChanged,
-    this.labelPadding,
-    this.ratio = 2,
   });
-
-  /// 下拉列表配置
-  final SelectConfig select;
 
   /// 当用户选择一项时调用。
   final ValueChanged<String?>? onChanged;
 
-  final EdgeInsetsGeometry? labelPadding;
-
-  /// 比率: ratio = select / text
-  final double ratio;
-
   @override
-  Widget build(BuildContext context) {
-    const base = 100;
-    Widget childWidget = DropdownButtonFormField2(
-      value: select.value,
-      hint: Text(select.note.tr),
+  Widget buildContent(BuildContext context, ThemeData theme) {
+    return DropdownButtonFormField2(
+      value: config.value,
       isDense: true,
       isExpanded: true,
       decoration: InputDecoration(
         isDense: true,
         contentPadding: kVer8Hor12,
         hoverColor: Colors.transparent, // 悬停时的背景色
+        //hintText: config.note.tr,
+        hintStyle: theme.textTheme.bodySmall!.copyWith(
+          color: theme.colorScheme.outline,
+        ),
       ),
       menuItemStyleData: const MenuItemStyleData(
         height: 40,
@@ -46,7 +44,7 @@ class SelectWidget extends StatelessWidget {
         padding: EdgeInsets.zero,
       ),
       items: [
-        for (var option in select.options)
+        for (var option in config.options)
           DropdownMenuItem<String>(
             value: option.value,
             child: Text(option.label.tr),
@@ -54,25 +52,5 @@ class SelectWidget extends StatelessWidget {
       ],
       onChanged: onChanged,
     );
-    childWidget = Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Flexible(
-            flex: base,
-            child: Padding(
-              padding: labelPadding ?? kRightPadding16,
-              child: Text(select.label),
-            )),
-        Flexible(
-          flex: (ratio * base).ceil(),
-          child: childWidget,
-        ),
-        Flexible(
-          flex: base,
-          child: Container(),
-        ),
-      ],
-    );
-    return childWidget;
   }
 }
