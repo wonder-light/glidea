@@ -57,7 +57,12 @@ class GroupWidget extends StatelessWidget {
     );
     // 内容
     Widget content = Expanded(
-      child: TabBarView(children: children),
+      child: TabBarView(children: [
+        for (var child in children)
+          SingleChildScrollView(
+            child: child,
+          ),
+      ]),
     );
 
     if (!isTop) {
