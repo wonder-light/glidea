@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Trans;
 import 'package:glidea/components/render/group.dart';
+import 'package:glidea/components/render/input.dart';
 import 'package:glidea/components/render/select.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/models/render.dart';
@@ -30,7 +31,8 @@ class _ThemeWidgetState extends State<ThemeWidget> {
           child: Column(
             children: [
               SelectWidget(
-                select: SelectConfig()
+                isTop: true,
+                config: SelectConfig()
                   ..label = '选择主题'
                   ..name = 'themeName'
                   ..note = '选择主题'
@@ -46,6 +48,16 @@ class _ThemeWidgetState extends State<ThemeWidget> {
                       ..label = 'paper'
                       ..value = 'paper',
                   ],
+                onChanged: (String? str) {},
+              ),
+              TextareaWidget(
+                isTop: true,
+                config: TextareaConfig()
+                  ..label = '选择主题'
+                  ..name = 'themeName'
+                  ..note = '选择主题-note'
+                  ..hint = '选择主题-hit'
+                  ..value = 'notes',
                 onChanged: (String? str) {},
               ),
             ],
