@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show BoolExtension, Get, GetNavigationExt, Inst, Obx, Trans;
-import 'package:glidea/components/drawer.dart';
+import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;

@@ -1,8 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' show Obx, RxT, Trans;
-import 'package:glidea/components/ListItem.dart';
-import 'package:glidea/components/drawerEditor.dart';
+import 'package:glidea/components/Common/ListItem.dart';
+import 'package:glidea/components/Common/drawerEditor.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/log.dart';

@@ -1,8 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
-import 'package:glidea/components/dialog.dart';
-import 'package:glidea/components/drawer.dart';
-import 'package:glidea/components/pageAction.dart';
+import 'package:glidea/components/Common/dialog.dart';
+import 'package:glidea/components/Common/drawer.dart';
+import 'package:glidea/components/Common/pageAction.dart';
 import 'package:glidea/components/tag/tagEditor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
