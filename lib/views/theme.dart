@@ -60,6 +60,16 @@ class _ThemeWidgetState extends State<ThemeWidget> {
                   ..value = 'notes',
                 onChanged: (String? str) {},
               ),
+              InputWidget(
+                isTop: true,
+                config: InputConfig()
+                  ..label = '选择颜色'
+                  ..name = 'themeName'
+                  ..note = '选择颜色-note'
+                  ..hint = '选择颜色-hit'
+                  ..value = '#D793D1FF',
+                onChanged: (String? str) {},
+              ),
             ],
           ),
         ),

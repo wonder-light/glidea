@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Trans;
+import 'package:glidea/components/Common/Autocomplete.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/render.dart';
 
@@ -17,7 +18,7 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
   });
 
   /// 当用户选择一项时调用。
-  final ValueChanged<String?>? onChanged;
+  final ValueChanged<String>? onChanged;
 
   bool get isTextarea => true;
 
@@ -41,7 +42,7 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
   }
 }
 
-class InputWidget extends TextareaWidget<InputConfig> {
+class InputWidget extends ConfigBaseWidget<InputConfig> {
   const InputWidget({
     super.key,
     required super.config,
@@ -49,9 +50,43 @@ class InputWidget extends TextareaWidget<InputConfig> {
     super.ratio,
     super.labelPadding,
     super.contentPadding,
-    super.onChanged,
+    this.onChanged,
   });
 
+  /// 当用户选择一项时调用。
+  final ValueChanged<String>? onChanged;
+
   @override
-  bool get isTextarea => false;
+  Widget buildContent(BuildContext context, ThemeData theme) {
+    /*ColorPicker(
+      colorPickerWidth: 220,
+      pickerColor: config.value.toColorFromCss,
+      onColorChanged: (Color value) {
+        onChanged?.call(value.toCssHex);
+        //onSelected(value.toCssHex);
+      },
+      onHsvColorChanged: (HSVColor value) {
+        onChanged?.call(value.toColor().toCssHex);
+        onSelected(value.toColor().toCssHex);
+      },
+      pickerAreaHeightPercent: 0.7,
+      enableAlpha: true,
+      displayThumbColor: true,
+      paletteType: PaletteType.hsvWithHue,
+      labelTypes: [],
+      portraitOnly: true,
+    );*/
+    return AutocompleteField<String>(
+      optionsBuilder: (textEditingValue) => [config.value],
+      optionsViewBuilder: (context, onSelected, options) {
+        return SingleChildScrollView(
+          child: Container(),
+        );
+      },
+      constraints: const BoxConstraints(
+        maxWidth: 200,
+        maxHeight: 300,
+      ),
+    );
+  }
 }

@@ -14,6 +14,7 @@ class AutocompleteField<T extends Object> extends StatelessWidget {
     this.controller,
     this.onChanged,
     this.inputFormatters,
+    this.constraints,
   }) : fieldKey = const GlobalObjectKey({});
 
   /// 返回选择选项时要在字段中显示的字符串。
@@ -39,6 +40,9 @@ class AutocompleteField<T extends Object> extends StatelessWidget {
 
   /// 字段的格式化
   final List<TextInputFormatter>? inputFormatters;
+
+  /// 弹出视图的约束
+  final BoxConstraints? constraints;
 
   /// 字段的全局键
   final GlobalKey fieldKey;
@@ -67,7 +71,7 @@ class AutocompleteField<T extends Object> extends StatelessWidget {
       child: Material(
         elevation: 10,
         child: ConstrainedBox(
-          constraints: BoxConstraints(
+          constraints: constraints ?? BoxConstraints(
             maxHeight: 260,
             maxWidth: maxWidth,
           ),
