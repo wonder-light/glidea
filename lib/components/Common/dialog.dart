@@ -1,14 +1,31 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Trans;
+import 'package:glidea/helpers/constants.dart';
 
 class DialogWidget extends StatelessWidget {
-  const DialogWidget({super.key, this.onConfirm, this.onCancel});
+  const DialogWidget({
+    super.key,
+    this.onConfirm,
+    this.onCancel,
+    this.header,
+    this.content,
+    this.actions,
+  });
 
   /// 确认时的回调函数
   final VoidCallback? onConfirm;
 
   /// 确认时的回调函数
   final VoidCallback? onCancel;
+
+  /// 弹窗的头部控件
+  final Widget? header;
+
+  /// 弹窗的内容控件
+  final Widget? content;
+
+  /// 弹窗的操作按钮控件
+  final Widget? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -18,38 +35,41 @@ class DialogWidget extends StatelessWidget {
       alignment: Alignment.center,
     );
     // 头部
-    Widget header = Padding(
-      padding: const EdgeInsets.all(18),
-      child: Text('⚠️${"warning".tr}', textScaler: const TextScaler.linear(1.2)),
-    );
+    Widget headerWidget = header ??
+        Padding(
+          padding: kAllPadding16,
+          child: Text('⚠️${"warning".tr}', textScaler: const TextScaler.linear(1.2)),
+        );
     // 内容
-    Widget content = Flexible(
+    Widget contentWidget = Flexible(
       fit: FlexFit.tight,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18),
-        child: Text('deleteWarning'.tr),
-      ),
+      child: content ??
+          Padding(
+            padding: kAllPadding16,
+            child: Text('deleteWarning'.tr),
+          ),
     );
     // 操作按钮
-    Widget actions = Padding(
-      padding: const EdgeInsets.only(top: 24, bottom: 18, left: 18, right: 18),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          OutlinedButton(
-            onPressed: onCancel,
-            style: style,
-            child: Text("cancel".tr),
+    Widget actionWidget = actions ??
+        Padding(
+          padding: kAllPadding16 + kTopPadding8,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              OutlinedButton(
+                onPressed: onCancel,
+                style: style,
+                child: Text("cancel".tr),
+              ),
+              Container(width: 10),
+              FilledButton(
+                onPressed: onConfirm,
+                style: style,
+                child: Text('confirm'.tr),
+              ),
+            ],
           ),
-          Container(width: 10),
-          FilledButton(
-            onPressed: onConfirm,
-            style: style,
-            child: Text('confirm'.tr),
-          ),
-        ],
-      ),
-    );
+        );
     // 弹窗
     Widget dialogChild = IntrinsicWidth(
       stepWidth: 60,
@@ -58,9 +78,9 @@ class DialogWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          header,
-          content,
-          actions,
+          headerWidget,
+          contentWidget,
+          actionWidget,
         ],
       ),
     );
