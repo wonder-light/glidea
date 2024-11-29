@@ -54,10 +54,10 @@ abstract class ConfigBool extends ConfigBase<bool> {
 
 /// 整数值配置
 @jsonSerializable
-abstract class ConfigInt extends ConfigBase<int> {
+abstract class ConfigDouble extends ConfigBase<double> {
   @override
   @JsonProperty()
-  int value = 0;
+  double value = 0;
 }
 
 /// 数组映射值配置
@@ -158,14 +158,14 @@ class ArrayConfig extends ConfigArrayMap {
 /// 滑块配置, 范围是 (0, ∞)
 @jsonSerializable
 @Json(discriminatorValue: FieldType.slider)
-class SliderConfig extends ConfigInt {
+class SliderConfig extends ConfigDouble {
   @override
   @JsonProperty()
   FieldType get type => FieldType.slider;
 
   /// 滑动范围最大值, 必须大于 0
   @JsonProperty()
-  int max = 100;
+  double max = 100;
 }
 
 /// 下拉列表中的选项
