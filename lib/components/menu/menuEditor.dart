@@ -37,9 +37,6 @@ class MenuEditorState extends DrawerEditorState<Menu> {
   /// 可以引用的链接
   final List<TLinkData> linkData = [];
 
-  /// 链接字段的全局键
-  final GlobalKey _key = GlobalKey();
-
   @override
   void initState() {
     super.initState();
@@ -112,39 +109,25 @@ class MenuEditorState extends DrawerEditorState<Menu> {
 
   /// 构建列表选项组件
   Widget _buildOptionsView<T extends TLinkData>(BuildContext context, AutocompleteOnSelected<T> onSelected, Iterable<T> options) {
-    // 获取链接字段的宽度
-    final maxWidth = _key.currentContext?.findRenderObject()?.semanticBounds.width ?? double.infinity;
-    return Align(
-      alignment: AlignmentDirectional.topStart,
-      child: Material(
-        elevation: 10,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: 260,
-            maxWidth: maxWidth,
-          ),
-          child: ListView.separated(
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            itemCount: options.length,
-            itemBuilder: (BuildContext context, int index) {
-              final option = options.elementAt(index);
-              return ListItem(
-                leading: const Icon(PhosphorIconsRegular.link),
-                onTap: () {
-                  onSelected(option);
-                },
-                title: Text(option.name),
-                subtitle: Text(option.link),
-                dense: true,
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return const Divider(height: 1, thickness: 1);
-            },
-          ),
-        ),
-      ),
+    return ListView.separated(
+      padding: EdgeInsets.zero,
+      shrinkWrap: true,
+      itemCount: options.length,
+      itemBuilder: (BuildContext context, int index) {
+        final option = options.elementAt(index);
+        return ListItem(
+          leading: const Icon(PhosphorIconsRegular.link),
+          onTap: () {
+            onSelected(option);
+          },
+          title: Text(option.name),
+          subtitle: Text(option.link),
+          dense: true,
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) {
+        return const Divider(height: 1, thickness: 1);
+      },
     );
   }
 
