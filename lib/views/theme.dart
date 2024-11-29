@@ -1,11 +1,14 @@
 ﻿import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Trans;
+import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxT, Trans;
 import 'package:glidea/components/render/group.dart';
 import 'package:glidea/components/render/input.dart';
 import 'package:glidea/components/render/select.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/json.dart';
+import 'package:glidea/helpers/log.dart';
 import 'package:glidea/models/render.dart';
 
 class ThemeWidget extends StatefulWidget {
@@ -18,6 +21,15 @@ class ThemeWidget extends StatefulWidget {
 class _ThemeWidgetState extends State<ThemeWidget> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
+
+  final inputConfig = (InputConfig()
+        ..label = '选择颜色'
+        ..name = 'themeName'
+        ..note = '选择颜色-note'
+        ..hint = '选择颜色-hit'
+        ..card = InputCardType.none
+        ..value = '#D793D1FF')
+      .obs;
 
   @override
   Widget build(BuildContext context) {
@@ -60,15 +72,16 @@ class _ThemeWidgetState extends State<ThemeWidget> {
                   ..value = 'notes',
                 onChanged: (String? str) {},
               ),
-              InputWidget(
-                isTop: true,
-                config: InputConfig()
-                  ..label = '选择颜色'
-                  ..name = 'themeName'
-                  ..note = '选择颜色-note'
-                  ..hint = '选择颜色-hit'
-                  ..value = '#D793D1FF',
-                onChanged: (String? str) {},
+              Obx(
+                () => InputWidget(
+                  isTop: true,
+                  config: inputConfig.value,
+                  onChanged: (String? str) {
+                    inputConfig.value = inputConfig.value.copyWith<InputConfig>({
+                      'value': str,
+                    })!;
+                  },
+                ),
               ),
             ],
           ),
