@@ -1,11 +1,14 @@
 ﻿import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:get/get.dart' show Trans;
-import 'package:glidea/components/Common/Autocomplete.dart';
+import 'package:get/get.dart'; // show Get, Inst, Trans;
+import 'package:glidea/components/Common/ListItem.dart';
+import 'package:glidea/components/Common/dialog.dart';
+import 'package:glidea/controller/site.dart';
+import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/color.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/render.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 import 'base.dart';
 
@@ -59,65 +62,122 @@ class InputWidget extends ConfigBaseWidget<InputConfig> {
 
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {
-    return TypeAheadField(
-      autoFlipDirection: true,
-      itemBuilder: (BuildContext context, value) => Container(),
-      onSelected: (Object? value) {},
-      suggestionsCallback: (String search) => [config.value],
-      constraints: const BoxConstraints(maxWidth: 200),
-      offset: const Offset(-380, 0),
-      builder: (context, controller, focusNode) {
-        return TextField(
-          controller: controller,
-          focusNode: focusNode,
-          autofocus: true,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'City',
-            hoverColor: Colors.transparent,
+    Widget? button = switch (config.card) {
+      InputCardType.post => IconButton(
+          color: theme.colorScheme.primary,
+          icon: const Icon(PhosphorIconsRegular.article),
+          onPressed: postDialog,
+        ),
+      InputCardType.card => IconButton(
+          color: config.value.toColorFromCss,
+          icon: const Icon(PhosphorIconsRegular.palette),
+          onPressed: colorDialog,
+        ),
+      _ => null,
+    };
+
+    return TextFormField(
+      initialValue: config.value,
+      readOnly: config.card != InputCardType.none,
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding: kVer8Hor12,
+        hoverColor: Colors.transparent,
+        prefixIcon: button,
+        hintText: config.hint.tr,
+        hintStyle: theme.textTheme.bodySmall!.copyWith(
+          color: theme.colorScheme.outline,
+        ),
+      ),
+      onChanged: onChanged,
+    );
+  }
+
+  /// 文章选择弹窗
+  void postDialog() {
+    final site = Get.find<SiteController>(tag: SiteController.tag);
+    // 数据
+    var links = site.getPostLink();
+    // 列表
+    var index = 0;
+    Widget childWidget = Column(
+      children: [
+        for (var option in links) ...[
+          if (index++ > 0) const Divider(height: 1, thickness: 1),
+          ListItem(
+            leading: const Icon(PhosphorIconsRegular.link),
+            onTap: () {
+              onChanged?.call(option.link);
+              Get.backLegacy();
+            },
+            title: Text(option.name),
+            subtitle: Text(option.link),
+            dense: true,
           ),
-        );
-      },
-      listBuilder: (context, children) => ColorPicker( // TODO: 需要更新 flex_color_picker 包
-        width: 26,
-        pickersEnabled: const {
-          ColorPickerType.primary: false,
-          ColorPickerType.accent: false,
-          ColorPickerType.wheel: true,
-        },
-        enableShadesSelection: false,
-        enableOpacity: true,
-        onColorChanged: (Color color) {},
-        onColorChangeEnd: (Color color) {
-          onChanged?.call(color.toCssHex);
-          //onSelected(color.toCssHex);
-        },
+        ],
+      ],
+    );
+    // 约束
+    childWidget = Container(
+      padding: kHorPadding16,
+      constraints: const BoxConstraints(maxHeight: kPanelWidth * 1.4),
+      child: SingleChildScrollView(
+        child: childWidget,
       ),
     );
-    return AutocompleteField<String>(
-      optionsBuilder: (textEditingValue) => [config.value],
-      optionsViewBuilder: (context, onSelected, options) {
-        return SingleChildScrollView(
-          child: ColorPicker(
-            width: 26,
-            pickersEnabled: const {
-              ColorPickerType.primary: false,
-              ColorPickerType.accent: false,
-              ColorPickerType.wheel: true,
-            },
-            enableShadesSelection: false,
-            onColorChanged: (Color color) {},
-            onColorChangeEnd: (Color color) {
-              onChanged?.call(color.toCssHex);
-              onSelected(color.toCssHex);
-            },
-          ),
-        );
-      },
-      constraints: const BoxConstraints(
-        maxWidth: 200,
-        maxHeight: 300,
+    // 弹窗控件
+    childWidget = DialogWidget(
+      header: Padding(
+        padding: kAllPadding16,
+        child: Text('selectArticle'.tr, textScaler: const TextScaler.linear(1.2)),
       ),
+      content: childWidget,
+      actions: const Padding(padding: kTopPadding16),
+      onCancel: () {
+        Get.backLegacy();
+      },
+      onConfirm: () {
+        Get.backLegacy();
+      },
     );
+    // 弹窗
+    Get.dialog(childWidget);
+  }
+
+  /// 颜色选择器弹窗
+  void colorDialog() {
+    // 颜色选择器
+    Widget childWidget = ColorPicker(
+      width: 26,
+      pickersEnabled: const {
+        ColorPickerType.primary: false,
+        ColorPickerType.accent: false,
+        ColorPickerType.wheel: true,
+      },
+      enableShadesSelection: false,
+      enableOpacity: true,
+      onColorChanged: (Color color) {},
+      onColorChangeEnd: (Color color) {
+        onChanged?.call(color.toCssHex);
+        //onSelected(color.toCssHex);
+      },
+    );
+    // 弹窗控件
+    childWidget = DialogWidget(
+      header: Padding(
+        padding: kAllPadding16,
+        child: Text('selectColor'.tr, textScaler: const TextScaler.linear(1.2)),
+      ),
+      content: childWidget,
+      actions: const Padding(padding: kTopPadding16),
+      onCancel: () {
+        Get.backLegacy();
+      },
+      onConfirm: () {
+        Get.backLegacy();
+      },
+    );
+    // 弹窗
+    Get.dialog(childWidget);
   }
 }
