@@ -2,6 +2,7 @@
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
+import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/post.dart';
 
@@ -39,6 +40,19 @@ mixin PostSite on StateController<Application> {
     }
 
     return state.posts.where(compare).toList();
+  }
+
+  /// 获取文章的链接
+  List<TLinkData> getPostLink() {
+    // 文章的链接
+    var posts = state.posts.map<TLinkData>((p) => (name: p.title, link: '/$defaultPostPath/${p.fileName}')).toList();
+    return posts;
+  }
+
+  /// 对文章链接进行筛选
+  List<TLinkData> filterPostLink(String data) {
+    // 筛选文章链接
+    return getPostLink().where((p) => p.link.contains(data)).toList();
   }
 
   /// 删除新标签
