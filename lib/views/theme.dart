@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxT, Trans;
 import 'package:glidea/components/render/group.dart';
 import 'package:glidea/components/render/input.dart';
+import 'package:glidea/components/render/picture.dart';
 import 'package:glidea/components/render/radio.dart';
 import 'package:glidea/components/render/select.dart';
 import 'package:glidea/components/render/slider.dart';
@@ -64,6 +65,13 @@ class _ThemeWidgetState extends State<ThemeWidget> {
     ..note = '选择颜色-Slider'
     ..max = 100
     ..value = 40)
+      .obs;
+
+  final pictureConfig = (PictureConfig()
+    ..label = 'Slider 颜色'
+    ..name = 'themeName'
+    ..note = '选择颜色-Slider'
+    ..value = '/post-images/post-feature.jpg')
       .obs;
 
   @override
@@ -148,6 +156,17 @@ class _ThemeWidgetState extends State<ThemeWidget> {
                   sliderConfig.value = sliderConfig.value.copyWith<SliderConfig>({
                     'value': value,
                   })!;
+                },
+              ),
+            ),
+            Obx(
+                  () => PictureWidget(
+                isTop: true,
+                config: pictureConfig.value,
+                onChanged: (dynamic value) {
+                  /*pictureConfig.value = pictureConfig.value.copyWith<SliderConfig>({
+                    'value': value,
+                  })!;*/
                 },
               ),
             ),
