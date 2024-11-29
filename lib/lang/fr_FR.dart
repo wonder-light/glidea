@@ -50,6 +50,8 @@
   'newTag': 'Nouveau tag',
   'tagName': 'Nom du tag',
   'selectTheme': 'Sélectionnez un thème',
+  'selectArticle': 'Choisir un article',
+  'selectColor': 'Choisissez la couleur',
   'siteName': 'Nom du site',
   'siteDescription': 'Description du site',
   'footerInfo': 'Informations sur le Footer',

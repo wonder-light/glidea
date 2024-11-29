@@ -49,6 +49,8 @@
   'newTag': '新标签',
   'tagName': '标签名',
   'selectTheme': '选择主题',
+  'selectArticle': '选择文章',
+  'selectColor': '选择颜色',
   'siteName': '网站名称',
   'siteDescription': '网站描述',
   'footerInfo': '底部信息',

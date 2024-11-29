@@ -50,6 +50,8 @@
   'newTag': 'Добавить тег',
   'tagName': 'Название тега',
   'selectTheme': 'Выберите Тему',
+  'selectArticle': 'Выбрать статью',
+  'selectColor': 'Выбери цвет.',
   'siteName': 'Название сайта',
   'siteDescription': 'Описание сайта',
   'footerInfo': 'Информация в подвале сайта',

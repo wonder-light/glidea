@@ -50,6 +50,8 @@
   'newTag': 'New',
   'tagName': 'Tag Name',
   'selectTheme': 'Select Theme',
+  'selectArticle': 'Select article',
+  'selectColor': 'Choose color',
   'siteName': 'Site Name',
   'siteDescription': 'Site Description',
   'footerInfo': 'Footer Information',

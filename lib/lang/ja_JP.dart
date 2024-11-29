@@ -49,6 +49,8 @@
   'newTag': '新規タグ',
   'tagName': 'タグ名',
   'selectTheme': 'テーマ選択',
+  'selectArticle': '文章を選びます',
+  'selectColor': '色を選びます',
   'siteName': 'サイト名',
   'siteDescription': 'サイト紹介',
   'footerInfo': 'フッター',

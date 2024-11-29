@@ -49,6 +49,8 @@
   'newTag': '新標籤',
   'tagName': '標籤名',
   'selectTheme': '選擇主題',
+  'selectArticle': '選擇文章',
+  'selectColor': '選擇顏色',
   'siteName': '網站名稱',
   'siteDescription': '網站描述',
   'footerInfo': '底部信息',
