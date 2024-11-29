@@ -28,4 +28,5 @@ const EdgeInsets kRightPadding4 = EdgeInsets.only(right: 4);
 const EdgeInsets kRightPadding8 = EdgeInsets.only(right: 8);
 const EdgeInsets kRightPadding16 = EdgeInsets.only(right: 16);
 const EdgeInsets kTopPadding8 = EdgeInsets.only(top: 8);
+const EdgeInsets kTopPadding16 = EdgeInsets.only(top: 16);
 final EdgeInsets kVer8Hor12 = kVerPadding8 + kHorPadding12;
