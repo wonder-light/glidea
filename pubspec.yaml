@@ -59,6 +59,8 @@ dependencies:
   url_launcher: ^6.3.1
   uuid: ^4.5.1
   dropdown_button2: ^2.3.9
+  flutter_typeahead: ^5.2.0
+  flex_color_picker: ^3.6.0
 
 dev_dependencies:
   flutter_test:

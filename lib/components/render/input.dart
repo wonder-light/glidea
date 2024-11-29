@@ -1,6 +1,9 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart' show Trans;
 import 'package:glidea/components/Common/Autocomplete.dart';
+import 'package:glidea/helpers/color.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/render.dart';
 
@@ -20,14 +23,12 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
   /// 当用户选择一项时调用。
   final ValueChanged<String>? onChanged;
 
-  bool get isTextarea => true;
-
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {
     return TextFormField(
       initialValue: config.value,
-      minLines: isTextarea ? 2 : null,
-      maxLines: isTextarea ? 30 : 1,
+      minLines: 2,
+      maxLines: 30,
       decoration: InputDecoration(
         isDense: true,
         contentPadding: kVer8Hor12,
@@ -58,29 +59,59 @@ class InputWidget extends ConfigBaseWidget<InputConfig> {
 
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {
-    /*ColorPicker(
-      colorPickerWidth: 220,
-      pickerColor: config.value.toColorFromCss,
-      onColorChanged: (Color value) {
-        onChanged?.call(value.toCssHex);
-        //onSelected(value.toCssHex);
+    return TypeAheadField(
+      autoFlipDirection: true,
+      itemBuilder: (BuildContext context, value) => Container(),
+      onSelected: (Object? value) {},
+      suggestionsCallback: (String search) => [config.value],
+      constraints: const BoxConstraints(maxWidth: 200),
+      offset: const Offset(-380, 0),
+      builder: (context, controller, focusNode) {
+        return TextField(
+          controller: controller,
+          focusNode: focusNode,
+          autofocus: true,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'City',
+            hoverColor: Colors.transparent,
+          ),
+        );
       },
-      onHsvColorChanged: (HSVColor value) {
-        onChanged?.call(value.toColor().toCssHex);
-        onSelected(value.toColor().toCssHex);
-      },
-      pickerAreaHeightPercent: 0.7,
-      enableAlpha: true,
-      displayThumbColor: true,
-      paletteType: PaletteType.hsvWithHue,
-      labelTypes: [],
-      portraitOnly: true,
-    );*/
+      listBuilder: (context, children) => ColorPicker( // TODO: 需要更新 flex_color_picker 包
+        width: 26,
+        pickersEnabled: const {
+          ColorPickerType.primary: false,
+          ColorPickerType.accent: false,
+          ColorPickerType.wheel: true,
+        },
+        enableShadesSelection: false,
+        enableOpacity: true,
+        onColorChanged: (Color color) {},
+        onColorChangeEnd: (Color color) {
+          onChanged?.call(color.toCssHex);
+          //onSelected(color.toCssHex);
+        },
+      ),
+    );
     return AutocompleteField<String>(
       optionsBuilder: (textEditingValue) => [config.value],
       optionsViewBuilder: (context, onSelected, options) {
         return SingleChildScrollView(
-          child: Container(),
+          child: ColorPicker(
+            width: 26,
+            pickersEnabled: const {
+              ColorPickerType.primary: false,
+              ColorPickerType.accent: false,
+              ColorPickerType.wheel: true,
+            },
+            enableShadesSelection: false,
+            onColorChanged: (Color color) {},
+            onColorChangeEnd: (Color color) {
+              onChanged?.call(color.toCssHex);
+              onSelected(color.toCssHex);
+            },
+          ),
         );
       },
       constraints: const BoxConstraints(
