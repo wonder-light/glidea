@@ -6,7 +6,7 @@ import 'package:glidea/models/render.dart';
 
 import 'base.dart';
 
-class SelectWidget extends ConfigBaseWidget<SelectConfig> {
+class SelectWidget extends ConfigBaseWidget<SelectConfig, String?> {
   const SelectWidget({
     super.key,
     required super.config,
@@ -14,11 +14,8 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
     super.ratio,
     super.labelPadding,
     super.contentPadding,
-    this.onChanged,
+    super.onChanged,
   });
-
-  /// 当用户选择一项时调用。
-  final ValueChanged<String?>? onChanged;
 
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {

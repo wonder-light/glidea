@@ -12,7 +12,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegula
 
 import 'base.dart';
 
-class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
+class TextareaWidget extends ConfigBaseWidget<TextareaConfig, String> {
   const TextareaWidget({
     super.key,
     required super.config,
@@ -20,11 +20,8 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
     super.ratio,
     super.labelPadding,
     super.contentPadding,
-    this.onChanged,
+    super.onChanged,
   });
-
-  /// 当用户选择一项时调用。
-  final ValueChanged<String>? onChanged;
 
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {
@@ -46,7 +43,7 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
   }
 }
 
-class InputWidget extends ConfigBaseWidget<InputConfig> {
+class InputWidget extends ConfigBaseWidget<InputConfig, String> {
   const InputWidget({
     super.key,
     required super.config,
@@ -54,11 +51,8 @@ class InputWidget extends ConfigBaseWidget<InputConfig> {
     super.ratio,
     super.labelPadding,
     super.contentPadding,
-    this.onChanged,
+    super.onChanged,
   });
-
-  /// 当用户选择一项时调用。
-  final ValueChanged<String>? onChanged;
 
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {

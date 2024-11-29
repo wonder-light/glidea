@@ -3,7 +3,7 @@ import 'package:get/get.dart' show Get, GetNavigationExt, Trans;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/render.dart';
 
-abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
+abstract class ConfigBaseWidget<T extends ConfigBase, F> extends StatelessWidget {
   const ConfigBaseWidget({
     super.key,
     required this.config,
@@ -12,6 +12,7 @@ abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
     this.labelPadding,
     this.contentPadding,
     this.helperPadding,
+    this.onChanged,
   });
 
   /// true: 标题在顶部
@@ -44,6 +45,9 @@ abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
   ///
   ///     EdgeInsets.symmetric(horizontal: 12, vertical: 4)
   final EdgeInsetsGeometry? helperPadding;
+
+  /// 当值发生变化时调用
+  final ValueChanged<F>? onChanged;
 
   @override
   Widget build(BuildContext context) {
