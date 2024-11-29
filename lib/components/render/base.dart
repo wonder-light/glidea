@@ -71,6 +71,7 @@ abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
     // 垂直方向
     if (isTop) {
       childWidget = Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [label, childWidget, if (note != null) note],
       );
@@ -87,8 +88,9 @@ abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
       }
       // 控件的第一行
       childWidget = Row(
+        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.end,
-        children: [label, childWidget, empty!],
+        children: [label, childWidget, empty],
       );
       if (note != null) {
         // 提示文本的第二行

@@ -68,6 +68,7 @@ class GroupWidget extends StatelessWidget {
     if (!isTop) {
       // 左边垂直 Tab
       childWidget = Row(
+        mainAxisSize: MainAxisSize.max,
         children: [
           Column(
             children: [
@@ -80,6 +81,7 @@ class GroupWidget extends StatelessWidget {
     } else {
       // 顶部 Tab
       childWidget = Column(
+        mainAxisSize: MainAxisSize.max,
         children: [
           childWidget,
           content,
