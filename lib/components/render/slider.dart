@@ -7,7 +7,6 @@ import 'base.dart';
 class SliderWidget extends ConfigBaseWidget<SliderConfig> {
   const SliderWidget({
     super.key,
-    //required this.configRx,
     required super.config,
     super.isTop,
     super.ratio,
@@ -33,13 +32,16 @@ class SliderWidget extends ConfigBaseWidget<SliderConfig> {
           overlayRadius: 16,
         ),
       ),
-      child: Obx(
-        () => Slider(
-          min: 0,
-          max: config.value.max,
-          value: config.value.value,
-          //divisions: config.max.toInt(),
-          label: config.value.value.toStringAsFixed(1),
+      child: Obx(() {
+        var isInt = config.value.isInt;
+        var maxValue = config.value.max;
+        var currentValue = config.value.value;
+        return Slider(
+          min: 0.0,
+          max: isInt ? maxValue.ceilToDouble() : maxValue,
+          value: isInt ? currentValue.floorToDouble() : currentValue,
+          divisions: isInt ? maxValue.ceil() : null,
+          label: config.value.value.toStringAsFixed(isInt ? 0 : 1),
           onChanged: (value) {
             config.update((t) {
               t!.value = value;
@@ -47,8 +49,8 @@ class SliderWidget extends ConfigBaseWidget<SliderConfig> {
             });
             onChanged?.call(value);
           },
-        ),
-      ),
+        );
+      }),
     );
   }
 }

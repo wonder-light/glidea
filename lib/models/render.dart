@@ -167,6 +167,14 @@ class SliderConfig extends ConfigDouble {
   /// 滑动范围最大值, 必须大于 0
   @JsonProperty()
   double max = 100;
+
+  /// 滑动时候的值是否是整数
+  ///
+  /// true: [value] 是转换成整数
+  ///
+  /// 默认是 false
+  @JsonProperty()
+  bool isInt = false;
 }
 
 /// 下拉列表中的选项
