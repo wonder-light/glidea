@@ -44,8 +44,9 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
         ),
         child: Container(
           constraints: const BoxConstraints(
-            maxWidth: 300,
-            maxHeight: 400,
+            minWidth: kImageWidth / 1.5,
+            maxWidth: kImageWidth,
+            maxHeight: kImageWidth * 2,
           ),
           child: Image.file(
             File(FS.joinR(site.state.appDir, config.value.value)),
