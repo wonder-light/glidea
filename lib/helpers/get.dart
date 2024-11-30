@@ -1,7 +1,29 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show ExtensionSnackbar, Get, GetInterface, GetNavigationExt, Trans;
+import 'package:get/get.dart' show ExtensionSnackbar, Get, GetInterface, GetNavigationExt, Rx, Trans;
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints, ResponsiveBreakpointsData;
+
+/// 扩展
+class RxObject<T> extends Rx<T> {
+  RxObject(super.initial);
+
+  @override
+  void update(T Function(T? val) fn) {
+    var newValue = fn(value);
+    var useUpdate = newValue == value;
+    value = newValue;
+    if (useUpdate) {
+      // subject.add(value);
+      refresh();
+    }
+  }
+}
+
+///  obs 方法
+extension RxObjectT<T extends Object> on T {
+  /// Returns a `Rx` instance with [this] `T` as initial value.
+  RxObject<T> get obs => RxObject<T>(this);
+}
 
 extension GetExt on GetInterface {
   /// 关于当前屏幕的响应性数据
