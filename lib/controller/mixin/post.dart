@@ -1,4 +1,5 @@
-﻿import 'package:get/get.dart' show Get, StateController;
+﻿import 'package:get/get.dart' show Get, StateController, StatusDataExt;
+import 'package:get/get_common/get_reset.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
@@ -32,6 +33,7 @@ mixin PostSite on StateController<Application> {
   ///     false: 从 [Post.title] 中搜索数据
   ///     true: 从 [Post.title] 和 [Post.content] 中搜索数据
   List<Post> filterPost(String data, {bool include = false}) {
+    if(!status.isSuccess) return [];
     if (data.isEmpty) return [...state.posts];
 
     bool compare(Post p) {
