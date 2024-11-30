@@ -63,6 +63,7 @@ abstract class ConfigDouble extends ConfigBase<double> {
 /// 数组映射值配置
 @jsonSerializable
 abstract class ConfigArrayMap extends ConfigBase<List<TJsonMap>> {
+  /// 列表中的每一项数据都是对字段的值的记录
   @override
   @JsonProperty()
   List<TJsonMap> value = [];
@@ -150,7 +151,7 @@ class ArrayConfig extends ConfigArrayMap {
   @JsonProperty()
   FieldType get type => FieldType.array;
 
-  /// 数组中每一项数据对象的字段定义
+  /// 数组中的每一项数据记录的都是字段的定义
   @JsonProperty()
   List<ConfigBase> arrayItems = [];
 }

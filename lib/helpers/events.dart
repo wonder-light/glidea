@@ -1,109 +1,54 @@
-﻿class EventName {
-  static const String themeSave = 'theme-save';
-
-  static const String themeSaved = 'theme-saved';
-
-  static const String themeCustomConfigSave = 'theme-custom-config-save';
-
-  static const String themeCustomConfigSaved = 'theme-custom-config-saved';
-
-  static const String settingSave = 'setting-save';
-
-  static const String settingSaved = 'setting-saved';
-
-  static const String commentSettingSave = 'comment-setting-save';
-
-  static const String commentSettingSaved = 'comment-setting-saved';
-
-  static const String faviconUpload = 'favicon-upload';
-
-  static const String faviconUploaded = 'favicon-uploaded';
-
-  static const String avatarUpload = 'avatar-upload';
-
-  static const String avatarUploaded = 'avatar-uploaded';
-
-  static const String sitePublish = 'site-publish';
-
-  static const String sitePublished = 'site-published';
-
-  static const String remoteDetect = 'remote-detect';
-
-  static const String remoteDetected = 'remote-detected';
-
-  static const String appPostCreate = 'app-post-create';
-
-  static const String appPostCreated = 'app-post-created';
-
-  static const String appPostDelete = 'app-post-delete';
-
-  static const String appPostDeleted = 'app-post-deleted';
-
-  static const String appPostListDelete = 'app-post-list-delete';
-
-  static const String appPostListDeleted = 'app-post-list-deleted';
-
-  static const String imageUpload = 'image-upload';
-
-  static const String imageUploaded = 'image-uploaded';
-
-  static const String htmlRender = 'html-render';
-
-  static const String htmlRendered = 'html-rendered';
-
-  static const String menuDelete = 'menu-delete';
-
-  static const String menuDeleted = 'menu-deleted';
-
-  static const String menuSave = 'menu-save';
-
-  static const String menuSaved = 'menu-saved';
-
-  static const String menuSort = 'menu-sort';
-
-  static const String menuSorted = 'menu-sorted';
-
-  static const String siteReload = 'site-reload';
-
-  static const String appSiteReload = 'app-site-reload';
-
-  static const String appSiteLoaded = 'app-site-loaded';
-
-  static const String appSourceFolderSetting = 'app-source-folder-setting';
-
-  static const String appSourceFolderSet = 'app-source-folder-set';
-
-  static const String appPreviewServerPortGet = 'app-preview-server-port-get';
-
-  static const String appPreviewServerPortGot = 'app-preview-server-port-got';
-
-  static const String tagDelete = 'tag-delete';
-
-  static const String tagDeleted = 'tag-deleted';
-
-  static const String tagSave = 'tag-save';
-
-  static const String TagSaved = 'tag-saved';
-
-  static const String ClickMenuSave = 'click-menu-save';
-
-  static const String SnackbarDisplay = 'snackbar-display';
-
-  static const String LogError = 'log-error';
-
-  static const String Preview = 'Preview';
-
-  static const String Publish = 'Preview';
-
-  static const String Client = 'Client';
-
-  static const String Post = 'Post';
-
-  static const String Menu = 'Menu';
-
-  static const String Setting = 'Setting';
-
-  static const String Tags = 'Tags';
-
-  static const String Theme = 'Theme';
-}
+﻿const String themeSaveEvent = 'theme-save';
+const String themeSavedEvent = 'theme-saved';
+const String themeCustomConfigSaveEvent = 'theme-custom-config-save';
+const String themeCustomConfigSavedEvent = 'theme-custom-config-saved';
+const String settingSaveEvent = 'setting-save';
+const String settingSavedEvent = 'setting-saved';
+const String commentSettingSaveEvent = 'comment-setting-save';
+const String commentSettingSavedEvent = 'comment-setting-saved';
+const String faviconUploadEvent = 'favicon-upload';
+const String faviconUploadedEvent = 'favicon-uploaded';
+const String avatarUploadEvent = 'avatar-upload';
+const String avatarUploadedEvent = 'avatar-uploaded';
+const String sitePublishEvent = 'site-publish';
+const String sitePublishedEvent = 'site-published';
+const String remoteDetectEvent = 'remote-detect';
+const String remoteDetectedEvent = 'remote-detected';
+const String appPostCreateEvent = 'app-post-create';
+const String appPostCreatedEvent = 'app-post-created';
+const String appPostDeleteEvent = 'app-post-delete';
+const String appPostDeletedEvent = 'app-post-deleted';
+const String appPostListDeleteEvent = 'app-post-list-delete';
+const String appPostListDeletedEvent = 'app-post-list-deleted';
+const String imageUploadEvent = 'image-upload';
+const String imageUploadedEvent = 'image-uploaded';
+const String htmlRenderEvent = 'html-render';
+const String htmlRenderedEvent = 'html-rendered';
+const String menuDeleteEvent = 'menu-delete';
+const String menuDeletedEvent = 'menu-deleted';
+const String menuSaveEvent = 'menu-save';
+const String menuSavedEvent = 'menu-saved';
+const String menuSortEvent = 'menu-sort';
+const String menuSortedEvent = 'menu-sorted';
+const String siteReloadEvent = 'site-reload';
+const String appSiteReloadEvent = 'app-site-reload';
+const String appSiteLoadedEvent = 'app-site-loaded';
+const String appSourceFolderSettingEvent = 'app-source-folder-setting';
+const String appSourceFolderSetEvent = 'app-source-folder-set';
+const String appPreviewServerPortGetEvent = 'app-preview-server-port-get';
+const String appPreviewServerPortGotEvent = 'app-preview-server-port-got';
+const String tagDeleteEvent = 'tag-delete';
+const String tagDeletedEvent = 'tag-deleted';
+const String tagSaveEvent = 'tag-save';
+const String tagSavedEvent = 'tag-saved';
+const String clickMenuSaveEvent = 'click-menu-save';
+const String snackbarDisplayEvent = 'snackbar-display';
+const String logErrorEvent = 'log-error';
+const String previewEvent = 'Preview';
+const String publishEvent = 'Preview';
+const String clientEvent = 'Client';
+const String postEvent = 'Post';
+const String menuEvent = 'Menu';
+const String settingEvent = 'Setting';
+const String tagsEvent = 'Tags';
+const String themeEvent = 'Theme';
