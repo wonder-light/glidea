@@ -129,5 +129,8 @@ class _ThemeWidgetState extends State<ThemeWidget> {
   }
 
   /// 保存配置
-  void saveConfig() {}
+  void saveConfig() {
+    site.updateThemeConfig(themeConfig.value);
+    resetConfig();
+  }
 }
