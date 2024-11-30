@@ -64,6 +64,7 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
     });
   }
 
+  /// 在指定位置添加一系列字段的值
   T addItem<T extends ArrayConfig>(T? obj, {int index = 0}) {
     if (obj == null) throw 'addItem: obj is null, But it is not allowed to be null';
     TJsonMap entity = {};
@@ -75,6 +76,7 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
     return obj;
   }
 
+  /// 创建对应类型的子控件
   ConfigBaseWidget createWidget<T extends ConfigBase>(T entity, TJsonMap values) {
     // 复制对象
     final obj = entity.copy<T>()!..value = values[entity.name];
@@ -83,15 +85,23 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
       values[obj.name] = value;
     }
 
-    return switch (entity.type) {
-      FieldType.input => InputWidget(isTop: false, config: (obj as InputConfig).obs, onChanged: change),
-      FieldType.select => SelectWidget(isTop: false, config: (obj as SelectConfig).obs, onChanged: change),
-      FieldType.textarea => TextareaWidget(isTop: false, config: (obj as TextareaConfig).obs, onChanged: change),
-      FieldType.radio => RadioWidget(isTop: false, config: (obj as RadioConfig).obs, onChanged: change),
-      FieldType.toggle => ToggleWidget(isTop: false, config: (obj as ToggleConfig).obs, onChanged: change),
-      FieldType.slider => SliderWidget(isTop: false, config: (obj as SliderConfig).obs, onChanged: change),
-      FieldType.picture => PictureWidget(isTop: false, config: (obj as PictureConfig).obs, onChanged: change),
-      FieldType.array => ArrayWidget(isTop: false, config: (obj as ArrayConfig).obs),
+    if (entity.type == FieldType.array) {
+      return ArrayWidget.create(config: obj);
+    }
+    return ArrayWidget.create(config: obj, onChanged: change);
+  }
+
+  /// 创建对应类型的子控件
+  static ConfigBaseWidget create<T extends ConfigBase>({required T config, bool isTop = true, ValueChanged<dynamic>? onChanged}) {
+    return switch (config.type) {
+      FieldType.input => InputWidget(config: (config as InputConfig).obs, isTop: isTop, onChanged: onChanged),
+      FieldType.select => SelectWidget(config: (config as SelectConfig).obs, isTop: isTop, onChanged: onChanged),
+      FieldType.textarea => TextareaWidget(config: (config as TextareaConfig).obs, isTop: isTop, onChanged: onChanged),
+      FieldType.radio => RadioWidget(config: (config as RadioConfig).obs, isTop: isTop, onChanged: onChanged),
+      FieldType.toggle => ToggleWidget(config: (config as ToggleConfig).obs, isTop: isTop, onChanged: onChanged),
+      FieldType.slider => SliderWidget(config: (config as SliderConfig).obs, isTop: isTop, onChanged: onChanged),
+      FieldType.picture => PictureWidget(config: (config as PictureConfig).obs, isTop: isTop, onChanged: onChanged),
+      FieldType.array => ArrayWidget(config: (config as ArrayConfig).obs, isTop: isTop, onChanged: onChanged),
     };
   }
 }
