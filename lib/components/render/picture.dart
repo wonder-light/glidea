@@ -8,7 +8,7 @@ import 'package:glidea/models/render.dart';
 
 import 'base.dart';
 
-class PictureWidget extends ConfigBaseWidget<PictureConfig, dynamic> {
+class PictureWidget extends ConfigBaseWidget<PictureConfig> {
   const PictureWidget({
     super.key,
     required super.config,
@@ -22,31 +22,32 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig, dynamic> {
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {
     var site = Get.find<SiteController>(tag: SiteController.tag);
-    var path = site.state.appDir + config.value;
-    return OutlinedButton(
-      onPressed: () {
-        // TODO: 添加图片选择器
-      },
-      style: ButtonStyle(
-        enableFeedback: true,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        padding: WidgetStateProperty.all(kAllPadding16),
-        shape: WidgetStateProperty.all(
-          const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(6)),
+    return Obx(
+      () => OutlinedButton(
+        onPressed: () {
+          // TODO: 打开图片选择器
+        },
+        style: ButtonStyle(
+          enableFeedback: true,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          padding: WidgetStateProperty.all(kAllPadding16),
+          shape: WidgetStateProperty.all(
+            const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(6)),
+            ),
           ),
+          side: WidgetStateProperty.resolveWith((states) {
+            var color = states.contains(WidgetState.hovered) ? theme.colorScheme.outline : theme.colorScheme.outlineVariant;
+            return BorderSide(color: color, width: 0.4);
+          }),
         ),
-        side: WidgetStateProperty.resolveWith((states) {
-          var color = states.contains(WidgetState.hovered) ? theme.colorScheme.outline : theme.colorScheme.outlineVariant;
-          return BorderSide(color: color, width: 0.4);
-        }),
-      ),
-      child: Container(
-        constraints: const BoxConstraints(
-          maxWidth: 300,
-          maxHeight: 400,
+        child: Container(
+          constraints: const BoxConstraints(
+            maxWidth: 300,
+            maxHeight: 400,
+          ),
+          child: Image.file(File(site.state.appDir + config.value.value), fit: BoxFit.contain),
         ),
-        child: Image.file(File(path), fit: BoxFit.contain),
       ),
     );
   }

@@ -1,9 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Trans;
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/render.dart';
 
-abstract class ConfigBaseWidget<T extends ConfigBase, F> extends StatelessWidget {
+abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
   const ConfigBaseWidget({
     super.key,
     required this.config,
@@ -28,7 +29,7 @@ abstract class ConfigBaseWidget<T extends ConfigBase, F> extends StatelessWidget
   /// 下拉列表配置
   ///
   /// [config.label] 需要手动添加 [i18n] 翻译
-  final T config;
+  final RxObject<T> config;
 
   /// 标签的边距
   ///
@@ -46,8 +47,8 @@ abstract class ConfigBaseWidget<T extends ConfigBase, F> extends StatelessWidget
   ///     EdgeInsets.symmetric(horizontal: 12, vertical: 4)
   final EdgeInsetsGeometry? helperPadding;
 
-  /// 当值发生变化时调用
-  final ValueChanged<F>? onChanged;
+  /// 当值发生变化时调用 - 主要用于 ArrayWidget 中接收值的变化
+  final ValueChanged<dynamic>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -57,15 +58,15 @@ abstract class ConfigBaseWidget<T extends ConfigBase, F> extends StatelessWidget
     // 标签
     Widget label = Padding(
       padding: labelPadding ?? (isTop ? kVerPadding8 : kRightPadding16),
-      child: Text(config.label.tr),
+      child: Text(config.value.label.tr),
     );
     // 提示
     Widget? note;
-    if (config.note.isNotEmpty) {
+    if (config.value.note.isNotEmpty) {
       note = Padding(
         padding: helperPadding ?? kVerPadding4,
         child: Text(
-          config.note.tr,
+          config.value.note.tr,
           style: theme.textTheme.bodySmall!.copyWith(
             color: theme.colorScheme.outline,
           ),

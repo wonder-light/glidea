@@ -1,4 +1,4 @@
-﻿import 'package:flex_color_picker/flex_color_picker.dart';
+﻿import 'package:flex_color_picker/flex_color_picker.dart' show ColorPicker, ColorPickerType;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/Common/list_item.dart';
@@ -12,7 +12,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegula
 
 import 'base.dart';
 
-class TextareaWidget extends ConfigBaseWidget<TextareaConfig, String> {
+class TextareaWidget extends ConfigBaseWidget<TextareaConfig> {
   const TextareaWidget({
     super.key,
     required super.config,
@@ -25,25 +25,32 @@ class TextareaWidget extends ConfigBaseWidget<TextareaConfig, String> {
 
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {
-    return TextFormField(
-      initialValue: config.value,
-      minLines: 2,
-      maxLines: 30,
-      decoration: InputDecoration(
-        isDense: true,
-        contentPadding: kVer8Hor12,
-        hoverColor: Colors.transparent,
-        hintText: config.hint.tr,
-        hintStyle: theme.textTheme.bodySmall!.copyWith(
-          color: theme.colorScheme.outline,
+    return Obx(
+      () => TextFormField(
+        initialValue: config.value.value,
+        minLines: 2,
+        maxLines: 30,
+        decoration: InputDecoration(
+          isDense: true,
+          contentPadding: kVer8Hor12,
+          hoverColor: Colors.transparent,
+          hintText: config.value.hint.tr,
+          hintStyle: theme.textTheme.bodySmall!.copyWith(
+            color: theme.colorScheme.outline,
+          ),
         ),
+        onChanged: (str) {
+          config.update((obj) {
+            return obj!..value = str;
+          });
+          onChanged?.call(str);
+        },
       ),
-      onChanged: onChanged,
     );
   }
 }
 
-class InputWidget extends ConfigBaseWidget<InputConfig, String> {
+class InputWidget extends ConfigBaseWidget<InputConfig> {
   const InputWidget({
     super.key,
     required super.config,
@@ -56,34 +63,41 @@ class InputWidget extends ConfigBaseWidget<InputConfig, String> {
 
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {
-    Widget? button = switch (config.card) {
+    Widget? button = switch (config.value.card) {
       InputCardType.post => IconButton(
           color: theme.colorScheme.primary,
           icon: const Icon(PhosphorIconsRegular.article),
           onPressed: postDialog,
         ),
       InputCardType.card => IconButton(
-          color: config.value.toColorFromCss,
+          color: config.value.value.toColorFromCss,
           icon: const Icon(PhosphorIconsRegular.palette),
           onPressed: colorDialog,
         ),
       _ => null,
     };
 
-    return TextFormField(
-      initialValue: config.value,
-      readOnly: config.card != InputCardType.none,
-      decoration: InputDecoration(
-        isDense: true,
-        contentPadding: kVer8Hor12,
-        hoverColor: Colors.transparent,
-        prefixIcon: button,
-        hintText: config.hint.tr,
-        hintStyle: theme.textTheme.bodySmall!.copyWith(
-          color: theme.colorScheme.outline,
+    return Obx(
+      () => TextFormField(
+        initialValue: config.value.value,
+        readOnly: config.value.card != InputCardType.none,
+        decoration: InputDecoration(
+          isDense: true,
+          contentPadding: kVer8Hor12,
+          hoverColor: Colors.transparent,
+          prefixIcon: button,
+          hintText: config.value.hint.tr,
+          hintStyle: theme.textTheme.bodySmall!.copyWith(
+            color: theme.colorScheme.outline,
+          ),
         ),
+        onChanged: (str) {
+          config.update((obj) {
+            return obj!..value = str;
+          });
+          onChanged?.call(str);
+        },
       ),
-      onChanged: onChanged,
     );
   }
 
@@ -101,7 +115,7 @@ class InputWidget extends ConfigBaseWidget<InputConfig, String> {
           ListItem(
             leading: const Icon(PhosphorIconsRegular.link),
             onTap: () {
-              onChanged?.call(option.link);
+              config.value.value = option.link;
               Get.backLegacy();
             },
             title: Text(option.name),
@@ -152,8 +166,7 @@ class InputWidget extends ConfigBaseWidget<InputConfig, String> {
       enableOpacity: true,
       onColorChanged: (Color color) {},
       onColorChangeEnd: (Color color) {
-        onChanged?.call(color.toCssHex);
-        //onSelected(color.toCssHex);
+        config.value.value = color.toCssHex;
       },
     );
     // 弹窗控件

@@ -5,7 +5,7 @@ import 'package:glidea/models/render.dart';
 
 import 'base.dart';
 
-class RadioWidget extends ConfigBaseWidget<RadioConfig, String?> {
+class RadioWidget extends ConfigBaseWidget<RadioConfig> {
   const RadioWidget({
     super.key,
     required super.config,
@@ -19,21 +19,32 @@ class RadioWidget extends ConfigBaseWidget<RadioConfig, String?> {
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {
     var index = 0;
-    var length = config.options.length;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (var item in config.options)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Radio(value: item.value, groupValue: config.value, onChanged: onChanged),
-              Text(item.label.tr),
-              if (++index < length) const Padding(padding: kRightPadding16),
-            ],
-          ),
-      ],
+    var length = config.value.options.length;
+    return Obx(
+      () => Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var item in config.value.options)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Radio(
+                  value: item.value,
+                  groupValue: config.value.value,
+                  onChanged: (str) {
+                    config.update((obj) {
+                      return obj!..value = str ?? obj.value;
+                    });
+                    onChanged?.call(str);
+                  },
+                ),
+                Text(item.label.tr),
+                if (++index < length) const Padding(padding: kRightPadding16),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }

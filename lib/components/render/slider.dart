@@ -4,9 +4,10 @@ import 'package:glidea/models/render.dart';
 
 import 'base.dart';
 
-class SliderWidget extends ConfigBaseWidget<SliderConfig, double> {
+class SliderWidget extends ConfigBaseWidget<SliderConfig> {
   const SliderWidget({
     super.key,
+    //required this.configRx,
     required super.config,
     super.isTop,
     super.ratio,
@@ -32,13 +33,21 @@ class SliderWidget extends ConfigBaseWidget<SliderConfig, double> {
           overlayRadius: 16,
         ),
       ),
-      child: Slider(
-        min: 0,
-        max: config.max,
-        value: config.value,
-        //divisions: config.max.toInt(),
-        label: config.value.toStringAsFixed(1),
-        onChanged: onChanged,
+      child: Obx(
+        () => Slider(
+          min: 0,
+          max: config.value.max,
+          value: config.value.value,
+          //divisions: config.max.toInt(),
+          label: config.value.value.toStringAsFixed(1),
+          onChanged: (value) {
+            config.update((t) {
+              t!.value = value;
+              return t;
+            });
+            onChanged?.call(value);
+          },
+        ),
       ),
     );
   }

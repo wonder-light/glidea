@@ -5,7 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegula
 
 import 'base.dart';
 
-class ToggleWidget extends ConfigBaseWidget<ToggleConfig, bool> {
+class ToggleWidget extends ConfigBaseWidget<ToggleConfig> {
   const ToggleWidget({
     super.key,
     required super.config,
@@ -20,17 +20,24 @@ class ToggleWidget extends ConfigBaseWidget<ToggleConfig, bool> {
   Widget buildContent(BuildContext context, ThemeData theme) {
     return Theme(
       data: theme,
-      child: Switch(
-        value: config.value,
-        onChanged: onChanged,
-        trackOutlineWidth: WidgetStateProperty.all(0),
-        thumbIcon: WidgetStateProperty.resolveWith<Icon>((states) {
-          if (states.contains(WidgetState.selected)) {
-            return const Icon(PhosphorIconsRegular.check);
-          }
-          return const Icon(PhosphorIconsRegular.x);
-        }),
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      child: Obx(
+        () => Switch(
+          value: config.value.value,
+          onChanged: (onOff) {
+            config.update((obj) {
+              return obj!..value = onOff;
+            });
+            onChanged?.call(onOff);
+          },
+          trackOutlineWidth: WidgetStateProperty.all(0),
+          thumbIcon: WidgetStateProperty.resolveWith<Icon>((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const Icon(PhosphorIconsRegular.check);
+            }
+            return const Icon(PhosphorIconsRegular.x);
+          }),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
       ),
     );
   }
