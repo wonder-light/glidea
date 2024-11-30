@@ -1,7 +1,7 @@
 ﻿import 'dart:io' show Directory;
 
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:get/get.dart' show GetStringUtils, StateController;
+import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
@@ -25,19 +25,23 @@ mixin DataProcess on StateController<Application> {
 
   /// 检查 .glidea 文件夹是否存在，如果不存在，则将其初始化
   Future<void> checkDir(Application site) async {
-    // 用户文件夹
-    final home = FS.join((await getApplicationSupportDirectory()).path, '../../../../');
-    // 文档
-    final document = FS.join((await getApplicationDocumentsDirectory()).path);
-    // 检查是否存在 .hve-notes 文件夹，如果存在，则加载它，否则使用默认配置。
-    final appConfigFolderOld = FS.join(home, '.hve-notes');
-    final appConfigFolder = FS.join(home, '.glidea');
-    final appConfigPath = FS.join(appConfigFolder, 'config.json');
+    // 应用程序支持目录
+    final support = FS.normalize((await getApplicationSupportDirectory()).path);
 
+    // 应用程序文档目录
+    final document = FS.normalize((await getApplicationDocumentsDirectory()).path);
+    // 检查是否存在 .hve-notes 文件夹，如果存在，则加载它，否则使用默认配置。
+    final appConfigFolderOld = FS.join(support, '.hve-notes');
+    final appConfigFolder = FS.join(support, '.glidea');
+    final appConfigPath = FS.join(appConfigFolder, 'config.json');
+    var defaultSiteDir = FS.join(document, 'glidea');
+
+    // 如果已经设置了目录则不必重新设置目录
+    site.appDir = site.appDir.isEmpty ? defaultSiteDir : site.appDir;
     site.baseDir = FS.normalize(Directory.current.path);
-    site.appDir = FS.join(document, 'glidea');
     site.buildDir = FS.join(appConfigFolder, 'output');
 
+    // Log.i(Directory('assets/public').existsSync()); => true
     try {
       // 如果存在的话 '.hve-notes' 配置文件夹，将文件夹名称更改为 '.glidea'
       if (!FS.pathExistsSync(appConfigFolder) && FS.pathExistsSync(appConfigFolderOld)) {
@@ -50,20 +54,31 @@ mixin DataProcess on StateController<Application> {
       // 创建 config.json 文件
       if (!FS.pathExistsSync(appConfigPath)) {
         FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
+      }else{
+        var dir = defaultSiteDir;
+        final appConfig = FS.readStringSync(appConfigPath).deserialize<TJsonMap>()!;
+        defaultSiteDir = FS.normalize(appConfig['sourceFolder']);
+        // 如果时默认目录则进行覆盖
+        if(site.appDir == dir){
+          site.appDir = defaultSiteDir;
+        }
       }
       // 输出目录
       if (!FS.pathExistsSync(site.buildDir)) {
         FS.createDirSync(site.buildDir);
       }
-      // 获取配置
-      final appConfig = FS.readStringSync(appConfigPath).deserialize<TJsonMap>()!;
-      site.appDir = FS.normalize(appConfig['sourceFolder']);
+      // 当保存的目录修改后将旧目录移动到新目录
+      if (site.appDir != defaultSiteDir) {
+        FS.renameDirSync(defaultSiteDir, site.appDir);
+        FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
+        return;
+      }
 
       // 网站文件夹不存在
       if (!FS.pathExistsSync(site.appDir)) {
         FS.createDirSync(site.appDir);
         FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
-        FS.copySync(FS.join(site.baseDir, '', 'assets/public/default-files'), site.appDir);
+        FS.copySync(FS.join(site.baseDir, 'assets/public/default-files'), site.appDir);
         return;
       }
 
@@ -72,13 +87,13 @@ mixin DataProcess on StateController<Application> {
       for (var folder in items) {
         final folderPath = FS.join(site.appDir, folder);
         if (!FS.pathExistsSync(folderPath)) {
-          FS.copySync(FS.join(site.baseDir, '', 'assets/public/default-files', folder), folderPath);
+          FS.copySync(FS.join(site.baseDir, 'assets/public/default-files', folder), folderPath);
         }
       }
 
       // 复制 output/favicon.ico 到 Glidea/favicon.ico
-      final outputFavicon = FS.join(site.buildDir, 'favicon.ico');
-      final sourceFavicon = FS.join(site.appDir, 'favicon.ico');
+      final outputFavicon = FS.join(site.buildDir, defaultFaviconPath);
+      final sourceFavicon = FS.join(site.appDir, defaultFaviconPath);
       if (FS.pathExistsSync(outputFavicon) && !FS.pathExistsSync(sourceFavicon)) {
         FS.copyFileSync(outputFavicon, sourceFavicon);
       }
@@ -107,7 +122,7 @@ mixin DataProcess on StateController<Application> {
     var themeConfig = site.themeConfig;
     var themes = site.themes = FS.subDir(FS.join(site.appDir, 'themes'));
     // 设置使用的主题名
-    if (!themes.contains(themeConfig.selectTheme)) {
+    if (themes.isNotEmpty && !themes.contains(themeConfig.selectTheme)) {
       themeConfig.selectTheme = themes.first;
     }
     // 合并选定主题数据
@@ -116,8 +131,6 @@ mixin DataProcess on StateController<Application> {
       final customConfig = FS.readStringSync(themePath).deserialize<TJsonMap>()!;
       site.themeCustomConfig = site.themeCustomConfig.mergeMaps(customConfig);
     }
-    // 加载主题字段配置
-    //site.themeField = (await rootBundle.loadString('assets/config/theme.json')).fromJson<List<TJsonMap>>()!;
     // 返回数据
     return site;
   }
@@ -125,6 +138,11 @@ mixin DataProcess on StateController<Application> {
   /// 保存配置到文件
   Future<void> saveSiteData() async {
     final site = state;
+    // 检查目录
+    var dir = FS.join(FS.normalize((await getApplicationDocumentsDirectory()).path), 'glidea');
+    if (site.appDir != dir) {
+      await checkDir(site);
+    }
     final configPath = FS.join(site.appDir, 'config');
     // 自定义主题配置
     if (site.themeCustomConfig.isNotEmpty) {
@@ -142,7 +160,9 @@ mixin DataProcess on StateController<Application> {
     TJsonMap? data = site.toMap();
     if (data == null) return;
     setSuccess(state.copyWith(data)!);
-    // TODO: 保存数据
+    refresh();
+    // 保存数据
+    saveSiteData();
   }
 
   // 从路径中获取 Gridea 的数据
