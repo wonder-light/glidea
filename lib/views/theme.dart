@@ -12,6 +12,7 @@ import 'package:glidea/components/render/slider.dart';
 import 'package:glidea/components/render/toggle.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/models/render.dart';
 
@@ -28,7 +29,7 @@ class _ThemeWidgetState extends State<ThemeWidget> {
 
   final inputConfig = (InputConfig()
         ..label = '选择颜色'
-        ..name = 'themeName'
+        ..name = 'input'
         ..note = '选择颜色-note'
         ..hint = '选择颜色-hit'
         ..card = InputCardType.none
@@ -37,14 +38,14 @@ class _ThemeWidgetState extends State<ThemeWidget> {
 
   final toggleConfig = (ToggleConfig()
         ..label = '选择颜色'
-        ..name = 'themeName'
+        ..name = 'toggle'
         ..note = '选择颜色-note'
         ..value = false)
       .obs;
 
   final radioConfig = (RadioConfig()
         ..label = '选择颜色-Radio'
-        ..name = 'themeName'
+        ..name = 'radio'
         ..note = 'Radio-note'
         ..value = 'color'
         ..options = [
@@ -61,19 +62,37 @@ class _ThemeWidgetState extends State<ThemeWidget> {
       .obs;
 
   final sliderConfig = (SliderConfig()
-    ..label = 'Slider 颜色'
-    ..name = 'themeName'
-    ..note = '选择颜色-Slider'
-    ..max = 100
-    ..value = 40)
+        ..label = 'Slider 颜色'
+        ..name = 'slider'
+        ..note = '选择颜色-Slider'
+        ..max = 100
+        ..value = 40)
       .obs;
 
   final pictureConfig = (PictureConfig()
-    ..label = 'Slider 颜色'
-    ..name = 'themeName'
-    ..note = '选择颜色-Slider'
-    ..value = '/post-images/post-feature.jpg')
+        ..label = 'Slider 颜色'
+        ..name = 'picture'
+        ..note = '选择颜色-Slider'
+        ..value = '/post-images/post-feature.jpg')
       .obs;
+
+  final arrayConfig = (ArrayConfig()
+        ..label = '数组配置-array'
+        ..name = 'array'
+        ..note = 'array-note'
+        ..value = []
+        ..arrayItems = [])
+      .obs;
+
+  @override
+  void initState() {
+    super.initState();
+    arrayConfig.value.arrayItems.add(inputConfig.value);
+    arrayConfig.value.arrayItems.add(toggleConfig.value);
+    arrayConfig.value.arrayItems.add(radioConfig.value);
+    arrayConfig.value.arrayItems.add(sliderConfig.value);
+    arrayConfig.value.arrayItems.add(arrayConfig.value.copy<ArrayConfig>()!);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,88 +107,58 @@ class _ThemeWidgetState extends State<ThemeWidget> {
           children: [
             SelectWidget(
               isTop: true,
-              config: SelectConfig()
-                ..label = '选择主题'
-                ..name = 'themeName'
-                ..note = '选择主题'
-                ..value = 'notes'
-                ..options = [
-                  SelectOption()
-                    ..label = 'notes'
-                    ..value = 'notes',
-                  SelectOption()
-                    ..label = 'fly'
-                    ..value = 'fly',
-                  SelectOption()
-                    ..label = 'paper'
-                    ..value = 'paper',
-                ],
-              onChanged: (String? str) {},
+              config: (SelectConfig()
+                    ..label = '选择主题'
+                    ..name = 'themeName'
+                    ..note = '选择主题'
+                    ..value = 'notes'
+                    ..options = [
+                      SelectOption()
+                        ..label = 'notes'
+                        ..value = 'notes',
+                      SelectOption()
+                        ..label = 'fly'
+                        ..value = 'fly',
+                      SelectOption()
+                        ..label = 'paper'
+                        ..value = 'paper',
+                    ])
+                  .obs,
             ),
             TextareaWidget(
               isTop: true,
-              config: TextareaConfig()
-                ..label = '选择主题'
-                ..name = 'themeName'
-                ..note = '选择主题-note'
-                ..hint = '选择主题-hit'
-                ..value = 'notes',
-              onChanged: (String? str) {},
+              config: (TextareaConfig()
+                    ..label = '选择主题'
+                    ..name = 'themeName'
+                    ..note = '选择主题-note'
+                    ..hint = '选择主题-hit'
+                    ..value = 'notes')
+                  .obs,
             ),
-            Obx(
-                  () => InputWidget(
-                isTop: true,
-                config: inputConfig.value,
-                onChanged: (String? str) {
-                  inputConfig.value = inputConfig.value.copyWith<InputConfig>({
-                    'value': str,
-                  })!;
-                },
-              ),
+            InputWidget(
+              isTop: true,
+              config: inputConfig,
             ),
-            Obx(
-                  () => ToggleWidget(
-                isTop: true,
-                config: toggleConfig.value,
-                onChanged: (bool str) {
-                  toggleConfig.value = toggleConfig.value.copyWith<ToggleConfig>({
-                    'value': str,
-                  })!;
-                },
-              ),
+            ToggleWidget(
+              isTop: true,
+              config: toggleConfig,
             ),
-            Obx(
-                  () => RadioWidget(
-                isTop: true,
-                config: radioConfig.value,
-                onChanged: (String? str) {
-                  radioConfig.value = radioConfig.value.copyWith<RadioConfig>({
-                    'value': str,
-                  })!;
-                },
-              ),
+            RadioWidget(
+              isTop: true,
+              config: radioConfig,
             ),
-            Obx(
-                  () => SliderWidget(
-                isTop: true,
-                config: sliderConfig.value,
-                onChanged: (double value) {
-                  sliderConfig.value = sliderConfig.value.copyWith<SliderConfig>({
-                    'value': value,
-                  })!;
-                },
-              ),
+            SliderWidget(
+              isTop: true,
+              //configRx: sliderConfig,
+              config: sliderConfig,
             ),
-            Obx(
-                  () => PictureWidget(
-                isTop: true,
-                config: pictureConfig.value,
-                onChanged: (dynamic value) {
-                  /*pictureConfig.value = pictureConfig.value.copyWith<SliderConfig>({
-                    'value': value,
-                  })!;*/
-                },
-              ),
+            PictureWidget(
+              isTop: true,
+              config: pictureConfig,
+            ),
+            ArrayWidget(
+              isTop: true,
+              config: arrayConfig,
             ),
           ],
         ),
