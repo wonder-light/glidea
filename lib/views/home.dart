@@ -1,4 +1,6 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:ui' show AppExitResponse;
+
+import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StringExtension, Trans;
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/controller/site.dart';
@@ -66,7 +68,7 @@ class _HomeWidgetState extends State<HomeWidget> {
     mobileMenus.addAll(menus.take(3));
     mobileMenus.add((name: 'setting', route: AppRouter.setting, icon: PhosphorIconsRegular.slidersHorizontal));
 
-    lifecycle = AppLifecycleListener(onStateChange: onStateChange);
+    lifecycle = AppLifecycleListener(onStateChange: handleStateChange, onExitRequested: handleExitRequested);
   }
 
   @override
@@ -78,6 +80,13 @@ class _HomeWidgetState extends State<HomeWidget> {
     if (showRouter != route) {
       toRouter(route);
     }
+  }
+
+  @override
+  void dispose() {
+    site.dispose();
+    lifecycle.dispose();
+    super.dispose();
   }
 
   @override
@@ -246,7 +255,19 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   /// 应用程序生命周期更改时的回调
-  void onStateChange(AppLifecycleState state) {}
+  void handleStateChange(AppLifecycleState state) {
+    Log.i('state: \n'
+        '$state');
+  }
+
+  /// 一个回调，用于询问应用程序是否允许在退出可以取消的情况下退出应用程序
+  Future<AppExitResponse> handleExitRequested() async {
+    if(!site.isDisposed){
+      await site.saveSiteData();
+    }
+    Log.e('onExitRequested');
+    return AppExitResponse.cancel;
+  }
 
   /// 过滤页面
   Iterable<GetPage> filterPages(Iterable<GetPage> afterAnchor) {
