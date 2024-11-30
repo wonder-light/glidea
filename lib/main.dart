@@ -8,14 +8,10 @@ import 'package:glidea/helpers/theme.dart';
 import 'package:glidea/lang/translations.dart';
 import 'package:glidea/routes/bindings.dart';
 import 'package:glidea/routes/router.dart';
-import 'package:responsive_framework/responsive_framework.dart';
-
-import 'main.reflectable.dart' show initializeReflectable;
+import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints, Breakpoint, MOBILE, DESKTOP;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  initializeReflectable();
   JsonHelp.initialized();
 
   runApp(DevicePreview(

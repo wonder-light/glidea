@@ -1,7 +1,7 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:glidea/enum/enums.dart';
-import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/main.reflectable.dart' show initializeReflectable;
 import 'package:glidea/models/menu.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/models/render.dart';
@@ -45,6 +45,12 @@ extension MapExtend on Map<String, dynamic> {
 class JsonHelp {
   /// JsonMapper 在项目中的初始化
   static void initialized() {
+    initializeReflectable();
+    initAdapter();
+  }
+
+  /// 初始适配器
+  static void initAdapter() {
     // 初始适配器
     JsonMapper().useAdapter(
       JsonMapperAdapter(
