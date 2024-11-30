@@ -33,21 +33,20 @@ class SliderWidget extends ConfigBaseWidget<SliderConfig> {
         ),
       ),
       child: Obx(() {
-        var isInt = config.value.isInt;
         var maxValue = config.value.max;
         var currentValue = config.value.value;
         return Slider(
           min: 0.0,
-          max: isInt ? maxValue.ceilToDouble() : maxValue,
-          value: isInt ? currentValue.floorToDouble() : currentValue,
-          divisions: isInt ? maxValue.ceil() : null,
-          label: config.value.value.toStringAsFixed(isInt ? 0 : 1),
+          max: maxValue.ceilToDouble(),
+          value: currentValue.floorToDouble(),
+          divisions: maxValue.ceil(),
+          label: currentValue.toString(),
           onChanged: (value) {
             config.update((t) {
-              t!.value = value;
+              t!.value = value.toInt();
               return t;
             });
-            onChanged?.call(value);
+            onChanged?.call(value.toInt());
           },
         );
       }),
