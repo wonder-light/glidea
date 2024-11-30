@@ -2,8 +2,8 @@
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/drawer.dart';
-import 'package:glidea/components/Common/pageAction.dart';
-import 'package:glidea/components/tag/tagEditor.dart';
+import 'package:glidea/components/Common/page_action.dart';
+import 'package:glidea/components/tag/tag_editor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/tag.dart';

@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:glidea/components/Common/drawerEditor.dart';
+import 'package:flutter/services.dart' show FilteringTextInputFormatter;
+import 'package:glidea/components/Common/drawer_editor.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/tag.dart';
 

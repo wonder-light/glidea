@@ -1,9 +1,9 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 import 'package:get/get.dart' show Obx, RxT, Trans;
-import 'package:glidea/components/Common/Autocomplete.dart';
-import 'package:glidea/components/Common/ListItem.dart';
-import 'package:glidea/components/Common/drawerEditor.dart';
+import 'package:glidea/components/Common/autocomplete.dart';
+import 'package:glidea/components/Common/list_item.dart';
+import 'package:glidea/components/Common/drawer_editor.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/interfaces/types.dart';
