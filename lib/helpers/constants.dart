@@ -11,6 +11,9 @@ const String defaultTagPath = 'tag';
 const String defaultPostFeaturePath = '/post-images/post-feature.jpg';
 const String defaultRobotsPath = 'User-agent: *\nDisallow:';
 
+/// 主题设置图片显示的最大宽度
+const double kImageWidth = 100;
+
 /// 面板宽度
 const double kPanelWidth = 200;
 

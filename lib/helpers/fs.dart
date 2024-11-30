@@ -50,8 +50,24 @@ class FS {
   ///
   ///     p. join('path', 'to', 'foo'); // -> 'path/to/foo'
   ///     p. join('path', '/to', 'foo'); // -> '/to/foo'
+  ///     p. join('path', '/to', '/foo'); // -> '/foo'
   static String join(String part1, [String? part2, String? part3, String? part4, String? part5]) {
     return FS.normalize(p.join(part1, part2, part3, part4, part5));
+  }
+
+  /// 链接路径
+  ///
+  ///     p. join('path', 'to', 'foo'); // -> 'path/to/foo'
+  ///     p. join('path', '/to', 'foo'); // -> 'path/to/foo'
+  ///     p. join('path', '/to', '/foo'); // -> 'path/to/foo'
+  static String joinR(String part1, [String? part2, String? part3, String? part4, String? part5]) {
+    // 去除开头的 /
+    String? remove(String? str) {
+      if (str == null) return null;
+      return str.startsWith('/') ? str.substring(1) : str;
+    }
+
+    return FS.normalize(p.join(part1, remove(part2), remove(part3), remove(part4), remove(part5)));
   }
 
   /// 路径序列化
