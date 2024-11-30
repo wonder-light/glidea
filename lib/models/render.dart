@@ -180,11 +180,19 @@ class SliderConfig extends ConfigDouble {
 /// 下拉列表中的选项
 @jsonSerializable
 class SelectOption {
+  /// 创建列表中的选项
+  SelectOption({this.label = '', this.value = ''});
+
+  /// 创建列表中的选项
+  ///
+  /// 名称和变量名都一致
+  SelectOption.all(String data) : this(label: data, value: data);
+
   /// 选项显示名称
   @JsonProperty()
-  String label = '';
+  String label;
 
   /// 选项对应值
   @JsonProperty()
-  String value = '';
+  String value;
 }
