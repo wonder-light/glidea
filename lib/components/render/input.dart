@@ -1,7 +1,6 @@
 ﻿import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'; // show Get, Inst, Trans;
-import 'package:glidea/components/Common/ListItem.dart';
+import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/controller/site.dart';

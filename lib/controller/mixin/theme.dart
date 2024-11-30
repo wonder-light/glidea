@@ -1,4 +1,4 @@
-﻿import 'package:get/get.dart' show FirstWhereOrNullExt, GetStringUtils, StateController;
+﻿import 'package:get/get.dart' show StateController;
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/theme.dart';

@@ -1,8 +1,8 @@
-﻿import 'dart:ui';
+﻿import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetInterface, GetNavigationExt;
-import 'package:responsive_framework/responsive_framework.dart';
+import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints;
 
 /// 这个类用于关闭抽屉
 class DraController extends ValueNotifier<bool> {
@@ -38,20 +38,19 @@ extension DrawerExt on GetInterface {
   /// [stepWidth] - 如果非空，则强制子元素的宽度为该值的倍数。如果为 null 或 0.0，子元素的宽度将与其最大固有宽度相同。该值不能为负值。
   ///
   /// [stepHeight] - 如果非空，则强制子元素的宽度为该值的倍数。只在移动端生效。
-  void showDrawer({
-    required WidgetBuilder builder,
-    double opacity = 0.5,
-    Color? opacityColor,
-    DraController? controller,
-    ShapeBorder? shape,
-    Alignment? align,
-    Duration duration = const Duration(milliseconds: 400),
-    bool blur = true,
-    double elevation = 40,
-    double? stepWidth = 60,
-    double? stepHeight,
-    BuildContext? context
-  }) {
+  void showDrawer(
+      {required WidgetBuilder builder,
+      double opacity = 0.5,
+      Color? opacityColor,
+      DraController? controller,
+      ShapeBorder? shape,
+      Alignment? align,
+      Duration duration = const Duration(milliseconds: 400),
+      bool blur = true,
+      double elevation = 40,
+      double? stepWidth = 60,
+      double? stepHeight,
+      BuildContext? context}) {
     // 获取断点数据
     final breakpoints = ResponsiveBreakpoints.of(Get.context!);
     // 设置 stepHeight

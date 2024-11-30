@@ -1,12 +1,12 @@
-﻿import 'dart:io';
+﻿import 'dart:io' show Directory;
 
-import 'package:get/get.dart' show FirstWhereOrNullExt, GetStringUtils, StateController;
+import 'package:get/get.dart' show GetStringUtils, StateController;
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart' show getApplicationDocumentsDirectory, getApplicationSupportDirectory;
 
 /// 混合 - 数据处理
 mixin DataProcess on StateController<Application> {

@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:get/get.dart' show Obx;
 import 'package:glidea/models/render.dart';
 
 import 'base.dart';

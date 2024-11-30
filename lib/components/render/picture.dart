@@ -1,7 +1,7 @@
-﻿import 'dart:io';
+﻿import 'dart:io' show File;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Inst;
+import 'package:get/get.dart' show Get, Inst, Obx;
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/render.dart';

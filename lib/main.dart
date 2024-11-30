@@ -1,5 +1,5 @@
-import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart';
+import 'package:device_preview/device_preview.dart' show DevicePreview;
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt, Transition;
 import 'package:glidea/helpers/json.dart';

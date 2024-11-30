@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+﻿import 'dart:io' show File;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
@@ -10,7 +10,7 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/post.dart';
-import 'package:jiffy/jiffy.dart';
+import 'package:jiffy/jiffy.dart' show Jiffy;
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 class ArticlesWidget extends StatefulWidget {

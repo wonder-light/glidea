@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Trans;
+import 'package:get/get.dart' show Obx, Trans;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/render.dart';
 

@@ -1,5 +1,5 @@
-﻿import 'dart:async';
-import 'dart:math';
+﻿import 'dart:async' show Timer;
+import 'dart:math' show Random;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Obx, RxT;

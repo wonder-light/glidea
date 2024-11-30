@@ -1,4 +1,4 @@
-﻿import 'package:uuid/uuid.dart';
+﻿import 'package:uuid/uuid.dart' show Uuid, Namespace;
 
 /// 创建 Uuid 类的新实例
 class Uid {

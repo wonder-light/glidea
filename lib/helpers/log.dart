@@ -1,5 +1,5 @@
 ﻿import 'package:get/get.dart' show Get;
-import 'package:logger/logger.dart';
+import 'package:logger/logger.dart' show Logger, Level;
 
 export 'package:logger/logger.dart' show Level;
 

@@ -1,7 +1,8 @@
-﻿import 'dart:math';
+﻿import 'dart:math' show Random;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxT, Trans;
+import 'package:get/get.dart' show Get, Inst, Obx, Trans;
+import 'package:glidea/components/render/array.dart';
 import 'package:glidea/components/render/group.dart';
 import 'package:glidea/components/render/input.dart';
 import 'package:glidea/components/render/picture.dart';

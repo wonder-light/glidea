@@ -8,8 +8,8 @@ import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
-import 'package:responsive_framework/responsive_framework.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints, ResponsiveBreakpointsData;
+import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});

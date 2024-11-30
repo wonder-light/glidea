@@ -1,4 +1,4 @@
-﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, Json, CaseStyle, JsonProperty;
+﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable;
 
 /// 部署的平台
 @jsonSerializable
