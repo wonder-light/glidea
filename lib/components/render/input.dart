@@ -25,9 +25,10 @@ class TextareaWidget extends ConfigBaseWidget<TextareaConfig> {
 
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {
+    final controller = TextEditingController(text: config.value.value);
     return Obx(
       () => TextFormField(
-        initialValue: config.value.value,
+        controller: controller,
         minLines: 2,
         maxLines: 30,
         decoration: InputDecoration(
@@ -63,6 +64,7 @@ class InputWidget extends ConfigBaseWidget<InputConfig> {
 
   @override
   Widget buildContent(BuildContext context, ThemeData theme) {
+    final controller = TextEditingController(text: config.value.value);
     Widget? button = switch (config.value.card) {
       InputCardType.post => IconButton(
           color: theme.colorScheme.primary,
@@ -79,7 +81,7 @@ class InputWidget extends ConfigBaseWidget<InputConfig> {
 
     return Obx(
       () => TextFormField(
-        initialValue: config.value.value,
+        controller: controller,
         readOnly: config.value.card != InputCardType.none,
         decoration: InputDecoration(
           isDense: true,
