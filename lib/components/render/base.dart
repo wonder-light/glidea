@@ -84,7 +84,14 @@ abstract class ConfigBaseWidget<T extends ConfigBase, F> extends StatelessWidget
       var value = (ratio * base).ceil();
       // 给水平的方式添加包装
       label = Flexible(flex: base, child: label);
-      childWidget = Flexible(flex: value, child: childWidget);
+      // 将内容不能缩放的对齐在左边开始的位置
+      childWidget = Expanded(
+        flex: value,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: childWidget,
+        ),
+      );
       // 空状态
       Widget empty = Flexible(flex: base, child: Container());
       if (note != null) {
