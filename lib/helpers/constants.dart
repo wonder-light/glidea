@@ -3,6 +3,8 @@
 const int defaultPostPageSize = 10;
 const int defaultArchivesPageSize = 50;
 const int defaultFeedCount = 10;
+const String defaultFaviconPath = 'favicon.ico';
+const String defaultAvatarPath = 'images/avatar.png';
 const String defaultArchivesPath = 'archives';
 const String defaultPostPath = 'post';
 const String defaultTagPath = 'tag';

@@ -8,6 +8,14 @@ class Theme {
   @JsonProperty()
   String themeName = '';
 
+  /// 网页图标的路径
+  @JsonProperty()
+  String favicon = defaultFaviconPath;
+
+  /// 头像配置的路径
+  @JsonProperty()
+  String avatar = defaultAvatarPath;
+
   /// 首页每一页显示的文章数量
   @JsonProperty()
   int postPageSize = defaultPostPageSize;
@@ -16,7 +24,7 @@ class Theme {
   @JsonProperty()
   int archivesPageSize = defaultArchivesPageSize;
 
-  /// 站点名
+  /// 站点名称
   @JsonProperty()
   String siteName = '';
 
@@ -48,9 +56,11 @@ class Theme {
   @JsonProperty()
   String dateFormat = 'YYYY-MM-DD';
 
-  /// 创建 Feed 文本
+  /// true: 启用 RSS/Feed
+  ///
+  /// false: 关闭 RSS/Feed
   @JsonProperty()
-  bool feedFullText = true;
+  bool useFeed = true;
 
   /// Feed 的文章数量
   @JsonProperty()
