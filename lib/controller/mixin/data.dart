@@ -1,5 +1,6 @@
 ﻿import 'dart:io' show Directory;
 
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:get/get.dart' show GetStringUtils, StateController;
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
@@ -106,15 +107,17 @@ mixin DataProcess on StateController<Application> {
     var themeConfig = site.themeConfig;
     var themes = site.themes = FS.subDir(FS.join(site.appDir, 'themes'));
     // 设置使用的主题名
-    if (!themes.contains(themeConfig.themeName)) {
-      themeConfig.themeName = themes.first;
+    if (!themes.contains(themeConfig.selectTheme)) {
+      themeConfig.selectTheme = themes.first;
     }
     // 合并选定主题数据
-    var themePath = FS.join(site.appDir, 'config', 'theme.${themeConfig.themeName}.config.json');
+    var themePath = FS.join(site.appDir, 'config', 'theme.${themeConfig.selectTheme}.config.json');
     if (FS.pathExistsSync(themePath)) {
       final customConfig = FS.readStringSync(themePath).deserialize<TJsonMap>()!;
       site.themeCustomConfig = site.themeCustomConfig.mergeMaps(customConfig);
     }
+    // 加载主题字段配置
+    //site.themeField = (await rootBundle.loadString('assets/config/theme.json')).fromJson<List<TJsonMap>>()!;
     // 返回数据
     return site;
   }
@@ -125,7 +128,7 @@ mixin DataProcess on StateController<Application> {
     final configPath = FS.join(site.appDir, 'config');
     // 自定义主题配置
     if (site.themeCustomConfig.isNotEmpty) {
-      final customThemePath = FS.join(configPath, 'theme.${site.themeConfig.themeName}.config.json');
+      final customThemePath = FS.join(configPath, 'theme.${site.themeConfig.selectTheme}.config.json');
       FS.writeStringSync(customThemePath, site.themeCustomConfig.toJson());
     }
     // 更新应用配置

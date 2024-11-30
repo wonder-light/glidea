@@ -4,17 +4,17 @@ import 'package:glidea/helpers/constants.dart';
 
 @jsonSerializable
 class Theme {
-  /// 主题名
+  /// 选择的主题名
   @JsonProperty()
-  String themeName = '';
+  String selectTheme = '';
 
   /// 网页图标的路径
   @JsonProperty()
-  String favicon = defaultFaviconPath;
+  String faviconSetting = defaultFaviconPath;
 
   /// 头像配置的路径
   @JsonProperty()
-  String avatar = defaultAvatarPath;
+  String avatarSetting = defaultAvatarPath;
 
   /// 首页每一页显示的文章数量
   @JsonProperty()
@@ -68,7 +68,7 @@ class Theme {
 
   /// 归档路径
   @JsonProperty()
-  String archivesPath = defaultArchivesPath;
+  String archivePath = defaultArchivePath;
 
   /// 文章路径
   @JsonProperty()
