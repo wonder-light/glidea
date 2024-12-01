@@ -48,7 +48,7 @@ dependencies:
   logger: ^2.5.0
   responsive_framework: ^1.5.1
   feedback: ^3.1.0            # 用于获取更好反馈的 Flutter 包
-  flutter_image_compress: ^2.3.0
+  image: ^4.3.0
   jiffy: ^6.3.1               # Jiffy 是一个 Flutter（Android、IOS 和 Web）日期时间包，用于解析、操作、查询和格式化日期和时间
   upgrader: ^11.3.0
   markdown: ^7.2.2            # 一个用 Dart 编写的可移植 Markdown 库
@@ -60,6 +60,7 @@ dependencies:
   uuid: ^4.5.1
   dropdown_button2: ^2.3.9
   flex_color_picker: ^3.6.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:
