@@ -1,6 +1,4 @@
-﻿import 'dart:math' show Random;
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show BoolExtension, Get, GetNavigationExt, GetView, Inst, Obx, StateExt, Trans;
 import 'package:glidea/components/render/array.dart';
 import 'package:glidea/components/render/group.dart';
@@ -25,14 +23,16 @@ class _ThemeWidgetState extends State<ThemeWidget> {
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
   /// 主题配置
-  ///
-  /// 字段的类型 -- 字段的默认值
   final RxObject<List<ConfigBase>> themeConfig = <ConfigBase>[].obs;
+
+  /// 自定义主题配置
+  final RxObject<List<ConfigBase>> themeCustomConfig = <ConfigBase>[].obs;
 
   @override
   void initState() {
     super.initState();
-    themeConfig.value.addAll(site.getThemeWidgetConfig());
+    themeConfig.value.addAll(site.getThemeWidget());
+    themeCustomConfig.value.addAll(site.getThemeCustomWidget());
   }
 
   @override
@@ -44,25 +44,10 @@ class _ThemeWidgetState extends State<ThemeWidget> {
           isScrollable: true,
           groups: const {'basicSetting', 'customConfig'},
           children: [
-            buildThemeConfig(),
-            if (site.themeCustomConfig.isEmpty)
-              Container(
-                alignment: Alignment.center,
-                padding: kTopPadding16,
-                child: Text('noCustomConfigTip'.tr),
-              )
-            else
-              GroupWidget(
-                groups: const {'basicSetting', 'customConfig'},
-                children: [
-                  Container(
-                    color: Colors.accents[Random().nextInt(10)],
-                  ),
-                  Container(
-                    color: Colors.accents[Random().nextInt(10)],
-                  ),
-                ],
-              ),
+            SingleChildScrollView(
+              child: buildThemeConfig(),
+            ),
+            buildCustomConfig(),
           ],
         );
       },
@@ -84,21 +69,57 @@ class _ThemeWidgetState extends State<ThemeWidget> {
   /// 构建主题配置页面的内容
   Widget buildThemeConfig() {
     return Obx(() {
-      List<Widget> children = [];
-      for (var item in themeConfig.value) {
-        Widget child = ArrayWidget.create(config: item, isTop: false);
-        child = Padding(
-          padding: kVerPadding8 * 2,
-          child: child,
+      return _buildContent(themeConfig.value, isTop: false);
+    });
+  }
+
+  /// 构建自定义主题配置页面的内容
+  Widget buildCustomConfig() {
+    return Obx(() {
+      if (themeCustomConfig.value.isEmpty) {
+        return Container(
+          alignment: Alignment.center,
+          padding: kTopPadding16,
+          child: Text('noCustomConfigTip'.tr),
         );
-        children.add(child);
       }
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: children,
+
+      Map<String, List<ConfigBase>> groups = {};
+      for (var t in themeCustomConfig.value.reversed) {
+        (groups[t.group] ??= []).add(t);
+      }
+
+      if (groups.keys.length == 1 && groups.keys.first.isEmpty) {
+        return SingleChildScrollView(
+          child: _buildContent(groups.values.first),
+        );
+      }
+
+      return GroupWidget(
+        groups: groups.keys.toSet(),
+        isScroll: true,
+        isScrollable: true,
+        initialIndex: groups.keys.length - 1,
+        children: [
+          for (var items in groups.values) _buildContent(items),
+        ],
       );
     });
+  }
+
+  Widget _buildContent(List<ConfigBase> items, {bool isTop = true}) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Padding(padding: kVerPadding4),
+        for (var item in items)
+          Padding(
+            padding: kHorPadding12 * 2 + (isTop ? EdgeInsets.zero : kVerPadding8),
+            child: ArrayWidget.create(config: item, isTop: isTop),
+          ),
+      ],
+    );
   }
 
   /// 构建底部按钮
@@ -133,12 +154,13 @@ class _ThemeWidgetState extends State<ThemeWidget> {
   /// 重置配置
   void resetConfig() {
     // 主题配置
-    themeConfig.value = site.getThemeWidgetConfig();
+    themeConfig.value = site.getThemeWidget();
+    themeCustomConfig.value = site.getThemeCustomWidget();
   }
 
   /// 保存配置
   void saveConfig() {
-    site.updateThemeConfig(themeConfig.value);
+    site.updateThemeConfig(themes: themeConfig.value, customs: themeCustomConfig.value);
     resetConfig();
   }
 }
