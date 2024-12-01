@@ -109,7 +109,14 @@ class _HomeWidgetState extends State<HomeWidget> {
                   ],
                 )
               : _buildBody(),
-          onLoading: const LoadingWidget(),
+          onLoading: const Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              LoadingWidget(),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: breakpoints.isDesktop ? null : _buildMobileBottomNav(),
@@ -259,10 +266,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   /// 应用程序生命周期更改时的回调
-  void handleStateChange(AppLifecycleState state) {
-    Log.i('state: \n'
-        '$state');
-  }
+  void handleStateChange(AppLifecycleState state) {}
 
   /// 一个回调，用于询问应用程序是否允许在退出可以取消的情况下退出应用程序
   Future<AppExitResponse> handleExitRequested() async {
