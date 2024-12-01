@@ -1,14 +1,15 @@
-﻿import 'package:get/get.dart' show StateController, StatusDataExt;
+﻿import 'package:get/get.dart' show StateController;
 import 'package:glidea/controller/mixin/data.dart';
 import 'package:glidea/controller/mixin/menu.dart';
 import 'package:glidea/controller/mixin/post.dart';
 import 'package:glidea/controller/mixin/tag.dart';
 import 'package:glidea/controller/mixin/theme.dart';
+import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/models/application.dart';
 
 /// 站点控制器
-class SiteController extends StateController<Application> with DataProcess, TagSite, MenuSite, PostSite, ThemeSite {
+class SiteController extends StateController<Application> with EventBus, DataProcess, TagSite, MenuSite, PostSite, ThemeSite {
   /// 发布的网址
   String get domain => state.themeConfig.domain;
 
