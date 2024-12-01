@@ -1,13 +1,16 @@
-﻿import 'package:get/get.dart' show StateController, Trans;
+﻿import 'package:get/get.dart' show Get, StateController, Trans;
 import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/render.dart';
 import 'package:glidea/models/theme.dart';
 
+import 'data.dart';
+
 /// 混合 - 主题
-mixin ThemeSite on StateController<Application> {
+mixin ThemeSite on StateController<Application>, DataProcess {
   /// 拥有的主题名列表
   List<String> get themes => state.themes;
 
@@ -78,12 +81,18 @@ mixin ThemeSite on StateController<Application> {
   }
 
   /// 更新主题的配置
-  void updateThemeConfig(List<ConfigBase> configs) {
+  void updateThemeConfig(List<ConfigBase> configs) async {
+    setLoading();
     TJsonMap items = {};
     for (var config in configs) {
       items[config.name] = config.value;
     }
     state.themeConfig = state.themeConfig.copyWith<Theme>(items)!;
+    await saveSiteData();
+
+    setSuccess(state);
     refresh();
+
+    Get.success('themeConfigSaved'.tr);
   }
 }
