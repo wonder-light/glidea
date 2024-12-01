@@ -15,11 +15,26 @@ mixin ThemeSite on StateController<Application>, DataProcess {
   /// 拥有的主题名列表
   List<String> get themes => state.themes;
 
+  /// 主题控制器的表情
+  String get themeTag => 'themeTag';
+
+  /// 自定义主题控制器的表情
+  String get themeCustomTag => 'themeCustomTag';
+
+  /// 当前主题控制器的标签
+  String themeCurrentTag = 'themeTag';
+
   /// 主题配置
   Theme get themeConfig => state.themeConfig;
 
   /// 自定义主题配置
   TJsonMap get themeCustomConfig => state.themeCustomConfig;
+
+  /// 自定义主题的路径
+  String get themeCustomPath => FS.joinR('themes', state.themeConfig.selectTheme);
+
+  /// 自定义主题的资源路径
+  String get themeCustomAssetPath => FS.joinR(themeCustomPath, 'assets');
 
   /// 主题配置中变量名称与字段类型的映射
   final Map<String, FieldType> fieldMaps = {

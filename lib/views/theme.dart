@@ -1,9 +1,11 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show BoolExtension, Get, GetNavigationExt, GetView, Inst, Obx, StateExt, Trans;
+import 'package:get/get.dart' show Bind, BoolExtension, Get, GetBuilder, GetNavigationExt, Inst, Obx, StateExt, Trans;
 import 'package:glidea/components/render/array.dart';
 import 'package:glidea/components/render/group.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/theme.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/render.dart';
 import 'package:glidea/views/loading.dart';
@@ -33,13 +35,17 @@ class _ThemeWidgetState extends State<ThemeWidget> {
     super.initState();
     themeConfig.value.addAll(site.getThemeWidget());
     themeCustomConfig.value.addAll(site.getThemeCustomWidget());
+
+    Get.lazyPut(() => ThemeController(), tag: site.themeTag);
+    Get.lazyPut(() => ThemeController(pathDir: site.themeCustomAssetPath), tag: site.themeCustomTag);
+    site.themeCurrentTag = site.themeTag;
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget childWidget = site.obx(
+    return site.obx(
       (data) {
-        return GroupWidget(
+        Widget childWidget = GroupWidget(
           isTop: true,
           isScrollable: true,
           groups: const {'basicSetting', 'customConfig'},
@@ -49,21 +55,25 @@ class _ThemeWidgetState extends State<ThemeWidget> {
             ),
             buildCustomConfig(),
           ],
+          onTap: (index) {
+            site.themeCurrentTag = index <= 0 ? site.themeTag : site.themeCustomTag;
+          },
         );
+
+        childWidget = Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(child: childWidget),
+            buildBottom(),
+          ],
+        );
+
+        return childWidget;
       },
       onLoading: const LoadingWidget(hint: 'inConfig'),
     );
-
-    childWidget = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(child: childWidget),
-        buildBottom(),
-      ],
-    );
-    return childWidget;
   }
 
   /// 构建主题配置页面的内容
@@ -159,7 +169,9 @@ class _ThemeWidgetState extends State<ThemeWidget> {
   }
 
   /// 保存配置
-  void saveConfig() {
+  void saveConfig() async {
+    // 保存前需要发出保存事件以便于图片进行保存
+    await site.emit(themeSaveEvent);
     site.updateThemeConfig(themes: themeConfig.value, customs: themeCustomConfig.value);
     resetConfig();
   }
