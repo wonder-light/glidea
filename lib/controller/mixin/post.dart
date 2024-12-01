@@ -33,7 +33,6 @@ mixin PostSite on StateController<Application> {
   ///     false: 从 [Post.title] 中搜索数据
   ///     true: 从 [Post.title] 和 [Post.content] 中搜索数据
   List<Post> filterPost(String data, {bool include = false}) {
-    if(!status.isSuccess) return [];
     if (data.isEmpty) return [...state.posts];
 
     bool compare(Post p) {

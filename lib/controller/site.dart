@@ -31,7 +31,6 @@ class SiteController extends StateController<Application> with DataProcess, TagS
   /// 获取首页左侧面板上显示的数量
   String getHomeLeftPanelNum(String name) {
     // 加载中则返回默认字符串
-    if (status.isLoading) return '';
     return switch (name) {
       'article' => '${state.posts.length}',
       'menu' => '${state.menus.length}',

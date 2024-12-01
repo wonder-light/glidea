@@ -1,7 +1,7 @@
 ﻿import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StringExtension, Trans;
+import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StateExt, StringExtension, Trans;
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
@@ -9,6 +9,7 @@ import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/routes/router.dart';
+import 'package:glidea/views/loading.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints, ResponsiveBreakpointsData;
 import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
@@ -96,17 +97,20 @@ class _HomeWidgetState extends State<HomeWidget> {
     // 构建控件
     return Scaffold(
       body: SafeArea(
-        child: breakpoints.isDesktop
-            ? Row(
-                children: [
-                  _buildLeftPanel(),
-                  const VerticalDivider(thickness: 1, width: 1),
-                  Expanded(
-                    child: _buildBody(),
-                  ),
-                ],
-              )
-            : _buildBody(),
+        child: site.obx(
+          (data) => breakpoints.isDesktop
+              ? Row(
+                  children: [
+                    _buildLeftPanel(),
+                    const VerticalDivider(thickness: 1, width: 1),
+                    Expanded(
+                      child: _buildBody(),
+                    ),
+                  ],
+                )
+              : _buildBody(),
+          onLoading: const LoadingWidget(),
+        ),
       ),
       bottomNavigationBar: breakpoints.isDesktop ? null : _buildMobileBottomNav(),
     );
@@ -262,7 +266,7 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   /// 一个回调，用于询问应用程序是否允许在退出可以取消的情况下退出应用程序
   Future<AppExitResponse> handleExitRequested() async {
-    if(!site.isDisposed){
+    if (!site.isDisposed) {
       await site.saveSiteData();
     }
     Log.e('onExitRequested');

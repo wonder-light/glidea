@@ -1,13 +1,14 @@
 ﻿import 'dart:math' show Random;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show BoolExtension, Get, GetNavigationExt, Inst, Obx, Trans;
+import 'package:get/get.dart' show BoolExtension, Get, GetNavigationExt, GetView, Inst, Obx, StateExt, Trans;
 import 'package:glidea/components/render/array.dart';
 import 'package:glidea/components/render/group.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/render.dart';
+import 'package:glidea/views/loading.dart';
 
 class ThemeWidget extends StatefulWidget {
   const ThemeWidget({super.key});
@@ -36,31 +37,38 @@ class _ThemeWidgetState extends State<ThemeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    Widget childWidget = GroupWidget(
-      isTop: true,
-      isScrollable: true,
-      groups: const {'basicSetting', 'customConfig'},
-      children: [
-        buildThemeConfig(),
-        if (site.themeCustomConfig.isEmpty)
-          Container(
-            alignment: Alignment.center,
-            child: Text('noCustomConfigTip'.tr),
-          )
-        else
-          GroupWidget(
-            groups: const {'basicSetting', 'customConfig'},
-            children: [
+    Widget childWidget = site.obx(
+      (data) {
+        return GroupWidget(
+          isTop: true,
+          isScrollable: true,
+          groups: const {'basicSetting', 'customConfig'},
+          children: [
+            buildThemeConfig(),
+            if (site.themeCustomConfig.isEmpty)
               Container(
-                color: Colors.accents[Random().nextInt(10)],
+                alignment: Alignment.center,
+                padding: kTopPadding16,
+                child: Text('noCustomConfigTip'.tr),
+              )
+            else
+              GroupWidget(
+                groups: const {'basicSetting', 'customConfig'},
+                children: [
+                  Container(
+                    color: Colors.accents[Random().nextInt(10)],
+                  ),
+                  Container(
+                    color: Colors.accents[Random().nextInt(10)],
+                  ),
+                ],
               ),
-              Container(
-                color: Colors.accents[Random().nextInt(10)],
-              ),
-            ],
-          ),
-      ],
+          ],
+        );
+      },
+      onLoading: const LoadingWidget(hint: 'inConfig'),
     );
+
     childWidget = Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
