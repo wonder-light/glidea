@@ -8,7 +8,9 @@ class GroupWidget extends StatelessWidget {
     required this.children,
     required this.groups,
     this.isTop = false,
+    this.isScroll = false,
     this.isScrollable = false,
+    this.initialIndex = 0,
     this.labelPadding,
     this.tabAlignment = TabAlignment.start,
     this.onTap,
@@ -23,8 +25,14 @@ class GroupWidget extends StatelessWidget {
   /// 是否是最顶级的标签页
   final bool isTop;
 
+  /// 初始化索引
+  final int initialIndex;
+
   /// 是否可以水平滚动此选项卡栏
   final bool isScrollable;
+
+  /// 内容是否可以垂直滚动
+  final bool isScroll;
 
   /// 添加到每个制表标签上的填充
   final EdgeInsets? labelPadding;
@@ -41,7 +49,7 @@ class GroupWidget extends StatelessWidget {
     Widget childWidget = TabBar.secondary(
       isScrollable: isScrollable,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
-      labelPadding: labelPadding ?? EdgeInsets.symmetric(horizontal: isTop ? 24 : 6, vertical: isTop ? 0 : 24),
+      labelPadding: labelPadding ?? EdgeInsets.symmetric(horizontal: isTop ? 24 : 6, vertical: isTop ? 0 : 32),
       tabAlignment: tabAlignment,
       onTap: onTap,
       tabs: [
@@ -59,9 +67,12 @@ class GroupWidget extends StatelessWidget {
     Widget content = Expanded(
       child: TabBarView(children: [
         for (var child in children)
-          SingleChildScrollView(
-            child: child,
-          ),
+          if (isScroll)
+            SingleChildScrollView(
+              child: child,
+            )
+          else
+            child,
       ]),
     );
 
@@ -70,11 +81,7 @@ class GroupWidget extends StatelessWidget {
       childWidget = Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          Column(
-            children: [
-              RotatedBox(quarterTurns: -1, child: childWidget),
-            ],
-          ),
+          RotatedBox(quarterTurns: -1, child: childWidget),
           content,
         ],
       );
@@ -92,6 +99,7 @@ class GroupWidget extends StatelessWidget {
     // 加控制器
     childWidget = DefaultTabController(
       length: groups.length,
+      initialIndex: initialIndex,
       child: childWidget,
     );
     // 返回
