@@ -152,7 +152,7 @@ mixin DataProcess on StateController<Application> {
     // 更新应用配置
     FS.writeStringSync(FS.join(configPath, 'config.json'), (site as ApplicationBase).toJson());
     // 更新设置
-    FS.writeStringSync(site.buildDir, '{"sourceFolder": "${site.appDir}"}');
+    //FS.writeStringSync(site.buildDir, '{"sourceFolder": "${site.appDir}"}');
   }
 
   /// 更新站点的全部数据
