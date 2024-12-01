@@ -4,8 +4,10 @@ import 'package:glidea/helpers/uid.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/tag.dart';
 
+import 'data.dart';
+
 /// 混合 - 标签
-mixin TagSite on StateController<Application> {
+mixin TagSite on StateController<Application>, DataProcess {
   /// 标签
   List<Tag> get tags => state.tags;
 
@@ -26,7 +28,7 @@ mixin TagSite on StateController<Application> {
       oldData.slug = newData.slug;
     }
     refresh();
-    Get.success('tagSuccess');
+    saveSiteData().then((_) => Get.success('tagSuccess'));
   }
 
   /// 删除新标签
@@ -37,6 +39,6 @@ mixin TagSite on StateController<Application> {
     }
 
     refresh();
-    Get.success('tagDelete');
+    saveSiteData().then((_) => Get.success('tagDelete'));
   }
 }

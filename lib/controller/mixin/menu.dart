@@ -5,8 +5,10 @@ import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
 
+import 'data.dart';
+
 /// 混合 - 菜单
-mixin MenuSite on StateController<Application> {
+mixin MenuSite on StateController<Application>, DataProcess {
   /// 菜单
   List<Menu> get menus => state.menus;
 
@@ -26,7 +28,7 @@ mixin MenuSite on StateController<Application> {
       oldData.link = newData.link;
     }
     refresh();
-    Get.success('menuSuccess');
+    saveSiteData().then((_) => Get.success('menuSuccess'));
   }
 
   /// 删除新标签
@@ -37,7 +39,7 @@ mixin MenuSite on StateController<Application> {
     }
 
     refresh();
-    Get.success('menuDelete');
+    saveSiteData().then((_) => Get.success('menuDelete'));
   }
 
   /// 获取可以引用的链接
