@@ -21,7 +21,6 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
     super.onChanged,
   });
 
-
   @override
   Widget build(BuildContext context) {
     // 颜色
@@ -73,7 +72,8 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
     );
   }
 
-  void getImage(SiteController site, RxString path) async {
+  /// 改变图片
+  void changeImage(RxString path) async {
     //实例化选择图片
     final picker = ImagePicker();
     //选择相册
@@ -83,17 +83,18 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
     var target = path.value;
     // 选择的图片路径
     path.value = FS.normalize(pickerImages.path);
+  }
 
-    /// 保存图片
-    Future<void> saveImage(arg) async {
-      // 保存并压缩
-      var image = await img.decodeImageFile(path.value);
-      await image?.compressImage(target);
-      //await pickerImages.saveTo(target);
-      // 恢复原有的路径
-      path.value = target;
-    }
-
-    site.once(themeSaveEvent, saveImage);
+  /// 保存图片
+  ///
+  /// [init] 初始路径
+  ///
+  /// [current] 当前显示的图片的路径
+  Future<void> saveImage(String init, RxString current) async {
+    // 保存并压缩
+    var image = await img.decodeImageFile(current.value);
+    await image?.compressImage(init);
+    // 恢复原有的路径
+    current.value = init;
   }
 }
