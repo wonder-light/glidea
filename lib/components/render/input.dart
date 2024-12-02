@@ -1,8 +1,8 @@
 ﻿import 'package:flex_color_picker/flex_color_picker.dart' show ColorPicker, ColorPickerType;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
-import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/dialog.dart';
+import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/color.dart';
@@ -12,22 +12,23 @@ import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegula
 
 import 'base.dart';
 
-class TextareaWidget extends ConfigBaseWidget<TextareaConfig> {
+/// 主题设置中的富文本控件
+class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
   const TextareaWidget({
     super.key,
     required super.config,
-    super.isTop,
-    super.ratio,
-    super.labelPadding,
-    super.contentPadding,
+    super.isVertical,
     super.onChanged,
   });
 
   @override
-  Widget buildContent(BuildContext context, ThemeData theme) {
+  Widget build(BuildContext context) {
+    var theme = Get.theme;
     final controller = TextEditingController(text: config.value.value);
-    return Obx(
-      () => TextFormField(
+    return ConfigLayoutWidget(
+      isVertical: isVertical,
+      config: config.value,
+      child: TextFormField(
         controller: controller,
         minLines: 2,
         maxLines: 30,

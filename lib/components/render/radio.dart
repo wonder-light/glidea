@@ -5,46 +5,49 @@ import 'package:glidea/models/render.dart';
 
 import 'base.dart';
 
+/// 主题设置中的单选框控件
 class RadioWidget extends ConfigBaseWidget<RadioConfig> {
   const RadioWidget({
     super.key,
     required super.config,
-    super.isTop,
-    super.ratio,
-    super.labelPadding,
-    super.contentPadding,
+    super.isVertical,
     super.onChanged,
   });
 
   @override
-  Widget buildContent(BuildContext context, ThemeData theme) {
-    var index = 0;
-    var length = config.value.options.length;
-    return Obx(
-      () => Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var item in config.value.options)
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Radio(
-                  value: item.value,
-                  groupValue: config.value.value,
-                  onChanged: (str) {
-                    config.update((obj) {
-                      return obj!..value = str ?? obj.value;
-                    });
-                    onChanged?.call(str);
-                  },
-                ),
-                Text(item.label.tr),
-                if (++index < length) const Padding(padding: kRightPadding16),
-              ],
-            ),
-        ],
-      ),
+  Widget build(BuildContext context) {
+    return ConfigLayoutWidget(
+      isVertical: isVertical,
+      config: config.value,
+      child: Obx(() {
+        // 索引
+        var index = 0;
+        // 当前选中的值
+        var groupValue = config.value.value;
+        // 数量
+        var length = config.value.options.length;
+        // 控件列表
+        List<Widget> lists = [];
+        for (var item in config.value.options) {
+          lists.add(Radio(value: item.value, groupValue: groupValue, onChanged: change));
+          lists.add(Text(item.label.tr));
+          // 间距
+          if (++index < length) {
+            lists.add(const Padding(padding: kRightPadding16));
+          }
+        }
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: lists,
+        );
+      }),
     );
+  }
+
+  /// 单选框的值变化时调用
+  void change(String? value) {
+    config.update((obj) => obj!..value = value ?? obj.value);
+    onChanged?.call(value);
   }
 }

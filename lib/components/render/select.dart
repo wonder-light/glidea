@@ -1,26 +1,27 @@
 ﻿import 'package:dropdown_button2/dropdown_button2.dart' show DropdownButtonFormField2, MenuItemStyleData, ButtonStyleData;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Obx, Trans;
+import 'package:get/get.dart' show Get, GetNavigationExt, Trans;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/render.dart';
 
 import 'base.dart';
 
+/// 主题设置中的下拉选择按钮控件
 class SelectWidget extends ConfigBaseWidget<SelectConfig> {
   const SelectWidget({
     super.key,
     required super.config,
-    super.isTop,
-    super.ratio,
-    super.labelPadding,
-    super.contentPadding,
+    super.isVertical,
     super.onChanged,
   });
 
   @override
-  Widget buildContent(BuildContext context, ThemeData theme) {
-    return Obx(
-      () => DropdownButtonFormField2(
+  Widget build(BuildContext context) {
+    var theme = Get.theme;
+    return ConfigLayoutWidget(
+      isVertical: isVertical,
+      config: config.value,
+      child: DropdownButtonFormField2(
         value: config.value.value,
         isDense: true,
         isExpanded: true,
@@ -48,13 +49,14 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
               child: Text(option.label.tr),
             ),
         ],
-        onChanged: (str) {
-          config.update((obj) {
-            return obj!..value = str!;
-          });
-          onChanged?.call(str);
-        },
+        onChanged: change,
       ),
     );
+  }
+
+  /// 下拉选择按钮的值变化时调用
+  void change(String? value) {
+    config.update((obj) => obj!..value = value ?? obj.value);
+    onChanged?.call(value);
   }
 }

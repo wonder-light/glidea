@@ -5,30 +5,24 @@ import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegula
 
 import 'base.dart';
 
+/// 主题设置中的开关控件
 class ToggleWidget extends ConfigBaseWidget<ToggleConfig> {
   const ToggleWidget({
     super.key,
     required super.config,
-    super.isTop,
-    super.ratio,
-    super.labelPadding,
-    super.contentPadding,
+    super.isVertical,
     super.onChanged,
   });
 
   @override
-  Widget buildContent(BuildContext context, ThemeData theme) {
-    return Theme(
-      data: theme,
+  Widget build(BuildContext context) {
+    return ConfigLayoutWidget(
+      isVertical: isVertical,
+      config: config.value,
       child: Obx(
         () => Switch(
           value: config.value.value,
-          onChanged: (onOff) {
-            config.update((obj) {
-              return obj!..value = onOff;
-            });
-            onChanged?.call(onOff);
-          },
+          onChanged: change,
           trackOutlineWidth: WidgetStateProperty.all(0),
           thumbIcon: WidgetStateProperty.resolveWith<Icon>((states) {
             if (states.contains(WidgetState.selected)) {
@@ -40,5 +34,11 @@ class ToggleWidget extends ConfigBaseWidget<ToggleConfig> {
         ),
       ),
     );
+  }
+
+  /// 开关值变化时调用
+  void change(bool value) {
+    config.update((obj) => obj!..value = value);
+    onChanged?.call(value);
   }
 }

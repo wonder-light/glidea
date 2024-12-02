@@ -1,41 +1,47 @@
-﻿import 'dart:io' show File;
-
-import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Inst, Obx, RxString, StringExtension;
+﻿import 'package:flutter/material.dart';
+import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxString, StringExtension;
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/controller/theme.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/image.dart';
-import 'package:glidea/helpers/log.dart';
 import 'package:glidea/models/render.dart';
 import 'package:image/image.dart' as img show decodeImageFile;
 import 'package:image_picker/image_picker.dart' show ImagePicker, ImageSource;
 
 import 'base.dart';
 
+/// 主题设置中的图片控件
 class PictureWidget extends ConfigBaseWidget<PictureConfig> {
   const PictureWidget({
     super.key,
     required super.config,
-    super.isTop,
-    super.ratio,
-    super.labelPadding,
-    super.contentPadding,
+    super.isVertical,
     super.onChanged,
   });
 
 
   @override
-  Widget buildContent(BuildContext context, ThemeData theme) {
-    var site = Get.find<SiteController>(tag: SiteController.tag);
-    var ctr = Get.find<ThemeController>(tag: site.themeCurrentTag);
-    final path = FS.joinR(site.state.appDir, ctr.pathDir, config.value.value).obs;
-    Log.i(path);
-    return Obx(
-      () => OutlinedButton(
-        onPressed: () => getImage(site, path),
+  Widget build(BuildContext context) {
+    // 颜色
+    final colorScheme = Get.theme.colorScheme;
+    // 站点控制器
+    final site = Get.find<SiteController>(tag: SiteController.tag);
+    // 主题控件器
+    final ctr = Get.find<ThemeController>(tag: site.themeCurrentTag);
+    // 初始图片路径
+    final initPath = FS.joinR(site.state.appDir, ctr.pathDir, config.value.value);
+    // 当前图片路径
+    final path = initPath.obs;
+    // 绑定事件, 以路径作为 id, 防止重复
+    site.once(themeSaveEvent, (_) => saveImage(initPath, path), id: initPath, cover: true);
+    // 控件
+    return ConfigLayoutWidget(
+      isVertical: isVertical,
+      config: config.value,
+      child: OutlinedButton(
+        onPressed: () => changeImage(path),
         style: ButtonStyle(
           enableFeedback: true,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -46,19 +52,21 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
             ),
           ),
           side: WidgetStateProperty.resolveWith((states) {
-            var color = states.contains(WidgetState.hovered) ? theme.colorScheme.outline : theme.colorScheme.outlineVariant;
+            var color = states.contains(WidgetState.hovered) ? colorScheme.outline : colorScheme.outlineVariant;
             return BorderSide(color: color, width: 0.4);
           }),
         ),
-        child: Container(
+        child: ConstrainedBox(
           constraints: const BoxConstraints(
             minWidth: kImageWidth / 1.5,
             maxWidth: kImageWidth,
             maxHeight: kImageWidth * 2,
           ),
-          child: Image(
-            image: FileImageExpansion(File(path.value)),
-            fit: BoxFit.contain,
+          child: Obx(
+            () => Image(
+              image: FileImageExpansion.file(path.value),
+              fit: BoxFit.contain,
+            ),
           ),
         ),
       ),
