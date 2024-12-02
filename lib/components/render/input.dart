@@ -21,6 +21,12 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
     super.onChanged,
   });
 
+  /// 是否时富文本
+  bool get isTextarea => true;
+
+  /// 文本框是否只读
+  bool get isReadOnly => false;
+
   @override
   Widget build(BuildContext context) {
     var theme = Get.theme;
@@ -30,43 +36,53 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
       config: config.value,
       child: TextFormField(
         controller: controller,
-        minLines: 2,
-        maxLines: 30,
+        readOnly: isReadOnly,
+        minLines: isTextarea ? 2 : null,
+        maxLines: isTextarea ? 30 : 1,
         decoration: InputDecoration(
           isDense: true,
           contentPadding: kVer8Hor12,
           hoverColor: Colors.transparent,
+          prefixIcon: getPrefixIcon(),
           hintText: config.value.hint.tr,
           hintStyle: theme.textTheme.bodySmall!.copyWith(
             color: theme.colorScheme.outline,
           ),
         ),
-        onChanged: (str) {
-          config.update((obj) {
-            return obj!..value = str;
-          });
-          onChanged?.call(str);
-        },
+        onChanged: change,
       ),
     );
   }
+
+  /// 内容值变化时调用
+  void change(String value) {
+    config.update((obj) => obj!..value = value);
+    onChanged?.call(value);
+  }
+
+  /// 获取输入框的前缀按钮
+  Widget? getPrefixIcon() => null;
 }
 
-class InputWidget extends ConfigBaseWidget<InputConfig> {
+/// 主题设置中的文本控件
+class InputWidget extends TextareaWidget<InputConfig> {
   const InputWidget({
     super.key,
     required super.config,
-    super.isTop,
-    super.ratio,
-    super.labelPadding,
-    super.contentPadding,
+    super.isVertical,
     super.onChanged,
   });
 
   @override
-  Widget buildContent(BuildContext context, ThemeData theme) {
-    final controller = TextEditingController(text: config.value.value);
-    Widget? button = switch (config.value.card) {
+  bool get isTextarea => false;
+
+  @override
+  bool get isReadOnly => config.value.card != InputCardType.none;
+
+  @override
+  Widget? getPrefixIcon() {
+    var theme = Get.theme;
+    return switch (config.value.card) {
       InputCardType.post => IconButton(
           color: theme.colorScheme.primary,
           icon: const Icon(PhosphorIconsRegular.article),
@@ -79,29 +95,6 @@ class InputWidget extends ConfigBaseWidget<InputConfig> {
         ),
       _ => null,
     };
-
-    return Obx(
-      () => TextFormField(
-        controller: controller,
-        readOnly: config.value.card != InputCardType.none,
-        decoration: InputDecoration(
-          isDense: true,
-          contentPadding: kVer8Hor12,
-          hoverColor: Colors.transparent,
-          prefixIcon: button,
-          hintText: config.value.hint.tr,
-          hintStyle: theme.textTheme.bodySmall!.copyWith(
-            color: theme.colorScheme.outline,
-          ),
-        ),
-        onChanged: (str) {
-          config.update((obj) {
-            return obj!..value = str;
-          });
-          onChanged?.call(str);
-        },
-      ),
-    );
   }
 
   /// 文章选择弹窗
