@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Bind, BoolExtension, Get, GetBuilder, GetNavigationExt, Inst, Obx, StateExt, Trans;
+import 'package:get/get.dart' show BoolExtension, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/render/array.dart';
 import 'package:glidea/components/render/group.dart';
 import 'package:glidea/controller/site.dart';
@@ -8,7 +8,6 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/render.dart';
-import 'package:glidea/views/loading.dart';
 
 class ThemeWidget extends StatefulWidget {
   const ThemeWidget({super.key});
@@ -35,7 +34,7 @@ class _ThemeWidgetState extends State<ThemeWidget> {
     super.initState();
     themeConfig.value.addAll(site.getThemeWidget());
     themeCustomConfig.value.addAll(site.getThemeCustomWidget());
-
+    // 添加主题控制器
     Get.lazyPut(() => ThemeController(), tag: site.themeTag);
     Get.lazyPut(() => ThemeController(pathDir: site.themeCustomAssetPath), tag: site.themeCustomTag);
     site.themeCurrentTag = site.themeTag;
@@ -43,44 +42,35 @@ class _ThemeWidgetState extends State<ThemeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return site.obx(
-      (data) {
-        Widget childWidget = GroupWidget(
-          isTop: true,
-          isScrollable: true,
-          groups: const {'basicSetting', 'customConfig'},
-          children: [
-            SingleChildScrollView(
-              child: buildThemeConfig(),
+    return Material(
+      color: Get.theme.scaffoldBackgroundColor,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: GroupWidget(
+              isTop: true,
+              groups: const {'basicSetting', 'customConfig'},
+              children: [
+                buildThemeConfig(),
+                buildCustomConfig(),
+              ],
+              onTap: (index) {
+                site.themeCurrentTag = index <= 0 ? site.themeTag : site.themeCustomTag;
+              },
             ),
-            buildCustomConfig(),
-          ],
-          onTap: (index) {
-            site.themeCurrentTag = index <= 0 ? site.themeTag : site.themeCustomTag;
-          },
-        );
-
-        childWidget = Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(child: childWidget),
-            buildBottom(),
-          ],
-        );
-
-        return childWidget;
-      },
-      onLoading: const LoadingWidget(hint: 'inConfig'),
+          ),
+          buildBottom(),
+        ],
+      ),
     );
   }
 
   /// 构建主题配置页面的内容
   Widget buildThemeConfig() {
-    return Obx(() {
-      return _buildContent(themeConfig.value, isTop: false);
-    });
+    return Obx(() => _buildContent(themeConfig.value, isTop: false));
   }
 
   /// 构建自定义主题配置页面的内容
@@ -89,27 +79,22 @@ class _ThemeWidgetState extends State<ThemeWidget> {
       if (themeCustomConfig.value.isEmpty) {
         return Container(
           alignment: Alignment.center,
-          padding: kTopPadding16,
+          padding: kAllPadding16,
           child: Text('noCustomConfigTip'.tr),
         );
       }
 
       Map<String, List<ConfigBase>> groups = {};
-      for (var t in themeCustomConfig.value.reversed) {
+      for (var t in themeCustomConfig.value) {
         (groups[t.group] ??= []).add(t);
       }
 
       if (groups.keys.length == 1 && groups.keys.first.isEmpty) {
-        return SingleChildScrollView(
-          child: _buildContent(groups.values.first),
-        );
+        return _buildContent(groups.values.first, isTop: false);
       }
 
       return GroupWidget(
         groups: groups.keys.toSet(),
-        isScroll: true,
-        isScrollable: true,
-        initialIndex: groups.keys.length - 1,
         children: [
           for (var items in groups.values) _buildContent(items),
         ],
