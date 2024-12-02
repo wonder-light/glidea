@@ -118,17 +118,15 @@ class _ThemeWidgetState extends State<ThemeWidget> {
   }
 
   Widget _buildContent(List<ConfigBase> items, {bool isTop = true}) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Padding(padding: kVerPadding4),
-        for (var item in items)
-          Padding(
-            padding: kHorPadding12 * 2 + (isTop ? EdgeInsets.zero : kVerPadding8),
-            child: ArrayWidget.create(config: item, isTop: isTop),
-          ),
-      ],
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: items.length,
+      itemBuilder: (ctx, index) {
+        return Padding(
+          padding: kVer12Hor24,
+          child: ArrayWidget.create(config: items[index], isVertical: isTop),
+        );
+      },
     );
   }
 
