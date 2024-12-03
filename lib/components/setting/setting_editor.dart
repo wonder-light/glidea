@@ -35,23 +35,20 @@ class SettingEditorState extends DrawerEditorState<Object> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
-  final languageOptions = [
-    SelectOption().setValues(label: '简体中文', value: 'zh_CN'),
-    SelectOption().setValues(label: 'English', value: 'en_US'),
-    SelectOption().setValues(label: '繁體中文', value: 'zh_TW'),
-    SelectOption().setValues(label: 'Français', value: 'fr_FR'),
-    SelectOption().setValues(label: 'русск', value: 'ru_RU'),
-    SelectOption().setValues(label: '日本語', value: 'ja_JP'),
-  ];
-
   @override
   void initState() {
     super.initState();
     canSave.value = true;
     language.value
       ..label = 'language'
-      ..value = 'zh_CN'
-      ..options = languageOptions;
+      ..value = site.state.language
+      ..options = [
+        for (var item in site.languages.entries)
+          SelectOption().setValues(
+            label: item.value,
+            value: item.key,
+          ),
+      ];
 
     siteDir.value
       ..value = site.state.appDir
@@ -71,7 +68,7 @@ class SettingEditorState extends DrawerEditorState<Object> {
     return [
       SelectWidget(config: language),
       Padding(padding: pad),
-      FileSelectWidget(config: siteDir),
+      FileSelectWidget(config: siteDir, isReadOnly: false),
       Padding(padding: pad),
       Padding(
         padding: kVerPadding8,
@@ -101,13 +98,22 @@ class SettingEditorState extends DrawerEditorState<Object> {
   void onSave() async {
     if (!canSave.value) return;
     try {
+      // 设置目录
+      site.state.appDir = siteDir.value.value;
+      // 设置语言代码
+      site.setLanguage(language.value.value);
+      // 保存数据
       await site.saveSiteData();
+      // 刷新当前页面
+      setState(() {});
+      // 进行通知
       Get.success('saveSuccess');
     } catch (e) {
-      Get.error('saveError');
+      Get.error('saveError\n$e');
     }
   }
 
+  /// 打开 URL
   void openUrl() async {
     final success = await launchUrlString('https://github.com/wonder-light/glidea');
     if (!success) {
