@@ -47,6 +47,12 @@ class ApplicationDb extends ApplicationBase {
   ///其它主题配置
   @JsonProperty()
   Map<String, dynamic> config = {};
+
+  ///语言代码, 例如
+  ///
+  /// ch_ZN, ch_TW
+  @JsonProperty()
+  String language = '';
 }
 
 /// APP 应用设置
