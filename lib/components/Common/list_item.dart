@@ -144,34 +144,32 @@ class ListItem extends StatelessWidget {
     // 子控件内容
     Widget childWidget = Container(
       padding: contentPadding ?? EdgeInsets.symmetric(vertical: dense ? 10 : 16, horizontal: dense ? 10 : 12),
-      constraints: constraints ?? BoxConstraints(minHeight: dense ? 50 : 80, maxHeight: dense ? 120 : 150),
-      child: IntrinsicHeight(
-        child: Row(
-          children: [
-            if (leading != null) buildLeadingAndTrailing(leading!, isLeading: true),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (title != null)
-                    AnimatedDefaultTextStyle(
-                      style: titleStyle,
-                      duration: kThemeChangeDuration,
-                      child: title!,
-                    ),
-                  if (subtitle != null)
-                    AnimatedDefaultTextStyle(
-                      style: subtitleStyle,
-                      duration: kThemeChangeDuration,
-                      child: subtitle!,
-                    ),
-                ],
-              ),
+      constraints: constraints ?? BoxConstraints(minHeight: dense ? 40 : 80, maxHeight: dense ? 70 : 150),
+      child: Row(
+        children: [
+          if (leading != null) buildLeadingAndTrailing(leading!, isLeading: true),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (title != null)
+                  AnimatedDefaultTextStyle(
+                    style: titleStyle,
+                    duration: kThemeChangeDuration,
+                    child: title!,
+                  ),
+                if (subtitle != null)
+                  AnimatedDefaultTextStyle(
+                    style: subtitleStyle,
+                    duration: kThemeChangeDuration,
+                    child: subtitle!,
+                  ),
+              ],
             ),
-            if (trailing != null) buildLeadingAndTrailing(trailing!, isLeading: false),
-          ],
-        ),
+          ),
+          if (trailing != null) buildLeadingAndTrailing(trailing!, isLeading: false),
+        ],
       ),
     );
     // 子控件装饰

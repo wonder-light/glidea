@@ -122,6 +122,7 @@ class MenuEditorState extends DrawerEditorState<Menu> {
           },
           title: Text(option.name),
           subtitle: Text(option.link),
+          constraints: BoxConstraints(minHeight: 40),
           dense: true,
         );
       },

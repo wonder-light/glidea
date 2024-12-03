@@ -22,8 +22,8 @@ mixin DataProcess on StateController<Application> {
     'zh_TW': '繁體中文',
     'en_US': 'English',
     'fr_FR': 'Français',
-    'ja_JP': 'русск',
-    'ru_RU': '日本語',
+    'ja_JP': '日本語',
+    'ru_RU': 'русск',
   };
 
   /// 初始化数据
