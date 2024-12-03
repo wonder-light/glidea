@@ -15,11 +15,17 @@ class TranslationsService extends Translations {
 
   @override
   Map<String, Map<String, String>> get keys => {
+        // 简体中文
         'zh_CN': zhCN,
+        // 繁体中文
         'zh_TW': zhTW,
+        // 英文
         'en_US': en,
+        // 法语
         'fr_FR': fr,
+        // 日语
         'ja_JP': jp,
+        // 俄语
         'ru_RU': ru,
       };
 }
