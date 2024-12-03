@@ -12,14 +12,26 @@ class FS {
   /// 同步查询该路径下的目录是否存在
   static bool dirExistsSync(String path) => Directory(path).existsSync();
 
+  /// 同步重命名此目录 - 异步
+  static Future<Directory> renameDir(String path, String newPath) => Directory(path).rename(newPath);
+
   /// 同步重命名此目录
   static void renameDirSync(String path, String newPath) => Directory(path).renameSync(newPath);
+
+  /// 如果目录不存在，则同步创建该目录 - 异步
+  static Future<Directory> createDir(String path) => Directory(path).create(recursive: true);
 
   /// 如果目录不存在，则同步创建该目录
   static void createDirSync(String path) => Directory(path).createSync(recursive: true);
 
+  /// 使用给定的Encoding以字符串的形式同步读取整个文件内容 - 异步
+  static Future<String> readString(String path) => File(path).readAsString();
+
   /// 使用给定的Encoding以字符串的形式同步读取整个文件内容
   static String readStringSync(String path) => File(path).readAsStringSync();
+
+  /// 同步地将字符串写入文件 - 异步
+  static Future<File> writeString(String path, String content) => File(path).writeAsString(content);
 
   /// 同步地将字符串写入文件
   static void writeStringSync(String path, String content) => File(path).writeAsStringSync(content);
@@ -38,7 +50,13 @@ class FS {
   }
 
   /// 同步复制此文件
+  static Future<File> copyFile(String src, String target) => File(src).copy(target);
+
+  /// 同步复制此文件
   static void copyFileSync(String src, String target) => File(src).copySync(target);
+
+  /// 删除目录
+  static void deleteDir(String src, {bool recursive = true}) => Directory(src).deleteSync(recursive: recursive);
 
   /// 获取指定文件夹中子目录的属性
   static List<Directory> subDirInfo(String path) => Directory(path).listSync().whereType<Directory>().toList();
