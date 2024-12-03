@@ -106,9 +106,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                   children: [
                     _buildLeftPanel(),
                     const VerticalDivider(thickness: 1, width: 1),
-                    Expanded(
-                      child: _buildBody(),
-                    ),
+                    Expanded(child: _buildBody()),
                   ],
                 )
               : _buildBody(),
@@ -128,19 +126,20 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   /// 构建左边面板
   Widget _buildLeftPanel() {
-    return Container(
-      constraints: const BoxConstraints(
-        minWidth: kPanelWidth,
-        maxWidth: kPanelWidth,
-      ),
-      child: Flex(
-        direction: Axis.vertical,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildPanelUp(),
-          _buildPanelBottom(),
-        ],
+    return IntrinsicWidth(
+      stepWidth: 40,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minWidth: kPanelWidth,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildPanelUp(),
+            _buildPanelBottom(),
+          ],
+        ),
       ),
     );
   }
@@ -177,6 +176,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                 leading: Icon(item.icon),
                 title: Text(item.name.tr),
                 trailing: Text(site.getHomeLeftPanelNum(item.name)),
+                constraints: const BoxConstraints(maxHeight: 50),
                 selected: desktopRouter.value == item.route,
                 selectedColor: colorScheme.surfaceContainerLow,
                 selectedTileColor: colorScheme.primary,
@@ -191,6 +191,9 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   /// 构建面板的下部分
   Widget _buildPanelBottom() {
+    ButtonStyle style = ButtonStyle(
+      padding: WidgetStatePropertyAll(kAllPadding16 / 2),
+    );
     Widget getButton(int i) {
       var item = actions[i];
       Widget childWidget = Row(
@@ -203,7 +206,17 @@ class _HomeWidgetState extends State<HomeWidget> {
           Text(item.name.tr),
         ],
       );
-      childWidget = i < 1 ? OutlinedButton(onPressed: item.call, child: childWidget) : FilledButton(onPressed: item.call, child: childWidget);
+      childWidget = i < 1
+          ? OutlinedButton(
+              onPressed: item.call,
+              style: style,
+              child: childWidget,
+            )
+          : FilledButton(
+              onPressed: item.call,
+              style: style,
+              child: childWidget,
+            );
       childWidget = Container(
         margin: kVerPadding8,
         child: childWidget,
@@ -214,7 +227,6 @@ class _HomeWidgetState extends State<HomeWidget> {
     return Container(
       padding: const EdgeInsets.only(left: 32, right: 32, top: 24, bottom: 8),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // 两个操作按钮
           getButton(0),
@@ -302,13 +314,6 @@ class _HomeWidgetState extends State<HomeWidget> {
   void openSetting() {
     /// 抽屉控制器
     final drawerController = DraController();
-    /*Get.dialog(
-      SettingEditor(
-        entity: 12,
-        controller: drawerController,
-      ),
-    );
-    return;*/
     // 显示抽屉
     Get.showDrawer(
       stepWidth: double.infinity,
