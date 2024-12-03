@@ -14,6 +14,7 @@ abstract class DrawerEditor<T> extends StatefulWidget {
     this.onSave,
     this.header = '',
     this.showAction = true,
+    this.hideCancel = false,
   });
 
   /// 实体
@@ -31,7 +32,11 @@ abstract class DrawerEditor<T> extends StatefulWidget {
   /// 菜单头部
   final String header;
 
+  /// 显示操作按钮
   final bool showAction;
+
+  /// 隐藏取消按钮
+  final bool hideCancel;
 
   @override
   DrawerEditorState<T> createState();
@@ -62,14 +67,16 @@ abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
       ),
     );
     // 上下两部分
-    widgets = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        widgets,
-        if (widget.showAction) buildActions(context),
-      ],
-    );
+    if (widget.showAction) {
+      widgets = Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          widgets,
+          buildActions(context),
+        ],
+      );
+    }
     // 返回控件
     return widgets;
   }
@@ -118,11 +125,12 @@ abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          OutlinedButton(
-            onPressed: onClose,
-            child: Text('cancel'.tr),
-          ),
-          Container(padding: kRightPadding8),
+          if (!widget.hideCancel)
+            OutlinedButton(
+              onPressed: onClose,
+              child: Text('cancel'.tr),
+            ),
+          if (!widget.hideCancel) Container(padding: kRightPadding8),
           Obx(
             () => FilledButton(
               onPressed: canSave.value ? onSave : null,
