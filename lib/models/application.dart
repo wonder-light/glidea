@@ -69,6 +69,10 @@ mixin class ApplicationSetting {
   ///构建输出目录
   @JsonProperty()
   String buildDir = '';
+
+  /// 预览端口
+  @JsonProperty()
+  int previewPort = 4000;
 }
 
 /// APP 信息, 包含版本等
