@@ -8,6 +8,7 @@ import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/color.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/models/render.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -33,37 +34,34 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
     var theme = Get.theme;
     final controller = TextEditingController();
     return ConfigLayoutWidget(
-      isVertical: isVertical,
-      config: config.value,
-      child: Obx(() {
-        controller.text = config.value.value;
-        return TextFormField(
-          controller: controller,
-          readOnly: isReadOnly,
-          minLines: isTextarea ? 2 : null,
-          maxLines: isTextarea ? 30 : 1,
-          decoration: InputDecoration(
-            isDense: true,
-            contentPadding: kVer8Hor12,
-            hoverColor: Colors.transparent,
-            prefixIcon: getPrefixIcon(),
-            suffixIcon: getSuffixIcon(),
-            hintText: config.value.hint.tr,
-            hintStyle: theme.textTheme.bodySmall!.copyWith(
-              color: theme.colorScheme.outline,
+        isVertical: isVertical,
+        config: config.value,
+        child: Obx(() {
+          controller.text = config.value.value;
+          return TextFormField(
+            controller: controller,
+            readOnly: isReadOnly,
+            minLines: isTextarea ? 2 : null,
+            maxLines: isTextarea ? 30 : 1,
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: kVer8Hor12,
+              hoverColor: Colors.transparent,
+              prefixIcon: getPrefixIcon(),
+              suffixIcon: getSuffixIcon(),
+              hintText: config.value.hint.tr,
+              hintStyle: theme.textTheme.bodySmall!.copyWith(
+                color: theme.colorScheme.outline,
+              ),
             ),
-          ),
-          onChanged: change,
-        );
-      })
-    );
+            onChanged: change,
+          );
+        }));
   }
 
   /// 内容值变化时调用
   void change(String value) {
-    config.update((obj) =>
-    obj!
-      ..value = value);
+    config.update((obj) => obj!..value = value);
     onChanged?.call(value);
   }
 
@@ -93,18 +91,16 @@ class InputWidget extends TextareaWidget<InputConfig> {
   Widget? getPrefixIcon() {
     var theme = Get.theme;
     return switch (config.value.card) {
-      InputCardType.post =>
-          IconButton(
-            color: theme.colorScheme.primary,
-            icon: const Icon(PhosphorIconsRegular.article),
-            onPressed: postDialog,
-          ),
-      InputCardType.card =>
-          IconButton(
-            color: config.value.value.toColorFromCss,
-            icon: const Icon(PhosphorIconsRegular.palette),
-            onPressed: colorDialog,
-          ),
+      InputCardType.post => IconButton(
+          color: theme.colorScheme.primary,
+          icon: const Icon(PhosphorIconsRegular.article),
+          onPressed: postDialog,
+        ),
+      InputCardType.card => IconButton(
+          color: config.value.value.toColorFromCss,
+          icon: const Icon(PhosphorIconsRegular.palette),
+          onPressed: colorDialog,
+        ),
       _ => null,
     };
   }
@@ -123,7 +119,7 @@ class InputWidget extends TextareaWidget<InputConfig> {
           ListItem(
             leading: const Icon(PhosphorIconsRegular.link),
             onTap: () {
-              config.update((obj){
+              config.update((obj) {
                 return obj!..value = option.link;
               });
               Get.backLegacy();
@@ -176,7 +172,7 @@ class InputWidget extends TextareaWidget<InputConfig> {
       enableOpacity: true,
       onColorChanged: (Color color) {},
       onColorChangeEnd: (Color color) {
-        config.update((obj){
+        config.update((obj) {
           return obj!..value = color.toCssHex;
         });
       },
@@ -208,13 +204,15 @@ class FileSelectWidget extends TextareaWidget<InputConfig> {
     required super.config,
     super.isVertical,
     super.onChanged,
-  });
+    bool isReadOnly = true,
+  }) : _isReadOnly = isReadOnly;
 
   @override
   bool get isTextarea => false;
 
   @override
-  bool get isReadOnly => true;
+  bool get isReadOnly => _isReadOnly;
+  final bool _isReadOnly;
 
   @override
   Widget? getSuffixIcon() {
@@ -229,8 +227,8 @@ class FileSelectWidget extends TextareaWidget<InputConfig> {
   void selectFile() async {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
     if (selectedDirectory == null) return;
-    config.update((obj){
-      return obj!..value = selectedDirectory;
+    config.update((obj) {
+      return obj!..value = FS.normalize(selectedDirectory);
     });
   }
 }
