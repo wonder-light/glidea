@@ -60,7 +60,8 @@ dependencies:
   uuid: ^4.5.1
   dropdown_button2: ^2.3.9
   flex_color_picker: ^3.6.0
-  image_picker: ^1.1.2
+  file_picker: ^8.1.4
+  package_info_plus: ^8.1.1
 
 dev_dependencies:
   flutter_test:

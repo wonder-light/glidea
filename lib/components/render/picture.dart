@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:file_picker/file_picker.dart' show FilePicker, FilePickerResult, FileType;
+import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxString, StringExtension;
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/controller/theme.dart';
@@ -8,7 +9,6 @@ import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/image.dart';
 import 'package:glidea/models/render.dart';
 import 'package:image/image.dart' as img show decodeImageFile;
-import 'package:image_picker/image_picker.dart' show ImagePicker, ImageSource;
 
 import 'base.dart';
 
@@ -74,15 +74,21 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
 
   /// 改变图片
   void changeImage(RxString path) async {
+    /*
     //实例化选择图片
     final picker = ImagePicker();
     //选择相册
     final pickerImages = await picker.pickImage(source: ImageSource.gallery);
     if (pickerImages == null || pickerImages.path.isEmpty) return;
-    // 保存的目标路径
-    var target = path.value;
+    */
+    //实例化选择图片
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'gif', 'tif', 'tiff', 'apng'],
+    );
+    if (result == null || result.paths.firstOrNull == null || result.paths.first!.isEmpty) return;
     // 选择的图片路径
-    path.value = FS.normalize(pickerImages.path);
+    path.value = FS.normalize(result.paths.first!);
   }
 
   /// 保存图片
