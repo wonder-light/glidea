@@ -36,6 +36,16 @@ mixin ThemeSite on StateController<Application>, DataProcess {
   /// 自定义主题的资源路径
   String get themeCustomAssetPath => FS.joinR(themeCustomPath, 'assets');
 
+  /// 当前选择的主题有效
+  bool get selectThemeValid {
+    var selectTheme = state.themeConfig.selectTheme;
+    if (selectTheme.isEmpty) return false;
+    // 查看是否有路径
+    var path = FS.joinR(state.appDir, 'themes', selectTheme);
+    if (!FS.dirExistsSync(path)) return false;
+    return true;
+  }
+
   /// 主题配置中变量名称与字段类型的映射
   final Map<String, FieldType> fieldMaps = {
     'selectTheme': FieldType.select,
