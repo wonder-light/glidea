@@ -92,7 +92,7 @@ mixin DataProcess on StateController<Application> {
           FS.renameDirSync(defaultSiteDir, site.appDir);
         } else {
           FS.copySync(defaultSiteDir, site.appDir);
-          FS.deleteDir(defaultSiteDir);
+          FS.deleteDirSync(defaultSiteDir);
         }
 
         FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');

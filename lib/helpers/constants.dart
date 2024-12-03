@@ -23,6 +23,9 @@ const double kLogSize = 64;
 /// 分隔列表的高度
 const double listSeparated = 10;
 
+/// 10Mb 文件大小
+const int fileSize10M = 10 * 1024 * 1024;
+
 const EdgeInsets kAllPadding16 = EdgeInsets.all(16);
 const EdgeInsets kHorPadding8 = EdgeInsets.symmetric(horizontal: 8);
 const EdgeInsets kHorPadding12 = EdgeInsets.symmetric(horizontal: 12);

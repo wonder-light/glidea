@@ -1,5 +1,6 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/crypto.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/main.reflectable.dart' show initializeReflectable;
 import 'package:glidea/models/menu.dart';
@@ -31,6 +32,9 @@ extension JsonObjectExtend on Object {
 extension JsonStringExtend on String {
   /// 将 json 字符串转换为类型为 T 的 Dart 对象
   T? fromJson<T>([DeserializationOptions? options]) => JsonMapper.fromJson<T>(this, options);
+
+  /// 获取加密哈希值
+  Future<String> getHash() => Crypto.cryptoStr(this);
 }
 
 extension MapExtend on Map<String, dynamic> {

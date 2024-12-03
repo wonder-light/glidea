@@ -102,6 +102,7 @@
   'themeConfigSaved': 'The theme configuration has been saved',
   'reset': 'Reset',
   'reseted': 'Reset',
+  'noValidCurrentTheme': 'The currently selected theme is not valid',
   'noCustomConfigTip': 'There is no custom configuration for the theme',
   'customConfig': 'Custom configuration',
   'moreThemes': 'More Themes',
