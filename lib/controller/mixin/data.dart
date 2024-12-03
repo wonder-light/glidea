@@ -154,7 +154,7 @@ mixin DataProcess on StateController<Application> {
     // 自定义主题配置
     if (site.themeCustomConfig.isNotEmpty) {
       final customThemePath = FS.join(configPath, 'theme.${site.themeConfig.selectTheme}.config.json');
-      FS.writeStringSync(customThemePath, site.themeCustomConfig.toJson());
+      FS.writeStringSync(customThemePath, Map.from(site.themeCustomConfig).toJson());
     }
     // 更新应用配置
     FS.writeStringSync(FS.join(configPath, 'config.json'), (site as ApplicationBase).toJson());

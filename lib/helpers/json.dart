@@ -24,7 +24,7 @@ extension JsonObjectExtend on Object {
   T? copyWithObj<T, S>(S other) => JsonMapper.copyWith<T>(this as T, JsonMapper.toMap(other)!);
 
   /// 将 JSON [String] 或 [Object] 或 [Map<String, dynamic>] 类型转换为 T 类型的 Dart 对象实例
-  T? deserialize<T>([DeserializationOptions? options]) => JsonMapper.deserialize(this, options);
+  T? deserialize<T>([DeserializationOptions? options]) => JsonMapper.deserialize<T>(this, options);
 }
 
 /// json 字符串扩展

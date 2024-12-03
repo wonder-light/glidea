@@ -124,7 +124,7 @@ mixin ThemeSite on StateController<Application>, DataProcess {
       items[config.name] = config.value;
     }
     // Map 在合并后需要使用新的 Map 对象, 旧的 Map 对象在序列化时会报错
-    state.themeCustomConfig = Map.from(state.themeCustomConfig.mergeMaps(items));
+    state.themeCustomConfig = state.themeCustomConfig.mergeMaps(items);
     // 保存数据
     await saveSiteData();
     // 刷新
