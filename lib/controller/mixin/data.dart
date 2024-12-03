@@ -7,6 +7,7 @@ import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
+import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
 import 'package:path_provider/path_provider.dart' show getApplicationDocumentsDirectory, getApplicationSupportDirectory;
 
 /// 混合 - 数据处理
@@ -54,12 +55,12 @@ mixin DataProcess on StateController<Application> {
       // 创建 config.json 文件
       if (!FS.pathExistsSync(appConfigPath)) {
         FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
-      }else{
+      } else {
         var dir = defaultSiteDir;
         final appConfig = FS.readStringSync(appConfigPath).deserialize<TJsonMap>()!;
         defaultSiteDir = FS.normalize(appConfig['sourceFolder']);
         // 如果时默认目录则进行覆盖
-        if(site.appDir == dir){
+        if (site.appDir == dir) {
           site.appDir = defaultSiteDir;
         }
       }
@@ -131,6 +132,12 @@ mixin DataProcess on StateController<Application> {
       final customConfig = FS.readStringSync(themePath).deserialize<TJsonMap>()!;
       site.themeCustomConfig = site.themeCustomConfig.mergeMaps(customConfig);
     }
+    // APP 信息
+    var packageInfo = await PackageInfo.fromPlatform();
+    site.appName = packageInfo.appName;
+    site.packageName = packageInfo.packageName;
+    site.version = packageInfo.version;
+    site.buildNumber = packageInfo.buildNumber;
     // 返回数据
     return site;
   }

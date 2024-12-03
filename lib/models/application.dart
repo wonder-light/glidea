@@ -65,6 +65,21 @@ mixin class ApplicationSetting {
   String buildDir = '';
 }
 
+/// APP 信息, 包含版本等
+mixin class ApplicationInfo {
+  /// app 名称
+  String appName = '';
+
+  /// package 名称
+  String packageName = '';
+
+  /// 软件包版本。从 [pubspec.yaml] 中的版本生成
+  String version = '';
+
+  /// 构建号。从 [pubspec.yaml] 中的版本生成
+  String buildNumber = '';
+}
+
 /// APP 应用
 @jsonSerializable
-class Application extends ApplicationDb with ApplicationSetting {}
+class Application extends ApplicationDb with ApplicationSetting, ApplicationInfo {}
