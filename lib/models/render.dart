@@ -187,4 +187,18 @@ class SelectOption {
   /// 选项对应值
   @JsonProperty()
   String value = '';
+
+  /// 设置值
+  SelectOption setValues({String label = '', String value = ''}) {
+    this.label = label;
+    this.value = value;
+    return this;
+  }
+
+  /// 复制值
+  SelectOption copyValues({String label = '', String value = ''}) {
+    return SelectOption()
+      ..label = label
+      ..value = value;
+  }
 }

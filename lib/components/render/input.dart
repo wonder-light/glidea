@@ -1,4 +1,5 @@
-﻿import 'package:flex_color_picker/flex_color_picker.dart' show ColorPicker, ColorPickerType;
+﻿import 'package:file_picker/file_picker.dart';
+import 'package:flex_color_picker/flex_color_picker.dart' show ColorPicker, ColorPickerType;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/Common/dialog.dart';
@@ -30,38 +31,47 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
   @override
   Widget build(BuildContext context) {
     var theme = Get.theme;
-    final controller = TextEditingController(text: config.value.value);
+    final controller = TextEditingController();
     return ConfigLayoutWidget(
       isVertical: isVertical,
       config: config.value,
-      child: TextFormField(
-        controller: controller,
-        readOnly: isReadOnly,
-        minLines: isTextarea ? 2 : null,
-        maxLines: isTextarea ? 30 : 1,
-        decoration: InputDecoration(
-          isDense: true,
-          contentPadding: kVer8Hor12,
-          hoverColor: Colors.transparent,
-          prefixIcon: getPrefixIcon(),
-          hintText: config.value.hint.tr,
-          hintStyle: theme.textTheme.bodySmall!.copyWith(
-            color: theme.colorScheme.outline,
+      child: Obx(() {
+        controller.text = config.value.value;
+        return TextFormField(
+          controller: controller,
+          readOnly: isReadOnly,
+          minLines: isTextarea ? 2 : null,
+          maxLines: isTextarea ? 30 : 1,
+          decoration: InputDecoration(
+            isDense: true,
+            contentPadding: kVer8Hor12,
+            hoverColor: Colors.transparent,
+            prefixIcon: getPrefixIcon(),
+            suffixIcon: getSuffixIcon(),
+            hintText: config.value.hint.tr,
+            hintStyle: theme.textTheme.bodySmall!.copyWith(
+              color: theme.colorScheme.outline,
+            ),
           ),
-        ),
-        onChanged: change,
-      ),
+          onChanged: change,
+        );
+      })
     );
   }
 
   /// 内容值变化时调用
   void change(String value) {
-    config.update((obj) => obj!..value = value);
+    config.update((obj) =>
+    obj!
+      ..value = value);
     onChanged?.call(value);
   }
 
   /// 获取输入框的前缀按钮
   Widget? getPrefixIcon() => null;
+
+  /// 获取输入框的后缀按钮
+  Widget? getSuffixIcon() => null;
 }
 
 /// 主题设置中的文本控件
@@ -83,16 +93,18 @@ class InputWidget extends TextareaWidget<InputConfig> {
   Widget? getPrefixIcon() {
     var theme = Get.theme;
     return switch (config.value.card) {
-      InputCardType.post => IconButton(
-          color: theme.colorScheme.primary,
-          icon: const Icon(PhosphorIconsRegular.article),
-          onPressed: postDialog,
-        ),
-      InputCardType.card => IconButton(
-          color: config.value.value.toColorFromCss,
-          icon: const Icon(PhosphorIconsRegular.palette),
-          onPressed: colorDialog,
-        ),
+      InputCardType.post =>
+          IconButton(
+            color: theme.colorScheme.primary,
+            icon: const Icon(PhosphorIconsRegular.article),
+            onPressed: postDialog,
+          ),
+      InputCardType.card =>
+          IconButton(
+            color: config.value.value.toColorFromCss,
+            icon: const Icon(PhosphorIconsRegular.palette),
+            onPressed: colorDialog,
+          ),
       _ => null,
     };
   }
@@ -111,7 +123,9 @@ class InputWidget extends TextareaWidget<InputConfig> {
           ListItem(
             leading: const Icon(PhosphorIconsRegular.link),
             onTap: () {
-              config.value.value = option.link;
+              config.update((obj){
+                return obj!..value = option.link;
+              });
               Get.backLegacy();
             },
             title: Text(option.name),
@@ -162,7 +176,9 @@ class InputWidget extends TextareaWidget<InputConfig> {
       enableOpacity: true,
       onColorChanged: (Color color) {},
       onColorChangeEnd: (Color color) {
-        config.value.value = color.toCssHex;
+        config.update((obj){
+          return obj!..value = color.toCssHex;
+        });
       },
     );
     // 弹窗控件
@@ -182,5 +198,39 @@ class InputWidget extends TextareaWidget<InputConfig> {
     );
     // 弹窗
     Get.dialog(childWidget);
+  }
+}
+
+/// 文件选择器控件
+class FileSelectWidget extends TextareaWidget<InputConfig> {
+  const FileSelectWidget({
+    super.key,
+    required super.config,
+    super.isVertical,
+    super.onChanged,
+  });
+
+  @override
+  bool get isTextarea => false;
+
+  @override
+  bool get isReadOnly => true;
+
+  @override
+  Widget? getSuffixIcon() {
+    return IconButton(
+      color: config.value.value.toColorFromCss,
+      icon: const Icon(PhosphorIconsRegular.folderOpen),
+      onPressed: selectFile,
+    );
+  }
+
+  /// 选择文件
+  void selectFile() async {
+    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+    if (selectedDirectory == null) return;
+    config.update((obj){
+      return obj!..value = selectedDirectory;
+    });
   }
 }

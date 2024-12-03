@@ -1,9 +1,12 @@
 ﻿import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StateExt, StringExtension, Trans;
+import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StateExt, StringExtension, Trans;
+import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/list_item.dart';
+import 'package:glidea/components/setting/setting_editor.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
@@ -297,7 +300,27 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   /// 打开设置
   void openSetting() {
-    // TODO: 打开设置, 使用抽屉或者其他方式
+    /// 抽屉控制器
+    final drawerController = DraController();
+    /*Get.dialog(
+      SettingEditor(
+        entity: 12,
+        controller: drawerController,
+      ),
+    );
+    return;*/
+    // 显示抽屉
+    Get.showDrawer(
+      stepWidth: double.infinity,
+      stepHeight: double.infinity,
+      direction: DrawerDirection.bottomToTop,
+      controller: drawerController,
+      context: context,
+      builder: (ctx) => SettingEditor(
+        entity: 12,
+        controller: drawerController,
+      ),
+    );
   }
 
   /// 打开发布在网站

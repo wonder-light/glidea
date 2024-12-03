@@ -1,4 +1,4 @@
-﻿import 'package:dropdown_button2/dropdown_button2.dart' show DropdownButtonFormField2, MenuItemStyleData, ButtonStyleData;
+﻿import 'package:dropdown_button2/dropdown_button2.dart' show ButtonStyleData, DropdownButtonFormField2, DropdownStyleData, MenuItemStyleData;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Trans;
 import 'package:glidea/helpers/constants.dart';
@@ -41,6 +41,10 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
         buttonStyleData: const ButtonStyleData(
           width: 0,
           padding: EdgeInsets.zero,
+        ),
+        dropdownStyleData: DropdownStyleData(
+          isOverButton: false,
+          useRootNavigator: true,
         ),
         items: [
           for (var option in config.value.options)
