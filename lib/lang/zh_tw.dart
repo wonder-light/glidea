@@ -101,6 +101,7 @@
   'themeConfigSaved': '主題配置已保存',
   'reset': '重置',
   'reseted': '已重置',
+  'noValidCurrentTheme': '當前選擇的主題暫無效',
   'noCustomConfigTip': '當前主題暫無自定義配置',
   'customConfig': '自定義配置',
   'moreThemes': '更多主題',

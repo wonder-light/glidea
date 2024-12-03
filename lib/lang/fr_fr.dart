@@ -103,6 +103,7 @@
   'themeConfigSaved': 'La configuration du thème a été sauvegardée',
   'reset': 'Réinitialiser',
   'reseted': 'Réinitialiser',
+  'noValidCurrentTheme': 'Le thème actuellement sélectionné n’est pas valide',
   'noCustomConfigTip': 'Il n\'y a pas de configuration personnalisée pour le thème',
   'customConfig': 'Configuration personnalisée',
   'moreThemes': 'Autres thèmes',

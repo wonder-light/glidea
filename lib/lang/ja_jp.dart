@@ -101,6 +101,7 @@
   'themeConfigSaved': 'テームの設定を保存しました',
   'reset': 'リセット',
   'reseted': 'リセット完成しました',
+  'noValidCurrentTheme': '現在選択しているテーマは無効です',
   'noCustomConfigTip': '現在のテーマはカスタム設定はありません',
   'customConfig': 'カスタム設定',
   'moreThemes': 'テーマストアー',

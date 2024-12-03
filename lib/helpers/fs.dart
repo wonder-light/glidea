@@ -1,5 +1,6 @@
 ﻿import 'dart:io' show File, Directory;
 
+import 'package:glidea/helpers/crypto.dart';
 import 'package:path/path.dart' as p;
 
 class FS {
@@ -49,6 +50,11 @@ class FS {
     }
   }
 
+  /// 所有目录下的所有文件
+  static Stream<File> getFiles(String src) async* {
+    yield* Directory(src).list(recursive: true).where((item) => item is File).cast<File>();
+  }
+
   /// 同步复制此文件
   static Future<File> copyFile(String src, String target) => File(src).copy(target);
 
@@ -56,7 +62,7 @@ class FS {
   static void copyFileSync(String src, String target) => File(src).copySync(target);
 
   /// 删除目录
-  static void deleteDir(String src, {bool recursive = true}) => Directory(src).deleteSync(recursive: recursive);
+  static void deleteDirSync(String src, {bool recursive = true}) => Directory(src).deleteSync(recursive: recursive);
 
   /// 获取指定文件夹中子目录的属性
   static List<Directory> subDirInfo(String path) => Directory(path).listSync().whereType<Directory>().toList();
@@ -90,4 +96,71 @@ class FS {
 
   /// 路径序列化
   static String normalize(String path) => p.normalize(path).replaceAll('\\', '/');
+
+  /// 获取 [path] 相对于 [from] 的相对路径
+  ///
+  ///     relative('/root/path/a/b.dart', from: '/root/path'); // -> 'a/b.dart'
+  //      relative('/root/other.dart', from: '/root/path');    // -> '../other.dart'
+  static String relative(String path, String from) => normalize(p.relative(path, from: from));
+}
+
+extension FileExt on File {
+  Future<String> getHash() => Crypto.cryptoFile(this);
+/*
+  Future<String> getFileHashMd5() async {
+    final fileLength = lengthSync();
+    // 小文件直接获取
+    if (fileLength < fileSize10M) {
+      return md5.convert(readAsBytesSync()).toString();
+    }
+    // 大文件分块获取
+    final sFile = await open();
+    try {
+      // 输出块
+      final output = AccumulatorSink<Digest>();
+      final input = md5.startChunkedConversion(output);
+      int x = 0;
+      while (x < fileLength) {
+        final tmpLen = fileLength - x > fileSize10M ? fileSize10M : fileLength - x;
+        // 分块获取
+        input.add(sFile.readSync(tmpLen));
+        x += tmpLen;
+      }
+      input.close();
+
+      final hash = output.events.single;
+      return hash.toString();
+    } finally {
+      unawaited(sFile.close());
+    }
+  }
+
+  Future<String> getFileHashSh1() async {
+    final fileLength = lengthSync();
+    // 小文件直接获取
+    if (fileLength < fileSize10M) {
+      return sha1.convert(readAsBytesSync()).toString();
+    }
+    // 大文件分块获取
+    final sFile = await open();
+    try {
+      // 输出块
+      final output = AccumulatorSink<Digest>();
+      final input = sha1.startChunkedConversion(output);
+      int x = 0;
+      while (x < fileLength) {
+        final tmpLen = fileLength - x > fileSize10M ? fileSize10M : fileLength - x;
+        // 分块获取
+        input.add(sFile.readSync(tmpLen));
+        x += tmpLen;
+      }
+      input.close();
+
+      final hash = output.events.single;
+      return hash.toString();
+    } finally {
+      unawaited(sFile.close());
+    }
+  }
+*/
 }
