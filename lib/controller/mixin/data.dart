@@ -1,6 +1,7 @@
 ﻿import 'dart:io' show Directory;
+import 'dart:ui' show Locale;
 
-import 'package:get/get.dart' show GetStringUtils, StateController;
+import 'package:get/get.dart' show Get, GetStringUtils, LocalesIntl, StateController;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
@@ -12,14 +13,30 @@ import 'package:path_provider/path_provider.dart' show getApplicationDocumentsDi
 
 /// 混合 - 数据处理
 mixin DataProcess on StateController<Application> {
+  // 创建开始
+  bool _isCreate = true;
+
+  /// 语言代码
+  final Map<String, String> languages = const {
+    'zh_CN': '简体中文',
+    'zh_TW': '繁體中文',
+    'en_US': 'English',
+    'fr_FR': 'Français',
+    'ja_JP': 'русск',
+    'ru_RU': '日本語',
+  };
+
   /// 初始化数据
   Future<Application> initData() async {
     var site = Application();
     try {
       await checkDir(site);
       var data = await loadSiteData(site);
+      // 设置语言
+      setLanguage(data.language, data: data);
       return data;
     } catch (e) {
+      Log.i(e);
       return site;
     }
   }
@@ -28,7 +45,6 @@ mixin DataProcess on StateController<Application> {
   Future<void> checkDir(Application site) async {
     // 应用程序支持目录
     final support = FS.normalize((await getApplicationSupportDirectory()).path);
-
     // 应用程序文档目录
     final document = FS.normalize((await getApplicationDocumentsDirectory()).path);
     // 检查是否存在 .hve-notes 文件夹，如果存在，则加载它，否则使用默认配置。
@@ -56,12 +72,12 @@ mixin DataProcess on StateController<Application> {
       if (!FS.pathExistsSync(appConfigPath)) {
         FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
       } else {
-        var dir = defaultSiteDir;
         final appConfig = FS.readStringSync(appConfigPath).deserialize<TJsonMap>()!;
         defaultSiteDir = FS.normalize(appConfig['sourceFolder']);
         // 如果时默认目录则进行覆盖
-        if (site.appDir == dir) {
+        if (_isCreate) {
           site.appDir = defaultSiteDir;
+          _isCreate = false;
         }
       }
       // 输出目录
@@ -70,7 +86,15 @@ mixin DataProcess on StateController<Application> {
       }
       // 当保存的目录修改后将旧目录移动到新目录
       if (site.appDir != defaultSiteDir) {
-        FS.renameDirSync(defaultSiteDir, site.appDir);
+        Log.i('${site.appDir}\n$defaultSiteDir');
+        if (!FS.dirExistsSync(site.appDir)) {
+          // 目录不存在时才可以重命名
+          FS.renameDirSync(defaultSiteDir, site.appDir);
+        } else {
+          FS.copySync(defaultSiteDir, site.appDir);
+          FS.deleteDir(defaultSiteDir);
+        }
+
         FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
         return;
       }
@@ -146,10 +170,7 @@ mixin DataProcess on StateController<Application> {
   Future<void> saveSiteData() async {
     final site = state;
     // 检查目录
-    var dir = FS.join(FS.normalize((await getApplicationDocumentsDirectory()).path), 'glidea');
-    if (site.appDir != dir) {
-      await checkDir(site);
-    }
+    await checkDir(site);
     final configPath = FS.join(site.appDir, 'config');
     // 自定义主题配置
     if (site.themeCustomConfig.isNotEmpty) {
@@ -157,9 +178,11 @@ mixin DataProcess on StateController<Application> {
       FS.writeStringSync(customThemePath, Map.from(site.themeCustomConfig).toJson());
     }
     // 更新应用配置
-    FS.writeStringSync(FS.join(configPath, 'config.json'), (site as ApplicationBase).toJson());
+    FS.writeStringSync(FS.join(configPath, 'config.json'), site.copy<ApplicationDb>()!.toJson());
     // 更新设置
     //FS.writeStringSync(site.buildDir, '{"sourceFolder": "${site.appDir}"}');
+    // 保存后刷新数据
+    refresh();
   }
 
   /// 更新站点的全部数据
@@ -228,5 +251,15 @@ mixin DataProcess on StateController<Application> {
     }
     // 将配置全部合并到 base 中
     return data;
+  }
+
+  /// 设置语言代码
+  void setLanguage(String code, {Application? data}) {
+    if (languages[code] == null) {
+      code = languages.keys.first;
+    }
+    (data ?? state).language = code;
+    var [lang, country] = code.split('_');
+    Get.locale = Locale(lang, country);
   }
 }
