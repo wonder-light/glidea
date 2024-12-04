@@ -45,7 +45,7 @@ mixin class PostDataBase {
 /// 统计数据
 @jsonSerializable
 class Stats {
-  /// 文本
+  /// 提示文本文本, 例如 2 min read
   @JsonProperty()
   String text = '';
 
@@ -57,7 +57,7 @@ class Stats {
   @JsonProperty()
   int time = 0;
 
-  /// 字数
+  /// 文章字数
   @JsonProperty()
   int words = 0;
 }
