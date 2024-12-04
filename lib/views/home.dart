@@ -1,7 +1,7 @@
 ﻿import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StateExt, StringExtension, Trans;
+import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StateExt, StringExtension, Trans;
 import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/setting/setting_editor.dart';
@@ -302,7 +302,7 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   /// 预览网页
   void preview() {
-    // TODO: 预览网页
+    site.previewSite();
   }
 
   /// 发布网页

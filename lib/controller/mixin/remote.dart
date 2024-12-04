@@ -1,4 +1,5 @@
-﻿import 'package:get/get.dart' show Get, StateController;
+﻿import 'package:flutter_js/flutter_js.dart' show HandlePromises, getJavascriptRuntime;
+import 'package:get/get.dart' show Get, StateController;
 import 'package:glidea/controller/mixin/data.dart';
 import 'package:glidea/controller/mixin/theme.dart';
 import 'package:glidea/enum/enums.dart';
@@ -92,6 +93,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     _themePath = FS.joinR(state.appDir, 'themes', state.themeConfig.selectTheme);
     await _clearOutputFolder();
     await _formatDataForRender();
+    await _buildCss();
   }
 
   /// 清理输出目录
@@ -131,14 +133,47 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     _menusData = state.menus.map((m) => m.copyWith<Menu>({'link': '${themeConfig.domain}${m.link}'})!).toList();
   }
 
+  /// 构建 CSS
   Future<void> _buildCss() async {
     // 使用 css
     final cssFilePath = FS.joinR(_themePath, 'assets', 'styles', 'main.css');
     final cssFolderPath = FS.joinR(state.buildDir, 'styles');
-    // 创建目录
+    final styleOverridePath = FS.joinR(_themePath, 'style-override.js');
+    // 结果
+    String cssString = '';
+    // 创建 styles 目录
     FS.createDirSync(cssFolderPath);
-    if (!FS.fileExistsSync(cssFilePath)) return;
-    final cssString = await FS.readString(cssFilePath);
+    // 获取 main.css 内容
+    if (FS.fileExistsSync(cssFilePath)) {
+      cssString += await FS.readString(cssFilePath);
+    }
+    // 设置 style override
+    if (FS.fileExistsSync(styleOverridePath)) {
+      // 变量
+      String custom = themeCustomConfig.toJson();
+      String js = 'module = {};let params = $custom;';
+      // 内容
+      js += await FS.readString(styleOverridePath);
+      js += '''
+      if (generateOverride != null) {
+        generateOverride(params)
+      }
+      else if (module.exports instanceof Function) {
+        module.exports(params)
+      }
+      ''';
+      // 执行 js
+      final javascriptRuntime = getJavascriptRuntime();
+      var jsResult = await javascriptRuntime.evaluateAsync(js, sourceUrl: styleOverridePath);
+      javascriptRuntime.executePendingJob();
+      var asyncResult = await javascriptRuntime.handlePromise(jsResult);
+
+      cssString += asyncResult.stringResult;
+    }
+    // 写入内容
+    if (cssString.isNotEmpty) {
+      await FS.writeString(FS.joinR(cssFolderPath, 'main.css'), cssString);
+    }
   }
 
   /// Tag to TagRender
@@ -167,7 +202,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// Post to PostRender
   PostRender _postToRender(Post post) {
     // 变换标签
-    var currentTags = post.tags.map((t) => _tagsMap[t.slug]!);
+    var currentTags = post.tags.map((t) => _tagsMap[t.slug]!.toMap());
     // TOC 目录
     var toc = '';
     // 将文章中本地图片路径，变更为线上路径
@@ -176,7 +211,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     // 渲染 MarkDown to HTML
     // 返回数据
     return post.copyWith<PostRender>({
-      'tags': currentTags,
+      'tags': currentTags.toList(),
       'toc': toc,
       'content': html,
       'abstract': Markdown.markdownToHtml(changeImageUrlToDomain(post.abstract)),

@@ -64,6 +64,7 @@ dependencies:
   package_info_plus: ^8.1.1
   crypto: ^3.0.6
   convert: ^3.1.2
+  flutter_js: ^0.8.1
 
 dev_dependencies:
   flutter_test:

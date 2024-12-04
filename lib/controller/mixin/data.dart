@@ -137,7 +137,7 @@ mixin DataProcess on StateController<Application> {
       // 获取配置
       TJsonMap config = FS.readStringSync(configJsonPath).deserialize<TJsonMap>()!;
       // 将配置全部合并到 base 中
-      site = site.copyWith(config)!;
+      site = site.copyWith<Application>(config)!;
     } else {
       // 获取数据
       site = transformDataForPath(site);
@@ -189,7 +189,7 @@ mixin DataProcess on StateController<Application> {
   void updateSite(Application site) {
     TJsonMap? data = site.toMap();
     if (data == null) return;
-    setSuccess(state.copyWith(data)!);
+    setSuccess(state.copyWith<Application>(data)!);
     refresh();
     // 保存数据
     saveSiteData();
@@ -209,7 +209,7 @@ mixin DataProcess on StateController<Application> {
     var data = theme.mergeMaps(posts).mergeMaps(remote);
     data = transformData(data);
     // 将配置全部合并到 base 中
-    site = site.copyWith(data)!;
+    site = site.copyWith<Application>(data)!;
     return site;
   }
 

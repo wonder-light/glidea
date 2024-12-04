@@ -19,10 +19,8 @@ extension JsonObjectExtend on Object {
   /// 用于复制类型 T 的 Dart 对象的 clone 方法的别名
   T? copy<T>() => JsonMapper.copy<T>(this as T);
 
-  /// 复制 T 类型的 Dart 对象并将其与 other 合并
-  T? copyWith<T>(Map<String, dynamic> other) => JsonMapper.copyWith<T>(this as T, other);
-
-  T? copyWithObj<T, S>(S other) => JsonMapper.copyWith<T>(this as T, JsonMapper.toMap(other)!);
+  /// 复制 T 类型的 Dart 对象并将其与 other 合并, 然后反序列化到指定类型的对象
+  T? copyWith<T>(Map<String, dynamic> other) => JsonMapper.fromMap<T>(toMap()?.mergeMaps(other));
 
   /// 将 JSON [String] 或 [Object] 或 [Map<String, dynamic>] 类型转换为 T 类型的 Dart 对象实例
   T? deserialize<T>([DeserializationOptions? options]) => JsonMapper.deserialize<T>(this, options);
@@ -42,7 +40,7 @@ extension MapExtend on Map<String, dynamic> {
   T? fromMap<T>([DeserializationOptions? options]) => JsonMapper.fromMap<T>(this, options);
 
   /// 递归深度合并两个映射
-  Map<String, dynamic> mergeMaps(Map<String, dynamic> map) => JsonMapper.mergeMaps(this, map);
+  Map<String, dynamic> mergeMaps(Map<String, dynamic> map) => JsonMapper.mergeMaps(Map.from(this), map);
 }
 
 /// Json 序列化帮助类
