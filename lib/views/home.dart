@@ -126,127 +126,117 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   /// 构建左边面板
   Widget _buildLeftPanel() {
+    var colorScheme = Get.theme.colorScheme;
+    // 头像
+    Widget childWidget = Container(
+      alignment: Alignment.center,
+      padding: kVerPadding16 + kTopPadding16,
+      child: const ClipOval(
+        child: Image(
+          image: AssetImage('assets/images/logo.png'),
+          width: kLogSize,
+          height: kLogSize,
+        ),
+      ),
+    );
+    // 菜单列表
+    List<Widget> widgets = [
+      // 菜单列表
+      for (var item in menus)
+        Padding(
+          padding: kVerPadding4 + kHorPadding12,
+          child: ListItem(
+            onTap: () {
+              desktopRouter.value = item.route;
+              toRouter(item.route);
+            },
+            leading: Icon(item.icon),
+            title: Text(item.name.tr),
+            trailing: Text(site.getHomeLeftPanelNum(item.name)),
+            constraints: const BoxConstraints(maxHeight: 50),
+            selected: desktopRouter.value == item.route,
+            selectedColor: colorScheme.surfaceContainerLow,
+            selectedTileColor: colorScheme.primary,
+            contentPadding: kHorPadding16,
+            dense: true,
+          ),
+        ),
+    ];
+    // 在第一个的位置插入头像
+    widgets.insert(0, childWidget);
+    // 插入一个空白, 进行填充中间的间隔
+    widgets.add(Expanded(child: Container()));
+    // 最底部的按钮
+    childWidget = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        for (var item in actions.skip(2))
+          IconButton(
+            padding: EdgeInsets.zero,
+            visualDensity: VisualDensity.comfortable,
+            onPressed: item.call,
+            icon: Icon(item.icon),
+            tooltip: item.name.tr,
+          ),
+      ],
+    );
+    // 加上预览和发布按钮
+    childWidget = Padding(
+      padding: kVer8Hor32,
+      child: Column(
+        children: [
+          _buildActionButton(actions[0]),
+          _buildActionButton(actions[1], isFilled: true),
+          childWidget,
+        ],
+      ),
+    );
+    widgets.add(childWidget);
+    // 放到列中
+    childWidget = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: widgets,
+    );
+    // 使用 [IntrinsicWidth] 限制最大宽度, 并用 [ConstrainedBox] 限制最小宽度
     return IntrinsicWidth(
       stepWidth: 40,
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           minWidth: kPanelWidth,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildPanelUp(),
-            _buildPanelBottom(),
-          ],
-        ),
+        child: childWidget,
       ),
     );
   }
 
-  /// 构建面板的上部分
-  Widget _buildPanelUp() {
-    var colorScheme = Get.theme.colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget _buildActionButton(TActionData item, {bool isFilled = false}) {
+    // 按钮样式
+    ButtonStyle style = ButtonStyle(padding: WidgetStatePropertyAll(kAllPadding16 / 2));
+    // 内容
+    Widget childWidget = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // 头像
-        Container(
-          alignment: Alignment.center,
-          padding: const EdgeInsets.only(top: 32, bottom: 16),
-          child: const ClipOval(
-            child: Image(
-              image: AssetImage('assets/images/logo.png'),
-              width: kLogSize,
-              height: kLogSize,
-            ),
-          ),
-        ),
-        // 菜单列表
-        for (var item in menus)
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-            child: Obx(
-              () => ListItem(
-                onTap: () {
-                  desktopRouter.value = item.route;
-                  toRouter(item.route);
-                },
-                leading: Icon(item.icon),
-                title: Text(item.name.tr),
-                trailing: Text(site.getHomeLeftPanelNum(item.name)),
-                constraints: const BoxConstraints(maxHeight: 50),
-                selected: desktopRouter.value == item.route,
-                selectedColor: colorScheme.surfaceContainerLow,
-                selectedTileColor: colorScheme.primary,
-                contentPadding: kHorPadding16,
-                dense: true,
-              ),
-            ),
-          ),
+        Icon(item.icon),
+        const Padding(padding: kRightPadding8),
+        Text(item.name.tr),
       ],
     );
-  }
-
-  /// 构建面板的下部分
-  Widget _buildPanelBottom() {
-    ButtonStyle style = ButtonStyle(
-      padding: WidgetStatePropertyAll(kAllPadding16 / 2),
-    );
-    Widget getButton(int i) {
-      var item = actions[i];
-      Widget childWidget = Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: kRightPadding8,
-            child: Icon(item.icon),
-          ),
-          Text(item.name.tr),
-        ],
-      );
-      childWidget = i < 1
-          ? OutlinedButton(
-              onPressed: item.call,
-              style: style,
-              child: childWidget,
-            )
-          : FilledButton(
-              onPressed: item.call,
-              style: style,
-              child: childWidget,
-            );
-      childWidget = Container(
-        margin: kVerPadding8,
-        child: childWidget,
-      );
-      return childWidget;
-    }
-
-    return Container(
-      padding: const EdgeInsets.only(left: 32, right: 32, top: 24, bottom: 8),
-      child: Column(
-        children: [
-          // 两个操作按钮
-          getButton(0),
-          getButton(1),
-          // 一行的其它操作按钮
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              for (var item in actions.skip(2))
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  visualDensity: VisualDensity.comfortable,
-                  onPressed: item.call,
-                  icon: Icon(item.icon),
-                  tooltip: item.name.tr,
-                ),
-            ],
+    // 包裹的按钮
+    childWidget = isFilled
+        ? FilledButton(
+            onPressed: item.call,
+            style: style,
+            child: childWidget,
           )
-        ],
-      ),
+        : OutlinedButton(
+            onPressed: item.call,
+            style: style,
+            child: childWidget,
+          );
+    // 加上边距
+    return Padding(
+      padding: kVerPadding8,
+      child: childWidget,
     );
   }
 
@@ -289,7 +279,7 @@ class _HomeWidgetState extends State<HomeWidget> {
       await site.saveSiteData();
     }
     Log.e('onExitRequested');
-    return AppExitResponse.cancel;
+    return AppExitResponse.exit;
   }
 
   /// 过滤页面
