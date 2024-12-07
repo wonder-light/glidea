@@ -48,6 +48,8 @@ mixin DataProcess on StateController<Application> {
   }
 
   /// 检查 .glidea 文件夹是否存在，如果不存在，则将其初始化
+  ///
+  /// throw [Mistake] exception
   Future<void> checkDir(Application site) async {
     // 应用程序支持目录, 即配置所在的目录
     final appConfigFolder = FS.normalize((await getApplicationSupportDirectory()).path);
@@ -149,33 +151,41 @@ mixin DataProcess on StateController<Application> {
   }
 
   /// 加载配置
+  ///
+  /// throw [Mistake] exception
   Future<Application> loadSiteData(Application site) async {
     final configPath = FS.join(site.appDir, 'config');
     final configJsonPath = FS.join(configPath, 'config.json');
 
-    // 兼容 Gridea
-    if (FS.pathExistsSync(configJsonPath)) {
-      // 获取配置
-      TJsonMap config = FS.readStringSync(configJsonPath).deserialize<TJsonMap>()!;
-      // 将配置全部合并到 base 中
-      site = site.copyWith<Application>(config)!;
+    if (FS.fileExistsSync(configJsonPath)) {
+      try {
+        // 获取配置
+        TJsonMap config = FS.readStringSync(configJsonPath).deserialize<TJsonMap>()!;
+        // 将配置全部合并到 base 中
+        site = site.copyWith<Application>(config)!;
+      } catch (e) {
+        throw Mistake(message: 'read and merge site data failed: $e');
+      }
     } else {
-      // 获取数据
-      site = transformDataForPath(site);
+      // 兼容 Gridea, 获取数据
+      site = _transformDataForPath(site);
     }
 
-    // 主题名列表
-    var themeConfig = site.themeConfig;
-    var themes = site.themes = FS.subDir(FS.join(site.appDir, 'themes'));
-    // 设置使用的主题名
-    if (themes.isNotEmpty && !themes.contains(themeConfig.selectTheme)) {
-      themeConfig.selectTheme = themes.first;
-    }
-    // 合并选定主题数据
-    var themePath = FS.join(site.appDir, 'config', 'theme.${themeConfig.selectTheme}.config.json');
-    if (FS.pathExistsSync(themePath)) {
-      final customConfig = FS.readStringSync(themePath).deserialize<TJsonMap>()!;
-      site.themeCustomConfig = site.themeCustomConfig.mergeMaps(customConfig);
+    try {
+      // 主题名列表
+      var themeConfig = site.themeConfig;
+      var themes = site.themes = FS.subDir(FS.join(site.appDir, 'themes'));
+      // 设置使用的主题名
+      if (themes.isNotEmpty && !themes.contains(themeConfig.selectTheme)) {
+        themeConfig.selectTheme = themes.first;
+      }
+      // 使用选定主题数据
+      var themePath = FS.join(site.appDir, 'config', 'theme.${themeConfig.selectTheme}.config.json');
+      if (FS.fileExistsSync(themePath)) {
+        site.themeCustomConfig = FS.readStringSync(themePath).deserialize<TJsonMap>()!;
+      }
+    } catch (e) {
+      throw Mistake(message: 'set theme data failed: $e');
     }
     // APP 信息
     var packageInfo = await PackageInfo.fromPlatform();
@@ -187,33 +197,42 @@ mixin DataProcess on StateController<Application> {
     return site;
   }
 
-  /// 保存配置到文件
+  /// 保存配置到文件, 保存后进行 [refresh]
+  ///
+  /// throw [Mistake] exception
   Future<void> saveSiteData() async {
     final site = state;
     // 检查目录
     await checkDir(site);
     final configPath = FS.join(site.appDir, 'config');
-    // 自定义主题配置
-    if (site.themeCustomConfig.isNotEmpty) {
-      final customThemePath = FS.join(configPath, 'theme.${site.themeConfig.selectTheme}.config.json');
-      FS.writeStringSync(customThemePath, Map.from(site.themeCustomConfig).toJson());
+    try {
+      // 自定义主题配置
+      if (site.themeCustomConfig.isNotEmpty) {
+        final customThemePath = FS.join(configPath, 'theme.${site.themeConfig.selectTheme}.config.json');
+        FS.writeStringSync(customThemePath, site.themeCustomConfig.toJson());
+      }
+      // 更新应用配置
+      FS.writeStringSync(FS.join(configPath, 'config.json'), site.copy<ApplicationDb>()!.toJson());
+    } catch (e) {
+      throw Mistake(message: 'write application config failed: $e');
     }
-    // 更新应用配置
-    FS.writeStringSync(FS.join(configPath, 'config.json'), site.copy<ApplicationDb>()!.toJson());
-    // 更新设置
-    //FS.writeStringSync(site.buildDir, '{"sourceFolder": "${site.appDir}"}');
     // 保存后刷新数据
     refresh();
   }
 
   /// 更新站点的全部数据
+  ///
+  /// throw [Mistake] exception
   void updateSite(Application site) {
-    TJsonMap? data = site.toMap();
-    if (data == null) return;
-    setSuccess(state.copyWith<Application>(data)!);
-    refresh();
+    // 加载
+    setLoading();
     // 保存数据
     saveSiteData();
+    // 刷新
+    setSuccess(state.copy<Application>()!);
+    refresh();
+  }
+
   /// 设置语言代码
   void setLanguage(String code) {
     if (languages[code] == null) {
@@ -226,25 +245,44 @@ mixin DataProcess on StateController<Application> {
   }
 
   // 从路径中获取 Gridea 的数据
-  Application transformDataForPath(Application site) {
+  Application _transformDataForPath(Application site) {
+    // 数据
+    TJsonMap data = {};
+    // config 路径
     final configPath = FS.join(site.appDir, 'config');
-    final postPath = FS.join(configPath, 'posts.json');
-    final remotePath = FS.join(configPath, 'setting.json');
-    final themePath = FS.join(configPath, 'theme.json');
-    // 获取配置
-    final posts = FS.readStringSync(postPath).deserialize<TJsonMap>()!;
-    final remote = FS.readStringSync(remotePath).deserialize<TJsonMap>()!;
-    final theme = FS.readStringSync(themePath).deserialize<TJsonMap>()!;
-    // 合并数据
-    var data = theme.mergeMaps(posts).mergeMaps(remote);
-    data = transformData(data);
-    // 将配置全部合并到 base 中
-    site = site.copyWith<Application>(data)!;
+    // 配置路径
+    final paths = {
+      // post 数据
+      FS.join(configPath, 'posts.json'),
+      // remote 数据
+      FS.join(configPath, 'setting.json'),
+      // theme 数据
+      FS.join(configPath, 'theme.json'),
+    };
+    for (var path in paths) {
+      // 判断是否存在
+      if (FS.fileExistsSync(path)) {
+        try {
+          // 合并配置
+          data = data.mergeMaps(FS.readStringSync(path).deserialize<TJsonMap>()!);
+        } catch (e) {
+          Log.w('read gridea data failed: $e');
+        }
+      }
+    }
+    if (data.isNotEmpty) {
+      try {
+        // 将配置全部合并到 base 中
+        site = site.copyWith<Application>(_transformData(data))!;
+      } catch (e) {
+        Log.w('merge gridea data failed: $e');
+      }
+    }
     return site;
   }
 
   /// 将 Gridea 的数据处理为适合该应用的数据
-  TJsonMap transformData(TJsonMap data) {
+  TJsonMap _transformData(TJsonMap data) {
     // 修改 json 中的部分名称
     if (data.containsKey('setting')) {
       data['remote'] = data.remove('setting');
@@ -256,16 +294,24 @@ mixin DataProcess on StateController<Application> {
       data['themeCustomConfig'] = data.remove('customConfig');
     }
     // 扁平化 post 中的 data 字段
-    if (data.containsKey('posts') && data['posts'] is List<TJsonMap>) {
-      // 标签
-      var tags = (data.containsKey('tags') && data['tags'] is List<TJsonMap>) ? data['tags'] as List<TJsonMap> : <TJsonMap>[];
-      for (var item in data['post'] as List<TJsonMap>) {
-        if (!item.containsKey('data')) continue;
-        // 扁平化
-        item.addAll(item.remove('data'));
+    if (data['posts'] case List<Map> posts when posts.isNotEmpty) {
+      // 最外层的标签源数据 tag.name - tag
+      TJsonMap tagsMap = {};
+      // 记录标签
+      if (data['tags'] case List<Map> tags when tags.isNotEmpty) {
+        for (var tag in tags) {
+          tagsMap[tag['name']] = tag;
+        }
+      }
+      // 对每个 post 进行处理
+      for (var post in posts) {
+        // 扁平化 data
+        if (post['data'] is Map) {
+          post.addAll(post.remove('data'));
+        }
         // 更改 tags 的内容
-        if (item.containsKey('tags') && item['tags'] is List<String>) {
-          item['tags'] = (item['tags'] as List<String>).map((t) => tags.firstWhere((m) => m['name'] == t)).toList();
+        if (post['tags'] case List<String> tags when tags.isNotEmpty) {
+          post['tags'] = tags.map((tagName) => tagsMap[tagName]).toList();
         }
       }
     }
@@ -274,22 +320,13 @@ mixin DataProcess on StateController<Application> {
       data['tagUrlFormat'] = (data['tagUrlFormat'] as String).camelCase;
       data['postUrlFormat'] = (data['postUrlFormat'] as String).camelCase;
     }
-    if (data.containsKey('menus') && data['menus'] is List<TJsonMap>) {
-      for (var item in data['menus'] as List<TJsonMap>) {
-        item['openType'] = (item['openType'] as String).camelCase;
+    // 将字符串格式化
+    if (data['menus'] case List<Map> menus when menus.isNotEmpty) {
+      for (var menu in menus) {
+        menu['openType'] = (menu['openType'] as String).camelCase;
       }
     }
     // 将配置全部合并到 base 中
     return data;
-  }
-
-  /// 设置语言代码
-  void setLanguage(String code, {Application? data}) {
-    if (languages[code] == null) {
-      code = languages.keys.first;
-    }
-    (data ?? state).language = code;
-    var [lang, country] = code.split('_');
-    Get.locale = Locale(lang, country);
   }
 }
