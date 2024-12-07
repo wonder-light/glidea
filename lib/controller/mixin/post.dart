@@ -1,8 +1,9 @@
-﻿import 'package:get/get.dart' show Get, StateController, StatusDataExt;
-import 'package:get/get_common/get_reset.dart';
+﻿import 'package:get/get.dart' show Get, StateController;
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
+import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/post.dart';
@@ -25,14 +26,9 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
   Post createPost() => Post();
 
   /// 获取文章封面图片的路径
-  String getFeaturePath({required Post data, bool isWeb = false}) {
+  String getFeaturePath({required Post data}) {
     var feature = data.feature.isNotEmpty ? data.feature : defaultPostFeaturePath;
-    // 去掉开头的 /
-    if (feature.startsWith('/')) {
-      feature = feature.substring(1);
-    }
-    if (isWeb) return FS.join(state.themeConfig.domain, defaultPostPath, feature);
-    return FS.join(state.appDir, feature);
+    return FS.joinR(state.appDir, feature);
   }
 
   /// 筛选文章
@@ -43,20 +39,25 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
   ///     true: 从 [Post.title] 和 [Post.content] 中搜索数据
   List<Post> filterPost(String data, {bool include = false}) {
     if (data.isEmpty) return [...state.posts];
-
+    // 比较
     bool compare(Post p) {
-      final reg = RegExp(data, caseSensitive: false);
+      final reg = RegExp(data, caseSensitive: false, multiLine: true);
       return p.title.contains(reg) || (include && p.content.contains(reg));
     }
 
+    // 筛选
     return state.posts.where(compare).toList();
   }
 
   /// 获取文章的链接
   List<TLinkData> getPostLink() {
+    final postPath = '/${state.themeConfig.postPath}/';
     // 文章的链接
-    var posts = state.posts.map<TLinkData>((p) => (name: p.title, link: '/$defaultPostPath/${p.fileName}')).toList();
-    return posts;
+    return [
+      for (var post in state.posts)
+        // 文章的链接
+        (name: post.title, link: '$postPath${post.fileName}'),
+    ];
   }
 
   /// 对文章链接进行筛选
@@ -65,26 +66,20 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
     return getPostLink().where((p) => p.link.contains(data)).toList();
   }
 
-  /// 删除新标签
-  void removePost(Post data) {
+  /// 删除 post
+  void removePost(Post data) async {
     if (!state.posts.remove(data)) {
-      Get.error('articleDeleteFailure');
       // 删除失败
+      Get.error('articleDeleteFailure');
       return;
     }
     // 标签
-    var tags = data.tags;
-    if (tags.isNotEmpty) {
-      // 查看 posts 中是否还有相同的标签存在
-      for (var tag in tags) {
-        var value = state.posts.any((p) => p.tags.any((t) => t.slug == tag.slug));
-        if (!value) {
-          tag = state.tags.firstWhere((t) => t.slug == tag.slug);
-          tag.used = false;
-        }
-      }
+    updateTagUsedField();
+    try {
+      await saveSiteData();
+    } on Mistake catch (e) {
+      Log.w(e.message);
     }
-    refresh();
     // 菜单中的列表不必管
     Get.success('articleDelete');
   }
