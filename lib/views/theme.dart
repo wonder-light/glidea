@@ -32,8 +32,8 @@ class _ThemeWidgetState extends State<ThemeWidget> {
   @override
   void initState() {
     super.initState();
-    themeConfig.value.addAll(site.getThemeWidget());
-    themeCustomConfig.value.addAll(site.getThemeCustomWidget());
+    themeConfig.value.addAll(site.getThemeWidgetConfig());
+    themeCustomConfig.value.addAll(site.getThemeCustomWidgetConfig());
     // 添加主题控制器
     Get.lazyPut(() => ThemeController(), tag: site.themeTag);
     Get.lazyPut(() => ThemeController(pathDir: site.themeCustomAssetPath), tag: site.themeCustomTag);
@@ -147,15 +147,19 @@ class _ThemeWidgetState extends State<ThemeWidget> {
   /// 重置配置
   void resetConfig() {
     // 主题配置
-    themeConfig.value = site.getThemeWidget();
-    themeCustomConfig.value = site.getThemeCustomWidget();
+    themeConfig.value = site.getThemeWidgetConfig();
+    themeCustomConfig.value = site.getThemeCustomWidgetConfig();
   }
 
   /// 保存配置
   void saveConfig() async {
-    // 保存前需要发出保存事件以便于图片进行保存
-    await site.emit(themeSaveEvent);
-    site.updateThemeConfig(themes: themeConfig.value, customs: themeCustomConfig.value);
-    resetConfig();
+    try{
+      // 保存前需要发出保存事件以便于图片进行保存
+      await site.emit(themeSaveEvent);
+      site.updateThemeConfig(themes: themeConfig.value, customs: themeCustomConfig.value);
+      resetConfig();
+    } catch(e) {
+      Get.error('saveError');
+    }
   }
 }
