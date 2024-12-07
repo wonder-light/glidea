@@ -2,6 +2,7 @@
 
 import 'package:dio/dio.dart' show Dio, Options, Response;
 import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
@@ -28,7 +29,9 @@ abstract class Deploy {
   static Dio? _dio;
 
   /// 发布
-  Future<Incident> publish();
+  ///
+  /// 出现错误时抛出 [Mistake] 异常类
+  Future<void> publish();
 
   /// 远程检测
   Future<bool> remoteDetect() async => true;
@@ -64,31 +67,33 @@ class NetlifyDeploy extends Deploy {
   String _deployId;
 
   @override
-  Future<Incident> publish() async {
+  Future<void> publish() async {
+    // 详情请看
+    // https://docs.netlify.com/api/get-started/#deploy-with-the-api
+    final fileList = await prepareLocalFilesList();
+    // 异常
+    final mistake = Mistake(message: 'netlify deploy upload file failed', hint: 'connectFailed');
     try {
-      /// 详情请看
-      /// https://docs.netlify.com/api/get-started/#deploy-with-the-api
-      final fileList = await prepareLocalFilesList();
       // 需要上传的文件的哈希值
       final hashOfFilesToUpload = await requestFiles(fileList);
+      // 开始上传
       for (var filePath in hashOfFilesToUpload) {
         // 出错时尝试两次
         try {
           var result = await uploadFile(filePath);
           if (result.statusCode == 422) {
-            throw Incident.deployError422;
+            throw mistake;
           }
         } catch (e) {
           var result = await uploadFile(filePath);
           if (result.statusCode == 422) {
-            return Incident.deployError422;
+            throw mistake;
           }
         }
       }
     } catch (e) {
-      return Incident.connectFailed;
+      throw mistake;
     }
-    return Incident.success;
   }
 
   /// 准备本地文件列表
@@ -160,7 +165,7 @@ class GitDeploy extends Deploy {
   final DeployPlatform platform;
 
   @override
-  Future<Incident> publish() async {
+  Future<void> publish() async {
     // TODO: implement publish
     throw UnimplementedError();
   }
@@ -171,7 +176,7 @@ class SftpDeploy extends Deploy {
   SftpDeploy(super.site);
 
   @override
-  Future<Incident> publish() async {
+  Future<void> publish() async {
     // TODO: implement publish
     throw UnimplementedError();
   }
