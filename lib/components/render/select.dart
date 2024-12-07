@@ -42,7 +42,7 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
           width: 0,
           padding: EdgeInsets.zero,
         ),
-        dropdownStyleData: DropdownStyleData(
+        dropdownStyleData: const DropdownStyleData(
           isOverButton: false,
           useRootNavigator: true,
         ),
@@ -60,7 +60,7 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
 
   /// 下拉选择按钮的值变化时调用
   void change(String? value) {
-    config.update((obj) => obj!..value = value ?? obj.value);
+    config.update((obj) => obj..value = value ?? obj.value);
     onChanged?.call(value);
   }
 }

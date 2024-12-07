@@ -8,7 +8,7 @@ class RxObject<T> extends Rx<T> {
   RxObject(super.initial);
 
   @override
-  void update(T Function(T? val) fn) {
+  void update(T Function(T val) fn) {
     var newValue = fn(value);
     var useUpdate = newValue == value;
     value = newValue;

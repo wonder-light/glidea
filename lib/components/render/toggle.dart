@@ -38,7 +38,7 @@ class ToggleWidget extends ConfigBaseWidget<ToggleConfig> {
 
   /// 开关值变化时调用
   void change(bool value) {
-    config.update((obj) => obj!..value = value);
+    config.update((obj) => obj..value = value);
     onChanged?.call(value);
   }
 }

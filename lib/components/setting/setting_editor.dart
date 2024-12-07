@@ -10,6 +10,7 @@ import 'package:glidea/helpers/log.dart';
 import 'package:glidea/models/render.dart';
 import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
 
+/// 大窗下的设置配置控件
 class SettingEditor extends DrawerEditor<Object> {
   const SettingEditor({
     super.key,
@@ -117,7 +118,7 @@ class SettingEditorState extends DrawerEditorState<Object> {
   void openUrl() async {
     final success = await launchUrlString('https://github.com/wonder-light/glidea');
     if (!success) {
-      Log.i('github 打开失败');
+      Log.w('github 打开失败');
     }
   }
 }

@@ -10,6 +10,7 @@ import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
+/// 菜单编辑器
 class MenuEditor extends DrawerEditor<Menu> {
   const MenuEditor({
     super.key,
@@ -56,7 +57,7 @@ class MenuEditorState extends DrawerEditorState<Menu> {
       name: 'name',
       child: TextFormField(
         controller: nameController,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           isDense: true,
           contentPadding: kVer8Hor12,
           hoverColor: Colors.transparent, // 悬停时的背景色

@@ -52,7 +52,7 @@ class SliderWidget extends ConfigBaseWidget<SliderConfig> {
   /// 滑块值变化时调用
   void change(double value) {
     var index = value.toInt();
-    config.update((obj) => obj!..value = index);
+    config.update((obj) => obj..value = index);
     onChanged?.call(index);
   }
 }

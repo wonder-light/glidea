@@ -15,6 +15,7 @@ import 'select.dart';
 import 'slider.dart';
 import 'toggle.dart';
 
+/// 渲染 [ArrayConfig] 的控件
 class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
   const ArrayWidget({
     super.key,
@@ -65,8 +66,7 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
   }
 
   /// 在指定位置添加一系列字段的值
-  T addItem<T extends ArrayConfig>(T? obj, {int index = 0}) {
-    if (obj == null) throw 'addItem: obj is null, But it is not allowed to be null';
+  T addItem<T extends ArrayConfig>(T obj, {int index = 0}) {
     TJsonMap entity = {};
     for (var item in obj.arrayItems) {
       entity[item.name] = item.value;
@@ -79,6 +79,7 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
   /// 创建对应类型的子控件
   Widget createWidget<T extends ConfigBase>(T entity, TJsonMap values) {
     // 复制对象
+    assert(entity.copy<T>() != null, 'ArrayWidget: create widget failed');
     final obj = entity.copy<T>()!..value = values[entity.name];
     // 标量值变化时需要重新覆盖原值
     void change(value) {

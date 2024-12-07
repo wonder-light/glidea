@@ -47,7 +47,7 @@ class RadioWidget extends ConfigBaseWidget<RadioConfig> {
 
   /// 单选框的值变化时调用
   void change(String? value) {
-    config.update((obj) => obj!..value = value ?? obj.value);
+    config.update((obj) => obj..value = value ?? obj.value);
     onChanged?.call(value);
   }
 }

@@ -61,7 +61,7 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
 
   /// 内容值变化时调用
   void change(String value) {
-    config.update((obj) => obj!..value = value);
+    config.update((obj) => obj..value = value);
     onChanged?.call(value);
   }
 
@@ -120,7 +120,7 @@ class InputWidget extends TextareaWidget<InputConfig> {
             leading: const Icon(PhosphorIconsRegular.link),
             onTap: () {
               config.update((obj) {
-                return obj!..value = option.link;
+                return obj..value = option.link;
               });
               Get.backLegacy();
             },
@@ -173,7 +173,7 @@ class InputWidget extends TextareaWidget<InputConfig> {
       onColorChanged: (Color color) {},
       onColorChangeEnd: (Color color) {
         config.update((obj) {
-          return obj!..value = color.toCssHex;
+          return obj..value = color.toCssHex;
         });
       },
     );
@@ -228,7 +228,7 @@ class FileSelectWidget extends TextareaWidget<InputConfig> {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
     if (selectedDirectory == null) return;
     config.update((obj) {
-      return obj!..value = FS.normalize(selectedDirectory);
+      return obj..value = FS.normalize(selectedDirectory);
     });
   }
 }

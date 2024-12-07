@@ -53,6 +53,10 @@ class ApplicationDb extends ApplicationBase {
   /// ch_ZN, ch_TW
   @JsonProperty()
   String language = '';
+
+  /// 预览端口
+  @JsonProperty()
+  int previewPort = 4000;
 }
 
 /// APP 应用设置
@@ -73,10 +77,6 @@ mixin class ApplicationSetting {
   ///应用程序支持的目录 - ApplicationSupportDirectory
   @JsonProperty()
   String supportDir = '';
-
-  /// 预览端口
-  @JsonProperty()
-  int previewPort = 4000;
 }
 
 /// APP 信息, 包含版本等

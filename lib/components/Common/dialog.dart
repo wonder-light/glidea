@@ -2,6 +2,7 @@
 import 'package:get/get.dart' show Trans;
 import 'package:glidea/helpers/constants.dart';
 
+/// 放入 [Dialog] 显示中显示的控件
 class DialogWidget extends StatelessWidget {
   const DialogWidget({
     super.key,

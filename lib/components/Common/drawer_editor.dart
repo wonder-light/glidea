@@ -5,6 +5,7 @@ import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
+/// 用时在抽屉中使用的编辑器框架
 abstract class DrawerEditor<T> extends StatefulWidget {
   const DrawerEditor({
     super.key,

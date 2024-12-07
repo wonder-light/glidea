@@ -4,6 +4,7 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/render.dart';
 
+/// 渲染 [ConfigBase] 的抽象控件
 abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
   const ConfigBaseWidget({
     super.key,
@@ -26,6 +27,7 @@ abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
   final ValueChanged<dynamic>? onChanged;
 }
 
+/// 对 [ConfigBaseWidget] 进行布局管控的控件
 class ConfigLayoutWidget extends StatelessWidget {
   const ConfigLayoutWidget({
     super.key,

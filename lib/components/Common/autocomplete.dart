@@ -103,7 +103,7 @@ class AutocompleteField<T extends Object> extends StatelessWidget {
       focusNode: focusNode,
       controller: textEditingController,
       onFieldSubmitted: (_) => onFieldSubmitted(),
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         isDense: true,
         contentPadding: kVer8Hor12,
         hoverColor: Colors.transparent, // 悬停时的背景色

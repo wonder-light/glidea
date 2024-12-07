@@ -2,6 +2,7 @@
 import 'package:get/get.dart' show Get, GetNavigationExt;
 import 'package:glidea/helpers/constants.dart';
 
+/// 菜单和标签页面的公共部分
 class PageAction extends StatelessWidget {
   const PageAction({
     super.key,
@@ -42,6 +43,7 @@ class PageAction extends StatelessWidget {
       ],
     );
     // 加上分割线, 以及内容
+    // 使用 [Material] 在切换路由时可以将背景变不透明, 不至于让两个页面看起来重叠在了一起
     childWidget = Material(
       color: Get.theme.scaffoldBackgroundColor,
       child: Column(

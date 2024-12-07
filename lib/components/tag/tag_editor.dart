@@ -4,6 +4,7 @@ import 'package:glidea/components/Common/drawer_editor.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/tag.dart';
 
+/// 编辑标签的控件
 class TagEditor extends DrawerEditor<Tag> {
   const TagEditor({
     super.key,
@@ -42,7 +43,7 @@ class TagEditorState extends DrawerEditorState<Tag> {
       name: 'tagName',
       child: TextFormField(
         controller: nameController,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           isDense: true,
           contentPadding: kVer8Hor12,
           hoverColor: Colors.transparent, // 悬停时的背景色
@@ -54,7 +55,7 @@ class TagEditorState extends DrawerEditorState<Tag> {
       name: 'tagUrl',
       child: TextFormField(
         controller: urlController,
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           isDense: true,
           contentPadding: kVer8Hor12,
           hoverColor: Colors.transparent, // 悬停时的背景色

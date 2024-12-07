@@ -86,9 +86,9 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
       type: FileType.custom,
       allowedExtensions: ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'gif', 'tif', 'tiff', 'apng'],
     );
-    if (result == null || result.paths.firstOrNull == null || result.paths.first!.isEmpty) return;
+    if (result?.paths.firstOrNull?.isEmpty ?? true) return;
     // 选择的图片路径
-    path.value = FS.normalize(result.paths.first!);
+    path.value = FS.normalize(result!.paths.first!);
   }
 
   /// 保存图片

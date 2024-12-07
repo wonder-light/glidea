@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt;
 
+/// 列表项
 class ListItem extends StatelessWidget {
   const ListItem({
     super.key,

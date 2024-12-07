@@ -18,6 +18,7 @@ class DraController extends ValueNotifier<bool> {
   }
 }
 
+/// [Get] 的扩展
 extension DrawerExt on GetInterface {
   /// 在页面上创建抽屉
   ///
@@ -75,6 +76,7 @@ extension DrawerExt on GetInterface {
       vsync: navigatorState,
       duration: duration,
     );
+    // 使用 [PopupRoute] 不会遮挡住下来选项中的选项弹出框
     navigatorState.push(GetDrawerRoute(
       builder: (BuildContext ctx) {
         // 背景板
