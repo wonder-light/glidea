@@ -14,6 +14,9 @@ import 'package:glidea/models/menu.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:jiffy/jiffy.dart' show Jiffy;
+import 'package:shelf/shelf_io.dart' as shelf_io show serve;
+import 'package:shelf_static/shelf_static.dart' show createStaticHandler;
+import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
 
 /// 混合 - 远程
 mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
@@ -86,6 +89,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     // 设置域名
     state.themeConfig.domain = 'http://localhost:${state.previewPort}';
     await renderAll();
+      await _enableStaticServer();
   }
 
   /// 渲染所有
@@ -205,11 +209,18 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       javascriptRuntime.executePendingJob();
       var asyncResult = await javascriptRuntime.handlePromise(jsResult);
 
-      cssString += asyncResult.stringResult;
-    }
-    // 写入内容
-    if (cssString.isNotEmpty) {
-      await FS.writeString(FS.joinR(cssFolderPath, 'main.css'), cssString);
+  /// 启动静态文件服务器
+  Future<void> _enableStaticServer() async {
+    try {
+      if (fileServer == null) {
+        // 启动服务
+        var handler = createStaticHandler(state.buildDir, defaultDocument: 'index.html');
+        fileServer = await shelf_io.serve(handler, 'localhost', state.previewPort);
+      }
+      // 打开网址
+      await launchUrlString(state.themeConfig.domain);
+    } catch (e) {
+      throw Mistake(message: 'enable static server failed: $e', hint: 'renderError');
     }
   }
 
