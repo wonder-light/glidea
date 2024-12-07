@@ -11,7 +11,7 @@
   'setting': '設 置',
   'visitSite': '訪問網站',
   'renderSuccess': '渲染完毕，快去预览吧！',
-  'renderError': '渲染失敗，請檢查 hosts 文件中 127.0.0.1 是否指向 localhost。確認配置正確後，嘗試重啟應用。',
+  'renderError': '渲染失敗，請確認配置正確後，嘗試重啓應用',
   'syncWarning': '必須完成配置才能同步哦！',
   'syncSuccess': '同步成功啦！',
   'syncError1': '同步遇到了错误，请查閱',

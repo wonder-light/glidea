@@ -11,8 +11,7 @@
   'setting': 'La mise en place',
   'visitSite': 'Visitez le site',
   'renderSuccess': 'Félicitations, le rendu est terminé et regardez en avant-première.',
-  'renderError':
-  'Le rendu a échoué, veuillez vérifier si 127.0.0.1 dans le fichier hosts pointe vers localhost. Après avoir vérifié que la configuration est correcte, essayez de redémarrer l\'application.',
+  'renderError': 'Le rendu a échoué, assurez-vous que la configuration est correcte et essayez de redémarrer l’application',
   'syncWarning': 'Vous devez compléter la configuration pour synchroniser !',
   'syncSuccess': 'La synchronisation a réussi !',
   'syncError1': 'Désolé, la synchronisation a rencontré une erreur, veuillez vous référer à',

@@ -11,8 +11,7 @@
   'setting': 'settings',
   'visitSite': 'Visit the website',
   'renderSuccess': 'Congratulations, the rendering is complete, go ahead and preview.',
-  'renderError':
-  'Rendering failed, please check whether 127.0.0.1 in the hosts file points to localhost. After confirming that the configuration is correct, try to restart the application.',
+  'renderError': 'The rendering failed. Please confirm that the configuration is correct and try to restart the application',
   'syncWarning': 'You must complete the configuration to synchronize!',
   'syncSuccess': 'Synchronization succeeded!',
   'syncError1': 'Sorry, synchronization encountered an error, please refer to',
