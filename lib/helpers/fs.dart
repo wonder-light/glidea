@@ -37,15 +37,26 @@ class FS {
   /// 同步地将字符串写入文件
   static void writeStringSync(String path, String content) => File(path).writeAsStringSync(content);
 
-  /// 拷贝文件夹
+  /// 拷贝文件夹或者文件
   static void copySync(String src, String target) {
-    for (var file in Directory(src).listSync(recursive: true)) {
-      var isFile = file is File;
-      var relative = p.relative(isFile ? file.parent.path : file.path, from: src);
-      FS.createDirSync(p.join(target, relative));
-      if (isFile) {
-        relative = p.relative(file.path, from: src);
-        file.copySync(p.join(target, relative));
+    // 如果 src 是文件
+    if (File(src) case File file when file.existsSync()) {
+      file.copySync(target);
+      return;
+    }
+    // 如果 src 是目录
+    if (Directory(src) case Directory directory when directory.existsSync()) {
+      // 获取目录下的所有子目录包括文件
+      for (var file in directory.listSync(recursive: true)) {
+        var isFile = file is File;
+        // 获取目录的相对路径
+        var relative = p.relative(isFile ? file.parent.path : file.path, from: src);
+        FS.createDirSync(p.join(target, relative));
+        if (isFile) {
+          // 获取文件的相对路径
+          relative = p.relative(file.path, from: src);
+          file.copySync(p.join(target, relative));
+        }
       }
     }
   }
@@ -55,7 +66,17 @@ class FS {
     yield* Directory(src).list(recursive: true).where((item) => item is File).cast<File>();
   }
 
-  /// 同步复制此文件
+  /// 移动子目录下的所有文件到指定目录, 包括文件
+  static void moveSubFile(String src, String target) async {
+    if (dirExistsSync(target)) createDirSync(target);
+    for (var item in Directory(src).listSync()) {
+      // 获取文件的相对路径
+      var relative = p.relative(item.path, from: src);
+      item.renameSync(p.join(target, relative));
+    }
+  }
+
+  /// 复制此文件
   static Future<File> copyFile(String src, String target) => File(src).copy(target);
 
   /// 同步复制此文件
