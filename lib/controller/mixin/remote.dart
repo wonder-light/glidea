@@ -131,6 +131,8 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     });
     // 菜单数据
     _menusData = state.menus.map((m) => m.copyWith<Menu>({'link': '${themeConfig.domain}${m.link}'})!).toList();
+  /// 构建 HTML 模板
+  Future<void> _buildHtmlTemplate() async {
     // 渲染数据路径
     final renderDataPath = FS.joinR(state.supportDir, 'render_data.json');
     try {
@@ -151,6 +153,20 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       await FS.writeString(renderDataPath, data.toJson());
     } catch (e) {
       throw Mistake(message: 'build template’s render data failed: $e', hint: 'renderError');
+    }
+    // 通信 node
+    try {
+      // 目标路径  TODO: 目前只在 Windows 平台使用, 且需要有 node 环境
+      final nodeJsPath = FS.joinR(state.baseDir, 'assets/js/index.js');
+      var pro = await Process.start('node', [nodeJsPath, renderDataPath], mode: ProcessStartMode.normal);
+      // 获取输出
+      for (var item in await pro.stdout.transform(utf8.decoder).toList()) {
+        Log.i(item);
+      }
+      // 等待退出
+      await pro.exitCode;
+    } catch (e) {
+      throw Mistake(message: 'start node process failed: $e', hint: 'renderError');
     }
   }
 
