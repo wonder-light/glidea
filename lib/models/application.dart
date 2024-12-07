@@ -58,7 +58,7 @@ class ApplicationDb extends ApplicationBase {
 /// APP 应用设置
 @jsonSerializable
 mixin class ApplicationSetting {
-  ///基本目录
+  ///基本目录 - 当前应用所在的目录
   @JsonProperty()
   String baseDir = '';
 
@@ -69,6 +69,10 @@ mixin class ApplicationSetting {
   ///构建输出目录
   @JsonProperty()
   String buildDir = '';
+
+  ///应用程序支持的目录 - ApplicationSupportDirectory
+  @JsonProperty()
+  String supportDir = '';
 
   /// 预览端口
   @JsonProperty()

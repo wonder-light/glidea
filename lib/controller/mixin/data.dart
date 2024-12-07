@@ -3,6 +3,7 @@ import 'dart:ui' show Locale;
 
 import 'package:get/get.dart' show Get, GetStringUtils, LocalesIntl, StateController;
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
@@ -43,13 +44,13 @@ mixin DataProcess on StateController<Application> {
 
   /// 检查 .glidea 文件夹是否存在，如果不存在，则将其初始化
   Future<void> checkDir(Application site) async {
-    // 应用程序支持目录
-    final support = FS.normalize((await getApplicationSupportDirectory()).path);
+    // 应用程序支持目录, 即配置所在的目录
+    final appConfigFolder = FS.normalize((await getApplicationSupportDirectory()).path);
     // 应用程序文档目录
     final document = FS.normalize((await getApplicationDocumentsDirectory()).path);
     // 检查是否存在 .hve-notes 文件夹，如果存在，则加载它，否则使用默认配置。
-    final appConfigFolderOld = FS.join(support, '.hve-notes');
-    final appConfigFolder = FS.join(support, '.glidea');
+    final appConfigFolderOld1 = FS.join(appConfigFolder, '.hve-notes');
+    final appConfigFolderOld2 = FS.join(appConfigFolder, '.glidea');
     final appConfigPath = FS.join(appConfigFolder, 'config.json');
     var defaultSiteDir = FS.join(document, 'glidea');
 
@@ -57,17 +58,26 @@ mixin DataProcess on StateController<Application> {
     site.appDir = site.appDir.isEmpty ? defaultSiteDir : site.appDir;
     site.baseDir = FS.normalize(Directory.current.path);
     site.buildDir = FS.join(appConfigFolder, 'output');
+    site.supportDir = appConfigFolder;
 
     // Log.i(Directory('assets/public').existsSync()); => true
     try {
-      // 如果存在的话 '.hve-notes' 配置文件夹，将文件夹名称更改为 '.glidea'
-      if (!FS.pathExistsSync(appConfigFolder) && FS.pathExistsSync(appConfigFolderOld)) {
-        FS.renameDirSync(appConfigFolderOld, appConfigFolder);
+      // 如果存在的话 '.gridea' 配置文件夹，则将其移动到 appConfigFolder 目录下
+      if (FS.pathExistsSync(appConfigFolderOld2)) {
+        FS.moveSubFile(appConfigFolderOld2, appConfigFolder);
+      }
+      // 如果存在的话 '.hve-notes' 配置文件夹，则将其移动到 appConfigFolder 目录下
+      if (FS.pathExistsSync(appConfigFolderOld1)) {
+        FS.moveSubFile(appConfigFolderOld1, appConfigFolder);
       }
       // 创建默认目录 '.glidea'
       if (!FS.pathExistsSync(appConfigFolder)) {
         FS.createDirSync(appConfigFolder);
       }
+    } catch (e) {
+      throw Mistake(message: 'move old config folder failed: $e');
+    }
+    try {
       // 创建 config.json 文件
       if (!FS.pathExistsSync(appConfigPath)) {
         FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
@@ -84,9 +94,12 @@ mixin DataProcess on StateController<Application> {
       if (!FS.pathExistsSync(site.buildDir)) {
         FS.createDirSync(site.buildDir);
       }
-      // 当保存的目录修改后将旧目录移动到新目录
-      if (site.appDir != defaultSiteDir) {
-        Log.i('${site.appDir}\n$defaultSiteDir');
+    } catch (e) {
+      throw Mistake(message: 'create or read config.json file failed: $e');
+    }
+    // 当保存的目录修改后将旧目录移动到新目录
+    if (site.appDir != defaultSiteDir) {
+      try {
         if (!FS.dirExistsSync(site.appDir)) {
           // 目录不存在时才可以重命名
           FS.renameDirSync(defaultSiteDir, site.appDir);
@@ -97,8 +110,11 @@ mixin DataProcess on StateController<Application> {
 
         FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
         return;
+      } catch (e) {
+        throw Mistake(message: 'move appDir failed: $e');
       }
-
+    }
+    try {
       // 网站文件夹不存在
       if (!FS.pathExistsSync(site.appDir)) {
         FS.createDirSync(site.appDir);
@@ -123,7 +139,7 @@ mixin DataProcess on StateController<Application> {
         FS.copyFileSync(outputFavicon, sourceFavicon);
       }
     } catch (e) {
-      Log.w(e);
+      throw Mistake(message: 'copy default files to appDir failed: $e');
     }
   }
 
