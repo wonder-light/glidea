@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt, Transition;
 import 'package:glidea/helpers/json.dart';
-import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/theme.dart';
 import 'package:glidea/lang/translations.dart';
 import 'package:glidea/routes/bindings.dart';

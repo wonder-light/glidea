@@ -24,5 +24,5 @@ class Uid {
   static String get v8 => Uid.uid.v8();
 
   /// 生成短 uid
-  static String get shortId => v4.substring(0, 13).toUpperCase();
+  static String get shortId => v4.replaceAll('-', '').substring(0, 13).toUpperCase();
 }
