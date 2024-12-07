@@ -20,13 +20,16 @@ class SiteController extends StateController<Application> with EventBus, DataPro
   @override
   void onInit() async {
     super.onInit();
-    futurize(initData);
+    setLoading();
+    setSuccess(await initData());
+    initState();
+    refresh();
   }
 
   @override
   void dispose() async {
     super.dispose();
-    Log.w('site dispose');
+    Log.i('site dispose');
     await saveSiteData();
   }
 

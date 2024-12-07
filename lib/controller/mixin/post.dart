@@ -7,10 +7,19 @@ import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/post.dart';
 
+import 'data.dart';
+import 'tag.dart';
+
 /// 混合 - 文章
-mixin PostSite on StateController<Application> {
+mixin PostSite on StateController<Application>, DataProcess, TagSite {
   /// 菜单
   List<Post> get posts => state.posts;
+
+  @override
+  void initState() {
+    super.initState();
+    updateTagUsedField();
+  }
 
   /// 创建文章
   Post createPost() => Post();

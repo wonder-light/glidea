@@ -31,15 +31,20 @@ mixin DataProcess on StateController<Application> {
   Future<Application> initData() async {
     var site = Application();
     try {
+      // 检查目录
       await checkDir(site);
-      var data = await loadSiteData(site);
-      // 设置语言
-      setLanguage(data.language, data: data);
-      return data;
+      // 加载数据
+      site = await loadSiteData(site);
     } catch (e) {
-      Log.i(e);
-      return site;
+      Log.e(e);
     }
+    return site;
+  }
+
+  /// 控制器状态设置为 success 后调佣
+  void initState() async {
+    // 设置语言
+    setLanguage(state.language);
   }
 
   /// 检查 .glidea 文件夹是否存在，如果不存在，则将其初始化
@@ -209,6 +214,15 @@ mixin DataProcess on StateController<Application> {
     refresh();
     // 保存数据
     saveSiteData();
+  /// 设置语言代码
+  void setLanguage(String code) {
+    if (languages[code] == null) {
+      code = languages.keys.first;
+    }
+    // 刚开始加载数据时 [state] 为 null
+    state.language = code;
+    var [lang, country] = code.split('_');
+    Get.locale = Locale(lang, country);
   }
 
   // 从路径中获取 Gridea 的数据
