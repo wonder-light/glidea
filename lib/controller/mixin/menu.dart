@@ -1,5 +1,4 @@
 ﻿import 'package:get/get.dart' show FirstWhereOrNullExt, Get, StateController;
-import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
@@ -16,7 +15,7 @@ mixin MenuSite on StateController<Application>, DataProcess {
   Menu createMenu() => Menu();
 
   /// 更新菜单
-  void updateMenu({required Menu newData, Menu? oldData}) {
+  void updateMenu({required Menu newData, Menu? oldData}) async {
     oldData = state.menus.firstWhereOrNull((m) => m == oldData);
     if (oldData == null) {
       // 添加标签
@@ -27,34 +26,39 @@ mixin MenuSite on StateController<Application>, DataProcess {
       oldData.openType = newData.openType;
       oldData.link = newData.link;
     }
-    refresh();
-    saveSiteData().then((_) => Get.success('menuSuccess'));
+    try {
+      await saveSiteData();
+      Get.success('menuSuccess');
+    } catch (e) {
+      Get.error('saveError');
+    }
   }
 
   /// 删除新标签
-  void removeMenu(Menu menu) {
+  void removeMenu(Menu menu) async {
     if (!state.menus.remove(menu)) {
       Get.error('menuDeleteFailure');
       return;
     }
-
-    refresh();
-    saveSiteData().then((_) => Get.success('menuDelete'));
+    try {
+      await saveSiteData();
+      Get.success('menuDelete');
+    } catch (e) {
+      Get.error('menuDeleteFailure');
+    }
   }
 
   /// 获取可以引用的链接
   List<TLinkData> getReferenceLink() {
-    // 可以引用的链接
-    var links = state.menus.map<TLinkData>((m) => (name: m.name, link: m.link)).toList();
-    // 含有 post 文章的链接
-    var postMenus = links.where((t) => t.link.contains('/$defaultPostPath/')).toList();
-    // 冲 posts 中去除含有 postMenus 的文章
-    var posts = state.posts
-        .map<TLinkData>((p) => (name: p.title, link: '/$defaultPostPath/${p.fileName}'))
-        .where((p) => !postMenus.any((t) => t.link == p.link))
-        .toList();
-    // 合并
-    links.addAll(posts);
-    return links;
+    final postPath = '/${state.themeConfig.postPath}/';
+    return [
+      for (var menu in state.menus)
+        if (!menu.link.startsWith(postPath))
+          // 筛选出不包含 post 的链接
+          (name: menu.name, link: menu.link),
+      for (var post in state.posts)
+        // posts 的链接
+        (name: post.title, link: '$postPath${post.fileName}'),
+    ];
   }
 }
