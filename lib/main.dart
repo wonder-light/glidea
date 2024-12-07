@@ -38,8 +38,7 @@ class App extends StatelessWidget {
       initialRoute: AppRouter.articles,
       defaultTransition: Transition.fadeIn,
       binds: SiteBind.bings,
-      enableLog: true,
-      logWriterCallback: Log.logWriter,
+      enableLog: !kReleaseMode,
       builder: (context, child) => ResponsiveBreakpoints.builder(
         child: child!,
         breakpoints: [

@@ -24,13 +24,14 @@ class SiteController extends StateController<Application> with EventBus, DataPro
     setSuccess(await initData());
     initState();
     refresh();
+    Log.initState(this);
   }
 
   @override
   void dispose() async {
-    super.dispose();
-    Log.i('site dispose');
     await saveSiteData();
+    Log.dispose();
+    super.dispose();
   }
 
   /// 获取首页左侧面板上显示的数量

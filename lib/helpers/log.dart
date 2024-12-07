@@ -1,10 +1,16 @@
-﻿import 'package:get/get.dart' show Get;
-import 'package:logger/logger.dart' show Logger, Level;
+﻿import 'package:flutter/foundation.dart' show kReleaseMode;
+import 'package:glidea/controller/site.dart';
+import 'package:glidea/helpers/fs.dart';
+import 'package:logger/logger.dart' show AdvancedFileOutput, ProductionFilter, Level, Logger;
 
 export 'package:logger/logger.dart' show Level;
 
 class Log {
-  static final Logger instance = Logger();
+  ///保存单例
+  static late final Logger _singleton;
+
+  // [Logger] 实例
+  static Logger get instance => _singleton;
 
   /// 应用程序当前的日志级别.
   ///
@@ -12,6 +18,25 @@ class Log {
   static Level get level => Logger.level;
 
   static set level(Level logLevel) => Logger.level = logLevel;
+
+  /// 初始化
+  static void initState(SiteController site) {
+    Level? level;
+    ProductionFilter? filter;
+    AdvancedFileOutput? output;
+    // 生产模式
+    if (kReleaseMode) {
+      level = Level.info;
+      filter = ProductionFilter();
+      output = AdvancedFileOutput(path: FS.joinR(site.state.supportDir, 'log'));
+    }
+    _singleton = Logger(filter: filter, output: output, level: level);
+  }
+
+  /// 是否 log 资源
+  static void dispose() {
+    Log.instance.close();
+  }
 
   /// 在级别记录消息 [Level.trace]
   static void t(dynamic message, {DateTime? time, Object? error, StackTrace? stackTrace}) {
@@ -46,14 +71,5 @@ class Log {
   /// 用 [Log.level] 级别记录消息
   static void log(Level level, dynamic message, {DateTime? time, Object? error, StackTrace? stackTrace}) {
     Log.instance.log(level, message, time: time, error: error, stackTrace: stackTrace);
-  }
-
-  static void logWriter(String value, {bool isError = false}) {
-    if (!Get.isLogEnable) return;
-    if (isError) {
-      Log.e(value);
-    } else {
-      Log.d(value);
-    }
   }
 }
