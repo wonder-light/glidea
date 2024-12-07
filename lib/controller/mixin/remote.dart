@@ -1,9 +1,12 @@
-﻿import 'package:flutter_js/flutter_js.dart' show HandlePromises, getJavascriptRuntime;
+﻿import 'dart:convert' show utf8;
+import 'dart:io' show HttpServer, Process, ProcessStartMode;
+
 import 'package:get/get.dart' show Get, StateController;
 import 'package:glidea/controller/mixin/data.dart';
 import 'package:glidea/controller/mixin/theme.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/deploy.dart';
+import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
@@ -47,11 +50,11 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 菜单数据
   List<Menu> _menusData = [];
 
-  /// 是不是首页
-  bool _isHomepage = false;
-
   /// 当前主题路径
   String _themePath = '';
+
+  /// 今天文件服务
+  HttpServer? fileServer;
 
   /// 发布站点
   Future<void> publishSite() async {
@@ -66,17 +69,15 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       return;
     }
     try {
+      // 设置域名
+      state.themeConfig.domain = state.remote.domain;
       // render
       await renderAll();
-      var result = await Deploy.create(state).publish();
-      if (result != Incident.success) {
-        Get.error(result.message);
-        return;
-      }
+      await Deploy.create(state).publish();
       // 成功
       Get.success('syncSuccess');
-    } catch (e) {
-      Get.error('syncError1');
+    } on Mistake catch (e) {
+      Get.error(e.hint);
     }
   }
 
@@ -86,18 +87,28 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       Get.error('noValidCurrentTheme');
       return;
     }
-    // 设置域名
-    state.themeConfig.domain = 'http://localhost:${state.previewPort}';
-    await renderAll();
+    try {
+      // 设置域名
+      state.themeConfig.domain = 'http://localhost:${state.previewPort}';
+      await renderAll();
+      // 启动静态文件服务
       await _enableStaticServer();
+      // 成功
+      Get.success('renderSuccess');
+    } on Mistake catch (e) {
+      Get.error(e.hint);
+    }
   }
 
   /// 渲染所有
+  ///
+  /// 当构建失败时抛出 [Mistake] 错误
   Future<void> renderAll() async {
     _themePath = FS.joinR(state.appDir, 'themes', state.themeConfig.selectTheme);
     await _clearOutputFolder();
     await _formatDataForRender();
-    await _buildCss();
+    await _buildHtmlTemplate();
+    await _copyFiles();
   }
 
   /// 清理输出目录
@@ -106,35 +117,49 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       FS.deleteDirSync(state.buildDir);
       FS.createDirSync(state.buildDir);
     } catch (e) {
-      Log.i('Delete file error: $e');
+      throw Mistake(message: 'clear output folder failed\n$e', hint: 'renderError');
     }
   }
 
   /// 为呈现页面格式化数据
   Future<void> _formatDataForRender() async {
-    // 标签
-    _tagsData = state.tags.map(_tagToRender).toList();
-    // 标签 slug - 对象
-    _tagsMap = {
-      for (var item in _tagsData) item.slug: item,
-    };
-    // 已经发布的 post
-    var publishPost = state.posts.where(_filterPublishPost);
-    // post 数据
-    _postsData = publishPost.map(_postToRender).toList();
-    // 对 post 进行排序, 置顶优先, 其次新发布的在前
-    // compareFn(a, b) 返回值    排序顺序
-    //  > 0	                    a 在 b 后，如 [b, a]
-    //  < 0	                    a 在 b 前，如 [a, b]
-    //  === 0	                  保持 a 和 b 原来的顺序
-    _postsData.sort((prev, next) {
-      int com = (next.isTop ? 1 : 0) - (prev.isTop ? 1 : 0);
-      if (com != 0) return com;
-      com = Jiffy.parse(next.date).diff(Jiffy.parse(prev.date)).toInt();
-      return com;
-    });
-    // 菜单数据
-    _menusData = state.menus.map((m) => m.copyWith<Menu>({'link': '${themeConfig.domain}${m.link}'})!).toList();
+    try {
+      // 标签
+      _tagsData = state.tags.map(_tagToRender).toList();
+      // 标签 slug - 对象
+      _tagsMap = {
+        for (var item in _tagsData) item.slug: item,
+      };
+    } catch (e) {
+      throw Mistake(message: 'format Tag to TagRender error\n$e', hint: 'renderError');
+    }
+    try {
+      // 已经发布的 post
+      var publishPost = state.posts.where(_filterPublishPost);
+      // post 数据
+      _postsData = publishPost.map(_postToRender).toList();
+      // 对 post 进行排序, 置顶优先, 其次新发布的在前
+      // compareFn(a, b) 返回值    排序顺序
+      //  > 0	                    a 在 b 后，如 [b, a]
+      //  < 0	                    a 在 b 前，如 [a, b]
+      //  === 0	                  保持 a 和 b 原来的顺序
+      _postsData.sort((prev, next) {
+        int com = (next.isTop ? 1 : 0) - (prev.isTop ? 1 : 0);
+        if (com != 0) return com;
+        com = Jiffy.parse(next.date).diff(Jiffy.parse(prev.date)).toInt();
+        return com;
+      });
+    } catch (e) {
+      throw Mistake(message: 'format Post to PostRender error\n$e', hint: 'renderError');
+    }
+    try {
+      // 菜单数据
+      _menusData = state.menus.map((m) => m.copy<Menu>()!).toList();
+    } catch (e) {
+      throw Mistake(message: 'format Menu data error\n$e', hint: 'renderError');
+    }
+  }
+
   /// 构建 HTML 模板
   Future<void> _buildHtmlTemplate() async {
     // 渲染数据路径
@@ -174,40 +199,33 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     }
   }
 
-  /// 构建 CSS
-  Future<void> _buildCss() async {
-    // 使用 css
-    final cssFilePath = FS.joinR(_themePath, 'assets', 'styles', 'main.css');
-    final cssFolderPath = FS.joinR(state.buildDir, 'styles');
-    final styleOverridePath = FS.joinR(_themePath, 'style-override.js');
-    // 结果
-    String cssString = '';
-    // 创建 styles 目录
-    FS.createDirSync(cssFolderPath);
-    // 获取 main.css 内容
-    if (FS.fileExistsSync(cssFilePath)) {
-      cssString += await FS.readString(cssFilePath);
+  /// 复制文件
+  Future<void> _copyFiles() async {
+    try {
+      final items = {
+        (input: 'post-images', output: 'post-images', isThemePath: false),
+        (input: 'images', output: 'images', isThemePath: false),
+        (input: 'favicon.ico', output: 'favicon.ico', isThemePath: false),
+        (input: 'static', output: '', isThemePath: false),
+        (input: 'assets/static', output: '', isThemePath: true),
+        (input: 'assets/media', output: 'media', isThemePath: true),
+      };
+      for (var item in items) {
+        final inputPath = FS.joinR(item.isThemePath ? _themePath : state.appDir, item.input);
+        final outputPath = FS.joinR(state.buildDir, item.output);
+        if (FS.pathExistsSync(inputPath)) {
+          FS.copySync(inputPath, outputPath);
+        }
+      }
+      // CNAME
+      final cnamePath = FS.joinR(state.buildDir, 'CNAME');
+      if (state.remote.cname.isNotEmpty) {
+        FS.writeStringSync(cnamePath, state.remote.cname);
+      }
+    } catch (e) {
+      throw Mistake(message: 'copy files failed on render all: $e', hint: 'renderError');
     }
-    // 设置 style override
-    if (FS.fileExistsSync(styleOverridePath)) {
-      // 变量
-      String custom = themeCustomConfig.toJson();
-      String js = 'module = {};let params = $custom;';
-      // 内容
-      js += await FS.readString(styleOverridePath);
-      js += '''
-      if (generateOverride != null) {
-        generateOverride(params)
-      }
-      else if (module.exports instanceof Function) {
-        module.exports(params)
-      }
-      ''';
-      // 执行 js
-      final javascriptRuntime = getJavascriptRuntime();
-      var jsResult = await javascriptRuntime.evaluateAsync(js, sourceUrl: styleOverridePath);
-      javascriptRuntime.executePendingJob();
-      var asyncResult = await javascriptRuntime.handlePromise(jsResult);
+  }
 
   /// 启动静态文件服务器
   Future<void> _enableStaticServer() async {
@@ -240,8 +258,10 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
         post.tags.removeAt(i);
         continue;
       }
-      // 设置 tag 的 count 值
-      value.count++;
+      // 设置 tag 的 count 值, 需要已发布且没有隐藏
+      if (post.published && !post.hideInList) {
+        value.count++;
+      }
     }
 
     return post.published;
