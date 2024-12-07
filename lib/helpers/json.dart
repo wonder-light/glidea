@@ -65,6 +65,7 @@ class JsonHelp {
           typeOf<List<ConfigBase>>(): (value) => value.cast<ConfigBase>(),
           typeOf<List<SelectOption>>(): (value) => value.cast<SelectOption>(),
           typeOf<List<TJsonMap>>(): (value) => value.cast<TJsonMap>(),
+          typeOf<Map<String, dynamic>>(): (value) => Map<String, dynamic>.from(value),
         },
         converters: {
           FieldType: FieldTypeConverter(),
