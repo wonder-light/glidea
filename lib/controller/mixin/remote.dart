@@ -131,6 +131,27 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     });
     // 菜单数据
     _menusData = state.menus.map((m) => m.copyWith<Menu>({'link': '${themeConfig.domain}${m.link}'})!).toList();
+    // 渲染数据路径
+    final renderDataPath = FS.joinR(state.supportDir, 'render_data.json');
+    try {
+      // 渲染数据
+      final data = {
+        'posts': _postsData,
+        'tags': _tagsData,
+        'menus': _menusData,
+        'themeConfig': themeConfig,
+        'customConfig': themeCustomConfig,
+        'commentSetting': state.comment,
+        'utils': {},
+        'isHomepage': false,
+        'appDir': state.appDir,
+        'buildDir': state.buildDir,
+        'minify': true,
+      };
+      await FS.writeString(renderDataPath, data.toJson());
+    } catch (e) {
+      throw Mistake(message: 'build template’s render data failed: $e', hint: 'renderError');
+    }
   }
 
   /// 构建 CSS
