@@ -82,7 +82,7 @@ mixin DataProcess on StateController<Application> {
         FS.createDirSync(appConfigFolder);
       }
     } catch (e) {
-      throw Mistake(message: 'move old config folder failed: $e');
+      throw Mistake(message: 'move old config folder failed: \n$e');
     }
     try {
       // 创建 config.json 文件
@@ -102,7 +102,7 @@ mixin DataProcess on StateController<Application> {
         FS.createDirSync(site.buildDir);
       }
     } catch (e) {
-      throw Mistake(message: 'create or read config.json file failed: $e');
+      throw Mistake(message: 'create or read config.json file failed: \n$e');
     }
     // 当保存的目录修改后将旧目录移动到新目录
     if (site.appDir != defaultSiteDir) {
@@ -118,7 +118,7 @@ mixin DataProcess on StateController<Application> {
         FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
         return;
       } catch (e) {
-        throw Mistake(message: 'move appDir failed: $e');
+        throw Mistake(message: 'move appDir failed: \n$e');
       }
     }
     try {
@@ -146,7 +146,7 @@ mixin DataProcess on StateController<Application> {
         FS.copyFileSync(outputFavicon, sourceFavicon);
       }
     } catch (e) {
-      throw Mistake(message: 'copy default files to appDir failed: $e');
+      throw Mistake(message: 'copy default files to appDir failed: \n$e');
     }
   }
 
@@ -164,7 +164,7 @@ mixin DataProcess on StateController<Application> {
         // 将配置全部合并到 base 中
         site = site.copyWith<Application>(config)!;
       } catch (e) {
-        throw Mistake(message: 'read and merge site data failed: $e');
+        throw Mistake(message: 'read and merge site data failed: \n$e');
       }
     } else {
       // 兼容 Gridea, 获取数据
@@ -185,7 +185,7 @@ mixin DataProcess on StateController<Application> {
         site.themeCustomConfig = FS.readStringSync(themePath).deserialize<TJsonMap>()!;
       }
     } catch (e) {
-      throw Mistake(message: 'set theme data failed: $e');
+      throw Mistake(message: 'set theme data failed: \n$e');
     }
     // APP 信息
     var packageInfo = await PackageInfo.fromPlatform();
@@ -214,7 +214,7 @@ mixin DataProcess on StateController<Application> {
       // 更新应用配置
       FS.writeStringSync(FS.join(configPath, 'config.json'), site.copy<ApplicationDb>()!.toJson());
     } catch (e) {
-      throw Mistake(message: 'write application config failed: $e');
+      throw Mistake(message: 'write application config failed: \n$e');
     }
     // 保存后刷新数据
     refresh();

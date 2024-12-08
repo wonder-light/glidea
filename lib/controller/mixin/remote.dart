@@ -126,7 +126,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       FS.deleteDirSync(state.buildDir);
       FS.createDirSync(state.buildDir);
     } catch (e) {
-      throw Mistake(message: 'clear output folder failed\n$e', hint: 'renderError');
+      throw Mistake(message: 'clear output folder failed: \n$e', hint: 'renderError');
     }
   }
 
@@ -140,7 +140,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
         for (var item in _tagsData) item.slug: item,
       };
     } catch (e) {
-      throw Mistake(message: 'format Tag to TagRender error\n$e', hint: 'renderError');
+      throw Mistake(message: 'format Tag to TagRender error: \n$e', hint: 'renderError');
     }
     try {
       // 已经发布的 post
@@ -159,13 +159,13 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
         return com;
       });
     } catch (e) {
-      throw Mistake(message: 'format Post to PostRender error\n$e', hint: 'renderError');
+      throw Mistake(message: 'format Post to PostRender error: \n$e', hint: 'renderError');
     }
     try {
       // 菜单数据
       _menusData = state.menus.map((m) => m.copy<Menu>()!).toList();
     } catch (e) {
-      throw Mistake(message: 'format Menu data error\n$e', hint: 'renderError');
+      throw Mistake(message: 'format Menu data error: \n$e', hint: 'renderError');
     }
   }
 
@@ -190,7 +190,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       };
       await FS.writeString(renderDataPath, data.toJson());
     } catch (e) {
-      throw Mistake(message: 'build template’s render data failed: $e', hint: 'renderError');
+      throw Mistake(message: 'build template’s render data failed: \n$e', hint: 'renderError');
     }
     // 通信 node
     try {
@@ -204,7 +204,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       // 等待退出
       await pro.exitCode;
     } catch (e) {
-      throw Mistake(message: 'start node process failed: $e', hint: 'renderError');
+      throw Mistake(message: 'start node process failed: \n$e', hint: 'renderError');
     }
   }
 
@@ -232,7 +232,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
         FS.writeStringSync(cnamePath, state.remote.cname);
       }
     } catch (e) {
-      throw Mistake(message: 'copy files failed on render all: $e', hint: 'renderError');
+      throw Mistake(message: 'copy files failed on render all: \n$e', hint: 'renderError');
     }
   }
 
@@ -247,7 +247,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       // 打开网址
       await launchUrlString(state.themeConfig.domain);
     } catch (e) {
-      throw Mistake(message: 'enable static server failed: $e', hint: 'renderError');
+      throw Mistake(message: 'enable static server failed: \n$e', hint: 'renderError');
     }
   }
 

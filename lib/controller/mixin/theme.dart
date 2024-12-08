@@ -179,7 +179,7 @@ mixin ThemeSite on StateController<Application>, DataProcess {
       // Map 在合并后需要使用新的 Map 对象, 旧的 Map 对象在序列化时会报错
       state.themeCustomConfig = state.themeCustomConfig.mergeMaps(items);
     } catch (e) {
-      throw Mistake(message: 'update theme config and custom theme config failed: $e');
+      throw Mistake(message: 'update theme config and custom theme config failed: \n$e');
     }
     // 保存数据
     await saveSiteData();
