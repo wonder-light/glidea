@@ -124,7 +124,7 @@ class _HomeWidgetState extends State<HomeWidget> {
           ),
         ),
       ),
-      bottomNavigationBar: breakpoints.isDesktop ? null : _buildMobileBottomNav(),
+      bottomNavigationBar: _buildMobileBottomNav(),
     );
   }
 
@@ -217,7 +217,7 @@ class _HomeWidgetState extends State<HomeWidget> {
     // 按钮样式
     ButtonStyle style = ButtonStyle(padding: WidgetStatePropertyAll(kAllPadding16 / 2));
     // 内容
-    Widget childWidget = Row(
+    Widget contentWidget = Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(item.icon),
@@ -259,12 +259,16 @@ class _HomeWidgetState extends State<HomeWidget> {
     // 加上边距
     return Padding(
       padding: kVerPadding8,
+      // 包裹的按钮
       child: childWidget,
     );
   }
 
   /// 构建移动端的底部导航栏
-  Widget _buildMobileBottomNav() {
+  Widget? _buildMobileBottomNav() {
+    if (breakpoints.isDesktop) {
+      return null;
+    }
     return Obx(
       () => BottomNavigationBar(
         items: [
