@@ -1,7 +1,8 @@
-﻿import 'dart:ui' show AppExitResponse;
+﻿import 'dart:math' show pi;
+import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StateExt, StringExtension, Trans;
+import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, DoubleExtension, Obx, StateExt, StringExtension, Trans;
 import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/setting/setting_editor.dart';
@@ -36,6 +37,9 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   /// 移动端的当前路由索引
   var mobileIndex = 0.obs;
+
+  /// 同步图标的旋转角度
+  var syncIconTurns = 0.0.obs;
 
   /// 当前显示的路由
   var showRouter = AppRouter.articles;
@@ -222,17 +226,36 @@ class _HomeWidgetState extends State<HomeWidget> {
       ],
     );
     // 包裹的按钮
-    childWidget = isFilled
-        ? FilledButton(
-            onPressed: item.call,
-            style: style,
-            child: childWidget,
-          )
-        : OutlinedButton(
-            onPressed: item.call,
-            style: style,
-            child: childWidget,
+    late Widget childWidget;
+    if (isFilled) {
+      childWidget = FilledButton(
+        onPressed: item.call,
+        style: style,
+        child: Obx(() {
+          if (!site.inBeingSync.value) {
+            return contentWidget;
+          }
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedRotation(
+                turns: syncIconTurns.value,
+                duration: const Duration(seconds: 2),
+                onEnd: updateSyncRotate,
+                child: const Icon(PhosphorIconsRegular.arrowsClockwise),
+              )
+            ],
           );
+        }),
+      );
+    } else {
+      childWidget = OutlinedButton(
+        onPressed: item.call,
+        style: style,
+        child: contentWidget,
+      );
+    }
     // 加上边距
     return Padding(
       padding: kVerPadding8,
@@ -296,8 +319,17 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   /// 发布网页
-  void publish() {
-    // TODO: 发布网页
+  void publish() async {
+    site.inBeingSync.removeListener(updateSyncRotate);
+    site.inBeingSync.addListener(updateSyncRotate);
+    site.publishSite();
+
+  }
+
+  /// 更新旋转角度
+  void updateSyncRotate() {
+    // 下一帧调用
+    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) => syncIconTurns.value += pi);
   }
 
   /// 打开设置

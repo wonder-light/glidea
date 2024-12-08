@@ -1,7 +1,7 @@
 ﻿import 'dart:convert' show utf8;
 import 'dart:io' show HttpServer, Process, ProcessStartMode;
 
-import 'package:get/get.dart' show Get, StateController;
+import 'package:get/get.dart' show Get, StateController, BoolExtension;
 import 'package:glidea/controller/mixin/data.dart';
 import 'package:glidea/controller/mixin/theme.dart';
 import 'package:glidea/enum/enums.dart';
@@ -23,6 +23,9 @@ import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
 
 /// 混合 - 远程
 mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
+  /// 是否这正在同步中
+  final inBeingSync = false.obs;
+
   /// 检测是否可以进行发布
   bool get checkPublish {
     final remote = state.remote;
@@ -69,6 +72,8 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       return;
     }
     try {
+      // 设置同步中
+      inBeingSync.value = true;
       // 设置域名
       state.themeConfig.domain = state.remote.domain;
       // render
@@ -77,7 +82,10 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       // 成功
       Get.success('syncSuccess');
     } on Mistake catch (e) {
+      Log.i(e);
       Get.error(e.hint);
+    } finally {
+      inBeingSync.value = false;
     }
   }
 
@@ -96,6 +104,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       // 成功
       Get.success('renderSuccess');
     } on Mistake catch (e) {
+      Log.i(e);
       Get.error(e.hint);
     }
   }
