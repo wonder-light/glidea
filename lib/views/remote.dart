@@ -1,14 +1,14 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt;
 
-class RemoteWidget extends StatefulWidget {
-  const RemoteWidget({super.key});
+class RemoteView extends StatefulWidget {
+  const RemoteView({super.key});
 
   @override
-  State<RemoteWidget> createState() => _RemoteWidgetState();
+  State<RemoteView> createState() => _RemoteViewState();
 }
 
-class _RemoteWidgetState extends State<RemoteWidget> {
+class _RemoteViewState extends State<RemoteView> {
   @override
   Widget build(BuildContext context) {
     return Container(

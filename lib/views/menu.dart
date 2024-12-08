@@ -10,14 +10,14 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
-class MenuWidget extends StatefulWidget {
-  const MenuWidget({super.key});
+class MenuView extends StatefulWidget {
+  const MenuView({super.key});
 
   @override
-  State<MenuWidget> createState() => _MenuWidgetState();
+  State<MenuView> createState() => _MenuViewState();
 }
 
-class _MenuWidgetState extends State<MenuWidget> {
+class _MenuViewState extends State<MenuView> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 

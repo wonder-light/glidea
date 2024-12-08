@@ -13,14 +13,14 @@ import 'package:glidea/models/post.dart';
 import 'package:jiffy/jiffy.dart' show Jiffy;
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
-class ArticlesWidget extends StatefulWidget {
-  const ArticlesWidget({super.key});
+class ArticlesView extends StatefulWidget {
+  const ArticlesView({super.key});
 
   @override
-  State<ArticlesWidget> createState() => _ArticlesWidgetState();
+  State<ArticlesView> createState() => _ArticlesViewState();
 }
 
-class _ArticlesWidgetState extends State<ArticlesWidget> {
+class _ArticlesViewState extends State<ArticlesView> {
   /// 筛选文章的文本内容
   final filterText = ''.obs;
 
@@ -158,7 +158,9 @@ class _ArticlesWidgetState extends State<ArticlesWidget> {
   }
 
   /// 编辑文章
-  void editorPost(Post post) {}
+  void editorPost(Post post) {
+    Get.toNamed(post.fileName);
+  }
 
   /// 删除文章
   void deletePost(Post post) {

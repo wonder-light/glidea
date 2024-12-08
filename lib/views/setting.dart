@@ -1,14 +1,14 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt;
 
-class SettingWidget extends StatefulWidget {
-  const SettingWidget({super.key});
+class SettingView extends StatefulWidget {
+  const SettingView({super.key});
 
   @override
-  State<SettingWidget> createState() => _SettingWidgetState();
+  State<SettingView> createState() => _SettingViewState();
 }
 
-class _SettingWidgetState extends State<SettingWidget> {
+class _SettingViewState extends State<SettingView> {
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -9,14 +9,14 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
-class TagsWidget extends StatefulWidget {
-  const TagsWidget({super.key});
+class TagsView extends StatefulWidget {
+  const TagsView({super.key});
 
   @override
-  State<TagsWidget> createState() => _TagsWidgetState();
+  State<TagsView> createState() => _TagsViewState();
 }
 
-class _TagsWidgetState extends State<TagsWidget> {
+class _TagsViewState extends State<TagsView> {
   /// 当前路由索引
   var selectedTag = ''.obs;
 

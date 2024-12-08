@@ -9,14 +9,14 @@ import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/render.dart';
 
-class ThemeWidget extends StatefulWidget {
-  const ThemeWidget({super.key});
+class ThemeView extends StatefulWidget {
+  const ThemeView({super.key});
 
   @override
-  State<ThemeWidget> createState() => _ThemeWidgetState();
+  State<ThemeView> createState() => _ThemeViewState();
 }
 
-class _ThemeWidgetState extends State<ThemeWidget> {
+class _ThemeViewState extends State<ThemeView> {
   /// 是否可以保存
   var canSave = false.obs;
 

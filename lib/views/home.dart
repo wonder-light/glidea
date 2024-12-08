@@ -13,19 +13,19 @@ import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/routes/router.dart';
-import 'package:glidea/views/loading.dart';
+import 'package:glidea/components/Common/loading.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints, ResponsiveBreakpointsData;
 import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
 
-class HomeWidget extends StatefulWidget {
-  const HomeWidget({super.key});
+class HomeView extends StatefulWidget {
+  const HomeView({super.key});
 
   @override
-  State<HomeWidget> createState() => _HomeWidgetState();
+  State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeWidgetState extends State<HomeWidget> {
+class _HomeViewState extends State<HomeView> {
   /// 关于当前屏幕的响应性数据
   late ResponsiveBreakpointsData breakpoints;
 
@@ -327,7 +327,6 @@ class _HomeWidgetState extends State<HomeWidget> {
     site.inBeingSync.removeListener(updateSyncRotate);
     site.inBeingSync.addListener(updateSyncRotate);
     site.publishSite();
-
   }
 
   /// 更新旋转角度

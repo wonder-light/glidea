@@ -2,7 +2,6 @@
 import 'package:get/get.dart' show GetPage;
 import 'package:glidea/views/articles.dart';
 import 'package:glidea/views/home.dart';
-import 'package:glidea/views/loading.dart';
 import 'package:glidea/views/menu.dart';
 import 'package:glidea/views/notfound.dart';
 import 'package:glidea/views/remote.dart';
@@ -19,26 +18,24 @@ class AppRouter {
   static const String theme = '/theme';
   static const String remote = '/remote';
   static const String setting = '/setting';
-  static const String loading = '/loading';
 
   /// 路由路线集合
   static final List<GetPage<Widget>> routes = [
     GetPage(
       name: AppRouter.home,
       title: 'main',
-      page: () => const HomeWidget(),
+      page: () => const HomeView(),
       participatesInRootNavigator: true,
-      preventDuplicates: true,
       children: [
-        GetPage(name: articles, page: () => const ArticlesWidget(), preventDuplicates: true),
-        GetPage(name: menu, page: () => const MenuWidget(), preventDuplicates: true),
-        GetPage(name: tags, page: () => const TagsWidget(), preventDuplicates: true),
-        GetPage(name: theme, page: () => const ThemeWidget(), preventDuplicates: true),
-        GetPage(name: remote, page: () => const RemoteWidget(), preventDuplicates: true),
-        GetPage(name: setting, page: () => const SettingWidget(), preventDuplicates: true), // 移动端才有设置页面
-        GetPage(name: loading, page: () => const LoadingWidget(), preventDuplicates: true),
+        GetPage(name: articles, page: () => const ArticlesView()),
+        GetPage(name: menu, page: () => const MenuView()),
+        GetPage(name: tags, page: () => const TagsView()),
+        GetPage(name: theme, page: () => const ThemeView()),
+        GetPage(name: remote, page: () => const RemoteView()),
+        // 移动端才有设置页面
+        GetPage(name: setting, page: () => const SettingView()),
       ],
     ),
-    GetPage(name: '/*', page: () => const NotfoundWidget(), preventDuplicates: true),
+    GetPage(name: '/*', page: () => const NotfoundWidget()),
   ];
 }

@@ -17,7 +17,7 @@ class LoadingWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
+        ConstrainedBox(
           constraints: const BoxConstraints.expand(width: 80, height: 80),
           child: const BallRotateChase(),
         ),
