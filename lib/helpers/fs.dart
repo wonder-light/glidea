@@ -62,8 +62,8 @@ class FS {
   }
 
   /// 所有目录下的所有文件
-  static Stream<File> getFiles(String src) async* {
-    yield* Directory(src).list(recursive: true).where((item) => item is File).cast<File>();
+  static List<File> getFilesSync(String path, {bool recursive = true}) {
+    return Directory(path).listSync(recursive: recursive).whereType<File>().toList();
   }
 
   /// 移动子目录下的所有文件到指定目录, 包括文件

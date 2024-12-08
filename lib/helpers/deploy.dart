@@ -4,6 +4,7 @@ import 'package:dio/dio.dart' show Dio, Options, Response;
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
+import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/setting.dart';
@@ -71,35 +72,31 @@ class NetlifyDeploy extends Deploy {
     // 详情请看
     // https://docs.netlify.com/api/get-started/#deploy-with-the-api
     final fileList = await prepareLocalFilesList();
+    // 需要上传的文件的哈希值
+    final hashOfFilesToUpload = await requestFiles(fileList);
     // 异常
     final mistake = Mistake(message: 'netlify deploy upload file failed', hint: 'connectFailed');
-    try {
-      // 需要上传的文件的哈希值
-      final hashOfFilesToUpload = await requestFiles(fileList);
-      // 开始上传
-      for (var filePath in hashOfFilesToUpload) {
-        // 出错时尝试两次
-        try {
-          var result = await uploadFile(filePath);
-          if (result.statusCode == 422) {
-            throw mistake;
-          }
-        } catch (e) {
-          var result = await uploadFile(filePath);
-          if (result.statusCode == 422) {
-            throw mistake;
-          }
+    // 开始上传
+    for (var filePath in hashOfFilesToUpload) {
+      // 出错时尝试两次
+      try {
+        var result = await uploadFile(filePath);
+        if (result.statusCode == 422) {
+          throw mistake;
+        }
+      } catch (e) {
+        var result = await uploadFile(filePath);
+        if (result.statusCode == 422) {
+          throw mistake;
         }
       }
-    } catch (e) {
-      throw mistake;
     }
   }
 
   /// 准备本地文件列表
   Future<TMap<String>> prepareLocalFilesList() async {
     final TMap<String> fileList = {};
-    for (var item in await FS.getFiles(buildDir).toList()) {
+    for (var item in FS.getFilesSync(buildDir)) {
       // "/index.html": "907d14fb3af2b0d4f18c2d46abe8aedce17367bd"
       var path = FS.relative(item.path, buildDir);
       if (!path.startsWith('/')) {
@@ -111,26 +108,32 @@ class NetlifyDeploy extends Deploy {
   }
 
   /// 获取需要上传的文件
+  ///
+  /// throw [Mistake] exception
   Future<List<String>> requestFiles(TMap<String> fileList) async {
-    final data = {'files': fileList};
-    final result = await Deploy.dio.post(
-      '${apiUrl}sites/$siteId/deploys',
-      data: data,
-      options: Options(
-        headers: {
-          'User-Agent': 'Glidea',
-          'Authorization': 'Bearer $accessToken',
-        },
-      ),
-    );
-    // 设置 _deployId
-    _deployId = result.data['id'];
-    List<String> lists = result.data['required'];
-    // "/index.html": "907d14fb3af2b0d4f18c2d46abe8aedce17367bd" =>
-    // "907d14fb3af2b0d4f18c2d46abe8aedce17367bd": "/index.html"
-    fileList = fileList.map((k, v) => MapEntry(v, k));
-    // 获取对应的路径
-    return lists.map((item) => fileList[item]!).toList();
+    try {
+      final data = {'files': fileList};
+      final result = await Deploy.dio.post(
+        '${apiUrl}sites/$siteId/deploys',
+        data: data,
+        options: Options(
+          headers: {
+            'User-Agent': 'Glidea',
+            'Authorization': 'Bearer $accessToken',
+          },
+        ),
+      );
+      // 设置 _deployId
+      _deployId = result.data['id'];
+      List<String> lists = (result.data['required'] as List).cast<String>();
+      // "/index.html": "907d14fb3af2b0d4f18c2d46abe8aedce17367bd" =>
+      // "907d14fb3af2b0d4f18c2d46abe8aedce17367bd": "/index.html"
+      fileList = fileList.map((k, v) => MapEntry(v, k));
+      // 获取对应的路径
+      return lists.map((item) => fileList[item]!).toList();
+    } catch (e) {
+      throw Mistake(message: 'netlify request file failed: \n$e', hint: 'connectFailed');
+    }
   }
 
   /// 上传文件

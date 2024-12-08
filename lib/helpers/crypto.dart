@@ -30,7 +30,7 @@ class Crypto {
   static Future<String> cryptoFile(File file, {Hash hash = sha1}) async {
     RandomAccessFile? xFile;
     int length = file.lengthSync();
-    if (length < fileSize10M) {
+    if (length > fileSize10M) {
       xFile = await file.open();
     }
     return _crypto(
@@ -40,7 +40,7 @@ class Crypto {
         if (xFile == null) return file.readAsBytesSync();
         return xFile.readSync(length);
       },
-      close: () async => xFile?.close(),
+      close: () async => await xFile?.close(),
     );
   }
 
@@ -62,11 +62,11 @@ class Crypto {
     required AsyncGetterValue<Uint8List> getter,
     AsyncCallback? close,
   }) async {
-    if (length < fileSize10M) {
-      return hash.convert(await getter(0, segmentSize)).toString();
-    }
-    // 大文件分块获取
     try {
+      if (length < segmentSize) {
+        return hash.convert(await getter(0, segmentSize)).toString();
+      }
+      // 大文件分块获取
       // 输出块
       final output = AccumulatorSink<Digest>();
       final input = hash.startChunkedConversion(output);
@@ -81,7 +81,7 @@ class Crypto {
 
       return output.events.single.toString();
     } finally {
-      close?.call();
+      await close?.call();
     }
   }
 }
