@@ -2,11 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
-import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/dialog.dart';
+import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/post.dart';
@@ -87,7 +88,7 @@ class _ArticlesViewState extends State<ArticlesView> {
     // 子列表
     final lists = <TIconData>[
       // 发布
-      if (post.published) (name: 'published', icon: PhosphorIconsRegular.check) else (name: 'draft', icon: PhosphorIconsRegular.x),
+      post.published ? (name: 'published', icon: PhosphorIconsRegular.check) : (name: 'draft', icon: PhosphorIconsRegular.x),
       // 日期
       (name: post.date.format(pattern: site.themeConfig.dateFormat), icon: PhosphorIconsRegular.calendarDots),
     ];
@@ -148,18 +149,18 @@ class _ArticlesViewState extends State<ArticlesView> {
         onPressed: () => deletePost(post),
         icon: const Icon(PhosphorIconsRegular.trash),
       ),
-      onTap: () => editorPost(post),
+      onTap: () => editorPost(fileName: post.fileName),
     );
   }
 
   /// 添加文章
   void addNewPost() {
-    editorPost(site.createPost());
+    editorPost();
   }
 
   /// 编辑文章
-  void editorPost(Post post) {
-    Get.toNamed(post.fileName);
+  void editorPost({String fileName = ''}) {
+    Get.toNamed(AppRouter.post, arguments: fileName);
   }
 
   /// 删除文章

@@ -4,6 +4,7 @@ import 'package:glidea/views/articles.dart';
 import 'package:glidea/views/home.dart';
 import 'package:glidea/views/menu.dart';
 import 'package:glidea/views/notfound.dart';
+import 'package:glidea/views/post.dart';
 import 'package:glidea/views/remote.dart';
 import 'package:glidea/views/setting.dart';
 import 'package:glidea/views/tags.dart';
@@ -18,6 +19,7 @@ class AppRouter {
   static const String theme = '/theme';
   static const String remote = '/remote';
   static const String setting = '/setting';
+  static const String post = '/post';
 
   /// 路由路线集合
   static final List<GetPage<Widget>> routes = [
@@ -34,6 +36,8 @@ class AppRouter {
         GetPage(name: remote, page: () => const RemoteView()),
         // 移动端才有设置页面
         GetPage(name: setting, page: () => const SettingView()),
+        // post 页面
+        GetPage(name: post, page: () => const PostView(), participatesInRootNavigator: true),
       ],
     ),
     GetPage(name: '/*', page: () => const NotfoundWidget()),
