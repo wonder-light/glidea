@@ -5,6 +5,7 @@ import 'package:get/get.dart' show Get, StateController, BoolExtension;
 import 'package:glidea/controller/mixin/data.dart';
 import 'package:glidea/controller/mixin/theme.dart';
 import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/deploy.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
@@ -16,7 +17,6 @@ import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/models/tag.dart';
-import 'package:jiffy/jiffy.dart' show Jiffy;
 import 'package:shelf/shelf_io.dart' as shelf_io show serve;
 import 'package:shelf_static/shelf_static.dart' show createStaticHandler;
 import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
@@ -155,7 +155,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       _postsData.sort((prev, next) {
         int com = (next.isTop ? 1 : 0) - (prev.isTop ? 1 : 0);
         if (com != 0) return com;
-        com = Jiffy.parse(next.date).diff(Jiffy.parse(prev.date)).toInt();
+        com = next.date.compareTo(prev.date);
         return com;
       });
     } catch (e) {
@@ -293,7 +293,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       'content': html,
       'abstract': Markdown.markdownToHtml(changeImageUrlToDomain(post.abstract)),
       'description': _getSummaryForContent(content),
-      'dateFormat': themeConfig.dateFormat.isNotEmpty ? Jiffy.parse(post.date).format(pattern: themeConfig.dateFormat) : post.date,
+      'dateFormat': themeConfig.dateFormat.isNotEmpty ? post.date.format(pattern: themeConfig.dateFormat) : post.date,
       'feature': _getPostFeature(post.feature),
       'link': FS.joinR(themeConfig.domain, themeConfig.postPath, post.fileName, '/'),
       'stats': _statsCalc(content).toMap(),

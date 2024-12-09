@@ -54,7 +54,7 @@ class Theme {
 
   /// 时间格式
   @JsonProperty()
-  String dateFormat = 'YYYY-MM-DD';
+  String dateFormat = defaultDateFormat;
 
   /// true: 启用 RSS/Feed
   ///

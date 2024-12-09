@@ -26,8 +26,8 @@ mixin class PostDataBase {
   String title = '';
 
   /// 日期
-  @JsonProperty()
-  String date = '';
+  @JsonProperty(converterParams: {'format': defaultDateFormat})
+  DateTime date = DateTime.now();
 
   /// 封面图
   @JsonProperty()

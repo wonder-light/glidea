@@ -10,7 +10,7 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/post.dart';
-import 'package:jiffy/jiffy.dart' show Jiffy;
+import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 class ArticlesView extends StatefulWidget {
@@ -89,7 +89,7 @@ class _ArticlesViewState extends State<ArticlesView> {
       // 发布
       if (post.published) (name: 'published', icon: PhosphorIconsRegular.check) else (name: 'draft', icon: PhosphorIconsRegular.x),
       // 日期
-      (name: Jiffy.parse(post.date).format(pattern: site.themeConfig.dateFormat), icon: PhosphorIconsRegular.calendarDots),
+      (name: post.date.format(pattern: site.themeConfig.dateFormat), icon: PhosphorIconsRegular.calendarDots),
     ];
 
     // 头部组件
