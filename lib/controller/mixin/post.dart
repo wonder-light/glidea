@@ -1,4 +1,4 @@
-﻿import 'package:get/get.dart' show Get, StateController;
+﻿import 'package:get/get.dart' show FirstWhereOrNullExt, Get, StateController;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
@@ -7,6 +7,7 @@ import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/post.dart';
+import 'package:glidea/models/tag.dart';
 
 import 'data.dart';
 import 'tag.dart';
@@ -69,6 +70,37 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
     return getPostLink().where((p) => p.link.contains(data)).toList();
   }
 
+  /// 更新或者添加 post
+  void updatePost({required Post newData, Post? oldData}) async {
+    // 获取 [posts] 中的实例
+    oldData = state.posts.firstWhereOrNull((p) => p == oldData);
+    // 添加新的 post
+    if (oldData == null) {
+      state.posts.add(newData);
+    } else {
+      // 更新数据
+      oldData.title = newData.title;
+      oldData.content = newData.content;
+      oldData.fileName = newData.fileName;
+      oldData.date = newData.date;
+      oldData.feature = newData.feature;
+      oldData.hideInList = newData.hideInList;
+      oldData.isTop = newData.isTop;
+      oldData.published = newData.published;
+      // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
+      oldData.abstract = newData.content.split(RegExp(r'<!--\s*more\s*-->')).firstOrNull ?? '';
+    }
+    // 更新标签
+    updateTagUsedField(addTag: true);
+    try {
+      // 保存
+      await saveSiteData();
+    } catch (e) {
+      Log.w('update post failed: $e');
+    }
+    Get.success(newData.published ? 'saved' :'draftSuccess');
+  }
+
   /// 删除 post
   void removePost(Post data) async {
     if (!state.posts.remove(data)) {
@@ -77,13 +109,36 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
       return;
     }
     // 标签
-    updateTagUsedField();
+    updateTagUsedField(addTag: false);
     try {
+      // 保存
       await saveSiteData();
     } on Mistake catch (e) {
       Log.w(e.message);
     }
     // 菜单中的列表不必管
     Get.success('articleDelete');
+  }
+
+  /// 比较 post 是否相等
+  bool equalPost(Post prev, Post next) {
+    // 标签
+    // 其它
+    return prev.title == next.title &&
+        prev.content == next.content &&
+        prev.fileName == next.fileName &&
+        prev.date == next.date &&
+        prev.feature == next.feature &&
+        prev.hideInList == next.hideInList &&
+        prev.isTop == next.isTop &&
+        equalPostTags(prev.tags, next.tags);
+  }
+
+  /// 比较 post 中的 tags 是否相等
+  bool equalPostTags(List<Tag> prev, List<Tag> next) {
+    final tag1 = prev.map((t) => t.slug).toSet();
+    final tag2 = next.map((t) => t.slug).toSet();
+    final tag3 = tag1.union(tag2);
+    return tag1.length == tag3.length && tag3.length == tag2.length;
   }
 }

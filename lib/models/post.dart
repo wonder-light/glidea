@@ -13,7 +13,9 @@ mixin class PostBase {
   @JsonProperty()
   String fileName = '';
 
-  /// 摘要
+  /// 摘要: 根据 [content] 中的摘要分隔符来生成的
+  ///
+  /// 摘要分隔符: \<!--\s\*more\s\*-->
   @JsonProperty()
   String abstract = '';
 }
