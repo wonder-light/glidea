@@ -9,6 +9,7 @@ class PageAction extends StatelessWidget {
     required this.child,
     this.leading,
     this.actions = const [],
+    this.contentPadding
   });
 
   /// 前面的操作控件
@@ -19,6 +20,8 @@ class PageAction extends StatelessWidget {
 
   /// 分割线下的内容控件
   final Widget child;
+
+  final EdgeInsetsGeometry? contentPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +59,7 @@ class PageAction extends StatelessWidget {
           const Divider(thickness: 1, height: 1),
           Expanded(
             child: Padding(
-              padding: kAllPadding16,
+              padding: contentPadding ?? kAllPadding16,
               child: child,
             ),
           ),
