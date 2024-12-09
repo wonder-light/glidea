@@ -116,7 +116,10 @@ class _PostViewState extends State<PostView> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
-  /// 获取的当前 post
+  /// 获取的当前 post 数据
+  late final RxObject<Post> postData;
+
+  /// 用于进行修改的 [postData] 副本
   late final RxObject<Post> currentPost;
 
   /// 标题的字段控制器
@@ -135,7 +138,10 @@ class _PostViewState extends State<PostView> {
   void initState() {
     super.initState();
     final fileName = Get.arguments as String;
-    currentPost = site.getPostOrDefault(fileName).obs;
+    // 获取已有的数据或者新的数据
+    postData = site.getPostOrDefault(fileName).obs;
+    // 复制
+    currentPost = postData.value.copy<Post>()!.obs;
     titleController.text = currentPost.value.title;
     contentController.text = currentPost.value.content;
     // 操作按钮
@@ -159,6 +165,7 @@ class _PostViewState extends State<PostView> {
   void dispose() {
     titleController.dispose();
     contentController.dispose();
+    postData.dispose();
     currentPost.dispose();
     super.dispose();
   }
@@ -225,6 +232,7 @@ class _PostViewState extends State<PostView> {
           hintText: isRich ? 'startWriting'.tr : 'title'.tr,
           hintStyle: style?.copyWith(color: theme.colorScheme.outlineVariant),
         ),
+        onChanged: (str) => isRich ? currentPost.value.content = str : currentPost.value.title = str,
       ),
     );
     /*if (isRich) {
@@ -249,7 +257,7 @@ class _PostViewState extends State<PostView> {
           ),
       ],
     );
-
+    // 位置
     return Positioned(
       right: 16,
       top: 0,
@@ -261,7 +269,7 @@ class _PostViewState extends State<PostView> {
   /// 返回 article 页面
   void backToArticlePage() {
     // 相同则返回
-    if (currentPost.value.content == contentController.text) {
+    if (site.equalPost(postData.value, currentPost.value)) {
       Get.back();
     }
     // 弹窗确认
@@ -271,9 +279,11 @@ class _PostViewState extends State<PostView> {
         child: Text('unsavedWarning'.tr),
       ),
       onCancel: () {
+        // 关闭弹窗
         Get.backLegacy();
       },
       onConfirm: () {
+        // 返回首页
         Get.back();
       },
     ));
@@ -285,7 +295,10 @@ class _PostViewState extends State<PostView> {
   }
 
   /// 保存 post
-  void savePost({bool published = true}) {}
+  void savePost({bool published = true}) {
+    currentPost.value.published = published;
+    site.updatePost(newData: currentPost.value, oldData: postData.value);
+  }
 
   /// 预览 post
   void previewPost() {
@@ -296,7 +309,7 @@ class _PostViewState extends State<PostView> {
       controller: drawerController,
       builder: (ctx) => PostEditor(
         header: '',
-        entity: currentPost.value,
+        entity: postData.value,
         markdown: contentController.text,
         controller: drawerController,
       ),

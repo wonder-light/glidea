@@ -52,6 +52,8 @@ extension GetExt on GetInterface {
   }
 
   /// 提示
+  ///
+  /// TODO: 需要解决多次触发时延迟出现的问题
   void _snackbar(String message, {Color? backgroundColor, IconData? icon, Color? iconColor, Color? boxShadowColor}) {
     var colorScheme = Get.theme.colorScheme;
     Get.snackbar(
