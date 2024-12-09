@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Trans;
+import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Trans;
+import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
@@ -123,6 +124,12 @@ class _PostViewState extends State<PostView> {
   /// 标题的字段控制器
   final contentController = CustomTextController();
 
+  /// 顶部的操作按钮
+  final List<TActionData> actionButtons = [];
+
+  /// 右侧的工具栏按钮
+  final List<TActionData> toolbars = [];
+
   @override
   void initState() {
     super.initState();
@@ -130,6 +137,21 @@ class _PostViewState extends State<PostView> {
     currentPost = site.getPostOrDefault(fileName).obs;
     titleController.text = currentPost.value.title;
     contentController.text = currentPost.value.content;
+    // 操作按钮
+    actionButtons.addAll([
+      (name: 'back', call: backToArticlePage, icon: PhosphorIconsRegular.arrowLeft),
+      (name: 'saveDraft', call: saveAsDraft, icon: PhosphorIconsRegular.check),
+      (name: 'save', call: savePost, icon: PhosphorIconsRegular.check),
+    ]);
+    // 工具栏按钮
+    toolbars.addAll([
+      (name: '', call: showPostStats, icon: PhosphorIconsRegular.warningCircle),
+      (name: 'insertEmoji', call: insertEmoji, icon: PhosphorIconsRegular.smiley),
+      (name: 'insertImage', call: insertImage, icon: PhosphorIconsRegular.image),
+      (name: 'insertMore', call: insertSeparator, icon: PhosphorIconsRegular.dotsThreeOutline),
+      (name: 'postSettings', call: openPostSetting, icon: PhosphorIconsRegular.gear),
+      (name: 'preview', call: previewPost, icon: PhosphorIconsRegular.eye),
+    ]);
   }
 
   @override
@@ -142,79 +164,119 @@ class _PostViewState extends State<PostView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Get.theme;
-    // 字段装饰器
-    const decoration = InputDecoration(
-      isDense: true,
-      contentPadding: kVer8Hor12,
-      // 悬停时的背景色
-      hoverColor: Colors.transparent,
-      fillColor: Colors.transparent,
-      focusColor: Colors.transparent,
-      border: InputBorder.none,
-    );
-    // 标题
-    final titleWidget = FractionallySizedBox(
-      widthFactor: 0.7,
-      alignment: Alignment.center,
-      child: TextFormField(
-        controller: titleController,
-        decoration: decoration,
-      ),
-    );
+    final colorScheme = Get.theme.colorScheme;
     // 内容
-    final content = Expanded(
-      child: FractionallySizedBox(
-        widthFactor: 0.7,
-        alignment: Alignment.center,
-        child: TextFormField(
-          controller: contentController,
-          maxLines: null,
-          decoration: decoration,
-          expands: true,
-        ),
+    Widget content = _buildInputField(isRich: true);
+    // 滚动
+    content = ScrollbarTheme(
+      data: ScrollbarThemeData(
+        thickness: const WidgetStatePropertyAll(4),
+        thumbColor: WidgetStatePropertyAll(colorScheme.primaryContainer),
       ),
+      child: SingleChildScrollView(child: content),
     );
+    // 扩展
+    content = Expanded(child: content);
     // 布局
     return PageAction(
       actions: [
-        IconButton(
-          onPressed: backToArticlePage,
-          icon: const Icon(PhosphorIconsRegular.arrowLeft),
-          tooltip: 'back'.tr,
-        ),
-        IconButton(
-          onPressed: saveAsDraft,
-          icon: const Icon(PhosphorIconsRegular.check),
-          tooltip: 'saveDraft'.tr,
-        ),
-        IconButton(
-          onPressed: savePost,
-          icon: Icon(PhosphorIconsRegular.check, color: theme.colorScheme.primary),
-          tooltip: 'save'.tr,
-        ),
+        for (var item in actionButtons)
+          IconButton(
+            onPressed: item.call,
+            icon: Icon(item.icon, color: item.name == 'save' ? colorScheme.primary : null),
+            tooltip: item.name.tr,
+          ),
       ],
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: Stack(
         children: [
-          titleWidget,
-          content,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // 标题
+              _buildInputField(),
+              // 内容
+              content,
+            ],
+          ),
+          _buildToolbar(),
         ],
       ),
     );
   }
 
-  /// 预览 post
-  Widget _buildPreview() {
-    return Expanded(
-      child: MarkdownWidget(data: currentPost.value.content),
+  /// 构建字段
+  Widget _buildInputField({bool isRich = false}) {
+    final theme = Get.theme;
+    final textTheme = theme.textTheme;
+    final style = isRich ? textTheme.bodyLarge : textTheme.titleLarge;
+    Widget widget = FractionallySizedBox(
+      widthFactor: 0.7,
+      alignment: Alignment.center,
+      child: TextFormField(
+        controller: isRich ? contentController : titleController,
+        style: style,
+        maxLines: isRich ? null : 1,
+        decoration: InputDecoration(
+          isDense: true,
+          contentPadding: kVer8Hor12,
+          // 悬停时的背景色
+          hoverColor: Colors.transparent,
+          fillColor: Colors.transparent,
+          focusColor: Colors.transparent,
+          border: InputBorder.none,
+          hintText: isRich ? 'startWriting'.tr : 'title'.tr,
+          hintStyle: style?.copyWith(color: theme.colorScheme.outlineVariant),
+        ),
+      ),
+    );
+    /*if (isRich) {
+      widget = Expanded(child: widget);
+    }*/
+    return widget;
+  }
+
+  // 构建工具栏
+  Widget _buildToolbar() {
+    final colorScheme = Get.theme.colorScheme;
+    Widget widget = Column(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var item in toolbars)
+          // TODO: 悬浮提示设置水平偏移
+          IconButton(
+            onPressed: item.call,
+            icon: Icon(item.icon, color: colorScheme.outlineVariant),
+            //tooltip: item.name.tr,
+          ),
+      ],
+    );
+
+    return Positioned(
+      right: 0,
+      top: 0,
+      bottom: 0,
+      child: widget,
     );
   }
 
   /// 返回 article 页面
   void backToArticlePage() {
-    Get.back();
+    // TODO: 比较 post 是否发生变化
+    // 弹窗
+    Get.dialog(DialogWidget(
+      content: Padding(
+        padding: kAllPadding16,
+        child: Text('unsavedWarning'.tr),
+      ),
+      onCancel: () {
+        Get.backLegacy();
+      },
+      onConfirm: () {
+        Get.back();
+      },
+    ));
   }
 
   /// 存草稿 post
@@ -222,4 +284,26 @@ class _PostViewState extends State<PostView> {
 
   /// 保存 post
   void savePost() {}
+
+  /// 预览 post
+  void previewPost() {
+    Widget widget = Expanded(
+      child: MarkdownWidget(data: currentPost.value.content),
+    );
+  }
+
+  /// 打开 post 设置
+  void openPostSetting() {}
+
+  /// 插入分隔符
+  void insertSeparator() {}
+
+  /// 插入图片
+  void insertImage() {}
+
+  /// 插入表情符号
+  void insertEmoji() {}
+
+  /// 显示 post 统计信息
+  void showPostStats() {}
 }
