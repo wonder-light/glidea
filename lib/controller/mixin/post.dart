@@ -22,8 +22,11 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
     updateTagUsedField();
   }
 
-  /// 创建文章
-  Post createPost() => Post();
+  /// 获取 [fileName] 对应的 post, 不然返回新的 [Post] 实例
+  Post getPostOrDefault(String fileName) {
+    // 没有时返回新的实例
+    return state.posts.firstWhere((p) => p.fileName == fileName, orElse: () => Post());
+  }
 
   /// 获取文章封面图片的路径
   String getFeaturePath({required Post data}) {
