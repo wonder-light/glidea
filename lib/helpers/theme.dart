@@ -58,9 +58,8 @@ sealed class AppTheme {
     ),
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
-  ).copyWith(
-    iconTheme: const IconThemeData(size: 18)
-  );
+  ).modifyData();
+
   // The defined dark theme.
   static ThemeData dark = FlexThemeData.dark(
     scheme: FlexScheme.hippieBlue,
@@ -97,7 +96,19 @@ sealed class AppTheme {
     ),
     visualDensity: FlexColorScheme.comfortablePlatformDensity,
     cupertinoOverrideTheme: const CupertinoThemeData(applyThemeToAll: true),
-  ).copyWith(
-      iconTheme: const IconThemeData(size: 18)
-  );
+  ).modifyData();
+}
+
+/// [ThemeData] 扩展
+extension ThemeDataExt on ThemeData {
+  /// 修改 [ThemeData] 数据
+  ThemeData modifyData() {
+    return copyWith(
+      iconTheme: const IconThemeData(size: 18),
+      scrollbarTheme: ScrollbarThemeData(
+        thickness: const WidgetStatePropertyAll(4),
+        thumbColor: WidgetStatePropertyAll(colorScheme.primaryContainer),
+      ),
+    );
+  }
 }
