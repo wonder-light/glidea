@@ -71,7 +71,9 @@ mixin TagSite on StateController<Application>, DataProcess {
   }
 
   /// 更新标签中 [Tag.used] 字段的值
-  void updateTagUsedField() {
+  ///
+  /// [addTag] == true, 将 [post] 中的标签添加到 [site.tags] 中, 否则删除它
+  void updateTagUsedField({bool addTag = false}) {
     // 清空
     _tagsMap = {};
     // 将 use 重置为 false
@@ -85,8 +87,12 @@ mixin TagSite on StateController<Application>, DataProcess {
         // 判断是否有对应的 tag
         if (_tagsMap[item.slug] case Tag tag) {
           tag.used = true;
+        } else if (addTag) {
+          // 添加 post 中的 tag 没有记录
+          post.tags.add(item);
+          _tagsMap[item.slug] = item..used = true;
         } else {
-          // post 中的 tag 没有记录
+          // 删除 post 中的 tag 没有记录
           post.tags.remove(item);
         }
       }
