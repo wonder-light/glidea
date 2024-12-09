@@ -33,6 +33,18 @@ extension JsonStringExtend on String {
 
   /// 获取加密哈希值
   Future<String> getHash() => Crypto.cryptoStr(this);
+
+  /// 分割字符串同时包含分隔符
+  List<String> splitWithSep(Pattern pattern) => pattern.allMatchesWithSep(this);
+
+  /// 分割字符串同时包含分隔符, 并对其进行自定义映射
+  List<T> splitMapWithSep<T>({
+    required Pattern pattern,
+    required TChangeCallback<T, Match> onMatch,
+    required TChangeCallback<T, String> onNonMatch,
+  }) {
+    return pattern.allMatchesMapWithSep(input: this, onMatch: onMatch, onNonMatch: onNonMatch);
+  }
 }
 
 extension MapExtend on Map<String, dynamic> {
@@ -41,6 +53,49 @@ extension MapExtend on Map<String, dynamic> {
 
   /// 递归深度合并两个映射
   Map<String, dynamic> mergeMaps(Map<String, dynamic> map) => JsonMapper.mergeMaps(Map.from(this), map);
+}
+
+extension RegExpExtension on Pattern {
+  /// 分割字符串同时包含分隔符
+  List<String> allMatchesWithSep(String input, [int start = 0]) {
+    return allMatchesMapWithSep(
+      input: input,
+      onMatch: _onMatch,
+      onNonMatch: _onNonMatch,
+    );
+  }
+
+  /// 分割字符串同时包含分隔符, 并对其进行自定义映射
+  List<T> allMatchesMapWithSep<T>({
+    required String input,
+    required TChangeCallback<T, Match> onMatch,
+    required TChangeCallback<T, String> onNonMatch,
+    int start = 0,
+  }) {
+    // 结果
+    var result = <T>[];
+    var str = '';
+    // 循环匹配
+    for (var match in allMatches(input, start)) {
+      assert(match[0] != null, 'in allMatchesWithSep, match[0] == null');
+      // 添加非匹配字符串
+      str = input.substring(start, match.start);
+      if(str.isNotEmpty) result.add(onNonMatch(str));
+      // 添加匹配字符串
+      if(match.groupCount > 0) result.add(onMatch(match));
+      // 设置下一次的起始位置
+      start = match.end;
+    }
+    // 添加末尾的未匹配字符串
+    str = input.substring(start);
+    if(str.isNotEmpty) result.add(onNonMatch(str));
+    // 返回
+    return result;
+  }
+
+  static String _onMatch(Match match) => match[0]!;
+
+  static String _onNonMatch(String value) => value;
 }
 
 /// Json 序列化帮助类
