@@ -11,14 +11,24 @@ import 'zh_tw.dart';
 class TranslationsService extends Translations {
   static Locale? get locale => Get.deviceLocale;
 
-  static const fallbackLocale = Locale('zn', 'CN');
+  static const fallbackLocale = Locale('zh', 'CN');
+
+  /// 语言代码
+  static const Map<String, String> languages = {
+    'zh_CN': '简体中文',
+    'zh_HK': '繁體中文',
+    'en_US': 'English',
+    'fr_FR': 'Français',
+    'ja_JP': '日本語',
+    'ru_RU': 'русск',
+  };
 
   @override
   Map<String, Map<String, String>> get keys => {
         // 简体中文
         'zh_CN': zhCN,
         // 繁体中文
-        'zh_TW': zhTW,
+        'zh_HK': zhTW,
         // 英文
         'en_US': en,
         // 法语

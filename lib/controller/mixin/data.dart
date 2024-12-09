@@ -1,13 +1,14 @@
 ﻿import 'dart:io' show Directory;
 import 'dart:ui' show Locale;
 
-import 'package:get/get.dart' show Get, GetStringUtils, LocalesIntl, StateController;
+import 'package:get/get.dart' show Get, GetNavigationExt, GetStringUtils, StateController;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/translations.dart';
 import 'package:glidea/models/application.dart';
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
 import 'package:path_provider/path_provider.dart' show getApplicationDocumentsDirectory, getApplicationSupportDirectory;
@@ -18,14 +19,7 @@ mixin DataProcess on StateController<Application> {
   bool _isCreate = true;
 
   /// 语言代码
-  final Map<String, String> languages = const {
-    'zh_CN': '简体中文',
-    'zh_TW': '繁體中文',
-    'en_US': 'English',
-    'fr_FR': 'Français',
-    'ja_JP': '日本語',
-    'ru_RU': 'русск',
-  };
+  Map<String, String> get languages => TranslationsService.languages;
 
   /// 初始化数据
   Future<Application> initData() async {
@@ -241,7 +235,7 @@ mixin DataProcess on StateController<Application> {
     // 刚开始加载数据时 [state] 为 null
     state.language = code;
     var [lang, country] = code.split('_');
-    Get.locale = Locale(lang, country);
+    Get.updateLocale(Locale(lang, country));
   }
 
   // 从路径中获取 Gridea 的数据
