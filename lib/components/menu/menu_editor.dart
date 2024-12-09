@@ -25,7 +25,7 @@ class MenuEditor extends DrawerEditor<Menu> {
   MenuEditorState createState() => MenuEditorState();
 }
 
-class MenuEditorState extends DrawerEditorState<Menu> {
+class MenuEditorState extends DrawerEditorState<MenuEditor> {
   /// 内链后或者外链类型
   var openType = MenuTypes.internal.obs;
 

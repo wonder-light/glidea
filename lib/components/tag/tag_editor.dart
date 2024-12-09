@@ -19,7 +19,7 @@ class TagEditor extends DrawerEditor<Tag> {
   TagEditorState createState() => TagEditorState();
 }
 
-class TagEditorState extends DrawerEditorState<Tag> {
+class TagEditorState extends DrawerEditorState<TagEditor> {
   /// 标签名控制器
   final TextEditingController nameController = TextEditingController();
 

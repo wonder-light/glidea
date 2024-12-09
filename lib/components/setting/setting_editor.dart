@@ -26,7 +26,7 @@ class SettingEditor extends DrawerEditor<Object> {
   SettingEditorState createState() => SettingEditorState();
 }
 
-class SettingEditorState extends DrawerEditorState<Object> {
+class SettingEditorState extends DrawerEditorState<SettingEditor> {
   /// 语言
   final language = SelectConfig().obs;
 

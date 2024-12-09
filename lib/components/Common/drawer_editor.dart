@@ -40,10 +40,10 @@ abstract class DrawerEditor<T> extends StatefulWidget {
   final bool hideCancel;
 
   @override
-  DrawerEditorState<T> createState();
+  DrawerEditorState<DrawerEditor<T>> createState();
 }
 
-abstract class DrawerEditorState<T> extends State<DrawerEditor<T>> {
+abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
   /// 是否可以保存
   var canSave = false.obs;
 
