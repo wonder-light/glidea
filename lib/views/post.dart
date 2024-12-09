@@ -1,14 +1,15 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Trans;
 import 'package:glidea/components/Common/dialog.dart';
+import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/page_action.dart';
+import 'package:glidea/components/post/post_editor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/post.dart';
-import 'package:markdown_widget/markdown_widget.dart' show MarkdownWidget;
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 /// 自定义控制器, 用于文本编辑器的字体样式显示
@@ -166,19 +167,15 @@ class _PostViewState extends State<PostView> {
   Widget build(BuildContext context) {
     final colorScheme = Get.theme.colorScheme;
     // 内容
-    Widget content = _buildInputField(isRich: true);
-    // 滚动
-    content = ScrollbarTheme(
-      data: ScrollbarThemeData(
-        thickness: const WidgetStatePropertyAll(4),
-        thumbColor: WidgetStatePropertyAll(colorScheme.primaryContainer),
+    Widget content = Expanded(
+      // 滚动
+      child: SingleChildScrollView(
+        child: _buildInputField(isRich: true),
       ),
-      child: SingleChildScrollView(child: content),
     );
-    // 扩展
-    content = Expanded(child: content);
     // 布局
     return PageAction(
+      contentPadding: EdgeInsets.zero,
       actions: [
         for (var item in actionButtons)
           IconButton(
@@ -254,7 +251,7 @@ class _PostViewState extends State<PostView> {
     );
 
     return Positioned(
-      right: 0,
+      right: 16,
       top: 0,
       bottom: 0,
       child: widget,
@@ -263,8 +260,11 @@ class _PostViewState extends State<PostView> {
 
   /// 返回 article 页面
   void backToArticlePage() {
-    // TODO: 比较 post 是否发生变化
-    // 弹窗
+    // 相同则返回
+    if (currentPost.value.content == contentController.text) {
+      Get.back();
+    }
+    // 弹窗确认
     Get.dialog(DialogWidget(
       content: Padding(
         padding: kAllPadding16,
@@ -280,15 +280,26 @@ class _PostViewState extends State<PostView> {
   }
 
   /// 存草稿 post
-  void saveAsDraft() {}
+  void saveAsDraft() {
+    savePost(published: false);
+  }
 
   /// 保存 post
-  void savePost() {}
+  void savePost({bool published = true}) {}
 
   /// 预览 post
   void previewPost() {
-    Widget widget = Expanded(
-      child: MarkdownWidget(data: currentPost.value.content),
+    /// 抽屉控制器
+    final drawerController = DraController();
+    Get.showDrawer(
+      width: Get.width / 1.75,
+      controller: drawerController,
+      builder: (ctx) => PostEditor(
+        header: '',
+        entity: currentPost.value,
+        markdown: contentController.text,
+        controller: drawerController,
+      ),
     );
   }
 
