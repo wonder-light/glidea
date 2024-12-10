@@ -11,8 +11,15 @@ const String defaultTagPath = 'tag';
 const String defaultPostFeaturePath = '/post-images/post-feature.jpg';
 const String defaultRobotsPath = 'User-agent: *\nDisallow:';
 const String defaultDateFormat = 'yyyy-MM-dd hh:mm:ss';
+
 /// 加载 [Post] 中的本地图片的前缀
 const String featurePrefix = 'file://';
+
+/// 摘要分隔符
+const String summarySeparator = '<!-- more -->';
+
+/// 摘要分隔符的正则匹配
+final RegExp summaryRegExp = RegExp(r'<!--\s*more\s*-->');
 
 /// 主题设置图片显示的最大宽度
 const double kImageWidth = 100;

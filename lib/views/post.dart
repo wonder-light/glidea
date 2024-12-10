@@ -323,11 +323,15 @@ class _PostViewState extends State<PostView> {
     );
   }
 
-  /// 打开 post 设置
-  void openPostSetting() {}
-
   /// 插入分隔符
-  void insertSeparator() {}
+  void insertSeparator() {
+    // 内容
+    final content = contentController.text;
+    // 位置
+    final end = contentController.selection.end;
+    // 插入摘要分隔符
+    contentController.text = '${content.substring(0, end)}$summarySeparator${content.substring(end)}';
+  }
 
   /// 插入图片
   void insertImage() {}

@@ -88,7 +88,7 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
       oldData.isTop = newData.isTop;
       oldData.published = newData.published;
       // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
-      oldData.abstract = newData.content.split(RegExp(r'<!--\s*more\s*-->')).firstOrNull ?? '';
+      oldData.abstract = newData.content.split(summaryRegExp).firstOrNull ?? '';
     }
     // 更新标签
     updateTagUsedField(addTag: true);
