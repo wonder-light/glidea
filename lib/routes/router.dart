@@ -38,8 +38,8 @@ class AppRouter {
         GetPage(name: setting, page: () => const SettingView()),
         // post 页面
         GetPage(name: post, page: () => const PostView(), participatesInRootNavigator: true),
+        GetPage(name: '/*', page: () => const NotfoundWidget(), participatesInRootNavigator: true),
       ],
     ),
-    GetPage(name: '/*', page: () => const NotfoundWidget()),
   ];
 }

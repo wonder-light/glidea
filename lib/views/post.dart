@@ -10,6 +10,7 @@ import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/post.dart';
+import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 /// 自定义控制器, 用于文本编辑器的字体样式显示
@@ -270,7 +271,7 @@ class _PostViewState extends State<PostView> {
   void backToArticlePage() {
     // 相同则返回
     if (site.equalPost(postData.value, currentPost.value)) {
-      Get.back();
+      Get.toNamed(AppRouter.articles);
     }
     // 弹窗确认
     Get.dialog(DialogWidget(
@@ -280,11 +281,11 @@ class _PostViewState extends State<PostView> {
       ),
       onCancel: () {
         // 关闭弹窗
-        Get.backLegacy();
+        Get.closeAllDialogs();
       },
       onConfirm: () {
         // 返回首页
-        Get.back();
+        Get.toNamed(AppRouter.articles);
       },
     ));
   }
