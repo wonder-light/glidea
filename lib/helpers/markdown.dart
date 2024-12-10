@@ -1,11 +1,8 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart' show HtmlWidget;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/image.dart';
 import 'package:glidea/helpers/uid.dart';
-import 'package:html/dom.dart' as h;
-import 'package:html/dom_parsing.dart' show TreeVisitor;
-import 'package:html/parser.dart' show parseFragment;
 import 'package:markdown/markdown.dart' as m;
 import 'package:markdown_widget/markdown_widget.dart';
 
@@ -125,7 +122,7 @@ class CustomTextNode extends ElementNode {
   //final String nodeText;
   final MarkdownConfig config;
   final WidgetVisitor visitor;
-  bool isTable = false;
+  bool isHtml = false;
   static final RegExp tableRep = RegExp(r'<table[^>]*>', multiLine: true, caseSensitive: true);
 
   static final RegExp htmlRep = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
@@ -136,16 +133,16 @@ class CustomTextNode extends ElementNode {
   InlineSpan build() {
     try {
       // HTML
-      if (isTable) {
-        return WidgetSpan(
-          child: HtmlWidget(element.textContent),
-        );
+      if (isHtml) {
+        return WidgetSpan(child: buildHtml());
       }
       return super.build();
     } catch (e) {
+      // 文本样式
+      final textStyle = config.p.textStyle.merge(parentStyle);
       // 显示文本
       return TextSpan(children: [
-        TextNode(text: element.textContent, style: style).build(),
+        TextNode(text: element.textContent, style: textStyle).build(),
       ]);
     }
   }
@@ -153,110 +150,35 @@ class CustomTextNode extends ElementNode {
   @override
   void onAccepted(SpanNode parent) {
     String nodeText = element.textContent;
-    // 文本样式
-    final textStyle = config.p.textStyle.merge(parentStyle);
+
     children.clear();
     // 没有 html 元素
-    if (!nodeText.contains(htmlRep)) {
-      accept(TextNode(text: nodeText, style: textStyle));
-      return;
-    }
-    //截距表标记
-    if (nodeText.contains(tableRep)) {
-      nodeText = nodeText.replaceAll(RegExp(r'[\n\r\s]'), '');
-      isTable = true;
+    isHtml = nodeText.contains(htmlRep);
+    if (isHtml) {
       accept(parent);
     }
-
-    //其余的由常规HTML处理处理
-    final spans = parseHtml(nodeText: nodeText, parentStyle: parentStyle);
-    for (var element in spans) {
-      isTable = false;
-      accept(element);
+    if (!isHtml) {
+      // 文本样式
+      final textStyle = config.p.textStyle.merge(parentStyle);
+      accept(TextNode(text: nodeText, style: textStyle));
     }
   }
 
-  ///parse [m.Node] to [h.Node]
-  List<SpanNode> parseHtml({required String nodeText, ValueCallback<dynamic>? onError, TextStyle? parentStyle}) {
-    try {
-      // 使用 WidgetVisitor，可以转换 MarkdownNode 到 SpanNodes, 你可以使用 SpanNode 与文本. rich 或 RichText 获取
-      final vis = WidgetVisitor(
-        config: visitor.config,
-        generators: visitor.generators,
-        richTextBuilder: visitor.richTextBuilder,
-      );
-      // 替换换行符
-      final text = nodeText.replaceAll(vis.splitRegExp ?? WidgetVisitor.defaultSplitRegExp, '');
-      // 没有 html 元素
-      if (!text.contains(htmlRep)) return [TextNode(text: nodeText)];
-      // 解析 html5 片段
-      final document = parseFragment(text);
-      return HtmlToSpanVisitor(visitor: vis, parentStyle: parentStyle).toVisit(document.nodes.toList());
-    } catch (e) {
-      onError?.call(e);
-      return [TextNode(text: nodeText)];
-    }
-  }
-}
-
-/// 用于DOM节点的简单树访问器
-class HtmlToSpanVisitor extends TreeVisitor {
-  final List<SpanNode> _spans = [];
-  final List<SpanNode> _spansStack = [];
-  final WidgetVisitor visitor;
-  final TextStyle parentStyle;
-
-  HtmlToSpanVisitor({WidgetVisitor? visitor, TextStyle? parentStyle})
-      : visitor = visitor ?? WidgetVisitor(),
-        parentStyle = parentStyle ?? const TextStyle();
-
-  List<SpanNode> toVisit(List<h.Node> nodes) {
-    _spans.clear();
-    for (final node in nodes) {
-      if (node case h.Element e when e.localName == 'link' || e.localName == 'script' || e.localName == 'style') {
-        continue;
-      }
-      final emptyNode = ConcreteElementNode(style: parentStyle);
-      _spans.add(emptyNode);
-      _spansStack.add(emptyNode);
-      visit(node);
-      _spansStack.removeLast();
-    }
-    final result = List.of(_spans);
-    _spans.clear();
-    _spansStack.clear();
-    return result;
-  }
-
-  @override
-  void visitText(h.Text node) {
-    final last = _spansStack.last;
-    if (last is ElementNode) {
-      final textNode = TextNode(text: node.text);
-      last.accept(textNode);
-    }
-  }
-
-  @override
-  void visitElement(h.Element node) {
-    final localName = node.localName ?? '';
-    final mdElement = m.Element(localName, []);
-    mdElement.attributes.addAll(node.attributes.cast());
-    SpanNode spanNode = visitor.getNodeByElement(mdElement, visitor.config);
-    if (spanNode is! ElementNode) {
-      final n = ConcreteElementNode(tag: localName, style: parentStyle);
-      n.accept(spanNode);
-      spanNode = n;
-    }
-    final last = _spansStack.last;
-    if (last is ElementNode) {
-      last.accept(spanNode);
-    }
-    _spansStack.add(spanNode);
-    for (var child in node.nodes.toList(growable: false)) {
-      visit(child);
-    }
-    _spansStack.removeLast();
+  /// 构建 HTML
+  Widget buildHtml() {
+    return HtmlWidget(
+      element.textContent,
+      customStylesBuilder: (el) {
+        switch (el.localName) {
+          case 'table':
+            return {'border': '1px solid', 'border-collapse': 'collapse'};
+          case 'th':
+          case 'td':
+            return {'border': '1px solid', 'padding': '8px'};
+        }
+        return null;
+      },
+    );
   }
 }
 
