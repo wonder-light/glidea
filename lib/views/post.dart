@@ -303,13 +303,19 @@ class _PostViewState extends State<PostView> {
 
   /// 预览 post
   void previewPost() {
+    openPostSetting(preview: true);
+  }
+
+  /// 打开 post 设置
+  void openPostSetting({bool preview = false}) {
     /// 抽屉控制器
     final drawerController = DraController();
     Get.showDrawer(
-      width: Get.width / 1.75,
+      width: preview ? Get.width / 1.75 : null,
       controller: drawerController,
       builder: (ctx) => PostEditor(
-        header: '',
+        preview: preview,
+        header: preview ? '' : 'postSettings',
         entity: postData.value,
         markdown: contentController.text,
         controller: drawerController,

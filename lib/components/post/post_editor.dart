@@ -10,17 +10,17 @@ class PostEditor extends DrawerEditor<Post> {
     super.key,
     required super.entity,
     required super.controller,
-    required this.markdown,
     super.header = 'postSettings',
     super.showAction = false,
     this.preview = true,
+    this.markdown,
   });
 
   /// 预览 post 文章
   final bool preview;
 
   /// markdown 内容
-  final String markdown;
+  final String? markdown;
 
   @override
   PostEditorState createState() => PostEditorState();
@@ -38,7 +38,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
       return [
         Expanded(
           child: MarkdownWidget(
-            data: widget.markdown,
+            data: widget.markdown ?? '',
             shrinkWrap: true,
             config: MarkdownConfig(configs: [
               const ImageConfig(),
