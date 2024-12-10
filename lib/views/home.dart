@@ -345,7 +345,6 @@ class _HomeViewState extends State<HomeView> {
       stepHeight: double.infinity,
       direction: DrawerDirection.bottomToTop,
       controller: drawerController,
-      context: context,
       builder: (ctx) => SettingEditor(
         entity: 12,
         controller: drawerController,
