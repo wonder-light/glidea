@@ -2,7 +2,7 @@
 import 'package:glidea/components/Common/drawer_editor.dart';
 import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/models/post.dart';
-import 'package:markdown_widget/markdown_widget.dart' show MarkdownConfig, MarkdownWidget;
+import 'package:markdown_widget/markdown_widget.dart' show MarkdownConfig, MarkdownGenerator, MarkdownWidget;
 
 /// 文章设置编辑器, 文章预览
 class PostEditor extends DrawerEditor<Post> {
@@ -43,6 +43,10 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
             config: MarkdownConfig(configs: [
               const ImageConfig(),
             ]),
+            markdownGenerator: MarkdownGenerator(
+              extensionSet: Markdown.custom,
+              textGenerator: CustomTextNode.new,
+            ),
           ),
         ),
       ];
