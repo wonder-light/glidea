@@ -1,5 +1,7 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, JsonProperty;
+import 'package:glidea/controller/mixin/remote.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/date.dart';
 import 'package:glidea/models/tag.dart';
 
 /// 文章基本要素
@@ -29,7 +31,7 @@ mixin class PostDataBase {
 
   /// 日期
   @JsonProperty(converterParams: {'format': defaultDateFormat})
-  DateTime date = DateTime.now();
+  DateTime date = DateTime.now().setFormat(pattern: defaultDateFormat);
 
   /// 封面图
   @JsonProperty()
