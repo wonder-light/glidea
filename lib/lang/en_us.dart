@@ -96,6 +96,7 @@
   'deleteSelected': 'Selected',
   'inputContent': 'Input content',
   'postUrlRepeatTip': 'The URL of the article is duplicated with other articles.',
+  'tagUrlRepeatTip': 'The name or URL of the tag is the same as another tag.',
   'postUrlIncludeTip': 'URL cannot contain /',
   'onlyPicDrag': 'Only picture dragging is supported',
   'themeConfigSaved': 'The theme configuration has been saved',

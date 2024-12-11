@@ -96,6 +96,7 @@
   'deleteSelected': '選択済み',
   'inputContent': '内容を入力してください',
   'postUrlRepeatTip': '文書のURLは他の文書と重複しました',
+  'tagUrlRepeatTip': 'タグの名前やURLが他のタグと重複しています',
   'postUrlIncludeTip': 'URLの中には　/　を含めません',
   'onlyPicDrag': 'イメージをドラッグのみです',
   'themeConfigSaved': 'テームの設定を保存しました',

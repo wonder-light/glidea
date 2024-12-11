@@ -97,6 +97,7 @@
   'deleteSelected': 'Sélectionné',
   'inputContent': 'Saisie du contenu',
   'postUrlRepeatTip': 'L\'URL de l\'article est dupliquée avec d\'autres articles.',
+  'tagUrlRepeatTip': 'Le nom ou l’url de l’étiquette est répété avec d’autres balises',
   'postUrlIncludeTip': 'L\'URL ne peut pas contenir /',
   'onlyPicDrag': 'Seul le dragage d\'images est autorisé',
   'themeConfigSaved': 'La configuration du thème a été sauvegardée',

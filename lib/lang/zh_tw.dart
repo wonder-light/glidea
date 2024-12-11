@@ -96,6 +96,7 @@
   'deleteSelected': '已選',
   'inputContent': '輸入內容',
   'postUrlRepeatTip': '文章的 URL 與其他文章重複',
+  'tagUrlRepeatTip': '標籤的名稱或 URL 與其他標籤重複',
   'postUrlIncludeTip': 'URL 不可包含 /',
   'onlyPicDrag': '僅支持圖片拖拽',
   'themeConfigSaved': '主題配置已保存',
