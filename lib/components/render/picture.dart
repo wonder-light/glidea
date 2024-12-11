@@ -84,7 +84,7 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
     //实例化选择图片
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'gif', 'tif', 'tiff', 'apng'],
+      allowedExtensions: imageExt,
     );
     if (result?.paths.firstOrNull?.isEmpty ?? true) return;
     // 选择的图片路径

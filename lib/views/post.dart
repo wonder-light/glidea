@@ -324,17 +324,29 @@ class _PostViewState extends State<PostView> {
   }
 
   /// 插入分隔符
-  void insertSeparator() {
+  void insertSeparator({String separator = summarySeparator}) {
     // 内容
     final content = contentController.text;
     // 位置
     final end = contentController.selection.end;
     // 插入摘要分隔符
-    contentController.text = '${content.substring(0, end)}$summarySeparator${content.substring(end)}';
+    contentController.text = '${content.substring(0, end)}$separator${content.substring(end)}';
   }
 
   /// 插入图片
-  void insertImage() {}
+  void insertImage() async {
+    //实例化选择图片
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: imageExt,
+    );
+
+    if (result?.paths.firstOrNull?.isEmpty ?? true) return;
+    // 选择的图片路径
+    final path = FS.normalize(result!.paths.first!);
+    // 在 markdown 插入图片
+    insertSeparator(separator: '![]($featurePrefix$path)');
+  }
 
   /// 插入表情符号
   void insertEmoji() {}
