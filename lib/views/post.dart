@@ -1,11 +1,13 @@
-﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Trans;
+﻿import 'package:file_picker/file_picker.dart' show FilePicker, FilePickerResult, FileType;
+import 'package:flutter/material.dart';
+import 'package:get/get.dart' show BoolExtension, ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/post/post_editor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/interfaces/types.dart';
@@ -118,19 +120,19 @@ class _PostViewState extends State<PostView> {
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
   /// 获取的当前 post 数据
-  late final RxObject<Post> postData;
+  late final Post postData;
 
   /// 用于进行修改的 [postData] 副本
-  late final RxObject<Post> currentPost;
+  late final Post currentPost;
+
+  /// 判断是否禁用保存图标
+  final isDisable = false.obs;
 
   /// 标题的字段控制器
   final titleController = TextEditingController();
 
   /// 标题的字段控制器
   final contentController = CustomTextController();
-
-  /// 顶部的操作按钮
-  final List<TActionData> actionButtons = [];
 
   /// 右侧的工具栏按钮
   final List<TActionData> toolbars = [];
@@ -140,17 +142,13 @@ class _PostViewState extends State<PostView> {
     super.initState();
     final fileName = Get.arguments as String;
     // 获取已有的数据或者新的数据
-    postData = site.getPostOrDefault(fileName).obs;
+    postData = site.getPostOrDefault(fileName);
     // 复制
-    currentPost = postData.value.copy<Post>()!.obs;
-    titleController.text = currentPost.value.title;
-    contentController.text = currentPost.value.content;
-    // 操作按钮
-    actionButtons.addAll([
-      (name: 'back', call: backToArticlePage, icon: PhosphorIconsRegular.arrowLeft),
-      (name: 'saveDraft', call: saveAsDraft, icon: PhosphorIconsRegular.check),
-      (name: 'save', call: savePost, icon: PhosphorIconsRegular.check),
-    ]);
+    currentPost = postData.copy<Post>()!;
+    titleController.text = currentPost.title;
+    contentController.text = currentPost.content;
+    // 禁用
+    updateDisable();
     // 工具栏按钮
     toolbars.addAll([
       (name: '', call: showPostStats, icon: PhosphorIconsRegular.warningCircle),
@@ -166,47 +164,67 @@ class _PostViewState extends State<PostView> {
   void dispose() {
     titleController.dispose();
     contentController.dispose();
-    postData.dispose();
-    currentPost.dispose();
+    isDisable.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Get.theme.colorScheme;
+    // 操作
+    List<Widget> actions = [
+      IconButton(
+        onPressed: backToArticlePage,
+        icon: const Icon(PhosphorIconsRegular.arrowLeft),
+        tooltip: 'back'.tr,
+      )
+    ];
+    // 存草稿
+    actions.add(Obx(
+      () => IconButton(
+        onPressed: isDisable.value ? null : saveAsDraft,
+        icon: const Icon(PhosphorIconsRegular.check),
+        tooltip: 'saveDraft'.tr,
+      ),
+    ));
+    // 保存发布
+    actions.add(Obx(
+      () => IconButton(
+        onPressed: isDisable.value ? null : savePost,
+        icon: Icon(PhosphorIconsRegular.check, color: isDisable.value ? null : colorScheme.primary),
+        tooltip: 'save'.tr,
+      ),
+    ));
     // 内容
-    Widget content = Expanded(
+    Widget childWidget = Expanded(
       // 滚动
       child: SingleChildScrollView(
         child: _buildInputField(isRich: true),
       ),
     );
+    // 标题
+    childWidget = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // 标题
+        _buildInputField(),
+        // 内容
+        childWidget,
+      ],
+    );
+    // 工具栏
+    childWidget = Stack(
+      children: [
+        childWidget,
+        _buildToolbar(),
+      ],
+    );
     // 布局
     return PageAction(
       contentPadding: EdgeInsets.zero,
-      actions: [
-        for (var item in actionButtons)
-          IconButton(
-            onPressed: item.call,
-            icon: Icon(item.icon, color: item.name == 'save' ? colorScheme.primary : null),
-            tooltip: item.name.tr,
-          ),
-      ],
-      child: Stack(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 标题
-              _buildInputField(),
-              // 内容
-              content,
-            ],
-          ),
-          _buildToolbar(),
-        ],
-      ),
+      actions: actions,
+      child: childWidget,
     );
   }
 
@@ -215,7 +233,7 @@ class _PostViewState extends State<PostView> {
     final theme = Get.theme;
     final textTheme = theme.textTheme;
     final style = isRich ? textTheme.bodyLarge : textTheme.titleLarge;
-    Widget widget = FractionallySizedBox(
+    return FractionallySizedBox(
       widthFactor: 0.7,
       alignment: Alignment.center,
       child: TextFormField(
@@ -233,13 +251,16 @@ class _PostViewState extends State<PostView> {
           hintText: isRich ? 'startWriting'.tr : 'title'.tr,
           hintStyle: style?.copyWith(color: theme.colorScheme.outlineVariant),
         ),
-        onChanged: (str) => isRich ? currentPost.value.content = str : currentPost.value.title = str,
+        onChanged: (str) {
+          if (isRich) {
+            currentPost.content = str;
+          } else {
+            currentPost.title = str;
+          }
+          updateDisable();
+        },
       ),
     );
-    /*if (isRich) {
-      widget = Expanded(child: widget);
-    }*/
-    return widget;
   }
 
   // 构建工具栏
@@ -270,8 +291,9 @@ class _PostViewState extends State<PostView> {
   /// 返回 article 页面
   void backToArticlePage() {
     // 相同则返回
-    if (site.equalPost(postData.value, currentPost.value)) {
+    if (site.equalPost(postData, currentPost)) {
       Get.toNamed(AppRouter.articles);
+      return;
     }
     // 弹窗确认
     Get.dialog(DialogWidget(
@@ -326,7 +348,7 @@ class _PostViewState extends State<PostView> {
       builder: (ctx) => PostEditor(
         preview: preview,
         header: preview ? '' : 'postSettings',
-        entity: postData.value,
+        entity: postData,
         markdown: contentController.text,
         controller: drawerController,
       ),
@@ -363,4 +385,9 @@ class _PostViewState extends State<PostView> {
 
   /// 显示 post 统计信息
   void showPostStats() {}
+
+  /// 更新保存按钮是否禁用
+  void updateDisable() {
+    isDisable.value = currentPost.title.isEmpty || currentPost.content.isEmpty;
+  }
 }
