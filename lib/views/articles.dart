@@ -1,6 +1,4 @@
-﻿import 'dart:io' show File;
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/list_item.dart';
@@ -9,6 +7,7 @@ import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/get.dart';
+import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/routes/router.dart';
@@ -94,13 +93,7 @@ class _ArticlesViewState extends State<ArticlesView> {
     ];
 
     // 头部组件
-    final leading = isDesktop
-        ? Image.file(
-            File(site.getFeaturePath(data: post)),
-            fit: BoxFit.cover,
-            height: double.infinity,
-          )
-        : null;
+    final leading = isDesktop ? ImageConfig.builderImg(site.getFeaturePath(post), {}) : null;
 
     //内容边距
     final contentPadding = isDesktop ? kRightPadding16 : null;

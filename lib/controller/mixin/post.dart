@@ -30,9 +30,17 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
   }
 
   /// 获取文章封面图片的路径
-  String getFeaturePath({required Post data}) {
+  String getFeaturePath(Post data, {bool usePrefix = true}) {
     var feature = data.feature.isNotEmpty ? data.feature : defaultPostFeaturePath;
-    return FS.joinR(state.appDir, feature);
+    if (feature.startsWith('http')) {
+      return feature;
+    }
+    feature = FS.joinR(state.appDir, feature);
+    // 加上 file:// 前缀
+    if (usePrefix) {
+      feature = featurePrefix + feature;
+    }
+    return feature;
   }
 
   /// 筛选文章

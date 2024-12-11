@@ -41,6 +41,8 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   }
 
   /// 匹配 feature 本地图片路径的正则
+  ///
+  /// r'file.*/post-images/'
   RegExp get featureReg => RegExp(r'file.*/post-images/');
 
   /// 渲染 post 的数据
@@ -337,13 +339,19 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
 
   /// 获取封面图 URL
   String _getPostFeature(String feature) {
-    if (feature.isEmpty) {
-      return themeConfig.showFeatureImage ? '${themeConfig.domain}/post-images/post-feature.jpg' : '';
+    // 不显示封面图
+    if (!themeConfig.showFeatureImage) {
+      return '';
     }
-    if (feature.contains('http')) {
+    // 默认图片
+    if (feature.isEmpty) {
+      return FS.joinR(themeConfig.domain, 'post-images/post-feature.jpg');
+    }
+    // 网络图
+    if (feature.startsWith('http')) {
       return feature;
     }
 
-    return '${themeConfig.domain}/post-images/${feature.replaceAll(featureReg, '')}';
+    return FS.joinR(themeConfig.domain, 'post-images', feature.replaceAll(featureReg, ''));
   }
 }
