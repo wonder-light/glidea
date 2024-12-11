@@ -1,7 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show FilteringTextInputFormatter;
+import 'package:get/get.dart' show Get, Inst;
 import 'package:glidea/components/Common/drawer_editor.dart';
+import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/tag.dart';
 
 /// 编辑标签的控件
@@ -20,6 +23,9 @@ class TagEditor extends DrawerEditor<Tag> {
 }
 
 class TagEditorState extends DrawerEditorState<TagEditor> {
+  /// 站点控制器
+  final site = Get.find<SiteController>(tag: SiteController.tag);
+
   /// 标签名控制器
   final TextEditingController nameController = TextEditingController();
 
@@ -89,6 +95,10 @@ class TagEditorState extends DrawerEditorState<TagEditor> {
       var newTag = Tag()
         ..name = nameController.text
         ..slug = urlController.text;
+      if (!site.checkTag(newTag, widget.entity)) {
+        Get.error('tagUrlRepeatTip');
+        return;
+      }
       widget.onSave?.call(newTag);
     }
     super.onSave();

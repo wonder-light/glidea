@@ -70,6 +70,21 @@ mixin TagSite on StateController<Application>, DataProcess {
     Get.success('tagDelete');
   }
 
+  /// 检测 [Tag] 的命名是否添加或者更新
+  ///
+  /// true: 可以加入
+  ///
+  /// false: 文章的 URL 与其他文章重复
+  bool checkTag(Tag data, [Tag? oldData]) {
+    // 不符合
+    if (data.name.trim().isEmpty || data.slug.trim().isEmpty) {
+      return false;
+    }
+    // 查找是否有重复的, 需要吧 oldData 排除
+    final length = state.tags.where((t) => (t.slug == data.slug || t.name == data.name) && t != oldData).length;
+    return length <= 0;
+  }
+
   /// 更新标签中 [Tag.used] 字段的值
   ///
   /// [addTag] == true, 将 [post] 中的标签添加到 [site.tags] 中, 否则删除它
@@ -82,20 +97,21 @@ mixin TagSite on StateController<Application>, DataProcess {
     }
     // 循环 post
     for (var post in state.posts) {
+      final List<Tag> tags = [];
       // 循环 post 中的 tags
       for (var item in post.tags) {
         // 判断是否有对应的 tag
         if (_tagsMap[item.slug] case Tag tag) {
           tag.used = true;
+          tags.add(tag);
         } else if (addTag) {
           // 添加 post 中的 tag 没有记录
-          post.tags.add(item);
+          tags.add(item);
           _tagsMap[item.slug] = item..used = true;
-        } else {
-          // 删除 post 中的 tag 没有记录
-          post.tags.remove(item);
         }
       }
+      // 设置 post.tags
+      post.tags = tags;
     }
   }
 }
