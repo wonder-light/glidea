@@ -87,16 +87,17 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
       state.posts.add(newData);
     } else {
       // 更新数据
-      oldData.title = newData.title;
-      oldData.content = newData.content;
-      oldData.fileName = newData.fileName;
-      oldData.date = newData.date;
-      oldData.feature = newData.feature;
-      oldData.hideInList = newData.hideInList;
-      oldData.isTop = newData.isTop;
-      oldData.published = newData.published;
-      // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
-      oldData.abstract = newData.content.split(summaryRegExp).firstOrNull ?? '';
+      oldData
+        ..title = newData.title
+        ..content = newData.content
+        ..fileName = newData.fileName
+        ..date = newData.date
+        ..feature = newData.feature
+        ..hideInList = newData.hideInList
+        ..isTop = newData.isTop
+        ..published = newData.published
+        // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
+        ..abstract = newData.content.split(summaryRegExp).firstOrNull ?? '';
     }
     // 更新标签
     updateTagUsedField(addTag: true);
@@ -106,7 +107,7 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
     } catch (e) {
       Log.w('update post failed: $e');
     }
-    Get.success(newData.published ? 'saved' :'draftSuccess');
+    Get.success(newData.published ? 'saved' : 'draftSuccess');
   }
 
   /// 删除 post
@@ -126,6 +127,25 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
     }
     // 菜单中的列表不必管
     Get.success('articleDelete');
+  }
+
+  /// 检测 [Post] 的命名是否添加或者更新
+  ///
+  /// true: 可以加入
+  ///
+  /// false: 文章的 URL 与其他文章重复
+  bool checkPost(Post data, [Post? oldData]) {
+    // 必须要有标题和内容
+    if (data.title.trim().isEmpty || data.content.trim().isEmpty) {
+      return false;
+    }
+    // fileName
+    if (data.fileName.trim().isEmpty || data.fileName.contains('/')) {
+      return false;
+    }
+    // 判断 fileName 是否有重复的
+    final length = state.posts.where((p) => p.fileName == data.fileName && p != oldData).length;
+    return length <= 0;
   }
 
   /// 比较 post 是否相等

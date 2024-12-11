@@ -297,8 +297,18 @@ class _PostViewState extends State<PostView> {
 
   /// 保存 post
   void savePost({bool published = true}) {
-    currentPost.value.published = published;
-    site.updatePost(newData: currentPost.value, oldData: postData.value);
+    // 看 fileName 是否包含 '/'
+    if (currentPost.fileName.contains('/')) {
+      Get.error('postUrlIncludeTip');
+      return;
+    }
+    // 检测 post 是否可以保存
+    if (!site.checkPost(currentPost, postData)) {
+      Get.error('postUrlRepeatTip');
+      return;
+    }
+    currentPost.published = published;
+    site.updatePost(newData: currentPost, oldData: postData);
   }
 
   /// 预览 post
