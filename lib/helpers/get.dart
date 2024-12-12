@@ -107,6 +107,8 @@ extension GetExt on GetInterface {
   /// [stepHeight] - 如果非空，则强制子元素的宽度为该值的倍数。只在移动端生效。
   ///
   /// [width] - 宽度, 默认为 403
+  ///
+  /// [onClose] 关闭时的回调函数
   void showDrawer({
     required WidgetBuilder builder,
     double opacity = 0.5,
@@ -121,6 +123,7 @@ extension GetExt on GetInterface {
     double? stepWidth = 60,
     double? stepHeight,
     double? width = 304,
+    VoidCallback? onClose,
   }) {
     // 使用 [PopupRoute] 不会遮挡住下来选项中的选项弹出框
     Get.generalDialog(
@@ -141,6 +144,7 @@ extension GetExt on GetInterface {
           stepHeight: stepHeight,
           width: width,
           shape: shape,
+          onClose: onClose,
         );
       },
     );

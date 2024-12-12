@@ -10,10 +10,13 @@ class DraController extends ValueNotifier<bool> {
   /// 任意抽屉控制器构造函数
   DraController() : super(true);
 
+  VoidCallback? _onClose;
+
   /// 关上抽屉
   void close() {
     value = false;
     notifyListeners();
+    _onClose?.call();
     Get.closeAllDialogs();
   }
 }
@@ -35,6 +38,7 @@ class DrawerWidget extends StatelessWidget {
     this.stepHeight,
     this.width = 304,
     this.shape,
+    this.onClose,
   });
 
   /// 比较透明度
@@ -76,6 +80,9 @@ class DrawerWidget extends StatelessWidget {
   /// 控制器
   final DraController? controller;
 
+  /// 关闭时的回调函数
+  final VoidCallback? onClose;
+
   @override
   Widget build(BuildContext context) {
     // 主题
@@ -84,6 +91,7 @@ class DrawerWidget extends StatelessWidget {
     final breakpoints = ResponsiveBreakpoints.of(Get.context!);
     // 控制器
     final DraController internalController = controller ?? DraController();
+    internalController._onClose = onClose;
     // 设置 stepHeight
     final stepHeight = breakpoints.isDesktop ? null : (this.stepHeight ?? 60);
     // 设置方向 direction
