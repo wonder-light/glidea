@@ -33,9 +33,6 @@ class SettingEditorState extends DrawerEditorState<SettingEditor> {
   /// 站点目录
   final siteDir = InputConfig().obs;
 
-  /// 站点控制器
-  final site = Get.find<SiteController>(tag: SiteController.tag);
-
   @override
   void initState() {
     super.initState();

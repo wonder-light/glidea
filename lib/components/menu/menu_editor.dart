@@ -47,7 +47,7 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
     nameController.addListener(updateTagState);
     urlController.addListener(updateTagState);
     openType.value = widget.entity.openType;
-    linkData.addAll(siteController.getReferenceLink());
+    linkData.addAll(site.getReferenceLink());
   }
 
   @override

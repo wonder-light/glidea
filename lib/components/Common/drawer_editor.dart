@@ -48,7 +48,7 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
   var canSave = false.obs;
 
   /// 站点控制器
-  final siteController = Get.find<SiteController>(tag: SiteController.tag);
+  final site = Get.find<SiteController>(tag: SiteController.tag);
 
   @override
   Widget build(BuildContext context) {

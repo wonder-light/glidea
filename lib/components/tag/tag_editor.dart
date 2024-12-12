@@ -23,9 +23,6 @@ class TagEditor extends DrawerEditor<Tag> {
 }
 
 class TagEditorState extends DrawerEditorState<TagEditor> {
-  /// 站点控制器
-  final site = Get.find<SiteController>(tag: SiteController.tag);
-
   /// 标签名控制器
   final TextEditingController nameController = TextEditingController();
 
