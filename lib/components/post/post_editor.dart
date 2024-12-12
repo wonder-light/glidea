@@ -58,13 +58,19 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
       (expanded: true, build: _buildUrl, header: 'URL'),
       (expanded: false, build: _buildDate, header: 'createAt'),
       (expanded: false, build: _buildImage, header: 'featureImage'),
+      (expanded: false, build: _buildHide, header: 'hideInList'),
+      (expanded: false, build: _buildTop, header: 'topArticles'),
     ]);
     dateController = TextEditingController(text: post.date.format(pattern: site.themeConfig.dateFormat));
+    isHide.value = post.hideInList;
+    isTop.value = post.isTop;
   }
 
   @override
   void dispose() {
     dateController?.dispose();
+    isHide.dispose();
+    isTop.dispose();
     super.dispose();
   }
 
@@ -217,6 +223,26 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
       onChanged: (str) => widget.entity.feature = str,
     );
   }
+
+  /// 隐藏
+  Widget _buildHide({bool top = false}) {
+    final post = widget.entity;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Obx(() {
+        final obj = top ? isTop : isHide;
+        return Switch(
+          value: obj.value,
+          onChanged: (value) => obj.value = (top ? post.isTop = value : post.hideInList = value),
+          trackOutlineWidth: WidgetStateProperty.all(0),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        );
+      }),
+     );
+   }
+
+  /// 置顶
+  Widget _buildTop() => _buildHide(top: true);
 
   /// 选择日期
   void openDatePicker() async {
