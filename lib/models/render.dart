@@ -137,7 +137,7 @@ class ToggleConfig extends ConfigBool {
 /// 图片上传配置
 @jsonSerializable
 @Json(discriminatorValue: FieldType.picture)
-class PictureConfig extends ConfigString {
+class PictureConfig extends ConfigString with PictureMixin {
   @override
   @JsonProperty()
   FieldType get type => FieldType.picture;
@@ -201,4 +201,8 @@ class SelectOption {
       ..label = label
       ..value = value;
   }
+}
+
+mixin class PictureMixin{
+  String filePath = '';
 }

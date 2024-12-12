@@ -93,7 +93,12 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
   }
 
   /// 创建对应类型的子控件
-  static Widget create<T extends ConfigBase>({required T config, bool isVertical = true, ValueChanged<dynamic>? onChanged}) {
+  static Widget create<T extends ConfigBase>({
+    required T config,
+    bool isVertical = true,
+    ValueChanged<dynamic>? onChanged,
+    bool randomName = false,
+  }) {
     return switch (config.type) {
       FieldType.input => InputWidget(config: (config as InputConfig).obs, isVertical: isVertical, onChanged: onChanged),
       FieldType.select => SelectWidget(config: (config as SelectConfig).obs, isVertical: isVertical, onChanged: onChanged),
@@ -101,7 +106,12 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
       FieldType.radio => RadioWidget(config: (config as RadioConfig).obs, isVertical: isVertical, onChanged: onChanged),
       FieldType.toggle => ToggleWidget(config: (config as ToggleConfig).obs, isVertical: isVertical, onChanged: onChanged),
       FieldType.slider => SliderWidget(config: (config as SliderConfig).obs, isVertical: isVertical, onChanged: onChanged),
-      FieldType.picture => PictureWidget(config: (config as PictureConfig).obs, isVertical: isVertical, onChanged: onChanged),
+      FieldType.picture => PictureWidget(
+          config: (config as PictureConfig).obs,
+          isVertical: isVertical,
+          randomName: randomName,
+          onChanged: onChanged,
+        ),
       FieldType.array => ArrayWidget(config: (config as ArrayConfig).obs, isVertical: isVertical, onChanged: onChanged),
     };
   }
