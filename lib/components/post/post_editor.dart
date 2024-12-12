@@ -37,10 +37,20 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
 
   @override
   List<Widget> buildContent(BuildContext context) {
+    Widget child;
     if (widget.preview) {
-      return [_buildPreview()];
+      child = _buildPreview();
+    } else {
+      child = _buildSetting();
     }
-    return [];
+    // 加个滚动
+    return [
+      Expanded(
+        child: SingleChildScrollView(
+          child: child,
+        ),
+      ),
+    ];
   }
 
   /// 构建预览
@@ -52,7 +62,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
     final dateStyle = textTheme.bodyMedium?.copyWith(color: colorScheme.outline);
     // 控件
     final List<Widget> children = [
-      ImageConfig.builderImg(site.getFeaturePath(widget.entity), {}),
+      ImageConfig.builderImg(site.getFeaturePath(widget.entity)),
       Text(post.title, style: textTheme.headlineSmall),
       Text(dateStr, style: dateStyle),
       if (post.tags.isNotEmpty)
@@ -84,20 +94,20 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
       ),
     ];
     // 返回
-    return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (var i = 0; i < children.length; i++)
-              Padding(
-                padding: i <= 0 ? kTopPadding8 : kTopPadding16,
-                child: children[i],
-              ),
-          ],
-        ),
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < children.length; i++)
+          Padding(
+            padding: i <= 0 ? kTopPadding8 : kTopPadding16,
+            child: children[i],
+          ),
+      ],
     );
+  }
+
+  /// 设置视图
+  Widget _buildSetting() {
   }
 }
