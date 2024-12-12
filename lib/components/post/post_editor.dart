@@ -3,9 +3,11 @@ import 'package:get/get.dart' show Get, GetNavigationExt;
 import 'package:glidea/components/Common/drawer_editor.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/models/post.dart';
 import 'package:markdown_widget/markdown_widget.dart' show MarkdownConfig, MarkdownGenerator, MarkdownWidget;
+import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 /// 文章设置编辑器, 文章预览
 class PostEditor extends DrawerEditor<Post> {
@@ -30,9 +32,16 @@ class PostEditor extends DrawerEditor<Post> {
 }
 
 class PostEditorState extends DrawerEditorState<PostEditor> {
+  late final expansions = <({Widget Function() build, bool expanded, String header})>[].obs;
+
   @override
   void initState() {
     super.initState();
+    if (widget.preview) return;
+    final post = widget.entity;
+    expansions.value.addAll([
+      (expanded: true, build: _buildUrl, header: 'URL'),
+    ]);
   }
 
   @override
@@ -109,5 +118,51 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
 
   /// 设置视图
   Widget _buildSetting() {
+    var color = Get.theme.colorScheme.surfaceContainerHigh;
+    return Obx(() {
+      return ExpansionPanelList(
+        elevation: 0,
+        expandedHeaderPadding: EdgeInsets.zero,
+        expansionCallback: (index, exp) {
+          expansions.update((obj) {
+            final tar = obj[index];
+            obj[index] = (expanded: exp, build: tar.build, header: tar.header);
+            return obj;
+          });
+        },
+        children: [
+          for (var item in expansions.value)
+            ExpansionPanel(
+              headerBuilder: (ctx, exp) => Padding(
+                padding: kHorPadding16,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(item.header.tr),
+                ),
+              ),
+              body: Padding(padding: kHorPadding16, child: item.build()),
+              isExpanded: item.expanded,
+              canTapOnHeader: true,
+              backgroundColor: item.expanded ? null : color,
+            )
+        ],
+      );
+    });
+  }
+
+  /// 设置中的 fileName
+  Widget _buildUrl() {
+    return TextFormField(
+      initialValue: widget.entity.fileName,
+      decoration: const InputDecoration(
+        isDense: true,
+        contentPadding: kVer8Hor12,
+        hoverColor: Colors.transparent, // 悬停时的背景色
+       ),
+      onChanged: (str) {
+        widget.entity.fileName = str;
+      },
+    );
+  }
   }
 }
