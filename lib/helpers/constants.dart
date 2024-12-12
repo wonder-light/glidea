@@ -37,7 +37,7 @@ const double listSeparated = 10;
 const int fileSize10M = 10 * 1024 * 1024;
 
 /// 图片类型扩展
-const List<String> imageExt = ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'gif', 'tif', 'tiff', 'apng'];
+const List<String> imageExt = ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'gif', 'tif', 'tiff', 'apng', 'jfif', 'avif'];
 
 const EdgeInsets kAllPadding16 = EdgeInsets.all(16);
 const EdgeInsets kHorPadding8 = EdgeInsets.symmetric(horizontal: 8);
