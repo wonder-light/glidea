@@ -115,7 +115,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   ///
   /// 当构建失败时抛出 [Mistake] 错误
   Future<void> renderAll() async {
-    _themePath = FS.joinR(state.appDir, 'themes', state.themeConfig.selectTheme);
+    _themePath = FS.join(state.appDir, 'themes', state.themeConfig.selectTheme);
     await _clearOutputFolder();
     await _formatDataForRender();
     await _buildHtmlTemplate();
@@ -174,7 +174,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 构建 HTML 模板
   Future<void> _buildHtmlTemplate() async {
     // 渲染数据路径
-    final renderDataPath = FS.joinR(state.supportDir, 'render_data.json');
+    final renderDataPath = FS.join(state.supportDir, 'render_data.json');
     try {
       // 渲染数据
       final data = {
@@ -197,7 +197,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     // 通信 node
     try {
       // 目标路径  TODO: 目前只在 Windows 平台使用, 且需要有 node 环境
-      final nodeJsPath = FS.joinR(state.baseDir, 'assets/js/index.js');
+      final nodeJsPath = FS.join(state.baseDir, 'assets/js/index.js');
       var pro = await Process.start('node', [nodeJsPath, renderDataPath], mode: ProcessStartMode.normal);
       // 获取输出
       for (var item in await pro.stdout.transform(utf8.decoder).toList()) {
@@ -222,14 +222,14 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
         (input: 'assets/media', output: 'media', isThemePath: true),
       };
       for (var item in items) {
-        final inputPath = FS.joinR(item.isThemePath ? _themePath : state.appDir, item.input);
-        final outputPath = FS.joinR(state.buildDir, item.output);
+        final inputPath = FS.join(item.isThemePath ? _themePath : state.appDir, item.input);
+        final outputPath = FS.join(state.buildDir, item.output);
         if (FS.pathExistsSync(inputPath)) {
           FS.copySync(inputPath, outputPath);
         }
       }
       // CNAME
-      final cnamePath = FS.joinR(state.buildDir, 'CNAME');
+      final cnamePath = FS.join(state.buildDir, 'CNAME');
       if (state.remote.cname.isNotEmpty) {
         FS.writeStringSync(cnamePath, state.remote.cname);
       }
@@ -255,7 +255,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
 
   /// Tag to TagRender
   TagRender _tagToRender(Tag tag) {
-    final link = FS.joinR(themeConfig.domain, themeConfig.tagPath, tag.slug, '/');
+    final link = FS.join(themeConfig.domain, themeConfig.tagPath, tag.slug, '/');
     return tag.copyWith<TagRender>({'link': link})!;
   }
 
@@ -297,7 +297,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       'description': _getSummaryForContent(content),
       'dateFormat': themeConfig.dateFormat.isNotEmpty ? post.date.format(pattern: themeConfig.dateFormat) : post.date,
       'feature': _getPostFeature(post.feature),
-      'link': FS.joinR(themeConfig.domain, themeConfig.postPath, post.fileName, '/'),
+      'link': FS.join(themeConfig.domain, themeConfig.postPath, post.fileName, '/'),
       'stats': _statsCalc(content).toMap(),
     })!;
   }
@@ -345,13 +345,13 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     }
     // 默认图片
     if (feature.isEmpty) {
-      return FS.joinR(themeConfig.domain, 'post-images/post-feature.jpg');
+      return FS.join(themeConfig.domain, 'post-images/post-feature.jpg');
     }
     // 网络图
     if (feature.startsWith('http')) {
       return feature;
     }
 
-    return FS.joinR(themeConfig.domain, 'post-images', feature.replaceAll(featureReg, ''));
+    return FS.join(themeConfig.domain, 'post-images', feature.replaceAll(featureReg, ''));
   }
 }

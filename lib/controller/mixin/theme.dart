@@ -42,7 +42,7 @@ mixin ThemeSite on StateController<Application>, DataProcess {
     var selectTheme = state.themeConfig.selectTheme;
     if (selectTheme.isEmpty) return false;
     // 查看是否有路径
-    var path = FS.joinR(state.appDir, 'themes', selectTheme);
+    var path = FS.join(state.appDir, 'themes', selectTheme);
     if (!FS.dirExistsSync(path)) return false;
     return true;
   }
@@ -129,7 +129,7 @@ mixin ThemeSite on StateController<Application>, DataProcess {
     var values = state.themeCustomConfig;
     try {
       // 自定义主题的配置文件路径
-      final configPath = FS.joinR(state.appDir, 'themes', state.themeConfig.selectTheme, 'config.json');
+      final configPath = FS.join(state.appDir, 'themes', state.themeConfig.selectTheme, 'config.json');
       if (!FS.fileExistsSync(configPath)) return [];
       // 配置数据
       final configs = FS.readStringSync(configPath).deserialize<TJsonMap>()!;

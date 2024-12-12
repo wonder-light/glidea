@@ -138,7 +138,7 @@ class NetlifyDeploy extends Deploy {
 
   /// 上传文件
   Future<Response> uploadFile(String filePath) async {
-    final fullFilePath = FS.joinR(buildDir, filePath);
+    final fullFilePath = FS.join(buildDir, filePath);
     final fileContent = await File(fullFilePath).readAsBytes();
     // 上传
     return await Deploy.dio.put(

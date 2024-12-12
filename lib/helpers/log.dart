@@ -28,7 +28,7 @@ class Log {
     if (kReleaseMode) {
       level = Level.info;
       filter = ProductionFilter();
-      output = AdvancedFileOutput(path: FS.joinR(site.state.supportDir, 'log'));
+      output = AdvancedFileOutput(path: FS.join(site.state.supportDir, 'log'));
     }
     _singleton = Logger(filter: filter, output: output, level: level);
   }

@@ -35,7 +35,7 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
     if (feature.startsWith('http')) {
       return feature;
     }
-    feature = FS.joinR(state.appDir, feature);
+    feature = FS.join(state.appDir, feature);
     // 加上 file:// 前缀
     if (usePrefix) {
       feature = featurePrefix + feature;

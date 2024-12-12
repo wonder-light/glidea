@@ -93,26 +93,11 @@ class FS {
 
   /// 链接路径
   ///
-  ///     p. join('path', 'to', 'foo'); // -> 'path/to/foo'
-  ///     p. join('path', '/to', 'foo'); // -> '/to/foo'
-  ///     p. join('path', '/to', '/foo'); // -> '/foo'
+  ///     join('path', 'to', 'foo'); // -> 'path/to/foo'
+  ///     join('path', '/to', 'foo'); // -> 'path/to/foo'
+  ///     join('path', '/to', '/foo'); // -> 'path/to/foo'
   static String join(String part1, [String? part2, String? part3, String? part4, String? part5]) {
-    return FS.normalize(p.join(part1, part2, part3, part4, part5));
-  }
-
-  /// 链接路径
-  ///
-  ///     p. join('path', 'to', 'foo'); // -> 'path/to/foo'
-  ///     p. join('path', '/to', 'foo'); // -> 'path/to/foo'
-  ///     p. join('path', '/to', '/foo'); // -> 'path/to/foo'
-  static String joinR(String part1, [String? part2, String? part3, String? part4, String? part5]) {
-    // 去除开头的 /
-    String? remove(String? str) {
-      if (str == null) return null;
-      return str.startsWith('/') ? str.substring(1) : str;
-    }
-
-    return FS.normalize(p.join(part1, remove(part2), remove(part3), remove(part4), remove(part5)));
+    return FS.normalize(p.join(part1, _remove(part2), _remove(part3), _remove(part4), _remove(part5)));
   }
 
   /// 路径序列化
@@ -123,6 +108,13 @@ class FS {
   ///     relative('/root/path/a/b.dart', from: '/root/path'); // -> 'a/b.dart'
   //      relative('/root/other.dart', from: '/root/path');    // -> '../other.dart'
   static String relative(String path, String from) => normalize(p.relative(path, from: from));
+  // 去除开头的 /
+  static String? _remove(String? str) {
+    if (str?.startsWith('/') ?? false) {
+      return str!.substring(1);
+    }
+    return str;
+  }
 }
 
 extension FileExt on File {
