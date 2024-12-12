@@ -1,9 +1,11 @@
-﻿import 'package:file_picker/file_picker.dart' show FilePicker, FilePickerResult, FileType;
+﻿import 'package:emoji_picker_flutter/emoji_picker_flutter.dart' show BottomActionBarConfig, CategoryViewConfig, Config, EmojiPicker, EmojiViewConfig;
+import 'package:file_picker/file_picker.dart' show FilePicker, FilePickerResult, FileType;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show BoolExtension, ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
+import 'package:get/get.dart' show BoolExtension, ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxBool, Trans;
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/page_action.dart';
+import 'package:glidea/components/Common/visibility.dart';
 import 'package:glidea/components/post/post_editor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
@@ -128,6 +130,12 @@ class _PostViewState extends State<PostView> {
   /// 判断是否禁用保存图标
   final isDisable = false.obs;
 
+  /// 是否显示表情
+  final isShowEmoji = false.obs;
+
+  /// emoji, stats 中当前使用的 bool
+  RxBool? currentBool;
+
   /// 标题的字段控制器
   final titleController = TextEditingController();
 
@@ -218,13 +226,17 @@ class _PostViewState extends State<PostView> {
       children: [
         childWidget,
         _buildToolbar(),
+        _buildEmojiView(),
       ],
     );
     // 布局
-    return PageAction(
-      contentPadding: EdgeInsets.zero,
-      actions: actions,
-      child: childWidget,
+    return Listener(
+      onPointerDown: onPointerDown,
+      child: PageAction(
+        contentPadding: EdgeInsets.zero,
+        actions: actions,
+        child: childWidget,
+      ),
     );
   }
 
@@ -285,6 +297,87 @@ class _PostViewState extends State<PostView> {
       top: 0,
       bottom: 0,
       child: widget,
+    );
+  }
+
+  /// 构建表情控件
+  Widget _buildEmojiView() {
+    Widget child = Obx(() {
+      final theme = Get.theme;
+      final colorScheme = theme.colorScheme;
+      const width = 320.0;
+      const height = 350.0;
+      const columns = 8;
+      const emojiSize = 24.0;
+      const tabBarHeight = 32.0;
+      final config = Config(
+        height: height,
+        emojiViewConfig: EmojiViewConfig(
+          columns: columns,
+          emojiSizeMax: emojiSize,
+          backgroundColor: theme.scaffoldBackgroundColor,
+        ),
+        categoryViewConfig: CategoryViewConfig(
+          tabBarHeight: tabBarHeight,
+          backgroundColor: theme.scaffoldBackgroundColor,
+          indicatorColor: colorScheme.primary,
+          iconColor: colorScheme.outlineVariant,
+          iconColorSelected: colorScheme.primary,
+          backspaceColor: colorScheme.primary,
+        ),
+        bottomActionBarConfig: const BottomActionBarConfig(enabled: false),
+      );
+      // 动画
+      return AnimatedVisibility(
+        visible: isShowEmoji.value,
+        duration: const Duration(milliseconds: 300),
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.outlineVariant,
+                offset: const Offset(0, 2),
+                blurRadius: 5,
+              ),
+            ],
+            border: Border.fromBorderSide(
+              BorderSide(
+                color: colorScheme.outlineVariant,
+                width: 0.5,
+              ),
+            ),
+          ),
+          constraints: const BoxConstraints.expand(width: width, height: height),
+          child: EmojiPicker(
+            onEmojiSelected: (category, emojis) {
+              insertSeparator(separator: emojis.emoji);
+            },
+            config: config,
+          ),
+        ),
+      );
+    });
+    // 加上位置
+    return Positioned(
+      right: 80,
+      top: 0,
+      bottom: 0,
+      child: Align(
+        alignment: Alignment.center,
+        child: _wrapperMouse(
+          child: child,
+          value: isShowEmoji,
+        ),
+      ),
+    );
+  }
+
+  /// 包装鼠标事件
+  Widget _wrapperMouse({required Widget child, RxBool? value}) {
+    return MouseRegion(
+      onEnter: (event) => currentBool = null,
+      onExit: (event) => currentBool = value,
+      child: child,
     );
   }
 
@@ -360,9 +453,13 @@ class _PostViewState extends State<PostView> {
     // 内容
     final content = contentController.text;
     // 位置
-    final end = contentController.selection.end;
+    final selection = contentController.selection;
+    // 位置
+    final end = selection.end;
     // 插入摘要分隔符
     contentController.text = '${content.substring(0, end)}$separator${content.substring(end)}';
+    // 复原位置
+    contentController.selection = selection;
   }
 
   /// 插入图片
@@ -381,7 +478,13 @@ class _PostViewState extends State<PostView> {
   }
 
   /// 插入表情符号
-  void insertEmoji() {}
+  ///
+  /// 当鼠标按下时, 先触发 [onPointerDown] 然后在触发 [IconButton] 的 [insertEmoji] 事件
+  void insertEmoji() {
+    if (currentBool == isShowEmoji) return;
+    isShowEmoji.value = !isShowEmoji.value;
+    currentBool = isShowEmoji;
+  }
 
   /// 显示 post 统计信息
   void showPostStats() {}
@@ -389,5 +492,14 @@ class _PostViewState extends State<PostView> {
   /// 更新保存按钮是否禁用
   void updateDisable() {
     isDisable.value = currentPost.title.isEmpty || currentPost.content.isEmpty;
+  }
+
+  /// 鼠标点击事件, 用于关闭 emoji, stats 视图
+  void onPointerDown(PointerEvent event) {
+    if (currentBool?.value == true) {
+      currentBool?.value = false;
+      return;
+    }
+    currentBool = null;
   }
 }
