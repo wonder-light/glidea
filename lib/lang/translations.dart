@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart' show Get, Translations, GetNavigationExt;
 
 import 'en_us.dart';
@@ -22,6 +23,23 @@ class TranslationsService extends Translations {
     'ja_JP': '日本語',
     'ru_RU': 'русск',
   };
+
+  /// 用于一组类型为T的本地化资源的工厂，将由本地化小部件加载。
+  static List<LocalizationsDelegate> delegates = [
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ];
+
+  /// 支持的语言
+  static const List<Locale> supportedLocales = [
+    Locale('zh', 'CN'),
+    Locale('zh', 'HK'),
+    Locale('en', 'US'),
+    Locale('fr', 'FR'),
+    Locale('ja', 'JP'),
+    Locale('ru', 'RU'),
+  ];
 
   @override
   Map<String, Map<String, String>> get keys => {

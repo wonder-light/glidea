@@ -33,6 +33,8 @@ class App extends StatelessWidget {
       locale: Get.deviceLocale,
       translations: TranslationsService(),
       fallbackLocale: TranslationsService.fallbackLocale,
+      supportedLocales: TranslationsService.supportedLocales,
+      localizationsDelegates: TranslationsService.delegates,
       getPages: AppRouter.routes,
       initialRoute: AppRouter.articles,
       defaultTransition: Transition.fadeIn,
