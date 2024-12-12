@@ -93,7 +93,7 @@ class _ArticlesViewState extends State<ArticlesView> {
     ];
 
     // 头部组件
-    final leading = isDesktop ? ImageConfig.builderImg(site.getFeaturePath(post), {}) : null;
+    final leading = isDesktop ? ImageConfig.builderImg(site.getFeaturePath(post)) : null;
 
     //内容边距
     final contentPadding = isDesktop ? kRightPadding16 : null;

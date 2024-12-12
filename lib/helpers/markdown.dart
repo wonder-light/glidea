@@ -184,22 +184,29 @@ class CustomTextNode extends ElementNode {
 
 /// config class for image, tag: img
 class ImageConfig extends ImgConfig {
-  const ImageConfig({super.builder = builderImg, super.errorBuilder});
+  const ImageConfig({super.builder = _defaultBuildImg, super.errorBuilder});
+
+  /// 默认构建图片
+  static Widget _defaultBuildImg(String url, Map<String, String>? attributes) => builderImg(url, attributes: attributes);
 
   /// 构建图片
-  static Widget builderImg(String url, Map<String, String> attributes) {
-    const fit = BoxFit.cover;
+  static Widget builderImg(String url, {Map<String, String>? attributes, BoxFit fit = BoxFit.cover}) {
+    if (url.trim().isEmpty) {
+      return Image.asset('assets/images/upload_image.jpg', errorBuilder: buildError);
+    }
     // 网络图片
     if (url.startsWith('http')) {
       return Image.network(url, fit: fit, errorBuilder: buildError);
     }
+    // 网络图片
+    if (url.startsWith('assets')) {
+      Image.asset(url, fit: fit, errorBuilder: buildError);
+    }
     // post 中的本地图片
     if (url.startsWith(featurePrefix)) {
       url = url.substring(featurePrefix.length);
-      return Image(image: FileImageExpansion.file(url), fit: fit, errorBuilder: buildError);
     }
-    // 资源图片
-    return Image.asset(url, fit: fit, errorBuilder: buildError);
+    return Image(image: FileImageExpansion.file(url), fit: fit, errorBuilder: buildError);
   }
 
   /// 图片加载失败时的占位图

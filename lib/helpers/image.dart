@@ -36,7 +36,7 @@ extension ImageSaveExt on img.Image {
   ///
   /// [quality] => [0, 100]
   /// [scale] => (0, 1]
-  Future<bool> compressImage(String path, {int quality = 80, double scale = 1.0}) async {
+  Future<bool> compressImage(String path, {int quality = 70, double scale = 1.0}) async {
     var image = img.copyResize(this, width: (width * scale).toInt(), height: (height * scale).toInt());
     var lists = img.encodeJpg(image, quality: quality);
     return img.writeFile(path, lists);
