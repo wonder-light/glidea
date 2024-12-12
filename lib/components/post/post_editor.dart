@@ -7,6 +7,7 @@ import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/models/post.dart';
 import 'package:markdown_widget/markdown_widget.dart' show MarkdownConfig, MarkdownGenerator, MarkdownWidget;
+import 'package:omni_datetime_picker/omni_datetime_picker.dart' show showOmniDateTimePicker;
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 /// 文章设置编辑器, 文章预览
@@ -34,6 +35,8 @@ class PostEditor extends DrawerEditor<Post> {
 class PostEditorState extends DrawerEditorState<PostEditor> {
   late final expansions = <({Widget Function() build, bool expanded, String header})>[].obs;
 
+  /// 日期的控制器
+  TextEditingController? dateController;
   @override
   void initState() {
     super.initState();
@@ -41,7 +44,15 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
     final post = widget.entity;
     expansions.value.addAll([
       (expanded: true, build: _buildUrl, header: 'URL'),
+      (expanded: false, build: _buildDate, header: 'createAt'),
     ]);
+    dateController = TextEditingController(text: post.date.format(pattern: site.themeConfig.dateFormat));
+  }
+
+  @override
+  void dispose() {
+    dateController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -164,5 +175,35 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
       },
     );
   }
+  /// 设置中的日期
+  Widget _buildDate() {
+    return TextFormField(
+      controller: dateController,
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding: kVer8Hor12,
+        hoverColor: Colors.transparent, // 悬停时的背景色
+        suffixIcon: IconButton(onPressed: openDatePicker, icon: const Icon(PhosphorIconsRegular.calendarDots)),
+       ),
+      readOnly: true,
+    );
+  }
+
+  /// 选择日期
+  void openDatePicker() async {
+    final date = widget.entity.date;
+    final result = await showOmniDateTimePicker(
+      context: context,
+      is24HourMode: true,
+      isShowSeconds: true,
+      initialDate: date,
+      firstDate: date.copyWith(year: date.year - 25),
+      lastDate: date.copyWith(year: date.year + 25),
+      constraints: const BoxConstraints(maxWidth: 400),
+    );
+    if (result != null) {
+      widget.entity.date = result;
+      dateController?.text = result.format(pattern: site.themeConfig.dateFormat);
+    }
   }
 }
