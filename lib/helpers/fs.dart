@@ -108,6 +108,25 @@ class FS {
   ///     relative('/root/path/a/b.dart', from: '/root/path'); // -> 'a/b.dart'
   //      relative('/root/other.dart', from: '/root/path');    // -> '../other.dart'
   static String relative(String path, String from) => normalize(p.relative(path, from: from));
+
+  /// 获取最后一个分隔符之前的 [path] 部分
+  ///
+  ///     dirname('path/to/foo.dart'); // -> 'path/to'
+  ///     dirname('path/to');          // -> 'path'
+  ///
+  /// 尾随分隔符将被忽略
+  ///
+  ///     dirname('path/to/'); // -> 'path'
+  static String dirname(String path) => normalize(p.dirname(path));
+
+  /// 获取[path]的文件扩展名
+  ///
+  ///     extension('path/to/foo.dart');    // -> '.dart'
+  ///     extension('path/to/foo');         // -> ''
+  ///     extension('path.to/foo');         // -> ''
+  ///     extension('path/to/foo.dart.js'); // -> '.js'
+  static String extension(String path) => p.extension(path);
+
   // 去除开头的 /
   static String? _remove(String? str) {
     if (str?.startsWith('/') ?? false) {
