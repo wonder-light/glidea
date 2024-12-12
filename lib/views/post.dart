@@ -9,11 +9,13 @@ import 'package:glidea/components/Common/visibility.dart';
 import 'package:glidea/components/post/post_editor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/post.dart';
+import 'package:glidea/models/render.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -122,10 +124,10 @@ class _PostViewState extends State<PostView> {
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
   /// 获取的当前 post 数据
-  late final Post postData;
+  late Post postData;
 
   /// 用于进行修改的 [postData] 副本
-  late final Post currentPost;
+  late Post currentPost;
 
   /// 判断是否禁用保存图标
   final isDisable = false.obs;
@@ -145,16 +147,13 @@ class _PostViewState extends State<PostView> {
   /// 右侧的工具栏按钮
   final List<TActionData> toolbars = [];
 
+  /// 图片配置
+  final picture = PictureConfig();
+
   @override
   void initState() {
     super.initState();
-    final fileName = Get.arguments as String;
-    // 获取已有的数据或者新的数据
-    postData = site.getPostOrDefault(fileName);
-    // 复制
-    currentPost = postData.copy<Post>()!;
-    titleController.text = currentPost.title;
-    contentController.text = currentPost.content;
+    updatePostData();
     // 禁用
     updateDisable();
     // 工具栏按钮
@@ -173,6 +172,8 @@ class _PostViewState extends State<PostView> {
     titleController.dispose();
     contentController.dispose();
     isDisable.dispose();
+    isShowEmoji.dispose();
+    site.off(themeSaveEvent);
     super.dispose();
   }
 
@@ -411,7 +412,7 @@ class _PostViewState extends State<PostView> {
   }
 
   /// 保存 post
-  void savePost({bool published = true}) {
+  void savePost({bool published = true}) async {
     // 看 fileName 是否包含 '/'
     if (currentPost.fileName.contains('/')) {
       Get.error('postUrlIncludeTip');
@@ -423,7 +424,10 @@ class _PostViewState extends State<PostView> {
       return;
     }
     currentPost.published = published;
+    await site.emit(themeSaveEvent);
     site.updatePost(newData: currentPost, oldData: postData);
+    // 更新数据
+    setState(() => updatePostData());
   }
 
   /// 预览 post
@@ -441,9 +445,10 @@ class _PostViewState extends State<PostView> {
       builder: (ctx) => PostEditor(
         preview: preview,
         header: preview ? '' : 'postSettings',
-        entity: postData,
-        markdown: contentController.text,
+        entity: currentPost,
+        markdown: preview ? contentController.text : '',
         controller: drawerController,
+        picture: picture,
       ),
     );
   }
@@ -488,6 +493,17 @@ class _PostViewState extends State<PostView> {
 
   /// 显示 post 统计信息
   void showPostStats() {}
+
+  /// 更新 post 数据
+  void updatePostData() {
+    // 获取已有的数据或者新的数据
+    postData = site.getPostOrDefault(Get.arguments as String);
+    // 复制
+    currentPost = postData.copy<Post>()!;
+    titleController.text = currentPost.title;
+    contentController.text = currentPost.content;
+    picture.value = postData.feature;
+  }
 
   /// 更新保存按钮是否禁用
   void updateDisable() {
