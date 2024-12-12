@@ -1,11 +1,13 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt;
+import 'package:get/get.dart' show Get, GetNavigationExt, Obx, Trans, BoolExtension;
 import 'package:glidea/components/Common/drawer_editor.dart';
+import 'package:glidea/components/render/array.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/models/post.dart';
+import 'package:glidea/models/render.dart';
 import 'package:markdown_widget/markdown_widget.dart' show MarkdownConfig, MarkdownGenerator, MarkdownWidget;
 import 'package:omni_datetime_picker/omni_datetime_picker.dart' show showOmniDateTimePicker;
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
@@ -20,6 +22,7 @@ class PostEditor extends DrawerEditor<Post> {
     super.showAction = false,
     this.preview = true,
     this.markdown,
+    required this.picture,
   });
 
   /// 预览 post 文章
@@ -27,6 +30,8 @@ class PostEditor extends DrawerEditor<Post> {
 
   /// markdown 内容
   final String? markdown;
+
+  final PictureConfig picture;
 
   @override
   PostEditorState createState() => PostEditorState();
@@ -37,6 +42,13 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
 
   /// 日期的控制器
   TextEditingController? dateController;
+
+  /// 是否是隐藏的
+  final isHide = false.obs;
+
+  /// 是否是置顶的
+  final isTop = false.obs;
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +57,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
     expansions.value.addAll([
       (expanded: true, build: _buildUrl, header: 'URL'),
       (expanded: false, build: _buildDate, header: 'createAt'),
+      (expanded: false, build: _buildImage, header: 'featureImage'),
     ]);
     dateController = TextEditingController(text: post.date.format(pattern: site.themeConfig.dateFormat));
   }
@@ -175,6 +188,12 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
       },
     );
   }
+
+  /// 设置中的标签 TODO: 工具标签列表
+  Widget _buildTags() {
+    return Container();
+  }
+
   /// 设置中的日期
   Widget _buildDate() {
     return TextFormField(
@@ -186,6 +205,16 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
         suffixIcon: IconButton(onPressed: openDatePicker, icon: const Icon(PhosphorIconsRegular.calendarDots)),
        ),
       readOnly: true,
+    );
+  }
+
+  /// 图片
+  Widget _buildImage() {
+    final post = widget.entity;
+    return ArrayWidget.create(
+      config: widget.picture,
+      randomName: true,
+      onChanged: (str) => widget.entity.feature = str,
     );
   }
 
