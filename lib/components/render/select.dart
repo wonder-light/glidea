@@ -1,6 +1,6 @@
-﻿import 'package:dropdown_button2/dropdown_button2.dart' show ButtonStyleData, DropdownButtonFormField2, DropdownStyleData, MenuItemStyleData;
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Trans;
+import 'package:glidea/components/Common/dropdown.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/models/render.dart';
 
@@ -13,7 +13,11 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
     required super.config,
     super.isVertical,
     super.onChanged,
+    this.bottomItem,
   });
+
+  /// 在弹出菜单底部显示的控件
+  final DropdownMenuItem<String>? bottomItem;
 
   @override
   Widget build(BuildContext context) {
@@ -21,39 +25,19 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
     return ConfigLayoutWidget(
       isVertical: isVertical,
       config: config.value,
-      child: DropdownButtonFormField2(
-        value: config.value.value,
-        isDense: true,
-        isExpanded: true,
-        decoration: InputDecoration(
-          isDense: true,
-          contentPadding: kVer8Hor12,
-          hoverColor: Colors.transparent, // 悬停时的背景色
-          //hintText: config.note.tr,
-          hintStyle: theme.textTheme.bodySmall!.copyWith(
-            color: theme.colorScheme.outline,
-          ),
-        ),
-        menuItemStyleData: const MenuItemStyleData(
-          height: 40,
-          padding: kHorPadding16,
-        ),
-        buttonStyleData: const ButtonStyleData(
-          width: 0,
-          padding: EdgeInsets.zero,
-        ),
-        dropdownStyleData: const DropdownStyleData(
-          isOverButton: false,
-          useRootNavigator: true,
-        ),
-        items: [
+      child: DropdownWidget(
+        initValue: config.value.value,
+        itemHeight: 40,
+        itemPadding: kHorPadding16,
+        bottomItem: bottomItem,
+        onSelected: change,
+        children: [
           for (var option in config.value.options)
             DropdownMenuItem<String>(
               value: option.value,
-              child: Text(option.label.tr),
+              child: Text(option.label.tr, style: theme.textTheme.bodyMedium),
             ),
         ],
-        onChanged: change,
       ),
     );
   }

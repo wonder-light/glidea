@@ -1,9 +1,8 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 import 'package:get/get.dart' show Obx, RxT, Trans;
-import 'package:glidea/components/Common/autocomplete.dart';
-import 'package:glidea/components/Common/list_item.dart';
+import 'package:glidea/components/Common/dropdown.dart';
 import 'package:glidea/components/Common/drawer_editor.dart';
+import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/interfaces/types.dart';
@@ -90,14 +89,27 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
     // 链接控件
     final linkWidget = wrapperField(
       name: 'link',
-      child: AutocompleteField(
-        controller: urlController,
-        optionsBuilder: _getOptions,
-        optionsViewBuilder: _buildOptionsView,
-        displayStringForOption: (option) => option.link,
-        onSelected: (value) => urlController.text = value.link,
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'(/(?!/)[a-zA-Z0-9-_.]*)+')),
+      child: DropdownWidget(
+        itemHeight: 56,
+        enableSearch: true,
+        enableFilter: true,
+        textController: urlController,
+        filterCallback: (item, text) {
+          return item.name.contains(text) || item.link.contains(text);
+        },
+        displayStringForItem: (item) => item.link,
+        children: [
+          for (var item in linkData)
+            DropdownMenuItem(
+              value: item,
+              child: ListItem(
+                leading: const Icon(PhosphorIconsRegular.link),
+                title: Text(item.name),
+                subtitle: Text(item.link),
+                constraints: const BoxConstraints(minHeight: 40),
+                dense: true,
+              ),
+            ),
         ],
       ),
     );
@@ -106,31 +118,6 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
       selectWidget,
       linkWidget,
     ];
-  }
-
-  /// 构建列表选项组件
-  Widget _buildOptionsView<T extends TLinkData>(BuildContext context, AutocompleteOnSelected<T> onSelected, Iterable<T> options) {
-    return ListView.separated(
-      padding: EdgeInsets.zero,
-      shrinkWrap: true,
-      itemCount: options.length,
-      itemBuilder: (BuildContext context, int index) {
-        final option = options.elementAt(index);
-        return ListItem(
-          leading: const Icon(PhosphorIconsRegular.link),
-          onTap: () {
-            onSelected(option);
-          },
-          title: Text(option.name),
-          subtitle: Text(option.link),
-          constraints: BoxConstraints(minHeight: 40),
-          dense: true,
-        );
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        return const Divider(height: 1, thickness: 1);
-      },
-    );
   }
 
   /// 更新标签状态
@@ -153,12 +140,5 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
       widget.onSave?.call(newMenu);
     }
     super.onSave();
-  }
-
-  /// 获取选项
-  Iterable<TLinkData> _getOptions(TextEditingValue textEditingValue) {
-    var text = textEditingValue.text;
-    if (text.isEmpty) return linkData;
-    return linkData.where((t) => t.name.contains(text) || t.link.contains(text));
   }
 }
