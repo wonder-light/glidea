@@ -159,4 +159,13 @@
   'toggledevtools': 'Инструменты разработчика',
   'close': 'Закрыть окно',
   'quit': 'Выход',
+  'headingDown': 'Понижение.',
+  'headingUp': 'Обновление названия.',
+  'toggleBold': 'Жирн шрифт',
+  'toggleCodeSpan': 'Внутренний код',
+  'toggleItalic': 'курсивн',
+  'toggleList': 'список',
+  'toggleMath': 'LateX (\$)',
+  'toggleMathReverse': 'LateX (\$\$)',
+  'toggleStrikethrough': 'Удали.',
 };

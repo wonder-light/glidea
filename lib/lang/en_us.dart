@@ -158,4 +158,13 @@
   'toggledevtools': 'Toogle Developer Tools',
   'close': 'Close Window',
   'quit': 'Quit',
+  'headingDown': 'Heading down',
+  'headingUp': 'Heading up',
+  'toggleBold': 'Toggle bold',
+  'toggleCodeSpan': 'Toggle code span',
+  'toggleItalic': 'Toggle italic',
+  'toggleList': 'Toggle list',
+  'toggleMath': 'LateX (\$)',
+  'toggleMathReverse': 'LateX (\$\$)',
+  'toggleStrikethrough': 'Toggle strikethrough',
 };

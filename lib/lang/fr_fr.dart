@@ -159,4 +159,13 @@
   'toggledevtools': 'Toogle Developer Tools',
   'close': 'Fermer',
   'quit': 'Quitter',
+  'headingDown': 'Déclassement du titre',
+  'headingUp': 'Amélioration du titre',
+  'toggleBold': 'En caractères gras',
+  'toggleCodeSpan': 'Code dans la ligne',
+  'toggleItalic': 'En italique',
+  'toggleList': 'La liste',
+  'toggleMath': 'LateX (\$)',
+  'toggleMathReverse': 'LateX (\$\$)',
+  'toggleStrikethrough': 'Supprimer la ligne',
 };

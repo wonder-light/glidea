@@ -158,4 +158,13 @@
   'toggledevtools': '開發者工具',
   'close': '關閉',
   'quit': '退出',
+  'headingDown': '標題降級',
+  'headingUp': '標題升級',
+  'toggleBold': '加粗',
+  'toggleCodeSpan': '行內代碼',
+  'toggleItalic': '斜體',
+  'toggleList': '列表',
+  'toggleMath': 'LateX (\$)',
+  'toggleMathReverse': 'LateX (\$\$)',
+  'toggleStrikethrough': '刪除線',
 };

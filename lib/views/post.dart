@@ -147,6 +147,9 @@ class _PostViewState extends State<PostView> {
   /// 右侧的工具栏按钮
   final List<TActionData> toolbars = [];
 
+  /// 上下文菜单内容
+  final List<TActions> contextMenus = [];
+
   /// 图片配置
   final picture = PictureConfig();
 
@@ -158,13 +161,15 @@ class _PostViewState extends State<PostView> {
     updateDisable();
     // 工具栏按钮
     toolbars.addAll([
-      (name: '', call: showPostStats, icon: PhosphorIconsRegular.warningCircle),
-      (name: 'insertEmoji', call: insertEmoji, icon: PhosphorIconsRegular.smiley),
+      //(name: '', call: showPostStats, icon: PhosphorIconsRegular.warningCircle),
+      (name: 'insertEmoji', call: showEmoji, icon: PhosphorIconsRegular.smiley),
       (name: 'insertImage', call: insertImage, icon: PhosphorIconsRegular.image),
       (name: 'insertMore', call: insertSeparator, icon: PhosphorIconsRegular.dotsThreeOutline),
       (name: 'postSettings', call: openPostSetting, icon: PhosphorIconsRegular.gear),
       (name: 'preview', call: previewPost, icon: PhosphorIconsRegular.eye),
     ]);
+    // 上下文菜单
+    contextMenus.addAll([]);
   }
 
   @override
@@ -173,6 +178,8 @@ class _PostViewState extends State<PostView> {
     contentController.dispose();
     isDisable.dispose();
     isShowEmoji.dispose();
+    toolbars.clear();
+    contextMenus.clear();
     site.off(themeSaveEvent);
     super.dispose();
   }
@@ -180,30 +187,6 @@ class _PostViewState extends State<PostView> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Get.theme.colorScheme;
-    // 操作
-    List<Widget> actions = [
-      IconButton(
-        onPressed: backToArticlePage,
-        icon: const Icon(PhosphorIconsRegular.arrowLeft),
-        tooltip: 'back'.tr,
-      )
-    ];
-    // 存草稿
-    actions.add(Obx(
-      () => IconButton(
-        onPressed: isDisable.value ? null : saveAsDraft,
-        icon: const Icon(PhosphorIconsRegular.check),
-        tooltip: 'saveDraft'.tr,
-      ),
-    ));
-    // 保存发布
-    actions.add(Obx(
-      () => IconButton(
-        onPressed: isDisable.value ? null : savePost,
-        icon: Icon(PhosphorIconsRegular.check, color: isDisable.value ? null : colorScheme.primary),
-        tooltip: 'save'.tr,
-      ),
-    ));
     // 内容
     Widget childWidget = Expanded(
       // 滚动
@@ -235,7 +218,29 @@ class _PostViewState extends State<PostView> {
       onPointerDown: onPointerDown,
       child: PageAction(
         contentPadding: EdgeInsets.zero,
-        actions: actions,
+        actions: [
+          IconButton(
+            onPressed: backToArticlePage,
+            icon: const Icon(PhosphorIconsRegular.arrowLeft),
+            tooltip: 'back'.tr,
+          ),
+          // 存草稿
+          Obx(
+            () => IconButton(
+              onPressed: isDisable.value ? null : saveAsDraft,
+              icon: const Icon(PhosphorIconsRegular.check),
+              tooltip: 'saveDraft'.tr,
+            ),
+          ),
+          // 保存发布
+          Obx(
+            () => IconButton(
+              onPressed: isDisable.value ? null : savePost,
+              icon: Icon(PhosphorIconsRegular.check, color: isDisable.value ? null : colorScheme.primary),
+              tooltip: 'save'.tr,
+            ),
+          )
+        ],
         child: childWidget,
       ),
     );
@@ -272,6 +277,7 @@ class _PostViewState extends State<PostView> {
           }
           updateDisable();
         },
+        contextMenuBuilder: isRich ? _builderContextMenu : null,
       ),
     );
   }
@@ -382,6 +388,17 @@ class _PostViewState extends State<PostView> {
     );
   }
 
+  /// 上下文菜单
+  Widget _builderContextMenu(BuildContext context, EditableTextState editableTextState) {
+    return AdaptiveTextSelectionToolbar(
+      anchors: editableTextState.contextMenuAnchors,
+      children: [
+        ...AdaptiveTextSelectionToolbar.getAdaptiveButtons(context, editableTextState.contextMenuButtonItems),
+        //const Divider(height: 1, thickness: 1),
+      ],
+    );
+  }
+
   /// 返回 article 页面
   void backToArticlePage() {
     // 相同则返回
@@ -455,16 +472,16 @@ class _PostViewState extends State<PostView> {
 
   /// 插入分隔符
   void insertSeparator({String separator = summarySeparator}) {
+    // 位置
+    var selection = contentController.selection;
     // 内容
-    final content = contentController.text;
+    var content = contentController.text;
     // 位置
-    final selection = contentController.selection;
-    // 位置
-    final end = selection.end;
+    var end = selection.end;
     // 插入摘要分隔符
     contentController.text = '${content.substring(0, end)}$separator${content.substring(end)}';
     // 复原位置
-    contentController.selection = selection;
+    contentController.selection = TextSelection.collapsed(offset: end + separator.length);;
   }
 
   /// 插入图片
@@ -482,10 +499,8 @@ class _PostViewState extends State<PostView> {
     insertSeparator(separator: '![]($featurePrefix$path)');
   }
 
-  /// 插入表情符号
-  ///
-  /// 当鼠标按下时, 先触发 [onPointerDown] 然后在触发 [IconButton] 的 [insertEmoji] 事件
-  void insertEmoji() {
+  /// 显示表情符号
+  void showEmoji() {
     if (currentBool == isShowEmoji) return;
     isShowEmoji.value = !isShowEmoji.value;
     currentBool = isShowEmoji;

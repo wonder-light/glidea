@@ -158,4 +158,13 @@
   'toggledevtools': '开发者工具',
   'close': '关闭',
   'quit': '退出',
+  'headingDown': '标题降级',
+  'headingUp': '标题升级',
+  'toggleBold': '加粗',
+  'toggleCodeSpan': '行内代码',
+  'toggleItalic': '斜体',
+  'toggleList': '列表',
+  'toggleMath': 'LateX (\$)',
+  'toggleMathReverse': 'LateX (\$\$)',
+  'toggleStrikethrough': '删除线',
 };

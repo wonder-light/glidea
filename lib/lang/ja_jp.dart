@@ -158,4 +158,13 @@
   'toggledevtools': '開発者ツール',
   'close': '閉じる',
   'quit': '終了',
+  'headingDown': 'タイトルダウンです',
+  'headingUp': 'タイトルアップグレードです',
+  'toggleBold': '太字にします',
+  'toggleCodeSpan': '行内コードです',
+  'toggleItalic': 'イタリック体です',
+  'toggleList': 'リストです',
+  'toggleMath': 'LateX (\$)',
+  'toggleMathReverse': 'LateX (\$\$)',
+  'toggleStrikethrough': '線を消します',
 };
