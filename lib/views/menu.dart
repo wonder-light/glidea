@@ -50,7 +50,8 @@ class _MenuViewState extends State<MenuView> {
   Widget _buildMenuItem(Menu menu) {
     // 配色方案
     final colors = Get.theme.colorScheme;
-
+    final textTheme = Get.theme.textTheme;
+    // 菜单项目
     return ListItem(
       shape: ContinuousRectangleBorder(
         side: BorderSide(
@@ -59,7 +60,7 @@ class _MenuViewState extends State<MenuView> {
         ),
         borderRadius: BorderRadius.circular(10.0),
       ),
-      constraints: const BoxConstraints(minHeight: 80),
+      constraints: const BoxConstraints(maxHeight: 80),
       contentPadding: kVerPadding8 + kHorPadding16,
       leadingMargin: kRightPadding16,
       leading: const Icon(PhosphorIconsRegular.starFour),
@@ -82,6 +83,9 @@ class _MenuViewState extends State<MenuView> {
           Container(padding: kRightPadding16),
           Text(menu.link),
         ],
+      ),
+      subtitleTextStyle: textTheme.bodySmall?.copyWith(
+        color: colors.outline,
       ),
       trailing: IconButton(
         onPressed: () => deleteMenu(menu),
