@@ -235,12 +235,13 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
       if (widget.filterCallback != null) {
         items = items.where((t) => widget.filterCallback!(t.value as T, text)).toList();
       }
+      _itemsNum.value = items.length;
       // list 构建 children
       return ListView.builder(
         shrinkWrap: true,
         itemExtent: widget.itemHeight,
         itemBuilder: (BuildContext context, int index) => _buildItemInk(child: items[index]),
-        itemCount: _itemsNum.value = items.length,
+        itemCount: _itemsNum.value,
       );
     });
   }
@@ -248,7 +249,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   /// 构建 [widget.children] 的 [Ink] 部分
   Widget _buildItemInk({required DropdownMenuItem<T> child, bool other = false}) {
     GestureTapCallback? onTap;
-    Widget? item;
+    Widget item = child;
     // 启用
     if (child.enabled) {
       onTap = () => _selectItem(child: child, other: other);
@@ -281,7 +282,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     if (widget.itemPadding != null) {
       item = Padding(
         padding: widget.itemPadding!,
-        child: item ?? child,
+        child: item,
       );
     }
     // 创建一个墨水井
@@ -467,7 +468,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     if (oldWidget != null) {
       // 多选
       if (widget.enableMultiple) {
-        textController.text = '';
+        _setTextField('');
       }
     }
   }
@@ -489,7 +490,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
       if (widget.initMultipleValue?.isNotEmpty ?? false) {
         _selectItems.value.addAll(widget.initMultipleValue!);
         // 清空控制器
-        textController.text = '';
+        _setTextField('');
       }
     } else if (widget.initValue != null) {
       // 非多选时的初始值
@@ -497,7 +498,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
       _selectItems.value.clear();
       _selectItems.value.add(value);
       // 设置控制器显示的值
-      textController.text = widget.displayStringForItem(value);
+      _setTextField(widget.displayStringForItem(value));
     }
   }
 
@@ -526,7 +527,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     // 选择
     var isSelected = true;
     // 控制器的值
-    textController.text = widget.displayStringForItem(item);
+    _setTextField(widget.displayStringForItem(item));
     // 更新 _selectItems
     _selectItems.update((value) {
       // 单选
@@ -551,7 +552,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     // widget.enableMultiple == true, 调用 multipleCallback
     if (widget.enableMultiple) {
       // 清空控制器的值
-      textController.text = '';
+      _setTextField('');
       widget.multipleCallback?.call(Set.of(_selectItems.value));
     }
     child.onTap?.call();
@@ -559,6 +560,14 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     if (!widget.enableMultiple) {
       // 未启用多选, 则关闭菜单
       menuController.close();
+    }
+  }
+
+  /// 设置 [textController] 和 [_textField] 的值
+  void _setTextField(String str){
+    textController.text = str;
+    if(widget.enableFilter) {
+      _textField.value = str;
     }
   }
 }
