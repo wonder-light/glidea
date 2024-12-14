@@ -18,7 +18,9 @@ class DropdownWidget<T> extends StatefulWidget {
     this.selectedTrailingIcon,
     this.enableFilter = false,
     this.enableSearch = false,
+    this.enableHighlight = false,
     this.filterCallback,
+    this.highlightBuild,
     this.headerItem,
     this.bottomItem,
     this.textController,
@@ -65,12 +67,16 @@ class DropdownWidget<T> extends StatefulWidget {
   /// 如果为 true, 则 [TextField] 是可输入状态, 否则是只读状态
   final bool enableSearch;
 
+  /// 启用选择 [item] 的高亮
+  final bool enableHighlight;
   /// [enableFilter] 为 true 时需要设置
   final TFilterCallback<T>? filterCallback;
 
   /// item 转字符串的函数
   final TDisplayStringForItem<T> displayStringForItem;
 
+  /// [item] 的高亮自定义构建函数
+  final TChangeValue<Widget>? highlightBuild;
   /// 在弹出菜单顶部显示的控件
   final DropdownMenuItem<T>? headerItem;
 
@@ -124,6 +130,10 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   /// [widget.children] 的数量
   final _itemsNum = 0.obs;
 
+  /// 选择的 item
+  final _selectItems = <T>{}.obs;
+
+  /// 主题
   ThemeData get theme => Get.theme;
 
   /// 菜单控制器
@@ -146,6 +156,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     _maxWidth.dispose();
     _itemsNum.dispose();
     _textField.dispose();
+    _selectItems.dispose();
     textController.dispose();
     super.dispose();
   }
@@ -203,10 +214,24 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   /// 构建 [widget.children] 的 [Ink] 部分
   Widget _buildItemInk({required DropdownMenuItem<T> child, bool other = false}) {
     GestureTapCallback? onTap;
-    Widget item = child;
+    Widget? item;
     // 启用
     if (child.enabled) {
       onTap = () => _selectItem(child: child, other: other);
+      // 对选择的 item 进行高亮
+      if (widget.enableHighlight) {
+        item = Obx(() {
+          if (!_selectItems.value.contains(child.value)) {
+            return child;
+          }
+          return widget.highlightBuild?.call(child) ??
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [Expanded(child: child), const Icon(PhosphorIconsRegular.check)],
+              );
+        });
+      }
     } else {
       // 禁用
       final colorScheme = theme.colorScheme;
@@ -222,7 +247,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     if (widget.itemPadding != null) {
       item = Padding(
         padding: widget.itemPadding!,
-        child: item,
+        child: item ?? child,
       );
     }
     // 创建一个墨水井
@@ -343,9 +368,6 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   }
 
   Object? handleDownKeyInvoke(_ArrowDownIntent intent) {
-    if (!menuController.isOpen) {
-      menuController.open();
-    }
     return null;
   }
 
