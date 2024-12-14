@@ -97,7 +97,9 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
         ..isTop = newData.isTop
         ..published = newData.published
         // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
-        ..abstract = newData.content.split(summaryRegExp).firstOrNull ?? '';
+        ..abstract = newData.content.split(summaryRegExp).firstOrNull ?? ''
+        // 标签
+        ..tags = newData.tags;
     }
     // 更新标签
     updateTagUsedField(addTag: true);
@@ -105,7 +107,7 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
       // 保存
       await saveSiteData();
     } catch (e) {
-      Log.w('update post failed: $e');
+      Log.w('update post failed: \n$e');
     }
     Get.success(newData.published ? 'saved' : 'draftSuccess');
   }
