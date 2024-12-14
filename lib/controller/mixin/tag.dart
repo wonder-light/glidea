@@ -1,4 +1,4 @@
-﻿import 'package:get/get.dart' show FirstWhereOrNullExt, Get, StateController;
+﻿import 'package:get/get.dart' show Get, StateController;
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/uid.dart';
@@ -101,9 +101,9 @@ mixin TagSite on StateController<Application>, DataProcess {
       // 循环 post 中的 tags
       for (var item in post.tags) {
         // 判断是否有对应的 tag
-        if (_tagsMap[item.slug] case Tag tag) {
-          tag.used = true;
-          tags.add(tag);
+        if (_tagsMap[item.slug] is Tag) {
+          item.used = true;
+          tags.add(item);
         } else if (addTag) {
           // 添加 post 中的 tag 没有记录
           tags.add(item);
