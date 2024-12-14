@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt;
+import 'package:glidea/helpers/constants.dart';
 
 /// 列表项
 class ListItem extends StatelessWidget {
@@ -144,9 +145,10 @@ class ListItem extends StatelessWidget {
     }
     // 子控件内容
     Widget childWidget = Container(
-      padding: contentPadding ?? EdgeInsets.symmetric(vertical: dense ? 10 : 16, horizontal: dense ? 10 : 12),
-      constraints: constraints ?? BoxConstraints(minHeight: dense ? 40 : 80, maxHeight: dense ? 70 : 150),
+      padding: contentPadding ?? (kVer8Hor12 * (dense ? 1 : 1.4)),
+      constraints: constraints ?? (const BoxConstraints(minHeight: 40, maxHeight: 80) * (dense ? 1 : 1.25)),
       child: Row(
+        //crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (leading != null) buildLeadingAndTrailing(leading!, isLeading: true),
           Expanded(
