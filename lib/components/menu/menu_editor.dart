@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Obx, RxT, Trans;
-import 'package:glidea/components/Common/dropdown.dart';
+import 'package:get/get.dart' show Get, GetNavigationExt, Obx, RxT, Trans;
 import 'package:glidea/components/Common/drawer_editor.dart';
+import 'package:glidea/components/Common/dropdown.dart';
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
@@ -51,6 +51,10 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
 
   @override
   List<Widget> buildContent(BuildContext context) {
+    final textTheme = Get.theme.textTheme;
+    final colorScheme = Get.theme.colorScheme;
+    // 高度
+    const itemHeight = 54.0;
     // 名称控件
     final nameWidget = wrapperField(
       name: 'name',
@@ -90,7 +94,7 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
     final linkWidget = wrapperField(
       name: 'link',
       child: DropdownWidget(
-        itemHeight: 56,
+        itemHeight: itemHeight,
         enableSearch: true,
         enableFilter: true,
         textController: urlController,
@@ -106,7 +110,10 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
                 leading: const Icon(PhosphorIconsRegular.link),
                 title: Text(item.name),
                 subtitle: Text(item.link),
-                constraints: const BoxConstraints(minHeight: 40),
+                subtitleTextStyle: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.outline,
+                ),
+                constraints: const BoxConstraints.expand(height: itemHeight),
                 dense: true,
               ),
             ),

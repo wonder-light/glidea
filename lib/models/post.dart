@@ -2,6 +2,7 @@
 import 'package:glidea/controller/mixin/remote.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
+import 'package:glidea/helpers/uid.dart';
 import 'package:glidea/models/tag.dart';
 
 /// 文章基本要素
@@ -13,7 +14,7 @@ mixin class PostBase {
 
   /// 文件名
   @JsonProperty()
-  String fileName = '';
+  String fileName = Uid.v4;
 
   /// 摘要: 根据 [content] 中的摘要分隔符来生成的
   ///
