@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Obx, Trans, BoolExtension;
 import 'package:glidea/components/Common/drawer_editor.dart';
+import 'package:glidea/components/Common/dropdown.dart';
 import 'package:glidea/components/render/array.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
@@ -57,6 +58,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
     expansions.value.addAll([
       (expanded: true, build: _buildUrl, header: 'URL'),
       (expanded: false, build: _buildDate, header: 'createAt'),
+      (expanded: false, build: _buildTags, header: 'tag'),
       (expanded: false, build: _buildImage, header: 'featureImage'),
       (expanded: false, build: _buildHide, header: 'hideInList'),
       (expanded: false, build: _buildTop, header: 'topArticles'),
@@ -188,16 +190,39 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
         isDense: true,
         contentPadding: kVer8Hor12,
         hoverColor: Colors.transparent, // 悬停时的背景色
-       ),
+      ),
       onChanged: (str) {
         widget.entity.fileName = str;
       },
     );
   }
 
-  /// 设置中的标签 TODO: 工具标签列表
+  /// 设置中的标签
   Widget _buildTags() {
-    return Container();
+    final slugSet = widget.entity.tags.map((t) => t.slug).toSet();
+    return DropdownWidget(
+      itemHeight: 40,
+      enableSearch: true,
+      enableFilter: true,
+      enableHighlight: true,
+      enableMultiple: true,
+      initMultipleValue: site.tags.where((t) => slugSet.contains(t.slug)).toSet(),
+      itemPadding: kHorPadding16,
+      filterCallback: (tag, str) {
+        return tag.name.contains(str);
+      },
+      displayStringForItem: (tag) => tag.name,
+      children: [
+        for (var tag in site.tags)
+          DropdownMenuItem(
+            value: tag,
+            child: Text(tag.name),
+          ),
+      ],
+      multipleCallback: (items) {
+        widget.entity.tags = items.toList();
+      },
+    );
   }
 
   /// 设置中的日期
@@ -209,7 +234,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
         contentPadding: kVer8Hor12,
         hoverColor: Colors.transparent, // 悬停时的背景色
         suffixIcon: IconButton(onPressed: openDatePicker, icon: const Icon(PhosphorIconsRegular.calendarDots)),
-       ),
+      ),
       readOnly: true,
     );
   }
@@ -238,8 +263,8 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         );
       }),
-     );
-   }
+    );
+  }
 
   /// 置顶
   Widget _buildTop() => _buildHide(top: true);
