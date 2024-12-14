@@ -1,8 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show LogicalKeyboardKey, TextInputFormatter;
-import 'package:get/get.dart' show BoolExtension, DoubleExtension, Get, GetNavigationExt, IntExtension, Obx, StringExtension;
+import 'package:get/get.dart' show BoolExtension, DoubleExtension, FirstWhereOrNullExt, Get, GetNavigationExt, IntExtension, Obx, StringExtension, Trans;
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 /// 下拉按钮菜单
 class DropdownWidget<T> extends StatefulWidget {
@@ -11,6 +13,7 @@ class DropdownWidget<T> extends StatefulWidget {
     super.key,
     this.enabled = true,
     this.initValue,
+    this.initMultipleValue,
     this.width,
     this.itemHeight = _itemHeight,
     this.itemsMaxHeight = _itemsMaxHeight,
@@ -19,8 +22,11 @@ class DropdownWidget<T> extends StatefulWidget {
     this.enableFilter = false,
     this.enableSearch = false,
     this.enableHighlight = false,
+    this.enableMultiple = false,
     this.filterCallback,
     this.highlightBuild,
+    this.multipleCallback,
+    this.multipleSelectedPrefixBuild,
     this.headerItem,
     this.bottomItem,
     this.textController,
@@ -38,6 +44,11 @@ class DropdownWidget<T> extends StatefulWidget {
   ///
   /// 如果为 null, 则默认选择第一项
   final T? initValue;
+
+  /// 启用多选时的初始值
+  ///
+  /// 如果为 null, 默认为空
+  final Set<T>? initMultipleValue;
 
   /// 确定 [DropdownWidget] 的宽度
   ///
@@ -69,6 +80,10 @@ class DropdownWidget<T> extends StatefulWidget {
 
   /// 启用选择 [item] 的高亮
   final bool enableHighlight;
+
+  /// 启用 [item] 的多选
+  final bool enableMultiple;
+
   /// [enableFilter] 为 true 时需要设置
   final TFilterCallback<T>? filterCallback;
 
@@ -77,6 +92,13 @@ class DropdownWidget<T> extends StatefulWidget {
 
   /// [item] 的高亮自定义构建函数
   final TChangeValue<Widget>? highlightBuild;
+
+  /// 多选时的前缀控件构建函数
+  final TChangeCallback<Widget, Set<T>>? multipleSelectedPrefixBuild;
+
+  /// 多选时的回调函数
+  final TChangeCallback<void, Set<T>>? multipleCallback;
+
   /// 在弹出菜单顶部显示的控件
   final DropdownMenuItem<T>? headerItem;
 
@@ -148,6 +170,18 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     assert(widget.children.every((t) => t.value != null), 'DropdownButton 中有 child 的 value 为 null');
     assert(widget.initValue == null || widget.children.any((t) => t.value == widget.initValue), 'initValue 不在 children 中');
     _updateTextEditor();
+    _updateSelectItems();
+  }
+
+  @override
+  void didUpdateWidget(covariant DropdownWidget<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.textController != oldWidget.textController) {
+      _updateTextEditor(oldWidget: oldWidget);
+    }
+    if (widget.children != oldWidget.children) {
+      _updateSelectItems(oldWidget: oldWidget);
+    }
   }
 
   @override
@@ -327,15 +361,6 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   Widget _buildField(BuildContext context, BoxConstraints constraints) {
     // 最大宽度
     _maxWidth.value = constraints.maxWidth;
-    // 后缀图标
-    final suffixIcon = widget.selectedTrailingIcon ??
-        widget.decoration?.suffixIcon ??
-        Padding(
-          padding: kRightPadding16,
-          child: Obx(
-            () => _isOpen.value ? const Icon(Icons.arrow_drop_up) : const Icon(Icons.arrow_drop_down),
-          ),
-        );
     // 装饰器的构造函数
     final inputDecorationFun = widget.decoration != null ? widget.decoration!.copyWith : InputDecoration.new;
     // 创建装饰器
@@ -346,12 +371,14 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
       hintStyle: theme.textTheme.bodySmall!.copyWith(
         color: theme.colorScheme.outline,
       ),
-      suffixIcon: suffixIcon,
+      prefixIcon: _buildMultipleSelectedPrefix(),
+      suffixIcon: _buildSelectedTrailingIcon(),
       suffixIconConstraints: const BoxConstraints(),
       prefixIconConstraints: const BoxConstraints(),
     );
     // 返回字段
     return TextFormField(
+      maxLines: widget.enableMultiple ? null : 1,
       controller: textController,
       enabled: widget.enabled,
       readOnly: !widget.enableSearch,
@@ -360,6 +387,59 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
       onTap: widget.enabled ? _menuHandle : null,
       onChanged: (str) => _textField.value = widget.enableFilter ? str : '',
       inputFormatters: widget.inputFormatters,
+    );
+  }
+
+  /// 构建拖尾图标
+  Widget _buildSelectedTrailingIcon() {
+    final suffixIcon = widget.selectedTrailingIcon ?? widget.decoration?.suffixIcon;
+    if (suffixIcon != null) {
+      return suffixIcon;
+    }
+
+    return Padding(
+      padding: kRightPadding16,
+      child: Obx(
+        () => _isOpen.value ? const Icon(Icons.arrow_drop_up) : const Icon(Icons.arrow_drop_down),
+      ),
+    );
+  }
+
+  /// 构建多选时的前缀图标
+  Widget? _buildMultipleSelectedPrefix() {
+    if (!widget.enableMultiple) {
+      return null;
+    }
+    // 自定义的构建函数
+    final child = widget.multipleSelectedPrefixBuild?.call(Set.of(_selectItems.value));
+    if (child != null) {
+      return child;
+    }
+    // 默认构建函数
+    return Obx(
+      () => Padding(
+        padding: kAllPadding16 / 4,
+        child: Wrap(
+          children: [
+            for (var item in _selectItems.value)
+              InputChip(
+                label: Text(widget.displayStringForItem(item)),
+                onDeleted: () {
+                  var child = widget.children.firstWhereOrNull((t) => t.value == item);
+                  if (child != null) {
+                    _selectItem(child: child);
+                  }
+                },
+                deleteIcon: const Icon(PhosphorIconsRegular.x),
+                deleteButtonTooltipMessage: 'delete'.tr,
+                visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
+                side: BorderSide(
+                  color: theme.colorScheme.outlineVariant,
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -378,12 +458,46 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   }
 
   /// 更新 [textController] 的值
-  void _updateTextEditor() {
+  void _updateTextEditor({DropdownWidget<T>? oldWidget}) {
     final children = widget.children;
+    // 数量
     _itemsNum.value = children.length;
+    // 控制器
     textController = widget.textController != null ? widget.textController! : TextEditingController();
-    if (widget.initValue != null) {
-      textController.text = widget.displayStringForItem(widget.initValue!);
+    if (oldWidget != null) {
+      // 多选
+      if (widget.enableMultiple) {
+        textController.text = '';
+      }
+    }
+  }
+
+  /// 更新 [_selectItems]
+  void _updateSelectItems({DropdownWidget<T>? oldWidget}) {
+    // 控件更新时的操作
+    if (oldWidget != null) {
+      if (widget.children != oldWidget.children) {
+        // 取公共的交集部分
+        final items = widget.children.map((t) => t.value!).toSet();
+        _selectItems.value = _selectItems.value.intersection(items);
+      }
+      return;
+    }
+    // 初始化
+    // 多选时的初始值
+    if (widget.enableMultiple) {
+      if (widget.initMultipleValue?.isNotEmpty ?? false) {
+        _selectItems.value.addAll(widget.initMultipleValue!);
+        // 清空控制器
+        textController.text = '';
+      }
+    } else if (widget.initValue != null) {
+      // 非多选时的初始值
+      T value = widget.initValue as T;
+      _selectItems.value.clear();
+      _selectItems.value.add(value);
+      // 设置控制器显示的值
+      textController.text = widget.displayStringForItem(value);
     }
   }
 
@@ -404,14 +518,48 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
 
   // 对 children 的 item 进行操作
   void _selectItem({required DropdownMenuItem<T> child, bool other = false}) {
+    final item = child.value as T;
     if (other) {
       child.onTap?.call();
       return;
     }
-    textController.text = widget.displayStringForItem(child.value as T);
-    widget.onSelected?.call(child.value as T);
+    // 选择
+    var isSelected = true;
+    // 控制器的值
+    textController.text = widget.displayStringForItem(item);
+    // 更新 _selectItems
+    _selectItems.update((value) {
+      // 单选
+      if (!widget.enableMultiple) {
+        // 未启用多选, 先清空 _selectItems, 在添加, 确保只有一个
+        value.clear();
+        value.add(item);
+      } else if (value.contains(item)) {
+        // 多选且 item 已经存在了, 需要移除
+        value.remove(item);
+        isSelected = false;
+      } else {
+        // 多选且 item 不经存在了, 需要添加
+        value.add(item);
+      }
+      return value;
+    });
+    // isSelected == true, 调用 onSelected
+    if (isSelected) {
+      widget.onSelected?.call(item);
+    }
+    // widget.enableMultiple == true, 调用 multipleCallback
+    if (widget.enableMultiple) {
+      // 清空控制器的值
+      textController.text = '';
+      widget.multipleCallback?.call(Set.of(_selectItems.value));
+    }
     child.onTap?.call();
-    menuController.close();
+    // 多选
+    if (!widget.enableMultiple) {
+      // 未启用多选, 则关闭菜单
+      menuController.close();
+    }
   }
 }
 
