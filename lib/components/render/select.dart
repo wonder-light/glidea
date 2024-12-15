@@ -49,6 +49,6 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
   /// 下拉选择按钮的值变化时调用
   void change(SelectOption item) {
     config.update((obj) => obj..value = item.value);
-    onChanged?.call(item);
+    onChanged?.call(item.value);
   }
 }
