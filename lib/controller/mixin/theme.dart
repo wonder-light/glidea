@@ -4,6 +4,7 @@ import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
+import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/render.dart';
@@ -56,7 +57,7 @@ mixin ThemeSite on StateController<Application>, DataProcess {
   }
 
   /// 主题配置中变量名称与字段类型的映射
-  final Map<String, FieldType> fieldMaps = {
+  final Map<String, FieldType> _fieldNames = {
     'selectTheme': FieldType.select,
     'faviconSetting': FieldType.picture,
     'avatarSetting': FieldType.picture,
@@ -78,56 +79,40 @@ mixin ThemeSite on StateController<Application>, DataProcess {
     'robotsText': FieldType.textarea,
   };
 
+  /// 主题下拉列表中的选项
+  List<SelectOption>? _themeOptions;
+
+  /// URL 的格式选项
+  List<SelectOption>? _urlFormatOptions;
+
   /// 获取主题的控件配置
   ///
   /// 都需要 [ArrayConfig] 时, throw [Mistake] exception
   List<ConfigBase> getThemeWidgetConfig() {
     // 主题列表
-    var themes = state.themes
-        .map((t) => SelectOption()
-          ..label = t
-          ..value = t)
-        .toList();
+    _themeOptions ??= state.themes.map((t) => SelectOption().setValues(label: t, value: t)).toList();
     // URL 默认格式
-    var formats = [
-      SelectOption()
-        ..label = 'Slug'.tr
-        ..value = UrlFormats.slug.name,
-      SelectOption()
-        ..label = 'Short ID'.tr
-        ..value = UrlFormats.shortId.name,
+    _urlFormatOptions ??= [
+      SelectOption().setValues(label: 'Slug'.tr, value: UrlFormats.slug.name),
+      SelectOption().setValues(label: 'Short ID'.tr, value: UrlFormats.shortId.name),
     ];
-    // 控件列表
-    List<ConfigBase> lists = [];
-    // 主题配置 {变量名: 变量值} 的映射
-    TJsonMap values = state.themeConfig.toMap()!;
-    // 循环添加控件
-    for (var item in fieldMaps.entries) {
-      // 变量名
-      var name = item.key;
-      // 变量值
-      var value = values[name];
-      // 字段控件
-      ConfigBase config = switch (item.value) {
-        FieldType.input => InputConfig(),
-        FieldType.select => SelectConfig()..options = themes,
-        FieldType.textarea => TextareaConfig()..note = 'htmlSupport'.tr,
-        FieldType.radio => RadioConfig()..options = formats,
-        FieldType.toggle => ToggleConfig(),
-        FieldType.slider => SliderConfig()..max = name == 'postPageSize' ? 50 : 100,
-        FieldType.picture => PictureConfig(),
-        FieldType.array => throw Mistake(message: 'create theme widget config failed, because there should be no array config'),
-      };
-
-      config
-        ..name = name
-        ..label = name.tr
-        ..value = value;
-
-      lists.add(config);
-    }
-
-    return lists;
+    return createRenderConfig(
+      fields: _fieldNames,
+      fieldValues: state.themeConfig.toMap()!,
+      options: {
+        'selectTheme': _themeOptions!,
+        'postUrlFormat': _urlFormatOptions!,
+        'tagUrlFormat': _urlFormatOptions!,
+      },
+      fieldNotes: {
+        'siteDescription': 'htmlSupport',
+        'footerInfo': 'htmlSupport',
+        'robotsText': 'htmlSupport',
+      },
+      sliderMax: {
+        'postPageSize': 50,
+      },
+    ).values.toList();
   }
 
   /// 获取自定义主题的控件配置
@@ -163,8 +148,48 @@ mixin ThemeSite on StateController<Application>, DataProcess {
 
       return lists;
     } catch (e) {
+      Log.w('get custom theme render config failed: \n$e');
       return [];
     }
+  }
+
+  /// 创建渲染配置
+  ///
+  /// [fields] 渲染配置需要的字段:  [字段名] - [渲染类型]
+  ///
+  /// [fieldValues] 字段对应的值:  [字段名] - [字段值]
+  Map<String, ConfigBase> createRenderConfig({
+    required Map<String, FieldType> fields,
+    Map<String, dynamic>? fieldValues,
+    Map<String, String>? fieldLabels,
+    Map<String, String>? fieldNotes,
+    Map<String, String>? fieldHints,
+    Map<String, int>? sliderMax,
+    Map<String, List<SelectOption>>? options,
+    Map<String, List<ConfigBase>>? arrayItems,
+  }) {
+    final Map<String, ConfigBase> children = {};
+    for (var field in fields.entries) {
+      final key = field.key;
+      // 创建配置
+      final ConfigBase config = switch (field.value) {
+        FieldType.input => InputConfig()..hint = fieldHints?[key]?.tr ?? '',
+        FieldType.textarea => TextareaConfig()..hint = fieldHints?[key]?.tr ?? '',
+        FieldType.select => SelectConfig()..options = options?[key] ?? [],
+        FieldType.radio => RadioConfig()..options = options?[key] ?? [],
+        FieldType.toggle => ToggleConfig(),
+        FieldType.slider => SliderConfig()..max = sliderMax?[key] ?? 100,
+        FieldType.picture => PictureConfig(),
+        FieldType.array => ArrayConfig()..arrayItems = arrayItems?[key] ?? [],
+      };
+      config
+        ..value = fieldValues?[key] ?? config.value
+        ..name = key
+        ..label = fieldLabels?[key] ?? key.tr
+        ..note = fieldNotes?[key]?.tr ?? '';
+      children[key] = config;
+    }
+    return children;
   }
 
   /// 更新主题的配置
