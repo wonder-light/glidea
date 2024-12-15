@@ -51,8 +51,6 @@ class DropdownWidget<T> extends StatefulWidget {
   final Set<T>? initMultipleValue;
 
   /// 确定 [DropdownWidget] 的宽度
-  ///
-  /// 如果该值为空，则 [DropdownWidget] 的宽度将与最宽的宽度相同菜单项加上前后图标的宽度.
   final double? width;
 
   /// 确定 [DropdownWidget] 中 [children] 的最大高度
@@ -220,9 +218,12 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
       children.add(_buildItemInk(child: widget.bottomItem!, other: true));
     }
     // 返回
-    return _buildAction(
-      child: _buildAnchor(
-        children: children,
+    return SizedBox(
+      width: widget.width,
+      child: _buildAction(
+        child: _buildAnchor(
+          children: children,
+        ),
       ),
     );
   }
@@ -302,7 +303,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   /// 设置 [ListView] 的宽高
   Widget _buildListSized({required Widget child}) {
     return Obx(() {
-      final width = widget.width ?? _maxWidth.value;
+      final width = _maxWidth.value;
       final itemHeight = widget.itemHeight ?? DropdownWidget._itemHeight;
       final maxHeight = widget.itemsMaxHeight ?? DropdownWidget._itemsMaxHeight;
       var height = itemHeight * _itemsNum.value;
