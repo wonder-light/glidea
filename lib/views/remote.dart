@@ -9,7 +9,10 @@ import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
+import 'package:glidea/helpers/log.dart';
+import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/render.dart';
+import 'package:glidea/models/setting.dart';
 
 class RemoteView extends StatefulWidget {
   const RemoteView({super.key});
@@ -19,26 +22,34 @@ class RemoteView extends StatefulWidget {
 }
 
 class _RemoteViewState extends State<RemoteView> {
+  static const _domain = 'domain';
+  static const _remotePlatform = 'platform';
+  static const _commentPlatform = 'commentPlatform';
+  static const _enabledProxy = 'enabledProxy';
+  static const _connectType = 'connectType';
+  static const _password = 'password';
+  static const _privateKey = 'privateKey';
+  static const _tokenUsername = 'tokenUsername';
+  static const _showComment = 'showComment';
+  static const _branch = 'branch';
+  static const _cname = 'cname';
+  static const _token = 'token';
+  static const _netlifyAccessToken = 'netlifyAccessToken';
+
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
   /// 当前选择的平台
   late final RxObject<DeployPlatform> platform;
 
-  /// [platform] 的字段配置
-  late final SelectConfig platformField;
-
-  /// 域名的字段配置
-  late final InputConfig domainField;
+  /// 当前选择的评论平台
+  late final RxObject<CommentPlatform> commentPlatform;
 
   /// 域名的文本控制器
   final TextEditingController domainController = TextEditingController();
 
   /// 域名前缀
   String domainPrefix = '';
-
-  /// 主题配置中变量名称与字段类型的映射
-  late final Map<String, ConfigBase> fieldMaps;
 
   /// 代理方式
   final proxyWay = ProxyWay.direct.obs;
@@ -48,34 +59,37 @@ class _RemoteViewState extends State<RemoteView> {
   /// password, key
   final sftpIsKey = false.obs;
 
-  /// 字段名称列表, 都是对应着 [InputConfig]
-  final fieldLists = const [
-    ['repository', 'branch', 'username', 'email', 'tokenUsername', 'token', 'cname'],
-    ['port', 'server', 'username', 'password', 'privateKey', 'remotePath'],
-    ['netlifySiteId', 'netlifyAccessToken'],
-    ['proxyPath', 'proxyPort'],
-    ['password', 'privateKey'],
-  ];
+  /// 字段名称列表
+  late final TMapList<Object, String> nameLists;
+
+  /// 字段名字
+  late final TMaps<Type, FieldType> fieldNames;
+
+  /// 字段配置
+  late final TMaps<Type, ConfigBase> fieldConfigs;
 
   // 字段的左下角提示
   final fieldNotes = const {
-    'privateKey': 'privateKeyTip',
+    _privateKey: 'privateKeyTip',
     'remotePath': 'remotePathTip',
   };
 
   // 字段的内部提示
   final fieldHints = const {
-    'branch': 'branch',
-    'domain': 'my_domain.com',
-    'cname': 'my_domain.com',
+    _branch: 'branch',
+    _domain: 'my_domain.com',
+    _cname: 'my_domain.com',
   };
+
+  /// 字段选项
+  late final TMapList<String, SelectOption> fieldOptions;
 
   /// 需要隐藏密码的字段
   final hidePasswords = {
-    'password': true.obs,
-    'privateKey': true.obs,
-    'netlifyAccessToken': true.obs,
-    'token': true.obs,
+    _password: true.obs,
+    _privateKey: true.obs,
+    _netlifyAccessToken: true.obs,
+    _token: true.obs,
   };
 
   @override
@@ -83,16 +97,36 @@ class _RemoteViewState extends State<RemoteView> {
     super.initState();
     final remote = site.remote;
     platform = remote.platform.obs;
+    commentPlatform = site.comment.commentPlatform.obs;
     proxyWay.value = remote.enabledProxy;
     sftpIsKey.value = remote.privateKey.isNotEmpty;
-    domainField = _updateDomainField();
-    platformField = _updatePlatformField();
-    fieldMaps = _getFieldMaps();
+    // 命名列表
+    nameLists = _getNameList();
+    // 命名
+    fieldNames = {
+      RemoteSetting: _getRemoteConfigMap(),
+      CommentSetting: {
+        _commentPlatform: FieldType.radio,
+        _showComment: FieldType.toggle,
+      },
+      GitalkSetting: _getConfigMap<GitalkSetting>(),
+      DisqusSetting: _getConfigMap<DisqusSetting>(),
+    };
+    // 选项
+    fieldOptions = _getConfigOptions();
+    // 配置
+    fieldConfigs = _getFieldConfig();
+    // 域名
+    _updateDomainField();
   }
 
   @override
   void dispose() {
     platform.dispose();
+    proxyWay.dispose();
+    sftpIsKey.dispose();
+    commentPlatform.dispose();
+    domainController.dispose();
     for (var item in hidePasswords.values) {
       item.dispose();
     }
@@ -122,7 +156,6 @@ class _RemoteViewState extends State<RemoteView> {
                   child: _buildCommentConfig(),
                 ),
               ],
-              onTap: (index) => site.isThemeCustomPage = index > 0,
             ),
           ),
           _buildBottom(),
@@ -134,62 +167,85 @@ class _RemoteViewState extends State<RemoteView> {
   /// 构建远程设置
   Widget _buildRemoteConfig() {
     return Obx(() {
-      final List<Widget> children = [];
-      // 平台
-      children.add(ArrayWidget.create(config: platformField, onChanged: _setPlatform, isVertical: false));
-      // 域名
-      children.add(_buildDomainField());
-      // 其它字段
-      final List<String> fields = [];
-      switch (platform.value) {
-        case DeployPlatform.coding || DeployPlatform.github || DeployPlatform.gitee:
-          fields.addAll(fieldLists[0]);
-          if (platform.value != DeployPlatform.coding) {
-            fields.remove('tokenUsername');
-          }
-          break;
-        case DeployPlatform.sftp:
-          fields.addAll(fieldLists[1]);
-          fields.replaceRange(3, 5, ['connectType', fieldLists[4][sftpIsKey.value ? 1 : 0]]);
-          break;
-        case DeployPlatform.netlify:
-          fields.addAll(fieldLists[2]);
-          break;
-      }
+      // 字段名称
+      final Set<String> names = {
+        ...nameLists[RemoteBase]!,
+        ...nameLists[platform.value]!,
+      };
       // 代理
       if (platform.value != DeployPlatform.sftp) {
-        fields.add('Proxy');
-        if (proxyWay.value != ProxyWay.direct) {
-          fields.addAll(fieldLists[3]);
+        // 直连
+        if (proxyWay.value == ProxyWay.direct) {
+          names.add(_enabledProxy);
+        } else {
+          // 代理, 全部加进去
+          names.addAll(nameLists[RemoteProxy]!);
         }
+      } else {
+        // SFTP
+        names.remove(sftpIsKey.value ? _password : _privateKey);
       }
-      // 添加
-      children.addAll([
-        for (var item in fields)
-          ArrayWidget.create(
-            config: fieldMaps[item]!,
-            isVertical: false,
-            onChanged: (str) => _fieldChange(str, field: item),
-            usePassword: hidePasswords[item],
-          ),
-      ]);
+
+      final configs = fieldConfigs[RemoteSetting] ?? {};
       // 构建列表
-      return ListView.builder(
-        shrinkWrap: true,
-        itemCount: children.length,
-        itemBuilder: (ctx, index) {
-          return Padding(
-            padding: kVer12Hor24,
-            child: children[index],
-          );
+      return _buildContent(
+        items: {
+          for (var item in names)
+            if (configs[item] case ConfigBase config)
+              // entry
+              item: config,
         },
+        over: {_domain: _buildDomainField()},
       );
     });
   }
 
   /// 构建评论设置
   Widget _buildCommentConfig() {
-    return const Text('评论');
+    return Obx(() {
+      // CommentSetting 的字段
+      TMap<ConfigBase> configs = {};
+      // 评论类型
+      final type = commentPlatform.value == CommentPlatform.gitalk ? GitalkSetting : DisqusSetting;
+      // 基础
+      configs.addAll(fieldConfigs[CommentSetting] ?? {});
+      // 添加对应评论的字段
+      configs.addAll(fieldConfigs[type] ?? {});
+      // 构建
+      return _buildContent(items: configs);
+    });
+  }
+
+  /// 构建字段列表
+  ///
+  /// [items] 字段配置
+  ///
+  /// [over] 需要进行覆盖的字段控件
+  Widget _buildContent({required TMap<ConfigBase> items, TMap<Widget>? over}) {
+    List<Widget> children = [];
+    for (var entry in items.entries) {
+      final key = entry.key;
+      children.add(
+        over?[key] ??
+            ArrayWidget.create(
+              config: entry.value,
+              isVertical: false,
+              usePassword: hidePasswords[key],
+              onChanged: (str) => _fieldChange(str, field: key),
+            ),
+      );
+    }
+    // 构建列表
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: children.length,
+      itemBuilder: (ctx, index) {
+        return Padding(
+          padding: kVer12Hor24,
+          child: children[index],
+        );
+      },
+    );
   }
 
   /// 构建底部按钮
@@ -199,9 +255,10 @@ class _RemoteViewState extends State<RemoteView> {
 
   /// 构建域名字段
   Widget _buildDomainField() {
+    InputConfig domain = fieldConfigs[RemoteSetting]![_domain] as InputConfig;
     return InputWidget(
       controller: domainController,
-      config: domainField.obs,
+      config: domain.obs,
       isVertical: false,
       prefixIcon: Padding(
         padding: kRightPadding8,
@@ -220,104 +277,141 @@ class _RemoteViewState extends State<RemoteView> {
           ],
           onSelected: (str) {
             domainPrefix = str;
-            domainField.value = domainPrefix + domainController.text;
+            domain.value = domainPrefix + domainController.text;
           },
         ),
       ),
       onChanged: (str) {
-        domainField.value = domainPrefix + domainController.text;
+        domain.value = domainPrefix + domainController.text;
       },
     );
   }
 
+  /// [SelectConfig] 的选项
+  TMapList<String, SelectOption> _getConfigOptions() {
+    return {
+      _remotePlatform: [
+        for (var item in DeployPlatform.values)
+          SelectOption()
+            ..label = item.name.tr
+            ..value = item.name,
+      ],
+      _enabledProxy: [
+        for (var item in ProxyWay.values) SelectOption().setValues(label: item.name.tr, value: item.name),
+      ],
+      _connectType: [
+        for (var item in nameLists[_connectType]!) SelectOption().setValues(label: item.tr, value: item),
+      ],
+      _commentPlatform: [
+        for (var item in CommentPlatform.values) SelectOption().setValues(label: item.name.tr, value: item.name),
+      ],
+    };
+  }
+
+  /// 获取 [T] 对应的 [FieldType] 映射
+  TMap<FieldType> _getConfigMap<T>({TMap<FieldType>? fieldTypes}) {
+    final values = '{}'.fromJson<T>()!.toMap()!;
+    return values.map((key, value) => MapEntry(key, fieldTypes?[key] ?? FieldType.input));
+  }
+
+  /// 获取 [RemoteSetting] 映射
+  TMap<FieldType> _getRemoteConfigMap() {
+    final TMap<FieldType> maps = _getConfigMap<RemoteSetting>();
+    maps.addAll({
+      _remotePlatform: FieldType.select,
+      _enabledProxy: FieldType.radio,
+      _connectType: FieldType.radio,
+    });
+    return maps;
+  }
+
+  /// 获取远程配置所需要的命名列表
+  TMapList<Object, String> _getNameList() {
+    List<String> getKeys<T>() => '{}'.fromJson<T>()!.toMap()!.keys.toList();
+    // DeployPlatform.coding
+    final codingNames = getKeys<RemoteCoding>();
+    // DeployPlatform.github
+    final githubNames = List.of(codingNames);
+    githubNames.remove(_tokenUsername);
+    // DeployPlatform.sftp
+    final sftpNames = getKeys<RemoteSftp>();
+    final index = sftpNames.indexOf(_password);
+    // 插入
+    sftpNames.insert(index, _connectType);
+    return {
+      RemoteBase: getKeys<RemoteBase>(),
+      RemoteProxy: getKeys<RemoteProxy>(),
+      DeployPlatform.github: githubNames,
+      DeployPlatform.gitee: githubNames,
+      DeployPlatform.coding: codingNames,
+      DeployPlatform.netlify: getKeys<RemoteNetlify>(),
+      DeployPlatform.sftp: sftpNames,
+      _connectType: [_password, _privateKey],
+    };
+  }
+
+  /// 获取 [FieldType] 对应的 [ConfigBase] 配置
+  TMaps<Type, ConfigBase> _getFieldConfig() {
+    try {
+      TMaps<Type, ConfigBase> configs = {};
+      for (var MapEntry(:key, :value) in fieldNames.entries) {
+        // 值
+        TMap<dynamic>? values;
+        if (key == RemoteSetting) {
+          // 远程
+          values = site.remote.toMap();
+          final strList = nameLists[_connectType]!;
+          values?.addAll({_connectType: sftpIsKey.value ? strList.last : strList.first});
+        } else if (key == CommentSetting) {
+          // 基础评论
+          values = site.comment.toMap();
+        } else if (key == GitalkSetting) {
+          // gitalk 评论
+          values = site.comment.gitalkSetting.toMap();
+        } else if (key == DisqusSetting) {
+          // disqus 评论
+          values = site.comment.disqusSetting.toMap();
+        }
+        configs[key] = site.createRenderConfig(
+          fields: value,
+          fieldValues: values,
+          fieldNotes: fieldNotes,
+          fieldHints: fieldHints,
+          options: fieldOptions,
+        );
+      }
+      return configs;
+    } catch (e) {
+      Log.w('remoteWidget._getFieldConfig: remote.toMap failed: \n$e');
+      return {};
+    }
+  }
+
   /// 更新域名字段
-  InputConfig _updateDomainField({InputConfig? field}) {
-    const key = 'domain';
-    field ??= InputConfig();
-    field
-      ..name = key
-      ..label = key.tr
-      ..value = site.domain
-      ..hint = fieldHints[key] ?? '';
+  void _updateDomainField() {
+    InputConfig field = fieldConfigs[RemoteSetting]![_domain]! as InputConfig;
     if (field.value.startsWith('https://')) {
       domainPrefix = 'https://';
     } else {
       domainPrefix = 'http://';
     }
     domainController.text = field.value.substring(domainPrefix.length);
-    return field;
   }
-
-  /// 更新平台字段
-  SelectConfig _updatePlatformField({SelectConfig? field}) {
-    field ??= SelectConfig();
-    field
-      ..name = 'platform'
-      ..label = 'platform'.tr
-      ..value = platform.value.name
-      ..options = [
-        for (var item in DeployPlatform.values)
-          SelectOption()
-            ..label = item.name.tr
-            ..value = item.name,
-      ];
-    return field;
-  }
-
-  /// 设置字段映射
-  Map<String, ConfigBase> _getFieldMaps() {
-    // 初始值
-    final Map<String, ConfigBase> maps = {
-      for (var field in fieldLists.expand((t) => t).toSet()) field: InputConfig(),
-    };
-    maps.addAll({
-      'Proxy': RadioConfig()
-        ..value = proxyWay.value.name
-        ..options = [
-          for (var item in ProxyWay.values) SelectOption().setValues(label: item.name.tr, value: item.name),
-        ],
-      'connectType': RadioConfig()
-        ..value = sftpIsKey.value ? fieldLists[4][1] : fieldLists[4][0]
-        ..options = [
-          for (var item in fieldLists[4]) SelectOption().setValues(label: item.tr, value: item),
-        ],
-    });
-    // 远程设置
-    final items = site.remote.toMap();
-    // 设置 label、value 等等
-    for (var entry in maps.entries) {
-      // 存储的值
-      final item = items?[entry.key];
-      // 设置当前值
-      entry.value
-        ..value = item ?? entry.value.value
-        ..name = entry.key
-        ..label = entry.key.tr
-        ..note = fieldNotes[entry.key] ?? '';
-    }
-    // 设置 hint
-    for (var entry in fieldHints.entries) {
-      if (maps[entry.key] case InputConfig obj) {
-        obj.hint = entry.value;
-      }
-    }
-    return maps;
-  }
-
-  /// 设置 [platform]
-  void _setPlatform(dynamic str) => _fieldChange(str, field: platformField.name);
 
   /// 字段变化时调用
   void _fieldChange(dynamic str, {String? field}) {
     switch (field) {
-      case 'platform':
+      case _remotePlatform:
         platform.value = DeployPlatform.values.firstWhereOrNull((t) => t.name == str) ?? DeployPlatform.github;
         break;
-      case 'Proxy':
+      case _commentPlatform:
+        commentPlatform.value = CommentPlatform.values.firstWhereOrNull((t) => t.name == str) ?? CommentPlatform.gitalk;
+        break;
+      case _enabledProxy:
         proxyWay.value = ProxyWay.values.firstWhereOrNull((t) => t.name == str) ?? ProxyWay.direct;
         break;
-      case 'connectType':
-        sftpIsKey.value = fieldLists[4][1] == str;
+      case _connectType:
+        sftpIsKey.value = nameLists[_connectType]!.last == str;
         break;
     }
   }

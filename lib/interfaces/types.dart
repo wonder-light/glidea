@@ -14,7 +14,9 @@ typedef TJsonMap = Map<String, dynamic>;
 
 typedef TMap<T> = Map<String, T>;
 
-typedef TMaps<T> = Map<String, TMap<T>>;
+typedef TMaps<K, V> = Map<K, TMap<V>>;
+
+typedef TMapList<K, V> = Map<K, List<V>>;
 
 typedef TChangeCallback<T, F> = T Function(F value);
 
