@@ -30,6 +30,9 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 远程
   RemoteSetting get remote => state.remote;
 
+  /// 评论
+  CommentSetting get comment => state.comment;
+
   /// 检测是否可以进行发布
   bool get checkPublish {
     final remote = state.remote;
