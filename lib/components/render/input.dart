@@ -1,7 +1,7 @@
 ﻿import 'package:file_picker/file_picker.dart';
 import 'package:flex_color_picker/flex_color_picker.dart' show ColorPicker, ColorPickerType;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
+import 'package:get/get.dart' show BoolExtension, ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxBool, Trans;
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/controller/site.dart';
@@ -21,7 +21,10 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
     required super.config,
     super.isVertical,
     super.onChanged,
+    this.controller,
   });
+
+  final TextEditingController? controller;
 
   /// 是否时富文本
   bool get isTextarea => true;
@@ -29,16 +32,22 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
   /// 文本框是否只读
   bool get isReadOnly => false;
 
+  /// 隐藏密码吗
+  bool get hidePassword => false;
+
   @override
   Widget build(BuildContext context) {
     var theme = Get.theme;
-    final controller = TextEditingController();
+    final controller = this.controller ?? TextEditingController();
+    if(this.controller == null) {
+      controller.text = config.value.value;
+    }
     return ConfigLayoutWidget(
         isVertical: isVertical,
         config: config.value,
         child: Obx(() {
-          controller.text = config.value.value;
           return TextFormField(
+            obscureText: hidePassword,
             controller: controller,
             readOnly: isReadOnly,
             minLines: isTextarea ? 2 : null,
@@ -49,6 +58,8 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
               hoverColor: Colors.transparent,
               prefixIcon: getPrefixIcon(),
               suffixIcon: getSuffixIcon(),
+              prefixIconConstraints: const BoxConstraints(),
+              suffixIconConstraints: const BoxConstraints(),
               hintText: config.value.hint.tr,
               hintStyle: theme.textTheme.bodySmall!.copyWith(
                 color: theme.colorScheme.outline,
@@ -79,7 +90,25 @@ class InputWidget extends TextareaWidget<InputConfig> {
     required super.config,
     super.isVertical,
     super.onChanged,
+    super.controller,
+    this.prefixIcon,
+    this.usePassword,
   });
+
+  /// 在装饰的容器中, 出现在文本字段的可编辑部分之后和后缀或 suffixText 之后的图标
+  final Widget? prefixIcon;
+
+  /// 使用密码样式
+  ///
+  /// ```
+  /// null:  不使用密码
+  /// true:  隐藏密码
+  /// false: 显示密码
+  /// ```
+  final RxBool? usePassword;
+
+  @override
+  bool get hidePassword => usePassword?.value ?? false;
 
   @override
   bool get isTextarea => false;
@@ -101,8 +130,23 @@ class InputWidget extends TextareaWidget<InputConfig> {
           icon: const Icon(PhosphorIconsRegular.palette),
           onPressed: colorDialog,
         ),
-      _ => null,
+      _ => prefixIcon,
     };
+  }
+
+  @override
+  Widget? getSuffixIcon() {
+    if (config.value.card == InputCardType.none && usePassword != null) {
+      return IconButton(
+        icon: hidePassword ? const Icon(PhosphorIconsRegular.eyeSlash) : const Icon(PhosphorIconsRegular.eye),
+        onPressed: () {
+          assert(usePassword != null, 'InputWidget.getSuffixIcon: usePassword != null is not true');
+          usePassword!.value = !usePassword!.value;
+          config.update((obj) => obj);
+        },
+      );
+    }
+    return super.getSuffixIcon();
   }
 
   /// 文章选择弹窗

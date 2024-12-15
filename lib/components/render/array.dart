@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Obx;
+import 'package:get/get.dart' show Obx, RxBool;
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
@@ -98,9 +98,10 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
     bool isVertical = true,
     ValueChanged<dynamic>? onChanged,
     bool randomName = false,
+    RxBool? usePassword,
   }) {
     return switch (config.type) {
-      FieldType.input => InputWidget(config: (config as InputConfig).obs, isVertical: isVertical, onChanged: onChanged),
+      FieldType.input => InputWidget(config: (config as InputConfig).obs, isVertical: isVertical, onChanged: onChanged, usePassword: usePassword),
       FieldType.select => SelectWidget(config: (config as SelectConfig).obs, isVertical: isVertical, onChanged: onChanged),
       FieldType.textarea => TextareaWidget(config: (config as TextareaConfig).obs, isVertical: isVertical, onChanged: onChanged),
       FieldType.radio => RadioWidget(config: (config as RadioConfig).obs, isVertical: isVertical, onChanged: onChanged),

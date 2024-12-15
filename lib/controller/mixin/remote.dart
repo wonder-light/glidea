@@ -16,6 +16,7 @@ import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:glidea/models/post.dart';
+import 'package:glidea/models/setting.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io show serve;
 import 'package:shelf_static/shelf_static.dart' show createStaticHandler;
@@ -25,6 +26,9 @@ import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
 mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 是否这正在同步中
   final inBeingSync = false.obs;
+
+  /// 远程
+  RemoteSetting get remote => state.remote;
 
   /// 检测是否可以进行发布
   bool get checkPublish {

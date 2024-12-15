@@ -23,7 +23,6 @@ enum CommentPlatform {
 enum ProxyWay {
   direct,
   proxy,
-  none,
 }
 
 /// 内链后或者外链类型
