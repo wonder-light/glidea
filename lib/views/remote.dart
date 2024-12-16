@@ -1,6 +1,7 @@
 ﻿import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show FirstWhereOrNullExt, Get, GetNavigationExt, Inst, Obx, Trans, BoolExtension;
+import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, Trans, BoolExtension;
+import 'package:glidea/components/Common/animated.dart';
 import 'package:glidea/components/Common/dropdown.dart';
 import 'package:glidea/components/render/array.dart';
 import 'package:glidea/components/render/group.dart';
@@ -14,6 +15,7 @@ import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/render.dart';
 import 'package:glidea/models/setting.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 class RemoteView extends StatefulWidget {
   const RemoteView({super.key});
@@ -60,6 +62,11 @@ class _RemoteViewState extends State<RemoteView> {
   /// password, key
   final sftpIsKey = false.obs;
 
+  /// 检测是否可以进行发布
+  ///
+  /// [true] - 可以进行发布
+  final checkPublish = false.obs;
+
   /// 字段名称列表
   late final TMapList<Object, String> nameLists;
 
@@ -99,6 +106,7 @@ class _RemoteViewState extends State<RemoteView> {
     final remote = site.remote;
     platform = remote.platform.obs;
     commentPlatform = site.comment.commentPlatform.obs;
+    checkPublish.value = site.checkPublish;
     proxyWay.value = remote.enabledProxy;
     sftpIsKey.value = remote.privateKey.isNotEmpty;
     // 命名列表
@@ -126,6 +134,7 @@ class _RemoteViewState extends State<RemoteView> {
     platform.dispose();
     proxyWay.dispose();
     sftpIsKey.dispose();
+    checkPublish.dispose();
     commentPlatform.dispose();
     domainController.dispose();
     for (var item in hidePasswords.values) {
@@ -251,7 +260,43 @@ class _RemoteViewState extends State<RemoteView> {
 
   /// 构建底部按钮
   Widget _buildBottom() {
-    return const Text('底部按钮');
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            width: 0.4,
+            color: Get.theme.colorScheme.outlineVariant,
+          ),
+        ),
+      ),
+      padding: kVer8Hor12,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Obx(() {
+            Widget child = Text('testConnection'.tr);
+            if (site.inRemoteDetect.value) {
+              child = Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const AutoAnimatedRotation(child: Icon(PhosphorIconsRegular.arrowsClockwise)),
+                  child,
+                ],
+              );
+            }
+            return OutlinedButton(
+              onPressed: checkPublish.value && !site.inRemoteDetect.value ? _testConnection : null,
+              child: child,
+            );
+          }),
+          FilledButton(
+            onPressed: _saveConfig,
+            child: Text('save'.tr),
+          ),
+        ],
+      ),
+    );
   }
 
   /// 构建域名字段
@@ -404,16 +449,38 @@ class _RemoteViewState extends State<RemoteView> {
     switch (field) {
       case _remotePlatform:
         platform.value = DeployPlatform.values.firstWhereOrNull((t) => t.name == str) ?? DeployPlatform.github;
+        site.remote.platform = platform.value;
+        checkPublish.value = site.checkPublish;
         break;
       case _commentPlatform:
         commentPlatform.value = CommentPlatform.values.firstWhereOrNull((t) => t.name == str) ?? CommentPlatform.gitalk;
+        site.comment.commentPlatform = commentPlatform.value;
         break;
       case _enabledProxy:
         proxyWay.value = ProxyWay.values.firstWhereOrNull((t) => t.name == str) ?? ProxyWay.direct;
+        site.remote.enabledProxy = proxyWay.value;
         break;
       case _connectType:
         sftpIsKey.value = nameLists[_connectType]!.last == str;
         break;
     }
+  }
+
+  /// 保持配置
+  void _saveConfig() async {
+    try {
+      final remotes = fieldConfigs[RemoteSetting]!.values.toList();
+      final comments = fieldConfigs[CommentSetting]!.values.toList();
+      comments.addAll(fieldConfigs[GitalkSetting]!.values);
+      comments.addAll(fieldConfigs[DisqusSetting]!.values);
+      site.updateRemoteConfig(remotes: remotes, comments: comments);
+    } catch (e) {
+      Get.error('saveError');
+    }
+  }
+
+  /// 检测远程连接
+  void _testConnection() async {
+    await site.remoteDetect();
   }
 }
