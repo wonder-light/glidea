@@ -54,7 +54,6 @@ dependencies:
   upgrader: ^11.3.0
   markdown: ^7.2.2            # 一个用 Dart 编写的可移植 Markdown 库
   markdown_widget: ^2.3.2+6   # 一个简单易用的 markdown 渲染组件
-  flutter_quill: ^10.8.5      # Flutter Quill 是一个富文本编辑器
   dart_json_mapper: ^2.2.14
   flex_color_scheme: ^8.0.1
   url_launcher: ^6.3.1
@@ -72,6 +71,7 @@ dependencies:
   emoji_picker_flutter: ^3.1.0
   omni_datetime_picker: ^2.0.5
   collection: ^1.18.0
+  elegant_notification: ^2.4.0
 
 dev_dependencies:
   flutter_test:

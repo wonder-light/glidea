@@ -1,8 +1,9 @@
-﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show ExtensionDialog, ExtensionSnackbar, Get, GetInterface, GetNavigationExt, Rx, Trans;
+﻿import 'package:elegant_notification/elegant_notification.dart' show ElegantNotification;
+import 'package:elegant_notification/resources/arrays.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart' show ExtensionDialog, Get, GetInterface, GetNavigationExt, Rx, Trans;
 import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/enum/enums.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints, ResponsiveBreakpointsData;
 
 /// 扩展
@@ -39,49 +40,51 @@ extension GetExt on GetInterface {
 
   /// 成功信息
   void success(String message) {
-    _snackbar(message);
+    _snackbar(
+      message: message,
+      icon: Icons.check_circle,
+      iconColor: NotificationType.success.color,
+    );
   }
 
   /// 错误信息
   void error(String message) {
-    var colorScheme = Get.theme.colorScheme;
     _snackbar(
-      message,
-      iconColor: colorScheme.error,
-      icon: PhosphorIconsRegular.xCircle,
-      backgroundColor: colorScheme.onError,
+      message: message,
+      icon: Icons.close,
+      iconColor: theme.colorScheme.error,
     );
   }
 
   /// 提示
-  ///
-  /// TODO: 需要解决多次触发时延迟出现的问题
-  void _snackbar(String message, {Color? backgroundColor, IconData? icon, Color? iconColor, Color? boxShadowColor}) {
-    var colorScheme = Get.theme.colorScheme;
-    if (Get.isSnackbarOpen) {
-      Get.closeAllSnackbars();
-    }
-    Get.snackbar(
-      'success'.tr,
-      message.tr,
-      maxWidth: 240,
-      borderRadius: 10,
-      duration: const Duration(seconds: 2),
+  void _snackbar({
+    required String message,
+    double? width = 240,
+    double? height = 60,
+    String? title,
+    IconData? icon,
+    Color? iconColor,
+  }) {
+    ElegantNotification(
+      width: width,
+      height: height,
+      icon: Icon(icon, color: iconColor),
+      iconSize: 18,
+      progressIndicatorColor: iconColor ?? theme.colorScheme.primary,
+      isDismissable: false,
+      position: Alignment.topCenter,
+      animation: AnimationType.fromTop,
       animationDuration: const Duration(milliseconds: 400),
-      backgroundColor: backgroundColor ?? colorScheme.onPrimary,
-      titleText: Container(),
-      icon: Icon(
-        icon ?? PhosphorIconsRegular.check,
-        color: iconColor ?? colorScheme.primary,
+      background: theme.scaffoldBackgroundColor,
+      progressIndicatorBackground: theme.scaffoldBackgroundColor,
+      title: title == null ? null : Text(title.tr),
+      description: Text(message.tr),
+      shadow: BoxShadow(
+        color: theme.colorScheme.outlineVariant,
+        offset: const Offset(-4, 4),
+        blurRadius: 25,
       ),
-      boxShadows: [
-        BoxShadow(
-          color: boxShadowColor ?? colorScheme.outlineVariant,
-          offset: const Offset(-4, 4),
-          blurRadius: 25,
-        ),
-      ],
-    );
+    ).show(context!);
   }
 
   /// 在页面上创建抽屉
