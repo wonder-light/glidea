@@ -1,7 +1,7 @@
 ﻿import 'dart:convert' show utf8;
 import 'dart:io' show HttpServer, Process, ProcessStartMode;
 
-import 'package:get/get.dart' show Get, StateController, BoolExtension;
+import 'package:get/get.dart' show BoolExtension, Get, StateController;
 import 'package:glidea/controller/mixin/data.dart';
 import 'package:glidea/controller/mixin/theme.dart';
 import 'package:glidea/enum/enums.dart';
@@ -13,9 +13,11 @@ import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/markdown.dart';
+import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:glidea/models/post.dart';
+import 'package:glidea/models/render.dart';
 import 'package:glidea/models/setting.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io show serve;
@@ -27,6 +29,9 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 是否这正在同步中
   final inBeingSync = false.obs;
 
+  /// 正在进行远程检测中
+  final inRemoteDetect = false.obs;
+
   /// 远程
   RemoteSetting get remote => state.remote;
 
@@ -34,6 +39,8 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   CommentSetting get comment => state.comment;
 
   /// 检测是否可以进行发布
+  ///
+  /// [true] - 可以进行发布
   bool get checkPublish {
     final remote = state.remote;
     return switch (remote.platform) {
@@ -127,6 +134,51 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     await _formatDataForRender();
     await _buildHtmlTemplate();
     await _copyFiles();
+  }
+
+  /// 更新远程配置
+  Future<void> updateRemoteConfig({List<ConfigBase> remotes = const [], List<ConfigBase> comments = const []}) async {
+    // 保存数据
+    await saveSiteData(callback: () async {
+      try {
+        // 远程
+        TJsonMap items = {for (var config in remotes) config.name: config.value};
+        state.remote = state.remote.copyWith<RemoteSetting>(items)!;
+        // 评论
+        items = {for (var config in comments) config.name: config.value};
+        // 合并
+        state.comment = state.comment.copyWith<CommentSetting>({
+          if (items['commentPlatform'] case String value) 'commentPlatform': value,
+          if (items['showComment'] case bool value) 'showComment': value,
+          'disqusSetting': items,
+          'gitalkSetting': items,
+        })!;
+      } catch (e) {
+        throw Mistake(message: 'RemoteSite.updateRemoteConfig save remote config failed: \n$e');
+      }
+    });
+    // 通知
+    Get.success('themeConfigSaved');
+  }
+
+  /// 远程检测
+  Future<void> remoteDetect() async {
+    try {
+      // 设置正在检测中
+      inRemoteDetect.value = true;
+      state.themeConfig.domain = state.remote.domain;
+      await Deploy.create(state).remoteDetect();
+      // 成功通知
+      Get.success('connectSuccess');
+      // 检测完毕
+      inRemoteDetect.value = false;
+    } on Mistake catch (e) {
+      Log.w(e);
+      // 检测完毕
+      inRemoteDetect.value = false;
+      // 失败通知
+      Get.error('connectFailed');
+    }
   }
 
   /// 清理输出目录
