@@ -196,29 +196,20 @@ mixin ThemeSite on StateController<Application>, DataProcess {
   ///
   /// throw [Mistake] exception
   void updateThemeConfig({List<ConfigBase> themes = const [], List<ConfigBase> customs = const []}) async {
-    setLoading();
-    try {
-      // 更新主题数据
-      TJsonMap items = {};
-      for (var config in themes) {
-        items[config.name] = config.value;
-      }
-      state.themeConfig = state.themeConfig.copyWith<Theme>(items)!;
-      // 更新自定义主题数据
-      items = {};
-      for (var config in customs) {
-        items[config.name] = config.value;
-      }
-      // Map 在合并后需要使用新的 Map 对象, 旧的 Map 对象在序列化时会报错
-      state.themeCustomConfig = state.themeCustomConfig.mergeMaps(items);
-    } catch (e) {
-      throw Mistake(message: 'update theme config and custom theme config failed: \n$e');
-    }
     // 保存数据
-    await saveSiteData();
-    // 刷新
-    setSuccess(state);
-    refresh();
+    await saveSiteData(callback: () async {
+      try {
+        // 更新主题数据
+        TJsonMap items = {for (var config in themes) config.name: config.value};
+        state.themeConfig = state.themeConfig.copyWith<Theme>(items)!;
+        // 更新自定义主题数据
+        items = {for (var config in customs) config.name: config.value};
+        // Map 在合并后需要使用新的 Map 对象, 旧的 Map 对象在序列化时会报错
+        state.themeCustomConfig = state.themeCustomConfig.mergeMaps(items);
+      } catch (e) {
+        throw Mistake(message: 'update theme config and custom theme config failed: \n$e');
+      }
+    });
     // 通知
     Get.success('themeConfigSaved');
   }

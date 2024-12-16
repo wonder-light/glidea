@@ -1,6 +1,7 @@
 ﻿import 'dart:io' show Directory;
 import 'dart:ui' show Locale;
 
+import 'package:flutter/foundation.dart' show AsyncCallback;
 import 'package:get/get.dart' show Get, GetNavigationExt, GetStringUtils, StateController;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/error.dart';
@@ -194,7 +195,16 @@ mixin DataProcess on StateController<Application> {
   /// 保存配置到文件, 保存后进行 [refresh]
   ///
   /// throw [Mistake] exception
-  Future<void> saveSiteData() async {
+  Future<void> saveSiteData({AsyncCallback? callback}) async {
+    // 设置状态
+    setLoading();
+    try {
+      // 先执行回调
+      await callback?.call();
+    } catch (e) {
+      setSuccess(state);
+      rethrow;
+    }
     final site = state;
     // 检查目录
     await checkDir(site);
@@ -210,6 +220,8 @@ mixin DataProcess on StateController<Application> {
     } catch (e) {
       throw Mistake(message: 'write application config failed: \n$e');
     }
+    // 设置状态
+    setSuccess(state);
     // 保存后刷新数据
     refresh();
   }
@@ -218,13 +230,9 @@ mixin DataProcess on StateController<Application> {
   ///
   /// throw [Mistake] exception
   void updateSite(Application site) {
-    // 加载
-    setLoading();
-    // 保存数据
-    saveSiteData();
-    // 刷新
-    setSuccess(state.copy<Application>()!);
-    refresh();
+    saveSiteData(callback: () async {
+      await Future.delayed(const Duration(milliseconds: 10));
+    });
   }
 
   /// 设置语言代码
