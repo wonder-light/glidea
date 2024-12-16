@@ -1,10 +1,11 @@
 ﻿import 'dart:io';
 
 import 'package:dio/dio.dart' show Dio, Options, Response;
+import 'package:dio/io.dart' show IOHttpClientAdapter;
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
-import 'package:glidea/helpers/log.dart';
+import 'package:glidea/helpers/json.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/setting.dart';
@@ -14,7 +15,10 @@ abstract class Deploy {
   Deploy(Application site)
       : appDir = site.appDir,
         buildDir = site.buildDir,
-        remote = site.remote;
+        remote = site.remote {
+    // 更新代理
+    _updateProxy(site);
+  }
 
   /// 文件所在的目录
   final String appDir;
@@ -35,7 +39,9 @@ abstract class Deploy {
   Future<void> publish();
 
   /// 远程检测
-  Future<bool> remoteDetect() async => true;
+  ///
+  /// 检测出错时抛出 [Mistake] 异常类
+  Future<void> remoteDetect() async => true;
 
   /// 创建部署
   static Deploy create(Application site) {
@@ -45,16 +51,35 @@ abstract class Deploy {
       DeployPlatform.sftp => SftpDeploy(site),
     };
   }
+
+  /// 设置代理
+  void _updateProxy(Application site) {
+    if (dio.httpClientAdapter is! IOHttpClientAdapter) return;
+    final adapter = dio.httpClientAdapter as IOHttpClientAdapter;
+    adapter.createHttpClient ??= () {
+      return HttpClient()
+        ..findProxy = (uri) {
+          // 将请求代理至 localhost:8888。
+          // 请注意，代理会在你正在运行应用的设备上生效，而不是在宿主平台生效。
+          // 'DIRECT; PROXY localhost:8888'
+          final remote = site.remote;
+          return remote.enabledProxy == ProxyWay.proxy ? 'PROXY ${remote.proxyPath}:${remote.proxyPort}' : 'DIRECT';
+        };
+    };
+  }
 }
 
 /// Netlify 部署
 class NetlifyDeploy extends Deploy {
-  NetlifyDeploy(
-    super.site, {
-    this.apiUrl = 'https://api.netlify.com/api/v1/',
-  })  : accessToken = site.remote.netlifyAccessToken,
+  NetlifyDeploy(super.site)
+      : apiUrl = 'https://api.netlify.com/api/v1/',
         siteId = site.remote.netlifySiteId,
-        _deployId = '';
+        accessToken = 'Bearer ${site.remote.netlifyAccessToken}',
+        _deployId = '',
+        header = {
+          'User-Agent': 'Glidea',
+          'Authorization': 'Bearer ${site.remote.netlifyAccessToken}',
+        };
 
   /// Netlify 的 API 接口
   final String apiUrl;
@@ -64,6 +89,9 @@ class NetlifyDeploy extends Deploy {
 
   /// Netflix ID
   final String siteId;
+
+  /// 请求头
+  final Map<String, dynamic> header;
 
   String _deployId;
 
@@ -93,6 +121,18 @@ class NetlifyDeploy extends Deploy {
     }
   }
 
+  @override
+  Future<void> remoteDetect() async {
+    try {
+      final result = await Deploy.dio.get('${apiUrl}sites/$siteId', options: Options(headers: header));
+      if (result.statusCode != 200) {
+        throw Mistake(message: 'Netlify remote detect error, response statusCode is not 200');
+      }
+    } catch (e) {
+      throw Mistake(message: 'Netlify remote detect failed: \n$e');
+    }
+  }
+
   /// 准备本地文件列表
   Future<TMap<String>> prepareLocalFilesList() async {
     final TMap<String> fileList = {};
@@ -116,12 +156,7 @@ class NetlifyDeploy extends Deploy {
       final result = await Deploy.dio.post(
         '${apiUrl}sites/$siteId/deploys',
         data: data,
-        options: Options(
-          headers: {
-            'User-Agent': 'Glidea',
-            'Authorization': 'Bearer $accessToken',
-          },
-        ),
+        options: Options(headers: header),
       );
       // 设置 _deployId
       _deployId = result.data['id'];
@@ -140,17 +175,12 @@ class NetlifyDeploy extends Deploy {
   Future<Response> uploadFile(String filePath) async {
     final fullFilePath = FS.join(buildDir, filePath);
     final fileContent = await File(fullFilePath).readAsBytes();
+    final headers = header.mergeMaps({'Content-Type': 'application/octet-stream'});
     // 上传
     return await Deploy.dio.put(
       '${apiUrl}deploys/$_deployId/files$filePath',
       data: fileContent,
-      options: Options(
-        headers: {
-          'User-Agent': 'Glidea',
-          'Content-Type': 'application/octet-stream',
-          'Authorization': 'Bearer $accessToken',
-        },
-      ),
+      options: Options(headers: headers),
     );
   }
 }
