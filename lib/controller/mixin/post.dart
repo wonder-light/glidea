@@ -1,4 +1,5 @@
-﻿import 'package:get/get.dart' show FirstWhereOrNullExt, Get, StateController;
+﻿import 'package:collection/collection.dart' show IterableExtension;
+import 'package:get/get.dart' show Get, StateController;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';

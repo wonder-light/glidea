@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:collection/collection.dart' show IterableExtension;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show LogicalKeyboardKey, TextInputFormatter;
-import 'package:get/get.dart' show BoolExtension, DoubleExtension, FirstWhereOrNullExt, Get, GetNavigationExt, IntExtension, Obx, StringExtension, Trans;
+import 'package:get/get.dart' show BoolExtension, DoubleExtension, Get, GetNavigationExt, IntExtension, Obx, StringExtension, Trans;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';

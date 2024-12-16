@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:collection/collection.dart' show IterableExtension;
+import 'package:flutter/material.dart';
 import 'package:get/get.dart' show FirstWhereOrNullExt, Get, GetNavigationExt, Inst, Obx, Trans, BoolExtension;
 import 'package:glidea/components/Common/dropdown.dart';
 import 'package:glidea/components/render/array.dart';

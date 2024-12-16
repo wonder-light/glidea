@@ -1,4 +1,5 @@
-﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable;
+﻿import 'package:collection/collection.dart' show IterableExtension;
+import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable;
 import 'package:flutter/material.dart' show Offset, Alignment;
 
 /// 部署的平台
@@ -79,4 +80,10 @@ enum DrawerDirection {
 
   /// 对齐
   Alignment get toAlign => Alignment(value.dx, value.dy);
+}
+
+extension EnumStringExt on String {
+  T? toEnum<T extends Enum>(Iterable<T> values) {
+    return values.firstWhereOrNull((t) => this == t.name);
+  }
 }
