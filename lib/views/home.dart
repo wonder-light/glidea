@@ -1,10 +1,11 @@
-﻿import 'dart:math' show pi;
-import 'dart:ui' show AppExitResponse;
+﻿import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, DoubleExtension, Obx, StateExt, StringExtension, Trans;
+import 'package:glidea/components/Common/animated.dart';
 import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/list_item.dart';
+import 'package:glidea/components/Common/loading.dart';
 import 'package:glidea/components/setting/setting_editor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
@@ -13,7 +14,6 @@ import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/routes/router.dart';
-import 'package:glidea/components/Common/loading.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints, ResponsiveBreakpointsData;
 import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
@@ -37,9 +37,6 @@ class _HomeViewState extends State<HomeView> {
 
   /// 移动端的当前路由索引
   var mobileIndex = 0.obs;
-
-  /// 同步图标的旋转角度
-  var syncIconTurns = 0.0.obs;
 
   /// 当前显示的路由
   var showRouter = AppRouter.articles;
@@ -236,14 +233,11 @@ class _HomeViewState extends State<HomeView> {
             return contentWidget;
           }
 
-          return Row(
+          return const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AnimatedRotation(
-                turns: syncIconTurns.value,
-                duration: const Duration(seconds: 2),
-                onEnd: updateSyncRotate,
-                child: const Icon(PhosphorIconsRegular.arrowsClockwise),
+              AutoAnimatedRotation(
+                child: Icon(PhosphorIconsRegular.arrowsClockwise),
               )
             ],
           );
@@ -303,9 +297,13 @@ class _HomeViewState extends State<HomeView> {
   /// 一个回调，用于询问应用程序是否允许在退出可以取消的情况下退出应用程序
   Future<AppExitResponse> handleExitRequested() async {
     if (!site.isDisposed) {
-      await site.saveSiteData();
+      try {
+        await site.saveSiteData();
+      } catch (e) {
+        Log.e('$e');
+      }
     }
-    Log.e('onExitRequested');
+    Log.i('onExitRequested');
     return AppExitResponse.exit;
   }
 
@@ -324,15 +322,7 @@ class _HomeViewState extends State<HomeView> {
 
   /// 发布网页
   void publish() async {
-    site.inBeingSync.removeListener(updateSyncRotate);
-    site.inBeingSync.addListener(updateSyncRotate);
     site.publishSite();
-  }
-
-  /// 更新旋转角度
-  void updateSyncRotate() {
-    // 下一帧调用
-    WidgetsFlutterBinding.ensureInitialized().addPostFrameCallback((_) => syncIconTurns.value += pi);
   }
 
   /// 打开设置
