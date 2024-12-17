@@ -50,6 +50,10 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
+  final _buttonStyle = const ButtonStyle(
+    fixedSize: WidgetStatePropertyAll(Size(double.infinity, kButtonHeight)),
+  );
+
   @override
   Widget build(BuildContext context) {
     // 头
@@ -57,14 +61,16 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
     // 内容
     List<Widget> content = buildContent(context);
     // 字段
-    Widget widgets = Container(
-      padding: kAllPadding16 + kVerPadding8,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          header,
-          ...content,
-        ],
+    Widget widgets = SingleChildScrollView(
+      child: Container(
+        padding: kAllPadding16 + kVerPadding8,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            header,
+            ...content,
+          ],
+        ),
       ),
     );
     // 上下两部分
@@ -73,7 +79,7 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          widgets,
+          Expanded(child: widgets),
           buildActions(context),
         ],
       );
@@ -128,12 +134,14 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
         children: [
           if (!widget.hideCancel)
             OutlinedButton(
+              style: _buttonStyle,
               onPressed: onClose,
               child: Text('cancel'.tr),
             ),
           if (!widget.hideCancel) Container(padding: kRightPadding8),
           Obx(
             () => FilledButton(
+              style: _buttonStyle,
               onPressed: canSave.value ? onSave : null,
               child: Text('save'.tr),
             ),

@@ -139,6 +139,7 @@ class DropdownWidget<T> extends StatefulWidget {
 }
 
 class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
+  final GlobalKey _key = const GlobalObjectKey({});
   /// 菜单宽度
   final _maxWidth = 350.0.obs;
 
@@ -162,6 +163,9 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
 
   /// 文本控制器
   late TextEditingController textController;
+
+  /// 滚动控制器
+  final ScrollController _scrollController = ScrollController(keepScrollOffset: false);
 
   @override
   void initState() {
@@ -198,24 +202,16 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   Widget build(BuildContext context) {
     // 子控件
     final List<Widget> children = [];
-    // 未启用
-    if (!widget.enabled) {
-      return _buildAction(
-        child: _buildAnchor(
-          children: children,
-        ),
-      );
-    }
     // 在弹出菜单顶部显示的控件
-    if (widget.headerItem != null) {
+    if (widget.enabled && widget.headerItem != null) {
       children.add(_buildItemInk(child: widget.headerItem!, other: true));
     }
     // 内容
-    if (widget.children.isNotEmpty) {
+    if (widget.enabled && widget.children.isNotEmpty) {
       children.add(_buildListSized(child: _buildItems()));
     }
     // 在弹出菜单底部显示的控件
-    if (widget.bottomItem != null) {
+    if (widget.enabled && widget.bottomItem != null) {
       children.add(_buildItemInk(child: widget.bottomItem!, other: true));
     }
     // 返回
@@ -240,6 +236,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
       _itemsNum.value = items.length;
       // list 构建 children
       return ListView.builder(
+        controller: _scrollController,
         shrinkWrap: true,
         itemExtent: widget.itemHeight,
         itemBuilder: (BuildContext context, int index) => _buildItemInk(child: items[index]),
@@ -304,7 +301,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   /// 设置 [ListView] 的宽高
   Widget _buildListSized({required Widget child}) {
     return Obx(() {
-      final width = _maxWidth.value;
+      final width = _key.currentContext?.findRenderObject()?.semanticBounds.width ?? _maxWidth.value;
       final itemHeight = widget.itemHeight ?? DropdownWidget._itemHeight;
       final maxHeight = widget.itemsMaxHeight ?? DropdownWidget._itemsMaxHeight;
       var height = itemHeight * _itemsNum.value;
@@ -329,7 +326,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
       ),
       onClose: () => _isOpen.value = false,
       onOpen: () => _isOpen.value = true,
-      child: LayoutBuilder(builder: _buildField),
+      builder: _buildField,
     );
   }
 
@@ -361,9 +358,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   }
 
   /// 构建表单字段
-  Widget _buildField(BuildContext context, BoxConstraints constraints) {
-    // 最大宽度
-    _maxWidth.value = constraints.maxWidth;
+  Widget _buildField(BuildContext context, MenuController controller, Widget? child) {
     // 装饰器的构造函数
     final inputDecorationFun = widget.decoration != null ? widget.decoration!.copyWith : InputDecoration.new;
     // 创建装饰器
@@ -381,6 +376,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     );
     // 返回字段
     return TextFormField(
+      key: _key,
       maxLines: widget.enableMultiple ? null : 1,
       controller: textController,
       enabled: widget.enabled,

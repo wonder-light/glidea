@@ -72,7 +72,7 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
       child: Obx(
         () => ToggleButtons(
           borderRadius: BorderRadius.circular(8),
-          //constraints: const BoxConstraints(),  // 取消最小高度
+          constraints: const BoxConstraints.tightFor(height: kButtonHeight * 0.8),  // 取消最小高度
           isSelected: [
             openType.value == MenuTypes.internal,
             openType.value == MenuTypes.external,
@@ -95,6 +95,7 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
       name: 'link',
       child: DropdownWidget(
         itemHeight: itemHeight,
+        itemsMaxHeight: itemHeight * 3,
         enableSearch: true,
         enableFilter: true,
         textController: urlController,
