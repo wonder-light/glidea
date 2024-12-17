@@ -46,7 +46,7 @@ dependencies:
   path: ^1.9.1
   path_provider: ^2.1.5
   flutter_inappwebview: ^6.1.5 # webview_flutter: ^4.10.0
-  device_preview: ^1.2.0
+  device_preview_plus: ^1.2.0
   logger: ^2.5.0
   responsive_framework: ^1.5.1
   feedback: ^3.1.0            # 用于获取更好反馈的 Flutter 包

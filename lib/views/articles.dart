@@ -81,8 +81,8 @@ class _ArticlesViewState extends State<ArticlesView> {
     // 主题配置
     final ThemeData(:textTheme, :colorScheme) = Get.theme;
 
-    /// 判断是否是桌面端
-    final isDesktop = Get.isDesktop;
+    /// 判断是否是手机端
+    final isDesktop = !Get.isPhone;
 
     // 子列表
     final lists = <TIconData>[

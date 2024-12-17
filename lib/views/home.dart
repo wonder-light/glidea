@@ -1,8 +1,7 @@
-﻿import 'dart:math';
-import 'dart:ui' show AppExitResponse;
+﻿import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, DoubleExtension, Obx, StateExt, StringExtension, Trans;
+import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StateExt, StringExtension, Trans;
 import 'package:glidea/components/Common/animated.dart';
 import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/list_item.dart';
@@ -16,7 +15,6 @@ import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
-import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints, ResponsiveBreakpointsData;
 import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
 
 class HomeView extends StatefulWidget {
@@ -27,9 +25,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  /// 关于当前屏幕的响应性数据
-  late ResponsiveBreakpointsData breakpoints;
-
   /// 侦听器，可用于侦听应用程序生命周期中的更改
   late final AppLifecycleListener lifecycle;
 
@@ -81,7 +76,7 @@ class _HomeViewState extends State<HomeView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // 获取匹配的路由
-    final route = Get.isDesktop ? desktopRouter.value : mobileMenus[mobileIndex.value].route;
+    final route = !Get.isPhone ? desktopRouter.value : mobileMenus[mobileIndex.value].route;
     // 路由不相同时更新路由
     if (showRouter != route) {
       toRouter(route);
@@ -97,22 +92,23 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    // 获取断点数据
-    breakpoints = ResponsiveBreakpoints.of(context);
     // 构建控件
     return Scaffold(
       body: SafeArea(
         child: site.obx(
-          (data) => breakpoints.isDesktop
-              ? Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildLeftPanel(),
-                    const VerticalDivider(thickness: 1, width: 1),
-                    Expanded(child: _buildBody()),
-                  ],
-                )
-              : _buildBody(),
+          (data) {
+            if (Get.isPhone) {
+              return _buildBody();
+            }
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildLeftPanel(),
+                const VerticalDivider(thickness: 1, width: 1),
+                Expanded(child: _buildBody()),
+              ],
+            );
+          },
           onLoading: const Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -276,7 +272,7 @@ class _HomeViewState extends State<HomeView> {
 
   /// 构建移动端的底部导航栏
   Widget? _buildMobileBottomNav() {
-    if (breakpoints.isDesktop) {
+    if (!Get.isPhone) {
       return null;
     }
     return Obx(

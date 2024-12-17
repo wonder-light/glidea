@@ -1,3 +1,4 @@
+import 'package:device_preview_plus/device_preview_plus.dart';
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt, Transition;
@@ -9,7 +10,7 @@ import 'package:glidea/helpers/windows.dart';
 import 'package:glidea/lang/translations.dart';
 import 'package:glidea/routes/bindings.dart';
 import 'package:glidea/routes/router.dart';
-import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints, Breakpoint, MOBILE, DESKTOP;
+import 'package:responsive_framework/responsive_framework.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,11 +18,12 @@ void main() async {
   JsonHelp.initialized();
   await WindowsHelp.initialized();
 
-  runApp(const App());
-  /*runApp(DevicePreview(
+  //runApp(const App());
+  runApp(DevicePreview(
     enabled: !kReleaseMode,
+    availableLocales: TranslationsService.supportedLocales,
     builder: (context) => const App(),
-  ));*/
+  ));
 }
 
 class App extends StatelessWidget {
@@ -36,7 +38,8 @@ class App extends StatelessWidget {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
       useInheritedMediaQuery: true,
-      locale: Get.deviceLocale,
+      locale: DevicePreview.locale(context),
+      //Get.deviceLocale,
       translations: TranslationsService(),
       fallbackLocale: TranslationsService.fallbackLocale,
       supportedLocales: TranslationsService.supportedLocales,
@@ -46,17 +49,57 @@ class App extends StatelessWidget {
       defaultTransition: Transition.fadeIn,
       binds: SiteBind.bings,
       enableLog: !kReleaseMode,
-      builder: (context, child) {
-        //child = DevicePreview.appBuilder(context, child);
-        child = ResponsiveBreakpoints.builder(
-          child: child!,
-          breakpoints: [
-            const Breakpoint(start: 0, end: windowMinWidth - 1, name: MOBILE),
-            const Breakpoint(start: windowMinWidth, end: double.infinity, name: DESKTOP),
-          ],
-        );
-        return child;
-      },
+      builder: Responsive.builder,
+    );
+  }
+}
+
+/// 响应
+class Responsive extends StatelessWidget {
+  const Responsive({super.key, required this.child});
+
+  /// 子控件
+  final Widget child;
+
+  /// 构建
+  static Widget builder(BuildContext context, Widget? child) {
+    return DevicePreview.appBuilder(context, Responsive(child: child!));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final platform = DevicePreview.platform(context);
+    final isMobile = platform == TargetPlatform.android || platform == TargetPlatform.iOS;
+    return ResponsiveBreakpoints.builder(
+      useShortestSide: true,
+      child: ResponsiveScale(child: child),
+      breakpoints: [
+        if (isMobile) const Breakpoint(start: 0, end: windowMinWidth - 1, name: PHONE),
+        if (isMobile) const Breakpoint(start: windowMinWidth, end: double.infinity, name: TABLET),
+        if (!isMobile) const Breakpoint(start: 0, end: double.infinity, name: DESKTOP),
+      ],
+    );
+  }
+}
+
+class ResponsiveScale extends StatelessWidget {
+  const ResponsiveScale({super.key, required this.child});
+
+  /// 子控件
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveScaledBox(
+      width: ResponsiveValue<double?>(context, conditionalValues: [
+        const Condition.equals(name: PHONE, value: 600),
+        const Condition.equals(name: TABLET, value: 900),
+        const Condition.equals(name: DESKTOP, value: null),
+      ]).value,
+      child: BouncingScrollWrapper(
+        dragWithMouse: true,
+        child: child,
+      ),
     );
   }
 }

@@ -254,11 +254,11 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "7.0.2"
-  device_preview:
+  device_preview_plus:
     dependency: "direct main"
     description:
-      name: device_preview
-      sha256: a694acdd3894b4c7d600f4ee413afc4ff917f76026b97ab06575fe886429ef19
+      name: device_preview_plus
+      sha256: "371df40c906f9d88e206ce83bc1cac045899d2df1464c7bb4a6e8e73dbbe7855"
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.2.0"
