@@ -113,28 +113,19 @@ class _ArticlesViewState extends State<ArticlesView> {
       constraints: constraints,
       leading: leading,
       title: Text(post.title),
-      subtitle: Row(
+      subtitle: Wrap(
+        spacing: kRightPadding4.right,
         children: [
           for (var item in lists) ...[
+            Icon(item.icon),
             Padding(
               padding: kRightPadding4,
-              child: Icon(item.icon),
-            ),
-            Padding(
-              padding: kRightPadding8,
               child: Text(item.name.tr),
             ),
           ],
           if (post.tags.isNotEmpty) ...[
-            const Padding(
-              padding: kRightPadding4,
-              child: Icon(PhosphorIconsRegular.tag),
-            ),
-            for (var tag in post.tags)
-              Padding(
-                padding: kRightPadding4,
-                child: Text(tag.name),
-              ),
+            const Icon(PhosphorIconsRegular.tag),
+            for (var tag in post.tags) Text(tag.name),
           ],
         ],
       ),
