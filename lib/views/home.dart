@@ -58,6 +58,10 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
+    // 平板端
+    if(Get.isTablet) {
+      menus.add((name: 'setting', route: AppRouter.tabletSetting, icon: PhosphorIconsRegular.slidersHorizontal));
+    }
     // 预览和发布两个操作按钮
     actions.add((name: 'preview', call: preview, icon: PhosphorIconsRegular.eye));
     actions.add((name: 'publishSite', call: publish, icon: PhosphorIconsRegular.cloudArrowUp));
@@ -67,7 +71,7 @@ class _HomeViewState extends State<HomeView> {
     actions.add((name: 'starSupport', call: starSupport, icon: PhosphorIconsRegular.githubLogo));
 
     mobileMenus.addAll(menus.take(3));
-    mobileMenus.add((name: 'setting', route: AppRouter.setting, icon: PhosphorIconsRegular.slidersHorizontal));
+    mobileMenus.add((name: 'setting', route: AppRouter.phoneSetting, icon: PhosphorIconsRegular.slidersHorizontal));
 
     lifecycle = AppLifecycleListener(onStateChange: handleStateChange, onExitRequested: handleExitRequested);
   }
@@ -126,8 +130,6 @@ class _HomeViewState extends State<HomeView> {
   /// 构建左边面板
   Widget _buildLeftPanel() {
     var colorScheme = Get.theme.colorScheme;
-    // 最新高度
-    var minHeight = kVerPadding16.top * 3 + kLogSize;
     // 头像, 高度 kVerPadding16.top * 3 + kLogSize
     Widget childWidget = Container(
       alignment: Alignment.center,
@@ -142,7 +144,6 @@ class _HomeViewState extends State<HomeView> {
     );
     // 菜单列表高度
     const itemHeight = 50.0;
-    minHeight += (kVerPadding4.top * 2 + itemHeight) * menus.length;
     // 菜单列表
     List<Widget> widgets = [
       // 菜单列表
@@ -168,37 +169,8 @@ class _HomeViewState extends State<HomeView> {
     ];
     // 在第一个的位置插入头像
     widgets.insert(0, childWidget);
-    // 插入一个空白, 进行填充中间的间隔
-    widgets.add(Expanded(child: Container()));
     // 最底部的按钮
-    childWidget = Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        for (var item in actions.skip(2))
-          IconButton(
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints.expand(width: kButtonHeight, height: kButtonHeight),
-            onPressed: item.call,
-            icon: Icon(item.icon),
-            tooltip: item.name.tr,
-          ),
-      ],
-    );
-    // 加上预览和发布按钮
-    childWidget = Padding(
-      padding: kVer8Hor32,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildActionButton(actions[0]),
-          _buildActionButton(actions[1], isFilled: true),
-          childWidget,
-        ],
-      ),
-    );
-    widgets.add(childWidget);
-    // 按钮高度
-    minHeight += (kVer8Hor32.top * 2) + kButtonHeight + (kVerPadding8.top * 2 + kButtonHeight) * 2;
+    _addBottomButton(widgets);
     // 放到列中
     childWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -207,19 +179,51 @@ class _HomeViewState extends State<HomeView> {
     // 使用 [IntrinsicWidth] 限制最大宽度, 并用 [ConstrainedBox] 限制最小宽度
     return IntrinsicWidth(
       stepWidth: 40,
-      child: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minWidth: kPanelWidth,
-            minHeight: min(minHeight, Get.height),
-            maxHeight: max(minHeight, Get.height),
-          ),
-          child: childWidget,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(
+          minWidth: kPanelWidth,
         ),
+        child: childWidget,
       ),
     );
   }
 
+  /// 添加底部的按钮
+  void _addBottomButton(List<Widget> widgets) {
+    if (Get.isTablet) {
+      return;
+    }
+    // 插入一个空白, 进行填充中间的间隔
+    widgets.add(Expanded(child: Container()));
+    // 按钮
+    widgets.add(Padding(
+      padding: kVer8Hor32,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 预览和发布按钮
+          _buildActionButton(actions[0]),
+          _buildActionButton(actions[1], isFilled: true),
+          // 最底部的按钮
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (var item in actions.skip(2))
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints.expand(width: kButtonHeight, height: kButtonHeight),
+                  onPressed: item.call,
+                  icon: Icon(item.icon),
+                  tooltip: item.name.tr,
+                ),
+            ],
+          ),
+        ],
+      ),
+    ));
+  }
+
+  /// 预览和发布按钮
   Widget _buildActionButton(TActionData item, {bool isFilled = false}) {
     // 按钮样式
     const buttonStyle = ButtonStyle(
