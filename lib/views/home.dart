@@ -1,4 +1,5 @@
-﻿import 'dart:ui' show AppExitResponse;
+﻿import 'dart:math';
+import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, DoubleExtension, Obx, StateExt, StringExtension, Trans;
@@ -104,6 +105,7 @@ class _HomeViewState extends State<HomeView> {
         child: site.obx(
           (data) => breakpoints.isDesktop
               ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _buildLeftPanel(),
                     const VerticalDivider(thickness: 1, width: 1),
@@ -128,7 +130,9 @@ class _HomeViewState extends State<HomeView> {
   /// 构建左边面板
   Widget _buildLeftPanel() {
     var colorScheme = Get.theme.colorScheme;
-    // 头像
+    // 最新高度
+    var minHeight = kVerPadding16.top * 3 + kLogSize;
+    // 头像, 高度 kVerPadding16.top * 3 + kLogSize
     Widget childWidget = Container(
       alignment: Alignment.center,
       padding: kVerPadding16 + kTopPadding16,
@@ -140,6 +144,9 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
     );
+    // 菜单列表高度
+    const itemHeight = 50.0;
+    minHeight += (kVerPadding4.top * 2 + itemHeight) * menus.length;
     // 菜单列表
     List<Widget> widgets = [
       // 菜单列表
@@ -154,7 +161,7 @@ class _HomeViewState extends State<HomeView> {
             leading: Icon(item.icon),
             title: Text(item.name.tr),
             trailing: Text(site.getHomeLeftPanelNum(item.name)),
-            constraints: const BoxConstraints(maxHeight: 50),
+            constraints: const BoxConstraints.expand(height: itemHeight),
             selected: desktopRouter.value == item.route,
             selectedColor: colorScheme.surfaceContainerLow,
             selectedTileColor: colorScheme.primary,
@@ -174,7 +181,7 @@ class _HomeViewState extends State<HomeView> {
         for (var item in actions.skip(2))
           IconButton(
             padding: EdgeInsets.zero,
-            visualDensity: VisualDensity.comfortable,
+            constraints: const BoxConstraints.expand(width: kButtonHeight, height: kButtonHeight),
             onPressed: item.call,
             icon: Icon(item.icon),
             tooltip: item.name.tr,
@@ -185,6 +192,7 @@ class _HomeViewState extends State<HomeView> {
     childWidget = Padding(
       padding: kVer8Hor32,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           _buildActionButton(actions[0]),
           _buildActionButton(actions[1], isFilled: true),
@@ -193,6 +201,8 @@ class _HomeViewState extends State<HomeView> {
       ),
     );
     widgets.add(childWidget);
+    // 按钮高度
+    minHeight += (kVer8Hor32.top * 2) + kButtonHeight + (kVerPadding8.top * 2 + kButtonHeight) * 2;
     // 放到列中
     childWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -201,18 +211,24 @@ class _HomeViewState extends State<HomeView> {
     // 使用 [IntrinsicWidth] 限制最大宽度, 并用 [ConstrainedBox] 限制最小宽度
     return IntrinsicWidth(
       stepWidth: 40,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: kPanelWidth,
+      child: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: kPanelWidth,
+            minHeight: min(minHeight, Get.height),
+            maxHeight: max(minHeight, Get.height),
+          ),
+          child: childWidget,
         ),
-        child: childWidget,
       ),
     );
   }
 
   Widget _buildActionButton(TActionData item, {bool isFilled = false}) {
     // 按钮样式
-    ButtonStyle style = ButtonStyle(padding: WidgetStatePropertyAll(kAllPadding16 / 2));
+    const buttonStyle = ButtonStyle(
+      fixedSize: WidgetStatePropertyAll(Size(double.infinity, kButtonHeight)),
+    );
     // 内容
     Widget contentWidget = Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -227,7 +243,7 @@ class _HomeViewState extends State<HomeView> {
     if (isFilled) {
       childWidget = FilledButton(
         onPressed: item.call,
-        style: style,
+        style: buttonStyle,
         child: Obx(() {
           if (!site.inBeingSync.value) {
             return contentWidget;
@@ -246,7 +262,7 @@ class _HomeViewState extends State<HomeView> {
     } else {
       childWidget = OutlinedButton(
         onPressed: item.call,
-        style: style,
+        style: buttonStyle,
         child: contentWidget,
       );
     }

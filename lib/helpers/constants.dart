@@ -30,6 +30,9 @@ const double kPanelWidth = 200;
 /// log大小
 const double kLogSize = 64;
 
+/// 默认按钮高度
+const double kButtonHeight = 36;
+
 /// 分隔列表的高度
 const double listSeparated = 10;
 
