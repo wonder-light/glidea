@@ -27,8 +27,10 @@ class Log {
     // 文件输出
     if (kReleaseMode) {
       // 应用程序支持目录, 即配置所在的目录
-      final supportDir = FS.normalize((await getApplicationSupportDirectory()).path);
-      lists.add(AdvancedFileOutput(path: FS.join(supportDir, 'log')));
+      var path = FS.normalize((await getApplicationSupportDirectory()).path);
+      path = FS.join(path, 'log');
+      FS.createDirSync(path);
+      lists.add(AdvancedFileOutput(path: path));
     }
     // 实例化
     instance = Logger(filter: ProductionFilter(), output: MultiOutput(lists), level: level);
