@@ -1,7 +1,8 @@
-﻿import 'package:file_picker/file_picker.dart';
+﻿import 'package:file_picker/file_picker.dart' show FilePicker;
 import 'package:flex_color_picker/flex_color_picker.dart' show ColorPicker, ColorPickerType;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show BoolExtension, ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxBool, Trans;
+import 'package:flutter/services.dart' show TextInputFormatter;
+import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxBool, Trans;
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/controller/site.dart';
@@ -22,9 +23,14 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
     super.isVertical,
     super.onChanged,
     this.controller,
+    this.inputFormatters,
   });
 
+  /// text 控制器
   final TextEditingController? controller;
+
+  /// 输入格式化
+  final List<TextInputFormatter>? inputFormatters;
 
   /// 是否时富文本
   bool get isTextarea => true;
@@ -39,35 +45,37 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
   Widget build(BuildContext context) {
     var theme = Get.theme;
     final controller = this.controller ?? TextEditingController();
-    if(this.controller == null) {
+    if (this.controller == null) {
       controller.text = config.value.value;
     }
     return ConfigLayoutWidget(
-        isVertical: isVertical,
-        config: config.value,
-        child: Obx(() {
-          return TextFormField(
-            obscureText: hidePassword,
-            controller: controller,
-            readOnly: isReadOnly,
-            minLines: isTextarea ? 2 : null,
-            maxLines: isTextarea ? 30 : 1,
-            decoration: InputDecoration(
-              isDense: true,
-              contentPadding: kVer8Hor12,
-              hoverColor: Colors.transparent,
-              prefixIcon: getPrefixIcon(),
-              suffixIcon: getSuffixIcon(),
-              prefixIconConstraints: const BoxConstraints(),
-              suffixIconConstraints: const BoxConstraints(),
-              hintText: config.value.hint.tr,
-              hintStyle: theme.textTheme.bodySmall!.copyWith(
-                color: theme.colorScheme.outline,
-              ),
+      isVertical: isVertical,
+      config: config.value,
+      child: Obx(() {
+        return TextFormField(
+          obscureText: hidePassword,
+          controller: controller,
+          readOnly: isReadOnly,
+          minLines: isTextarea ? 2 : null,
+          maxLines: isTextarea ? 30 : 1,
+          decoration: InputDecoration(
+            isDense: true,
+            contentPadding: kVer8Hor12,
+            hoverColor: Colors.transparent,
+            prefixIcon: getPrefixIcon(),
+            suffixIcon: getSuffixIcon(),
+            prefixIconConstraints: const BoxConstraints(),
+            suffixIconConstraints: const BoxConstraints(),
+            hintText: config.value.hint.tr,
+            hintStyle: theme.textTheme.bodySmall!.copyWith(
+              color: theme.colorScheme.outline,
             ),
-            onChanged: change,
-          );
-        }));
+          ),
+          onChanged: change,
+          inputFormatters: inputFormatters,
+        );
+      }),
+    );
   }
 
   /// 内容值变化时调用
@@ -91,6 +99,7 @@ class InputWidget extends TextareaWidget<InputConfig> {
     super.isVertical,
     super.onChanged,
     super.controller,
+    super.inputFormatters,
     this.prefixIcon,
     this.usePassword,
   });
