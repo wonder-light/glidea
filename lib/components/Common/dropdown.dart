@@ -139,7 +139,9 @@ class DropdownWidget<T> extends StatefulWidget {
 }
 
 class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
-  final GlobalKey _key = const GlobalObjectKey({});
+  /// [MenuAnchor] 的全局键, 用于获取宽度
+  late final GlobalKey _key;
+
   /// 菜单宽度
   final _maxWidth = 350.0.obs;
 
@@ -174,6 +176,8 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     assert(widget.initValue == null || widget.children.any((t) => t.value == widget.initValue), 'initValue 不在 children 中');
     _updateTextEditor();
     _updateSelectItems();
+    //_key = GlobalObjectKey<_DropdownWidgetState>(widget);
+    _key = LabeledGlobalKey(widget.toString());
   }
 
   @override
@@ -318,6 +322,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   Widget _buildAnchor({required List<Widget> children}) {
     // 创建一个常量菜单锚
     return MenuAnchor(
+      key: _key,
       controller: menuController,
       crossAxisUnconstrained: false,
       menuChildren: children,
@@ -376,7 +381,6 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     );
     // 返回字段
     return TextFormField(
-      key: _key,
       maxLines: widget.enableMultiple ? null : 1,
       controller: textController,
       enabled: widget.enabled,
@@ -562,9 +566,9 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   }
 
   /// 设置 [textController] 和 [_textField] 的值
-  void _setTextField(String str){
+  void _setTextField(String str) {
     textController.text = str;
-    if(widget.enableFilter) {
+    if (widget.enableFilter) {
       _textField.value = str;
     }
   }
