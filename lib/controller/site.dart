@@ -24,7 +24,6 @@ class SiteController extends StateController<Application> with EventBus, DataPro
     setSuccess(await initData());
     initState();
     refresh();
-    Log.initState(this);
   }
 
   @override

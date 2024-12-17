@@ -2,8 +2,11 @@ import 'package:device_preview/device_preview.dart' show DevicePreview;
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt, Transition;
+import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/json.dart';
+import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/theme.dart';
+import 'package:glidea/helpers/windows.dart';
 import 'package:glidea/lang/translations.dart';
 import 'package:glidea/routes/bindings.dart';
 import 'package:glidea/routes/router.dart';
@@ -11,6 +14,7 @@ import 'package:responsive_framework/responsive_framework.dart' show ResponsiveB
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Log.initialized();
   JsonHelp.initialized();
   await WindowsHelp.initialized();
 

@@ -312,6 +312,7 @@ class _HomeViewState extends State<HomeView> {
 
   /// 一个回调，用于询问应用程序是否允许在退出可以取消的情况下退出应用程序
   Future<AppExitResponse> handleExitRequested() async {
+    Log.i('onExitRequested');
     if (!site.isDisposed) {
       try {
         await site.saveSiteData();
@@ -319,7 +320,6 @@ class _HomeViewState extends State<HomeView> {
         Log.e('$e');
       }
     }
-    Log.i('onExitRequested');
     return AppExitResponse.exit;
   }
 

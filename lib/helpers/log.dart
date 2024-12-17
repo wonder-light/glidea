@@ -1,16 +1,15 @@
 ﻿import 'package:flutter/foundation.dart' show kReleaseMode;
-import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/fs.dart';
-import 'package:logger/logger.dart' show AdvancedFileOutput, ProductionFilter, Level, Logger;
+import 'package:logger/logger.dart' show AdvancedFileOutput, Level, Logger, MultiOutput, ProductionFilter, StreamOutput;
+import 'package:path_provider/path_provider.dart' show getApplicationSupportDirectory;
 
 export 'package:logger/logger.dart' show Level;
 
 class Log {
-  ///保存单例
-  static late final Logger _singleton;
-
   // [Logger] 实例
-  static Logger get instance => _singleton;
+  static late final Logger instance;
+
+  static late final Stream<List<String>> stream;
 
   /// 应用程序当前的日志级别.
   ///
@@ -20,17 +19,21 @@ class Log {
   static set level(Level logLevel) => Logger.level = logLevel;
 
   /// 初始化
-  static void initState(SiteController site) {
-    Level? level;
-    ProductionFilter? filter;
-    AdvancedFileOutput? output;
-    // 生产模式
+  static Future<void> initialized() async {
+    Level level = kReleaseMode ? Level.info : Level.trace;
+    // 流输出
+    StreamOutput streamOutput = StreamOutput();
+    stream = streamOutput.stream;
+    // 列表
+    final lists = [if (!kReleaseMode) Logger.defaultOutput(), streamOutput];
+    // 文件输出
     if (kReleaseMode) {
-      level = Level.info;
-      filter = ProductionFilter();
-      output = AdvancedFileOutput(path: FS.join(site.state.supportDir, 'log'));
+      // 应用程序支持目录, 即配置所在的目录
+      final supportDir = FS.normalize((await getApplicationSupportDirectory()).path);
+      lists.add(AdvancedFileOutput(path: FS.join(supportDir, 'log')));
     }
-    _singleton = Logger(filter: filter, output: output, level: level);
+    // 实例化
+    instance = Logger(filter: ProductionFilter(), output: MultiOutput(lists), level: level);
   }
 
   /// 是否 log 资源
