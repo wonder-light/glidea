@@ -9,9 +9,10 @@ import 'package:glidea/routes/bindings.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints, Breakpoint, MOBILE, DESKTOP;
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   JsonHelp.initialized();
+  await WindowsHelp.initialized();
 
   runApp(DevicePreview(
     enabled: !kReleaseMode,

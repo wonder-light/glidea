@@ -39,6 +39,9 @@ const double listSeparated = 10;
 /// 10Mb 文件大小
 const int fileSize10M = 10 * 1024 * 1024;
 
+const double windowMinWidth = 740;
+const double windowMinHeight = 600;
+
 /// 图片类型扩展
 const List<String> imageExt = ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'gif', 'tif', 'tiff', 'apng', 'jfif', 'avif'];
 
