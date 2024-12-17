@@ -99,15 +99,15 @@ mixin TagSite on StateController<Application>, DataProcess {
     for (var post in state.posts) {
       final List<Tag> tags = [];
       // 循环 post 中的 tags
-      for (var item in post.tags) {
+      for (var postTag in post.tags) {
         // 判断是否有对应的 tag
-        if (_tagsMap[item.slug] is Tag) {
-          item.used = true;
-          tags.add(item);
+        if (_tagsMap[postTag.slug] case Tag tag) {
+          tags.add(tag..used = true);
         } else if (addTag) {
           // 添加 post 中的 tag 没有记录
-          tags.add(item);
-          _tagsMap[item.slug] = item..used = true;
+          tags.add(postTag..used = true);
+          state.tags.add(postTag);
+          _tagsMap[postTag.slug] = postTag;
         }
       }
       // 设置 post.tags
