@@ -256,8 +256,12 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     // 通信 node
     try {
       // 目标路径  TODO: 目前只在 Windows 平台使用, 且需要有 node 环境
-      final nodeJsPath = FS.join(state.baseDir, 'assets/js/index.js');
-      var pro = await Process.start('node', [nodeJsPath, renderDataPath], mode: ProcessStartMode.normal);
+      var targetPath = FS.join(state.supportDir, 'js');
+      // 解压缩
+      await FS.unzip('assets/public/js.zip', targetPath, isAsset: true, cover: true);
+      // js 路径
+      targetPath = FS.join(targetPath, 'index.js');
+      var pro = await Process.start('node', [targetPath, renderDataPath], mode: ProcessStartMode.normal);
       // 获取输出
       for (var item in await pro.stdout.transform(utf8.decoder).toList()) {
         Log.i(item);
