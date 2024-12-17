@@ -1,4 +1,3 @@
-import 'package:device_preview/device_preview.dart' show DevicePreview;
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt, Transition;
@@ -18,10 +17,11 @@ void main() async {
   JsonHelp.initialized();
   await WindowsHelp.initialized();
 
-  runApp(DevicePreview(
+  runApp(const App());
+  /*runApp(DevicePreview(
     enabled: !kReleaseMode,
     builder: (context) => const App(),
-  ));
+  ));*/
 }
 
 class App extends StatelessWidget {
@@ -35,6 +35,7 @@ class App extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
+      useInheritedMediaQuery: true,
       locale: Get.deviceLocale,
       translations: TranslationsService(),
       fallbackLocale: TranslationsService.fallbackLocale,
@@ -45,13 +46,17 @@ class App extends StatelessWidget {
       defaultTransition: Transition.fadeIn,
       binds: SiteBind.bings,
       enableLog: !kReleaseMode,
-      builder: (context, child) => ResponsiveBreakpoints.builder(
-        child: child!,
-        breakpoints: [
-          const Breakpoint(start: 0, end: 800, name: MOBILE),
-          const Breakpoint(start: 801, end: double.infinity, name: DESKTOP),
-        ],
-      ),
+      builder: (context, child) {
+        //child = DevicePreview.appBuilder(context, child);
+        child = ResponsiveBreakpoints.builder(
+          child: child!,
+          breakpoints: [
+            const Breakpoint(start: 0, end: windowMinWidth - 1, name: MOBILE),
+            const Breakpoint(start: windowMinWidth, end: double.infinity, name: DESKTOP),
+          ],
+        );
+        return child;
+      },
     );
   }
 }
