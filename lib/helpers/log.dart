@@ -3,8 +3,6 @@ import 'package:glidea/helpers/fs.dart';
 import 'package:logger/logger.dart' show AdvancedFileOutput, Level, Logger, MultiOutput, ProductionFilter, StreamOutput;
 import 'package:path_provider/path_provider.dart' show getApplicationSupportDirectory;
 
-export 'package:logger/logger.dart' show Level;
-
 class Log {
   // [Logger] 实例
   static late final Logger instance;
