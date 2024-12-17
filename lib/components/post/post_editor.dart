@@ -78,20 +78,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
 
   @override
   List<Widget> buildContent(BuildContext context) {
-    Widget child;
-    if (widget.preview) {
-      child = _buildPreview();
-    } else {
-      child = _buildSetting();
-    }
-    // 加个滚动
-    return [
-      Expanded(
-        child: SingleChildScrollView(
-          child: child,
-        ),
-      ),
-    ];
+    return [widget.preview ? _buildPreview() : _buildSetting()];
   }
 
   /// 构建预览
