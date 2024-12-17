@@ -182,4 +182,5 @@
   'remotePath': 'Удаленный путь',
   'netlifySiteId': 'Сайт ID',
   'netlifyAccessToken': 'Талон доступа.',
+  'previewPort': 'Предварительный просмотр портов',
 };

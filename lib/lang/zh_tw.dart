@@ -181,4 +181,5 @@
   'remotePath': '遠程路徑',
   'netlifySiteId': '站點ID',
   'netlifyAccessToken': '訪問令牌',
+  'previewPort': '預覽端口',
 };

@@ -181,4 +181,5 @@
   'remotePath': 'Remote path',
   'netlifySiteId': 'Site Id',
   'netlifyAccessToken': 'Access token',
+  'previewPort': 'Preview port',
 };

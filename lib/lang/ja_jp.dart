@@ -181,4 +181,5 @@
   'remotePath': 'リモートパス',
   'netlifySiteId': 'サイトId',
   'netlifyAccessToken': 'アクセストークン',
+  'previewPort': 'プレビュー港',
 };

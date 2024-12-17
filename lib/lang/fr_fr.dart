@@ -181,4 +181,5 @@
   'remotePath': 'Chemin à distance',
   'netlifySiteId': 'ID du site',
   'netlifyAccessToken': 'Accès au token',
+  'previewPort': 'Prévisualiser le port',
 };
