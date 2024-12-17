@@ -1,5 +1,7 @@
-﻿import 'dart:io' show File, Directory;
+﻿import 'dart:io' show Directory, File, FileSystemEntity;
 
+import 'package:archive/archive_io.dart' show Archive, ArchiveFile, InputFileStream, OutputFileStream, ZipDecoder, extractArchiveToDisk;
+import 'package:flutter/services.dart' show Uint8List, rootBundle;
 import 'package:glidea/helpers/crypto.dart';
 import 'package:path/path.dart' as p;
 
@@ -61,10 +63,11 @@ class FS {
     }
   }
 
+  /// 所有目录下的所有文件和目录
+  static List<FileSystemEntity> getEntity(String path, {bool recursive = true}) => Directory(path).listSync(recursive: recursive);
+
   /// 所有目录下的所有文件
-  static List<File> getFilesSync(String path, {bool recursive = true}) {
-    return Directory(path).listSync(recursive: recursive).whereType<File>().toList();
-  }
+  static List<File> getFilesSync(String path, {bool recursive = true}) => getEntity(path, recursive: recursive).whereType<File>().toList();
 
   /// 移动子目录下的所有文件到指定目录, 包括文件
   static void moveSubFile(String src, String target) async {
@@ -86,7 +89,7 @@ class FS {
   static void deleteDirSync(String src, {bool recursive = true}) => Directory(src).deleteSync(recursive: recursive);
 
   /// 获取指定文件夹中子目录的属性
-  static List<Directory> subDirInfo(String path) => Directory(path).listSync().whereType<Directory>().toList();
+  static List<Directory> subDirInfo(String path) => getEntity(path, recursive: false).whereType<Directory>().toList();
 
   /// 获取指定文件夹中子目录的名称
   static List<String> subDir(String path) => subDirInfo(path).map((f) => p.basename(f.path)).toList();
@@ -133,6 +136,49 @@ class FS {
       return str!.substring(1);
     }
     return str;
+  }
+
+  /// 获取压缩存档
+  static Future<Archive> getZipArchive(String src, {bool isAsset = false}) async {
+    final zip = ZipDecoder();
+    Archive archive;
+    if (isAsset) {
+      // 获取2进制内容
+      Uint8List bytes = (await rootBundle.load(src)).buffer.asUint8List();
+      // 解压
+      archive = zip.decodeBytes(bytes);
+    } else {
+      // 获取输入流
+      final inputStream = InputFileStream(src);
+      // 解压
+      archive = zip.decodeStream(inputStream);
+    }
+    return archive;
+  }
+
+  /// 解压缩文件到指定路径
+  static Future<void> unzip(String src, String target, {bool isAsset = false, bool cover = false}) async {
+    final archive = await getZipArchive(src, isAsset: isAsset);
+    // 创建目录
+    createDirSync(target);
+    // 解压文件到磁盘
+    //await extractArchiveToDisk(archive, target);
+    // 循环
+    for (final entry in archive) {
+      // 路径
+      final filePath = join(target, entry.name);
+      // 判断是否不需要覆盖
+      if (!cover && pathExistsSync(filePath)) continue;
+      // 文件
+      if (entry.isFile) {
+        final outputStream = OutputFileStream(filePath);
+        entry.writeContent(outputStream);
+        await outputStream.close();
+      } else {
+        createDirSync(filePath);
+      }
+    }
+    await archive.clear();
   }
 }
 

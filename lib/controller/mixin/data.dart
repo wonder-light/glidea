@@ -1,9 +1,8 @@
-﻿import 'dart:io' show Directory;
+﻿import 'dart:io' show Directory, File;
 import 'dart:ui' show Locale;
 
 import 'package:flutter/foundation.dart' show AsyncCallback;
 import 'package:get/get.dart' show Get, GetNavigationExt, GetStringUtils, StateController;
-import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
@@ -46,6 +45,9 @@ mixin DataProcess on StateController<Application> {
   ///
   /// throw [Mistake] exception
   Future<void> checkDir(Application site) async {
+    // 创建开始
+    final isCreate = _isCreate;
+    _isCreate = false;
     // 应用程序支持目录, 即配置所在的目录
     final appConfigFolder = FS.normalize((await getApplicationSupportDirectory()).path);
     // 应用程序文档目录
@@ -62,7 +64,6 @@ mixin DataProcess on StateController<Application> {
     site.buildDir = FS.join(appConfigFolder, 'output');
     site.supportDir = appConfigFolder;
 
-    // Log.i(Directory('assets/public').existsSync()); => true
     try {
       // 如果存在的话 '.gridea' 配置文件夹，则将其移动到 appConfigFolder 目录下
       if (FS.pathExistsSync(appConfigFolderOld2)) {
@@ -71,10 +72,6 @@ mixin DataProcess on StateController<Application> {
       // 如果存在的话 '.hve-notes' 配置文件夹，则将其移动到 appConfigFolder 目录下
       if (FS.pathExistsSync(appConfigFolderOld1)) {
         FS.moveSubFile(appConfigFolderOld1, appConfigFolder);
-      }
-      // 创建默认目录 '.glidea'
-      if (!FS.pathExistsSync(appConfigFolder)) {
-        FS.createDirSync(appConfigFolder);
       }
     } catch (e) {
       throw Mistake(message: 'move old config folder failed: \n$e');
@@ -87,9 +84,8 @@ mixin DataProcess on StateController<Application> {
         final appConfig = FS.readStringSync(appConfigPath).deserialize<TJsonMap>()!;
         defaultSiteDir = FS.normalize(appConfig['sourceFolder']);
         // 如果时默认目录则进行覆盖
-        if (_isCreate) {
+        if (isCreate) {
           site.appDir = defaultSiteDir;
-          _isCreate = false;
         }
       }
       // 输出目录
@@ -116,32 +112,13 @@ mixin DataProcess on StateController<Application> {
         throw Mistake(message: 'move appDir failed: \n$e');
       }
     }
-    try {
-      // 网站文件夹不存在
-      if (!FS.pathExistsSync(site.appDir)) {
-        FS.createDirSync(site.appDir);
-        FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
-        FS.copySync(FS.join(site.baseDir, 'assets/public/default-files'), site.appDir);
-        return;
+    if (isCreate) {
+      try {
+        // 将不存在的文件解压到指定路径
+        FS.unzip('assets/public/default-files.zip', site.appDir, isAsset: true, cover: false);
+      } catch (e) {
+        throw Mistake(message: 'copy default files to appDir failed: \n$e');
       }
-
-      // 网站文件夹存在
-      final items = ['images', 'config', 'post-images', 'posts', 'themes', 'static'];
-      for (var folder in items) {
-        final folderPath = FS.join(site.appDir, folder);
-        if (!FS.pathExistsSync(folderPath)) {
-          FS.copySync(FS.join(site.baseDir, 'assets/public/default-files', folder), folderPath);
-        }
-      }
-
-      // 复制 output/favicon.ico 到 Glidea/favicon.ico
-      final outputFavicon = FS.join(site.buildDir, defaultFaviconPath);
-      final sourceFavicon = FS.join(site.appDir, defaultFaviconPath);
-      if (FS.pathExistsSync(outputFavicon) && !FS.pathExistsSync(sourceFavicon)) {
-        FS.copyFileSync(outputFavicon, sourceFavicon);
-      }
-    } catch (e) {
-      throw Mistake(message: 'copy default files to appDir failed: \n$e');
     }
   }
 
