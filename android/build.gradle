@@ -2,7 +2,6 @@ allprojects {
     repositories {
         google() // 这行注释
         mavenCentral() //这行也注释，底下三行加上去
-        maven { url 'https://jitpack.io' }
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/jcenter' }
         maven {
