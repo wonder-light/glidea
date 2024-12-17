@@ -9,7 +9,7 @@ class PageAction extends StatelessWidget {
     required this.child,
     this.leading,
     this.actions = const [],
-    this.contentPadding
+    this.contentPadding,
   });
 
   /// 前面的操作控件
@@ -37,24 +37,24 @@ class PageAction extends StatelessWidget {
     Widget childWidget = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(
-          child: leading,
-        ),
-        Row(
-          children: actionList,
-        ),
+        Container(child: leading),
+        Row(children: actionList),
       ],
     );
     // 加上分割线, 以及内容
     // 使用 [Material] 在切换路由时可以将背景变不透明, 不至于让两个页面看起来重叠在了一起
+    final color = Get.theme.scaffoldBackgroundColor;
     childWidget = Material(
-      color: Get.theme.scaffoldBackgroundColor,
+      color: color,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: kAllPadding16.copyWith(bottom: 8),
-            child: childWidget,
+          ColoredBox(
+            color: color,
+            child: Padding(
+              padding: kAllPadding16.copyWith(bottom: 8),
+              child: childWidget,
+            ),
           ),
           const Divider(thickness: 1, height: 1),
           Expanded(
