@@ -456,8 +456,15 @@ class _PostViewState extends State<PostView> {
   void openPostSetting({bool preview = false}) {
     /// 抽屉控制器
     final drawerController = DraController();
+    var width = !preview ? null: MediaQuery.sizeOf(context).width / 1.5;
+    var stepWidth = 60.0;
+    if(Get.isPhone) {
+      width = null;
+      stepWidth = double.infinity;
+    }
     Get.showDrawer(
-      width: preview ? Get.width / 1.75 : null,
+      stepWidth: stepWidth,
+      width: width,
       controller: drawerController,
       builder: (ctx) => PostEditor(
         preview: preview,
