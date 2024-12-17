@@ -1,5 +1,8 @@
-﻿import 'package:elegant_notification/elegant_notification.dart' show ElegantNotification;
-import 'package:elegant_notification/resources/arrays.dart';
+﻿import 'dart:io' show Platform;
+
+import 'package:elegant_notification/elegant_notification.dart' show ElegantNotification;
+import 'package:elegant_notification/resources/arrays.dart' show AnimationType, NotificationType;
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetInterface, GetNavigationExt, Rx, Trans;
 import 'package:glidea/components/Common/drawer.dart';
@@ -143,7 +146,6 @@ extension GetExt on GetInterface {
     DraController? controller,
     ShapeBorder? shape,
     DrawerDirection direction = DrawerDirection.rightToLeft,
-    DrawerDirection mobileDirection = DrawerDirection.center,
     Duration duration = const Duration(milliseconds: 300),
     bool blur = true,
     double elevation = 40,
@@ -166,7 +168,6 @@ extension GetExt on GetInterface {
           opacityColor: opacityColor,
           blur: blur,
           direction: direction,
-          mobileDirection: mobileDirection,
           stepWidth: stepWidth,
           stepHeight: stepHeight,
           width: width,

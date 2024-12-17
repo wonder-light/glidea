@@ -87,15 +87,9 @@ class DrawerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // 主题
     final theme = Get.theme;
-    // 获取断点数据
-    final breakpoints = ResponsiveBreakpoints.of(Get.context!);
     // 控制器
     final DraController internalController = controller ?? DraController();
     internalController._onClose = onClose;
-    // 设置 stepHeight
-    final stepHeight = breakpoints.isDesktop ? null : (this.stepHeight ?? 60);
-    // 设置方向 direction
-    final direction = breakpoints.isDesktop ? this.direction : mobileDirection;
     // 背景板
     Widget backboard = Opacity(
       opacity: opacity,

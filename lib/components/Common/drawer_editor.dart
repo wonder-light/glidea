@@ -10,19 +10,20 @@ abstract class DrawerEditor<T> extends StatefulWidget {
   const DrawerEditor({
     super.key,
     required this.entity,
-    required this.controller,
+    this.controller,
     this.onClose,
     this.onSave,
     this.header = '',
     this.showAction = true,
     this.hideCancel = false,
+    this.enabledScroller = true,
   });
 
   /// 实体
   final T entity;
 
   /// 抽屉控制器
-  final DraController controller;
+  final DraController? controller;
 
   /// 取消
   final VoidCallback? onClose;
@@ -39,6 +40,9 @@ abstract class DrawerEditor<T> extends StatefulWidget {
   /// 隐藏取消按钮
   final bool hideCancel;
 
+  /// 启用滚动
+  final bool enabledScroller;
+
   @override
   DrawerEditorState<DrawerEditor<T>> createState();
 }
@@ -50,9 +54,13 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
+  /// 按钮样式
   final _buttonStyle = const ButtonStyle(
     fixedSize: WidgetStatePropertyAll(Size(double.infinity, kButtonHeight)),
   );
+
+  /// 抽屉控制器
+  late final DraController controller = widget.controller ?? DraController();
 
   @override
   Widget build(BuildContext context) {
@@ -61,18 +69,20 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
     // 内容
     List<Widget> content = buildContent(context);
     // 字段
-    Widget widgets = SingleChildScrollView(
-      child: Container(
-        padding: kAllPadding16 + kVerPadding8,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            header,
-            ...content,
-          ],
-        ),
+    Widget widgets = Container(
+      padding: kAllPadding16 + kVerPadding8,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          header,
+          ...content,
+        ],
       ),
     );
+    // 启用滚动
+    if(widget.enabledScroller) {
+      widgets = SingleChildScrollView(child: widgets);
+    }
     // 上下两部分
     if (widget.showAction) {
       widgets = Column(
@@ -154,13 +164,13 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
   /// 关闭或者取消
   void onClose() {
     widget.onClose?.call();
-    widget.controller.close();
+    controller.close();
   }
 
   /// 保存
   void onSave() {
     if (!canSave.value) return;
     //widget.onSave?.call();
-    widget.controller.close();
+    controller.close();
   }
 }
