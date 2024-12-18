@@ -59,6 +59,8 @@
   'robotsText': 'Сообщение от Robots',
   'postPageSize': 'Записей на странице',
   'archivesPageSize': 'Архивных записей на странице',
+  'themeSetting': 'Компоновка темы',
+  'remoteSetting': 'Удаленная конфигурация',
   'basicSetting': 'Основные настройки',
   'commentSetting': 'Настройки комментариев',
   'faviconSetting': 'Настройки иконки сайта',

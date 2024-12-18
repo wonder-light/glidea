@@ -59,6 +59,8 @@
   'robotsText': 'Robotsテキストです',
   'postPageSize': '毎ページの文書数',
   'archivesPageSize': '毎ページのアーカイブ数',
+  'themeSetting': 'テーマ設定',
+  'remoteSetting': '遠隔配置です',
   'basicSetting': 'システム設定',
   'commentSetting': 'コメント設定',
   'faviconSetting': 'タブアイコン',

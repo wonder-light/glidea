@@ -150,7 +150,7 @@ class _RemoteViewState extends State<RemoteView> {
       if (arg == Tran.commentSetting) {
         childWidget = _buildConfig(isRemote: false);
       } else {
-        arg = Tran.remote;
+        arg = Tran.remoteSetting;
         childWidget = _buildConfig(isRemote: true);
       }
       return Scaffold(

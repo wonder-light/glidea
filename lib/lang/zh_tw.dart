@@ -59,6 +59,8 @@
   'robotsText': 'Robots 文本',
   'postPageSize': '每頁文章數',
   'archivesPageSize': '每頁歸檔數',
+  'themeSetting': '主题配置',
+  'remoteSetting': '遠程配置',
   'basicSetting': '基礎配置',
   'commentSetting': '評論配置',
   'faviconSetting': '網頁圖標',

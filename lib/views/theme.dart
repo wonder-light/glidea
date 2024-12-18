@@ -59,7 +59,7 @@ class _ThemeViewState extends State<ThemeView> {
         site.isThemeCustomPage = true;
         childWidget = buildCustomConfig();
       } else {
-        arg = Tran.theme;
+        arg = Tran.themeSetting;
         childWidget = buildThemeConfig();
       }
       return Scaffold(

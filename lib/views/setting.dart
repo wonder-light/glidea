@@ -21,9 +21,9 @@ class _SettingViewState extends State<SettingView> {
 
   /// 菜单数据
   final List<TRouterData> menus = [
-    (name: Tran.theme, route: AppRouter.phoneTheme, icon: PhosphorIconsRegular.tShirt),
+    (name: Tran.themeSetting, route: AppRouter.phoneTheme, icon: PhosphorIconsRegular.tShirt),
     (name: Tran.customConfig, route: AppRouter.phoneTheme, icon: PhosphorIconsRegular.hoodie),
-    (name: Tran.remote, route: AppRouter.phoneRemote, icon: PhosphorIconsRegular.hardDrives),
+    (name: Tran.remoteSetting, route: AppRouter.phoneRemote, icon: PhosphorIconsRegular.hardDrives),
     (name: Tran.commentSetting, route: AppRouter.phoneRemote, icon: PhosphorIconsRegular.chatCenteredDots),
   ];
 

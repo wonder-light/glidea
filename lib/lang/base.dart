@@ -59,6 +59,8 @@
   static const String robotsText = 'robotsText';
   static const String postPageSize = 'postPageSize';
   static const String archivesPageSize = 'archivesPageSize';
+  static const String themeSetting = 'themeSetting';
+  static const String remoteSetting = 'remoteSetting';
   static const String basicSetting = 'basicSetting';
   static const String commentSetting = 'commentSetting';
   static const String faviconSetting = 'faviconSetting';

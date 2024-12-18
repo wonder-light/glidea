@@ -59,6 +59,8 @@
   'robotsText': 'Robots text',
   'postPageSize': 'Articles per page',
   'archivesPageSize': 'Archives per page',
+  'themeSetting': 'Theme settings',
+  'remoteSetting': 'Remote settings',
   'basicSetting': 'Basic settings',
   'commentSetting': 'Comment settings',
   'faviconSetting': 'Favicon setting',
