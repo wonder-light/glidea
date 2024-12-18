@@ -248,14 +248,11 @@ class _HomeViewState extends State<HomeView> {
           if (!site.inBeingSync.value) {
             return contentWidget;
           }
-
-          return const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AutoAnimatedRotation(
-                child: Icon(PhosphorIconsRegular.arrowsClockwise),
-              )
-            ],
+          return const Align(
+            alignment: Alignment.center,
+            child: AutoAnimatedRotation(
+              child: Icon(PhosphorIconsRegular.arrowsClockwise),
+            ),
           );
         }),
       );
@@ -332,13 +329,13 @@ class _HomeViewState extends State<HomeView> {
   }
 
   /// 预览网页
-  void preview() {
-    site.previewSite();
+  void preview() async {
+    await site.previewSite();
   }
 
   /// 发布网页
   void publish() async {
-    site.publishSite();
+    await site.publishSite();
   }
 
   /// 打开设置

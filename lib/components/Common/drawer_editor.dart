@@ -55,7 +55,7 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
   /// 按钮样式
-  final _buttonStyle = const ButtonStyle(
+  final actionStyle = const ButtonStyle(
     fixedSize: WidgetStatePropertyAll(Size(double.infinity, kButtonHeight)),
   );
 
@@ -144,14 +144,14 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
         children: [
           if (!widget.hideCancel)
             OutlinedButton(
-              style: _buttonStyle,
+              style: actionStyle,
               onPressed: onClose,
               child: Text('cancel'.tr),
             ),
           if (!widget.hideCancel) Container(padding: kRightPadding8),
           Obx(
             () => FilledButton(
-              style: _buttonStyle,
+              style: actionStyle,
               onPressed: canSave.value ? onSave : null,
               child: Text('save'.tr),
             ),
