@@ -1,4 +1,5 @@
-﻿import 'package:dart_json_mapper/dart_json_mapper.dart';
+﻿import 'package:dart_json_mapper/dart_json_mapper.dart'
+    show DeserializationContext, DeserializationOptions, EnumConverterShort, JsonMapper, JsonMapperAdapter, SerializationOptions, typeOf;
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/crypto.dart';
 import 'package:glidea/interfaces/types.dart';
@@ -80,15 +81,15 @@ extension RegExpExtension on Pattern {
       assert(match[0] != null, 'in allMatchesWithSep, match[0] == null');
       // 添加非匹配字符串
       str = input.substring(start, match.start);
-      if(str.isNotEmpty) result.add(onNonMatch(str));
+      if (str.isNotEmpty) result.add(onNonMatch(str));
       // 添加匹配字符串
-      if(match.groupCount > 0) result.add(onMatch(match));
+      if (match.groupCount > 0) result.add(onMatch(match));
       // 设置下一次的起始位置
       start = match.end;
     }
     // 添加末尾的未匹配字符串
     str = input.substring(start);
-    if(str.isNotEmpty) result.add(onNonMatch(str));
+    if (str.isNotEmpty) result.add(onNonMatch(str));
     // 返回
     return result;
   }

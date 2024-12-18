@@ -1,6 +1,8 @@
-﻿import 'package:flex_color_scheme/flex_color_scheme.dart';
+﻿import 'package:flex_color_scheme/flex_color_scheme.dart'
+    show FlexAdaptive, FlexColorScheme, FlexInputBorderType, FlexScheme, FlexSubThemesData, FlexThemeData, SchemeColor;
 import 'package:flutter/cupertino.dart' show CupertinoThemeData;
 import 'package:flutter/material.dart';
+
 /// The [AppTheme] defines light and dark themes for the app.
 ///
 /// Theme setup for FlexColorScheme package v8.
@@ -30,7 +32,7 @@ sealed class AppTheme {
       blendOnLevel: 20,
       blendOnColors: true,
       useM2StyleDividerInM3: true,
-      switchThumbFixedSize: true,
+      switchAdaptiveCupertinoLike: FlexAdaptive.all(),
       inputDecoratorSchemeColor: SchemeColor.primary,
       inputDecoratorIsFilled: true,
       inputDecoratorContentPadding: EdgeInsetsDirectional.fromSTEB(12, 16, 12, 12),
@@ -68,7 +70,7 @@ sealed class AppTheme {
       tintedDisabledControls: true,
       blendOnColors: true,
       useM2StyleDividerInM3: true,
-      switchThumbFixedSize: true,
+      switchAdaptiveCupertinoLike: FlexAdaptive.all(),
       inputDecoratorSchemeColor: SchemeColor.primary,
       inputDecoratorIsFilled: true,
       inputDecoratorContentPadding: EdgeInsetsDirectional.fromSTEB(12, 16, 12, 12),
@@ -104,8 +106,8 @@ extension ThemeDataExt on ThemeData {
   /// 修改 [ThemeData] 数据
   ThemeData modifyData() {
     return copyWith(
-      iconTheme: const IconThemeData(size: 18),
-      scrollbarTheme: ScrollbarThemeData(
+      iconTheme: iconTheme.copyWith(size: 18),
+      scrollbarTheme: scrollbarTheme.copyWith(
         thickness: const WidgetStatePropertyAll(4),
         thumbColor: WidgetStatePropertyAll(colorScheme.primaryContainer),
       ),

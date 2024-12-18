@@ -175,19 +175,28 @@ class ListItem extends StatelessWidget {
         ],
       ),
     );
+    // 选择时的颜色
+    var selectedInkColor = tileColor ?? defaults.tileColor ?? Colors.transparent;
+    if (selected) {
+      selectedInkColor = selectedTileColor ?? defaults.selectedTileColor ?? colorScheme.primary;
+    }
     // 子控件装饰
-    childWidget = InkWell(
-      customBorder: shape ?? defaults.shape,
-      onTap: enabled ? onTap : null,
-      enableFeedback: enabled,
-      child: Semantics(
-        selected: selected,
-        enabled: enabled,
-        child: Ink(
-          decoration: ShapeDecoration(
-            shape: shape ?? const Border(),
-            color: selected ? selectedTileColor ?? defaults.selectedTileColor ?? colorScheme.primary : tileColor ?? defaults.tileColor ?? Colors.transparent,
-          ),
+    childWidget = Semantics(
+      selected: selected,
+      enabled: enabled,
+      child: Ink(
+        decoration: ShapeDecoration(
+          shape: shape ?? const Border(),
+          color: selectedInkColor,
+        ),
+        child: InkWell(
+          customBorder: shape ?? defaults.shape,
+          onTap: enabled ? onTap : null,
+          enableFeedback: enabled,
+          focusColor: theme.focusColor,
+          hoverColor: theme.focusColor,
+          highlightColor: theme.highlightColor,
+          splashColor: theme.splashColor,
           child: childWidget,
         ),
       ),

@@ -3,8 +3,9 @@ import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/image.dart';
 import 'package:glidea/helpers/uid.dart';
-import 'package:markdown/markdown.dart' as m;
-import 'package:markdown_widget/markdown_widget.dart';
+import 'package:markdown/markdown.dart' as m
+    show HeaderSyntax, Node, BlockParser, SetextHeaderSyntax, Element, ExtensionSet, Resolver, BlockSyntax, renderToHtml, Document, InlineSyntax;
+import 'package:markdown_widget/markdown_widget.dart' show ElementNode, ImgConfig, MarkdownConfig, SpanNode, TextNode, WidgetVisitor;
 
 /// 解析 ajax 样式的头，并将生成的id添加到生成的元素中
 ///
