@@ -19,9 +19,11 @@ class AppRouter {
   static const String tags = '/tags';
   static const String theme = '/theme';
   static const String remote = '/remote';
+  static const String post = '/post';
   static const String tabletSetting = '/tabletSetting';
   static const String phoneSetting = '/phoneSetting';
-  static const String post = '/post';
+  static const String phoneTheme = '/phoneTheme';
+  static const String phoneRemote = '/phoneRemote';
 
   /// 路由路线集合
   static final List<GetPage<Widget>> routes = [
@@ -31,19 +33,39 @@ class AppRouter {
       page: () => const HomeView(),
       participatesInRootNavigator: true,
       children: [
-        GetPage(name: articles, page: () => const ArticlesView()),
-        GetPage(name: menu, page: () => const MenuView()),
-        GetPage(name: tags, page: () => const TagsView()),
-        GetPage(name: theme, page: () => const ThemeView()),
-        GetPage(name: remote, page: () => const RemoteView()),
+        GetPage(name: articles, page: buildArticles),
+        GetPage(name: menu, page: buildMenu),
+        GetPage(name: tags, page: buildTags),
+        GetPage(name: theme, page: buildTheme),
+        GetPage(name: remote, page: buildRemote),
         // 平板端才有设置页面
-        GetPage(name: tabletSetting, page: () => const SettingEditor(isVertical: false)),
+        GetPage(name: tabletSetting, page: buildTabletSetting),
         // 移动端才有设置页面
-        GetPage(name: phoneSetting, page: () => const SettingView()),
+        GetPage(name: phoneSetting, page: buildPhoneSetting),
+        GetPage(name: phoneTheme, page: buildTheme, participatesInRootNavigator: true),
+        GetPage(name: phoneRemote, page: buildRemote, participatesInRootNavigator: true),
         // post 页面
-        GetPage(name: post, page: () => const PostView(), participatesInRootNavigator: true),
-        GetPage(name: '/*', page: () => const NotfoundWidget(), participatesInRootNavigator: true),
+        GetPage(name: post, page: buildPost, participatesInRootNavigator: true),
+        GetPage(name: '/*', page: buildNotfound, participatesInRootNavigator: true),
       ],
     ),
   ];
+
+  static Widget buildArticles() => const ArticlesView();
+
+  static Widget buildMenu() => const MenuView();
+
+  static Widget buildTags() => const TagsView();
+
+  static Widget buildTheme() => const ThemeView();
+
+  static Widget buildRemote() => const RemoteView();
+
+  static Widget buildPost() => const PostView();
+
+  static Widget buildNotfound() => const NotfoundWidget();
+
+  static Widget buildTabletSetting() => const SettingEditor(isVertical: false);
+
+  static Widget buildPhoneSetting() => const SettingView();
 }

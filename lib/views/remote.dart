@@ -43,10 +43,10 @@ class _RemoteViewState extends State<RemoteView> {
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
   /// 当前选择的平台
-  late final RxObject<DeployPlatform> platform;
+  final RxObject<DeployPlatform> platform = DeployPlatform.github.obs;
 
   /// 当前选择的评论平台
-  late final RxObject<CommentPlatform> commentPlatform;
+  final RxObject<CommentPlatform> commentPlatform = CommentPlatform.gitalk.obs;
 
   /// 域名的文本控制器
   final TextEditingController domainController = TextEditingController();
@@ -74,7 +74,7 @@ class _RemoteViewState extends State<RemoteView> {
   late final TMaps<Type, FieldType> fieldNames;
 
   /// 字段配置
-  late final TMaps<Type, ConfigBase> fieldConfigs;
+  final RxObject<TMaps<Type, ConfigBase>> fieldConfigs = <Type, TMap<ConfigBase>>{}.obs;
 
   // 字段的左下角提示
   final fieldNotes = const {
@@ -103,12 +103,6 @@ class _RemoteViewState extends State<RemoteView> {
   @override
   void initState() {
     super.initState();
-    final remote = site.remote;
-    platform = remote.platform.obs;
-    commentPlatform = site.comment.commentPlatform.obs;
-    checkPublish.value = site.checkPublish;
-    proxyWay.value = remote.enabledProxy;
-    sftpIsKey.value = remote.privateKey.isNotEmpty;
     // 命名列表
     nameLists = _getNameList();
     // 命名
@@ -123,8 +117,8 @@ class _RemoteViewState extends State<RemoteView> {
     };
     // 选项
     fieldOptions = _getConfigOptions();
-    // 配置
-    fieldConfigs = _getFieldConfig();
+    // 初始化配置
+    _initConfig();
     // 域名
     _updateDomainField();
   }
@@ -134,6 +128,7 @@ class _RemoteViewState extends State<RemoteView> {
     platform.dispose();
     proxyWay.dispose();
     sftpIsKey.dispose();
+    fieldConfigs.dispose();
     checkPublish.dispose();
     commentPlatform.dispose();
     domainController.dispose();
@@ -145,6 +140,32 @@ class _RemoteViewState extends State<RemoteView> {
 
   @override
   Widget build(BuildContext context) {
+    Widget childWidget;
+    // 手机端
+    if (Get.isPhone) {
+      // arguments 参数来自 [package:glidea/views/setting.dart] 中的 [_SettingViewState.toRouter]
+      var arg = '${Get.arguments}';
+      if (arg == 'commentSetting') {
+        childWidget = _buildConfig(isRemote: false);
+      } else {
+        arg = 'remote';
+        childWidget = _buildConfig(isRemote: true);
+      }
+      return Scaffold(
+        appBar: AppBar(title: Text(arg.tr), actions: getActionButton()),
+        body: childWidget,
+      );
+    }
+    // 远程和评论的分组
+    childWidget = GroupWidget(
+      isTop: true,
+      groups: const {'basicSetting', 'commentSetting'},
+      children: [
+        _buildConfig(isRemote: true),
+        _buildConfig(isRemote: false),
+      ],
+    );
+    // 返回
     return Material(
       color: Get.theme.scaffoldBackgroundColor,
       child: Column(
@@ -152,25 +173,18 @@ class _RemoteViewState extends State<RemoteView> {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: GroupWidget(
-              isTop: true,
-              groups: const {'basicSetting', 'commentSetting'},
-              children: [
-                Padding(
-                  padding: kTopPadding16,
-                  child: _buildRemoteConfig(),
-                ),
-                Padding(
-                  padding: kTopPadding16,
-                  child: _buildCommentConfig(),
-                ),
-              ],
-            ),
-          ),
+          Expanded(child: childWidget),
           _buildBottom(),
         ],
       ),
+    );
+  }
+
+  /// 包裹 [Padding]
+  Widget _buildConfig({bool isRemote = true}) {
+    return Padding(
+      padding: kTopPadding16,
+      child: isRemote ? _buildRemoteConfig() : _buildCommentConfig(),
     );
   }
 
@@ -196,7 +210,7 @@ class _RemoteViewState extends State<RemoteView> {
         names.remove(sftpIsKey.value ? _password : _privateKey);
       }
 
-      final configs = fieldConfigs[RemoteSetting] ?? {};
+      final configs = fieldConfigs.value[RemoteSetting] ?? {};
       // 构建列表
       return _buildContent(
         items: {
@@ -218,9 +232,9 @@ class _RemoteViewState extends State<RemoteView> {
       // 评论类型
       final type = commentPlatform.value == CommentPlatform.gitalk ? GitalkSetting : DisqusSetting;
       // 基础
-      configs.addAll(fieldConfigs[CommentSetting] ?? {});
+      configs.addAll(fieldConfigs.value[CommentSetting] ?? {});
       // 添加对应评论的字段
-      configs.addAll(fieldConfigs[type] ?? {});
+      configs.addAll(fieldConfigs.value[type] ?? {});
       // 构建
       return _buildContent(items: configs);
     });
@@ -299,9 +313,25 @@ class _RemoteViewState extends State<RemoteView> {
     );
   }
 
+  /// 手机端的 action 按钮
+  List<Widget> getActionButton() {
+    return [
+      IconButton(
+        onPressed: _resetConfig,
+        icon: const Icon(PhosphorIconsRegular.clockCounterClockwise),
+        tooltip: 'reset'.tr,
+      ),
+      IconButton(
+        onPressed: _saveConfig,
+        icon: const Icon(PhosphorIconsRegular.boxArrowDown),
+        tooltip: 'save'.tr,
+      ),
+    ];
+  }
+
   /// 构建域名字段
   Widget _buildDomainField() {
-    InputConfig domain = fieldConfigs[RemoteSetting]![_domain] as InputConfig;
+    InputConfig domain = fieldConfigs.value[RemoteSetting]![_domain] as InputConfig;
     return InputWidget(
       controller: domainController,
       config: domain.obs,
@@ -435,7 +465,7 @@ class _RemoteViewState extends State<RemoteView> {
 
   /// 更新域名字段
   void _updateDomainField() {
-    InputConfig field = fieldConfigs[RemoteSetting]![_domain]! as InputConfig;
+    InputConfig field = fieldConfigs.value[RemoteSetting]![_domain]! as InputConfig;
     if (field.value.startsWith('https://')) {
       domainPrefix = 'https://';
     } else {
@@ -466,13 +496,29 @@ class _RemoteViewState extends State<RemoteView> {
     }
   }
 
+  /// 初始化配置
+  void _initConfig() {
+    final remote = site.remote;
+    platform.value = remote.platform;
+    commentPlatform.value = site.comment.commentPlatform;
+    checkPublish.value = site.checkPublish;
+    proxyWay.value = remote.enabledProxy;
+    sftpIsKey.value = remote.privateKey.isNotEmpty;
+    // 配置
+    fieldConfigs.value = _getFieldConfig();
+  }
+
+  /// 重置配置
+  void _resetConfig() => _initConfig();
+
   /// 保持配置
   void _saveConfig() async {
     try {
-      final remotes = fieldConfigs[RemoteSetting]!.values.toList();
-      final comments = fieldConfigs[CommentSetting]!.values.toList();
-      comments.addAll(fieldConfigs[GitalkSetting]!.values);
-      comments.addAll(fieldConfigs[DisqusSetting]!.values);
+      final configs = fieldConfigs.value;
+      final remotes = configs[RemoteSetting]!.values.toList();
+      final comments = configs[CommentSetting]!.values.toList();
+      comments.addAll(configs[GitalkSetting]!.values);
+      comments.addAll(configs[DisqusSetting]!.values);
       site.updateRemoteConfig(remotes: remotes, comments: comments);
     } catch (e) {
       Get.error('saveError');

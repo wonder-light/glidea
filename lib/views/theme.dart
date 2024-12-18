@@ -7,6 +7,7 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/render.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 class ThemeView extends StatefulWidget {
   const ThemeView({super.key});
@@ -48,6 +49,33 @@ class _ThemeViewState extends State<ThemeView> {
 
   @override
   Widget build(BuildContext context) {
+    Widget childWidget;
+    // 手机端
+    if (Get.isPhone) {
+      // arguments 参数来自 [package:glidea/views/setting.dart] 中的 [_SettingViewState.toRouter]
+      var arg = '${Get.arguments}';
+      if (arg == 'customConfig') {
+        childWidget = buildCustomConfig();
+      } else {
+        arg = 'theme';
+        childWidget = buildThemeConfig();
+      }
+      return Scaffold(
+        appBar: AppBar(title: Text(arg.tr), actions: getActionButton()),
+        body: childWidget,
+      );
+    }
+    // 主题和自定义主题的分组
+    childWidget = GroupWidget(
+      isTop: true,
+      groups: const {'basicSetting', 'customConfig'},
+      children: [
+        buildThemeConfig(),
+        buildCustomConfig(),
+      ],
+      onTap: (index) => site.isThemeCustomPage = index > 0,
+    );
+    // PC 端和平板端
     return Material(
       color: Get.theme.scaffoldBackgroundColor,
       child: Column(
@@ -55,17 +83,7 @@ class _ThemeViewState extends State<ThemeView> {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: GroupWidget(
-              isTop: true,
-              groups: const {'basicSetting', 'customConfig'},
-              children: [
-                buildThemeConfig(),
-                buildCustomConfig(),
-              ],
-              onTap: (index) => site.isThemeCustomPage = index > 0,
-            ),
-          ),
+          Expanded(child: childWidget),
           buildBottom(),
         ],
       ),
@@ -106,6 +124,7 @@ class _ThemeViewState extends State<ThemeView> {
     });
   }
 
+  /// 从 [ConfigBase] 构建对应的控件
   Widget _buildContent(List<ConfigBase> items, {bool isTop = true}) {
     return ListView.builder(
       shrinkWrap: true,
@@ -146,6 +165,22 @@ class _ThemeViewState extends State<ThemeView> {
         ],
       ),
     );
+  }
+
+  /// 手机端的 action 按钮
+  List<Widget> getActionButton() {
+    return [
+      IconButton(
+        onPressed: resetConfig,
+        icon: const Icon(PhosphorIconsRegular.clockCounterClockwise),
+        tooltip: 'reset'.tr,
+      ),
+      IconButton(
+        onPressed: saveConfig,
+        icon: const Icon(PhosphorIconsRegular.boxArrowDown),
+        tooltip: 'save'.tr,
+      ),
+    ];
   }
 
   /// 重置配置
