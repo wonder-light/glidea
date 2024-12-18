@@ -16,6 +16,7 @@ import 'package:glidea/lang/base.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
+import 'package:window_manager/window_manager.dart' show WindowListener;
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -24,7 +25,7 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView> with WindowListener {
   /// 侦听器，可用于侦听应用程序生命周期中的更改
   late final AppLifecycleListener lifecycle;
 
@@ -59,7 +60,7 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     // 平板端
-    if(Get.isTablet) {
+    if (Get.isTablet) {
       menus.add((name: Tran.setting, route: AppRouter.tabletSetting, icon: PhosphorIconsRegular.slidersHorizontal));
     }
     // 预览和发布两个操作按钮
@@ -92,6 +93,15 @@ class _HomeViewState extends State<HomeView> {
     site.dispose();
     lifecycle.dispose();
     super.dispose();
+  }
+
+  @override
+  void onWindowClose() {
+    print('onWindowClose');
+    if(!site.isDisposed) {
+      site.dispose();
+    }
+    super.onWindowClose();
   }
 
   @override
