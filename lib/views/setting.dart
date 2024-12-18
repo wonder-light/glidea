@@ -25,6 +25,7 @@ class _SettingViewState extends State<SettingView> {
     (name: Tran.customConfig, route: AppRouter.phoneTheme, icon: PhosphorIconsRegular.hoodie),
     (name: Tran.remoteSetting, route: AppRouter.phoneRemote, icon: PhosphorIconsRegular.hardDrives),
     (name: Tran.commentSetting, route: AppRouter.phoneRemote, icon: PhosphorIconsRegular.chatCenteredDots),
+    (name: Tran.otherSetting, route: AppRouter.phoneOtherSetting, icon: PhosphorIconsRegular.slidersHorizontal),
   ];
 
   @override

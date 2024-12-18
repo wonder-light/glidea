@@ -63,6 +63,7 @@
   'remoteSetting': '遠隔配置です',
   'basicSetting': 'システム設定',
   'commentSetting': 'コメント設定',
+  'otherSetting': 'その他の設定です',
   'faviconSetting': 'タブアイコン',
   'avatarSetting': 'ユーザーアイコン',
   'domain': 'ドメイン名',

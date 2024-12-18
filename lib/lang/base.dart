@@ -63,6 +63,7 @@
   static const String remoteSetting = 'remoteSetting';
   static const String basicSetting = 'basicSetting';
   static const String commentSetting = 'commentSetting';
+  static const String otherSetting = 'otherSetting';
   static const String faviconSetting = 'faviconSetting';
   static const String avatarSetting = 'avatarSetting';
   static const String domain = 'domain';

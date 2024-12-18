@@ -24,6 +24,7 @@ class AppRouter {
   static const String phoneSetting = '/phoneSetting';
   static const String phoneTheme = '/phoneTheme';
   static const String phoneRemote = '/phoneRemote';
+  static const String phoneOtherSetting = '/phoneOtherSetting';
 
   /// 路由路线集合
   static final List<GetPage<Widget>> routes = [
@@ -44,6 +45,7 @@ class AppRouter {
         GetPage(name: phoneSetting, page: buildPhoneSetting),
         GetPage(name: phoneTheme, page: buildTheme, participatesInRootNavigator: true),
         GetPage(name: phoneRemote, page: buildRemote, participatesInRootNavigator: true),
+        GetPage(name: phoneOtherSetting, page: buildTabletSetting, participatesInRootNavigator: true),
         // post 页面
         GetPage(name: post, page: buildPost, participatesInRootNavigator: true),
         GetPage(name: '/*', page: buildNotfound, participatesInRootNavigator: true),

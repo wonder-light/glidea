@@ -63,6 +63,7 @@
   'remoteSetting': '远程配置',
   'basicSetting': '基础配置',
   'commentSetting': '评论配置',
+  'otherSetting': '其它设置',
   'faviconSetting': '网页图标',
   'avatarSetting': '头像配置',
   'domain': '域 名',

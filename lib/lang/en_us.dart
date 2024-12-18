@@ -63,6 +63,7 @@
   'remoteSetting': 'Remote settings',
   'basicSetting': 'Basic settings',
   'commentSetting': 'Comment settings',
+  'otherSetting': 'Other settings',
   'faviconSetting': 'Favicon setting',
   'avatarSetting': 'Avatar setting',
   'domain': 'Domain',

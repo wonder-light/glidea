@@ -63,6 +63,7 @@
   'remoteSetting': '遠程配置',
   'basicSetting': '基礎配置',
   'commentSetting': '評論配置',
+  'otherSetting': '其它設置',
   'faviconSetting': '網頁圖標',
   'avatarSetting': '頭像配置',
   'domain': '域 名',

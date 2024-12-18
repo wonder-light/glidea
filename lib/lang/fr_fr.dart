@@ -63,6 +63,7 @@
   'remoteSetting': 'Configuration à distance',
   'basicSetting': 'Paramètres de base',
   'commentSetting': 'Paramétrage des commentaires',
+  'otherSetting': 'Les autres paramètres',
   'faviconSetting': 'Paramètres du Favicon',
   'avatarSetting': 'Paramètres de l\'avatar',
   'domain': 'Domaine',

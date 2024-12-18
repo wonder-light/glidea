@@ -107,15 +107,15 @@ class SettingEditorState extends DrawerEditorState<SettingEditor> {
     publish.label = Tran.publishSite.tr;
     visitSite.label = Tran.visitSite.tr;
 
-    final isTablet = Get.isTablet;
+    final isMobile = !Get.isDesktop;
     callbacks.addAll([
       _buildLanguage,
       _buildFileSelect,
       _buildPreviewPort,
       _buildVersion,
-      if (isTablet) _buildPreview,
-      if (isTablet) _buildPublish,
-      if (isTablet) _buildVisitSite,
+      if (isMobile) _buildPreview,
+      if (isMobile) _buildPublish,
+      if (isMobile) _buildVisitSite,
     ]);
   }
 
@@ -131,8 +131,31 @@ class SettingEditorState extends DrawerEditorState<SettingEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: super.build(context),
+    // PC 端
+    if (Get.isDesktop) {
+      return Material(
+        child: super.build(context),
+      );
+    }
+    // 移动端
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Tran.otherSetting.tr),
+        actions: [
+          IconButton(
+            onPressed: onSave,
+            constraints: const BoxConstraints.expand(width: kButtonHeight, height: kButtonHeight),
+            icon: const Icon(PhosphorIconsRegular.boxArrowDown),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: kAllPadding16 + kVerPadding8,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: buildContent(context),
+        ),
+      ),
     );
   }
 

@@ -63,6 +63,7 @@
   'remoteSetting': 'Удаленная конфигурация',
   'basicSetting': 'Основные настройки',
   'commentSetting': 'Настройки комментариев',
+  'otherSetting': 'Другие настройки.',
   'faviconSetting': 'Настройки иконки сайта',
   'avatarSetting': 'Настройки аватара',
   'domain': 'Домен',
