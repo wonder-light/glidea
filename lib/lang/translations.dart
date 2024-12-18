@@ -10,8 +10,7 @@ import 'zh_cn.dart';
 import 'zh_tw.dart';
 
 class TranslationsService extends Translations {
-  static Locale? get locale => Get.deviceLocale;
-
+  /// [Locale] 的默认回调
   static const fallbackLocale = Locale('zh', 'CN');
 
   /// 语言代码

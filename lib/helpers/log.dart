@@ -37,8 +37,8 @@ class Log {
   }
 
   /// 是否 log 资源
-  static void dispose() {
-    Log.instance.close();
+  static Future<void> dispose() async {
+    await Log.instance.close();
   }
 
   /// 在级别记录消息 [Level.trace]

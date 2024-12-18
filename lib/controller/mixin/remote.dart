@@ -76,6 +76,14 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 今天文件服务
   HttpServer? fileServer;
 
+  @override
+  Future<void> disposeState() async {
+    inBeingSync.dispose();
+    inRemoteDetect.dispose();
+    await fileServer?.close(force: true);
+    return super.disposeState();
+  }
+
   /// 发布站点
   Future<void> publishSite() async {
     // 检测主题是否有效

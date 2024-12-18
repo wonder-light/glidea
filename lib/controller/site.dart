@@ -30,11 +30,11 @@ class SiteController extends StateController<Application> with EventBus, DataPro
   @override
   void dispose() async {
     try {
-      await saveSiteData();
+      await disposeState();
     } catch (e) {
       Log.e('$e');
     }
-    Log.dispose();
+    await Log.dispose();
     super.dispose();
   }
 

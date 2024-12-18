@@ -41,6 +41,11 @@ mixin DataProcess on StateController<Application> {
     setLanguage(state.language);
   }
 
+  /// 释放状态
+  Future<void> disposeState() async {
+    await saveSiteData();
+  }
+
   /// 检查 .glidea 文件夹是否存在，如果不存在，则将其初始化
   ///
   /// throw [Mistake] exception
