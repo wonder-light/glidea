@@ -1,10 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/Common/dialog.dart';
-import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/tag/tag_editor.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/tag.dart';
@@ -87,14 +87,12 @@ class _TagsViewState extends State<TagsView> {
 
   /// 编辑标签
   void editorTag(Tag tag) {
-    /// 抽屉控制器
-    final drawerController = DraController();
-
+    final isPhone = Get.isPhone;
     Get.showDrawer(
-      controller: drawerController,
+      direction: isPhone ? DrawerDirection.center : DrawerDirection.rightToLeft,
+      stepHeight: isPhone ? 20 : null,
       builder: (context) => TagEditor(
         entity: tag,
-        controller: drawerController,
         onSave: (data) {
           site.updateTag(newData: data, oldData: tag);
         },

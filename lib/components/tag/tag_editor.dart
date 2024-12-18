@@ -12,7 +12,7 @@ class TagEditor extends DrawerEditor<Tag> {
   const TagEditor({
     super.key,
     required super.entity,
-    required super.controller,
+    super.controller,
     super.onClose,
     super.onSave,
     super.header = 'tag',

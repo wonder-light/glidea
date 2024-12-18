@@ -14,7 +14,7 @@ class MenuEditor extends DrawerEditor<Menu> {
   const MenuEditor({
     super.key,
     required super.entity,
-    required super.controller,
+    super.controller,
     super.onClose,
     super.onSave,
     super.header = 'menu',

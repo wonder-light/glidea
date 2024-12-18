@@ -18,7 +18,7 @@ class PostEditor extends DrawerEditor<Post> {
   const PostEditor({
     super.key,
     required super.entity,
-    required super.controller,
+    super.controller,
     super.header = 'postSettings',
     super.showAction = false,
     this.preview = true,

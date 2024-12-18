@@ -454,8 +454,6 @@ class _PostViewState extends State<PostView> {
 
   /// 打开 post 设置
   void openPostSetting({bool preview = false}) {
-    /// 抽屉控制器
-    final drawerController = DraController();
     var width = !preview ? null: MediaQuery.sizeOf(context).width / 1.5;
     var stepWidth = 60.0;
     if(Get.isPhone) {
@@ -465,13 +463,11 @@ class _PostViewState extends State<PostView> {
     Get.showDrawer(
       stepWidth: stepWidth,
       width: width,
-      controller: drawerController,
       builder: (ctx) => PostEditor(
         preview: preview,
         header: preview ? '' : 'postSettings',
         entity: currentPost,
         markdown: preview ? contentController.text : '',
-        controller: drawerController,
         picture: picture,
       ),
     );
@@ -485,6 +481,10 @@ class _PostViewState extends State<PostView> {
     var content = contentController.text;
     // 位置
     var end = selection.end;
+    // 文本为空
+    if(selection.start < 0 && selection.end < 0) {
+      end = 0;
+    }
     // 插入摘要分隔符
     contentController.text = '${content.substring(0, end)}$separator${content.substring(end)}';
     // 复原位置

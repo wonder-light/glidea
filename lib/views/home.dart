@@ -340,18 +340,12 @@ class _HomeViewState extends State<HomeView> {
 
   /// 打开设置
   void openSetting() {
-    /// 抽屉控制器
-    final drawerController = DraController();
     // 显示抽屉
     Get.showDrawer(
       stepWidth: double.infinity,
       stepHeight: double.infinity,
       direction: DrawerDirection.bottomToTop,
-      controller: drawerController,
-      builder: (ctx) => SettingEditor(
-        entity: 12,
-        controller: drawerController,
-      ),
+      builder: (ctx) => const SettingEditor(),
     );
   }
 

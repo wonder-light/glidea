@@ -130,7 +130,7 @@ class DrawerWidget extends StatelessWidget {
             width: width,
             shape: shape ??
                 const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.zero),
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
             child: builder(context),
           ),

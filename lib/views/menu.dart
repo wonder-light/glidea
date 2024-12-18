@@ -6,6 +6,7 @@ import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/menu/menu_editor.dart';
 import 'package:glidea/controller/site.dart';
+import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/models/menu.dart';
@@ -102,14 +103,12 @@ class _MenuViewState extends State<MenuView> {
 
   /// 编辑菜单
   void editorMenu(Menu menu) {
-    /// 抽屉控制器
-    final drawerController = DraController();
-
+    final isPhone = Get.isPhone;
     Get.showDrawer(
-      controller: drawerController,
+      direction: isPhone ? DrawerDirection.center : DrawerDirection. rightToLeft,
+      stepHeight: isPhone ? 20 : null,
       builder: (context) => MenuEditor(
         entity: menu,
-        controller: drawerController,
         onSave: (data) {
           site.updateMenu(newData: data, oldData: menu);
         },
