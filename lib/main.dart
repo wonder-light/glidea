@@ -1,4 +1,4 @@
-import 'package:device_preview_plus/device_preview_plus.dart';
+import 'package:device_preview_plus/device_preview_plus.dart' show DevicePreview;
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt, Transition;

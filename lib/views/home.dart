@@ -12,6 +12,7 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
@@ -41,11 +42,11 @@ class _HomeViewState extends State<HomeView> {
 
   /// 菜单数据
   final List<TRouterData> menus = [
-    (name: 'article', route: AppRouter.articles, icon: PhosphorIconsRegular.article),
-    (name: 'menu', route: AppRouter.menu, icon: PhosphorIconsRegular.list),
-    (name: 'tag', route: AppRouter.tags, icon: PhosphorIconsRegular.tag),
-    (name: 'theme', route: AppRouter.theme, icon: PhosphorIconsRegular.tShirt),
-    (name: 'remote', route: AppRouter.remote, icon: PhosphorIconsRegular.hardDrives),
+    (name: Tran.article, route: AppRouter.articles, icon: PhosphorIconsRegular.article),
+    (name: Tran.menu, route: AppRouter.menu, icon: PhosphorIconsRegular.list),
+    (name: Tran.tag, route: AppRouter.tags, icon: PhosphorIconsRegular.tag),
+    (name: Tran.theme, route: AppRouter.theme, icon: PhosphorIconsRegular.tShirt),
+    (name: Tran.remote, route: AppRouter.remote, icon: PhosphorIconsRegular.hardDrives),
   ];
 
   /// 移动端的底部导航栏菜单
@@ -59,18 +60,18 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
     // 平板端
     if(Get.isTablet) {
-      menus.add((name: 'setting', route: AppRouter.tabletSetting, icon: PhosphorIconsRegular.slidersHorizontal));
+      menus.add((name: Tran.setting, route: AppRouter.tabletSetting, icon: PhosphorIconsRegular.slidersHorizontal));
     }
     // 预览和发布两个操作按钮
-    actions.add((name: 'preview', call: preview, icon: PhosphorIconsRegular.eye));
-    actions.add((name: 'publishSite', call: publish, icon: PhosphorIconsRegular.cloudArrowUp));
+    actions.add((name: Tran.preview, call: preview, icon: PhosphorIconsRegular.eye));
+    actions.add((name: Tran.publishSite, call: publish, icon: PhosphorIconsRegular.cloudArrowUp));
     // 下面一行的按钮
-    actions.add((name: 'setting', call: openSetting, icon: PhosphorIconsRegular.slidersHorizontal));
-    actions.add((name: 'visitSite', call: openWebSite, icon: PhosphorIconsRegular.globe));
-    actions.add((name: 'starSupport', call: starSupport, icon: PhosphorIconsRegular.githubLogo));
+    actions.add((name: Tran.setting, call: openSetting, icon: PhosphorIconsRegular.slidersHorizontal));
+    actions.add((name: Tran.visitSite, call: openWebSite, icon: PhosphorIconsRegular.globe));
+    actions.add((name: Tran.starSupport, call: starSupport, icon: PhosphorIconsRegular.githubLogo));
 
     mobileMenus.addAll(menus.take(3));
-    mobileMenus.add((name: 'setting', route: AppRouter.phoneSetting, icon: PhosphorIconsRegular.slidersHorizontal));
+    mobileMenus.add((name: Tran.setting, route: AppRouter.phoneSetting, icon: PhosphorIconsRegular.slidersHorizontal));
 
     lifecycle = AppLifecycleListener(onStateChange: handleStateChange, onExitRequested: handleExitRequested);
   }

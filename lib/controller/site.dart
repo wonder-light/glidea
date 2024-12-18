@@ -7,6 +7,7 @@ import 'package:glidea/controller/mixin/tag.dart';
 import 'package:glidea/controller/mixin/theme.dart';
 import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/log.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 
 /// 站点控制器
@@ -41,9 +42,9 @@ class SiteController extends StateController<Application> with EventBus, DataPro
   String getHomeLeftPanelNum(String name) {
     // 加载中则返回默认字符串
     return switch (name) {
-      'article' => '${state.posts.length}',
-      'menu' => '${state.menus.length}',
-      'tag' => '${state.tags.length}',
+      Tran.article => '${state.posts.length}',
+      Tran.menu => '${state.menus.length}',
+      Tran.tag => '${state.tags.length}',
       _ => '',
     };
   }

@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+﻿import 'dart:io' show File;
 
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img show Image, copyResize, encodeJpg, writeFile;

@@ -7,6 +7,7 @@ import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -31,7 +32,7 @@ class _TagsViewState extends State<TagsView> {
         IconButton(
           onPressed: addNewTag,
           icon: const Icon(PhosphorIconsRegular.plus),
-          tooltip: 'newTag'.tr,
+          tooltip: Tran.newTag.tr,
         ),
       ],
       child: Obx(

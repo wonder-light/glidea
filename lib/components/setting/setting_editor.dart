@@ -9,6 +9,7 @@ import 'package:glidea/components/render/select.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/render.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
@@ -21,7 +22,7 @@ class SettingEditor extends DrawerEditor<Object> {
     super.controller,
     super.onClose,
     super.onSave,
-    super.header = 'save',
+    super.header = Tran.save,
     super.hideCancel = true,
     this.isVertical = true,
   });
@@ -80,7 +81,7 @@ class SettingEditorState extends DrawerEditorState<SettingEditor> {
     canSave.value = true;
     final app = site.state;
     language.value
-      ..label = 'language'
+      ..label = Tran.language.tr
       ..value = app.language
       ..options = [
         for (var item in site.languages.entries)
@@ -92,19 +93,19 @@ class SettingEditorState extends DrawerEditorState<SettingEditor> {
 
     siteDir.value
       ..value = app.appDir
-      ..label = 'sourceFolder';
+      ..label = Tran.sourceFolder.tr;
 
     previewPort.value
-      ..label = 'previewPort'.tr
+      ..label = Tran.previewPort.tr
       ..value = '${app.previewPort}';
 
     version
-      ..label = 'version'.tr
+      ..label = Tran.version.tr
       ..value = app.version;
 
-    preview.label = 'preview'.tr;
-    publish.label = 'publishSite'.tr;
-    visitSite.label = 'visitSite'.tr;
+    preview.label = Tran.preview.tr;
+    publish.label = Tran.publishSite.tr;
+    visitSite.label = Tran.visitSite.tr;
 
     final isTablet = Get.isTablet;
     callbacks.addAll([
@@ -159,7 +160,7 @@ class SettingEditorState extends DrawerEditorState<SettingEditor> {
       child: FilledButton(
         style: super.actionStyle,
         onPressed: canSave.value ? onSave : null,
-        child: Text('save'.tr),
+        child: Text(Tran.save.tr),
       ),
     );
   }
@@ -271,9 +272,9 @@ class SettingEditorState extends DrawerEditorState<SettingEditor> {
       // 刷新当前页面
       setState(() {});
       // 进行通知
-      Get.success('saveSuccess');
+      Get.success(Tran.saveSuccess);
     } catch (e) {
-      Get.error('saveError\n$e');
+      Get.error('${Tran.saveError}\n$e');
     }
   }
 

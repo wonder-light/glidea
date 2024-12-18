@@ -6,6 +6,7 @@ import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/render.dart';
 import 'package:glidea/models/theme.dart';
@@ -16,12 +17,6 @@ import 'data.dart';
 mixin ThemeSite on StateController<Application>, DataProcess {
   /// 拥有的主题名列表
   List<String> get themes => state.themes;
-
-  /// 主题控制器的表情
-  String get themeTag => 'themeTag';
-
-  /// 自定义主题控制器的表情
-  String get themeCustomTag => 'themeCustomTag';
 
   /// 当前是主题的自定义页面
   bool? isThemeCustomPage;
@@ -211,6 +206,6 @@ mixin ThemeSite on StateController<Application>, DataProcess {
       }
     });
     // 通知
-    Get.success('themeConfigSaved');
+    Get.success(Tran.themeConfigSaved);
   }
 }

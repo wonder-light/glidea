@@ -6,6 +6,7 @@ import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/models/tag.dart';
@@ -110,14 +111,14 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
     } catch (e) {
       Log.w('update post failed: \n$e');
     }
-    Get.success(newData.published ? 'saved' : 'draftSuccess');
+    Get.success(newData.published ? Tran.saved : Tran.draftSuccess);
   }
 
   /// 删除 post
   void removePost(Post data) async {
     if (!state.posts.remove(data)) {
       // 删除失败
-      Get.error('articleDeleteFailure');
+      Get.error(Tran.articleDeleteFailure);
       return;
     }
     // 标签
@@ -129,7 +130,7 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
       Log.w(e.message);
     }
     // 菜单中的列表不必管
-    Get.success('articleDelete');
+    Get.success(Tran.articleDelete);
   }
 
   /// 检测 [Post] 的命名是否添加或者更新

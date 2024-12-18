@@ -5,6 +5,7 @@ import 'package:get/get.dart' show BoolExtension, DoubleExtension, Get, GetNavig
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 /// 下拉按钮菜单
@@ -434,7 +435,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
                   }
                 },
                 deleteIcon: const Icon(PhosphorIconsRegular.x),
-                deleteButtonTooltipMessage: 'delete'.tr,
+                deleteButtonTooltipMessage: Tran.delete.tr,
                 visualDensity: const VisualDensity(vertical: -4, horizontal: -4),
                 side: BorderSide(
                   color: theme.colorScheme.outlineVariant,

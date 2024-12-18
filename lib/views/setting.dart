@@ -4,6 +4,7 @@ import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -20,10 +21,10 @@ class _SettingViewState extends State<SettingView> {
 
   /// 菜单数据
   final List<TRouterData> menus = [
-    (name: 'theme', route: AppRouter.phoneTheme, icon: PhosphorIconsRegular.tShirt),
-    (name: 'customConfig', route: AppRouter.phoneTheme, icon: PhosphorIconsRegular.hoodie),
-    (name: 'remote', route: AppRouter.phoneRemote, icon: PhosphorIconsRegular.hardDrives),
-    (name: 'commentSetting', route: AppRouter.phoneRemote, icon: PhosphorIconsRegular.chatCenteredDots),
+    (name: Tran.theme, route: AppRouter.phoneTheme, icon: PhosphorIconsRegular.tShirt),
+    (name: Tran.customConfig, route: AppRouter.phoneTheme, icon: PhosphorIconsRegular.hoodie),
+    (name: Tran.remote, route: AppRouter.phoneRemote, icon: PhosphorIconsRegular.hardDrives),
+    (name: Tran.commentSetting, route: AppRouter.phoneRemote, icon: PhosphorIconsRegular.chatCenteredDots),
   ];
 
   @override
@@ -40,7 +41,7 @@ class _SettingViewState extends State<SettingView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('setting'.tr),
+        title: Text(Tran.setting.tr),
       ),
       body: ListView.builder(
         itemExtent: 68,
@@ -54,7 +55,6 @@ class _SettingViewState extends State<SettingView> {
               onTap: () => toRouter(item.route, arguments: item.name),
               leading: Icon(item.icon),
               title: Text(item.name.tr),
-              trailing: Text(site.getHomeLeftPanelNum(item.name)),
               //constraints: const BoxConstraints.expand(height: itemHeight),
               contentPadding: kHorPadding16,
               dense: true,

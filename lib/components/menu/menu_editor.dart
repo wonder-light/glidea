@@ -6,6 +6,7 @@ import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -17,7 +18,7 @@ class MenuEditor extends DrawerEditor<Menu> {
     super.controller,
     super.onClose,
     super.onSave,
-    super.header = 'menu',
+    super.header = Tran.menu,
   });
 
   @override
@@ -57,7 +58,7 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
     const itemHeight = 54.0;
     // 名称控件
     final nameWidget = wrapperField(
-      name: 'name',
+      name: Tran.name,
       child: TextFormField(
         controller: nameController,
         decoration: const InputDecoration(
@@ -72,7 +73,8 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
       child: Obx(
         () => ToggleButtons(
           borderRadius: BorderRadius.circular(8),
-          constraints: const BoxConstraints.tightFor(height: kButtonHeight * 0.8),  // 取消最小高度
+          constraints: const BoxConstraints.tightFor(height: kButtonHeight * 0.8),
+          // 取消最小高度
           isSelected: [
             openType.value == MenuTypes.internal,
             openType.value == MenuTypes.external,
@@ -92,7 +94,7 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
     );
     // 链接控件
     final linkWidget = wrapperField(
-      name: 'link',
+      name: Tran.link,
       child: DropdownWidget(
         itemHeight: itemHeight,
         itemsMaxHeight: itemHeight * 3,

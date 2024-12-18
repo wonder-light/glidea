@@ -13,6 +13,7 @@ import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/render.dart';
 import 'package:glidea/models/setting.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
@@ -32,6 +33,7 @@ class _RemoteViewState extends State<RemoteView> {
   static const _connectType = 'connectType';
   static const _password = 'password';
   static const _privateKey = 'privateKey';
+  static const _remotePath = 'remotePath';
   static const _tokenUsername = 'tokenUsername';
   static const _showComment = 'showComment';
   static const _branch = 'branch';
@@ -78,13 +80,13 @@ class _RemoteViewState extends State<RemoteView> {
 
   // 字段的左下角提示
   final fieldNotes = const {
-    _privateKey: 'privateKeyTip',
-    'remotePath': 'remotePathTip',
+    _privateKey: Tran.privateKeyTip,
+    _remotePath: Tran.remotePathTip,
   };
 
   // 字段的内部提示
   final fieldHints = const {
-    _branch: 'branch',
+    _branch: Tran.branch,
     _domain: 'my_domain.com',
     _cname: 'my_domain.com',
   };
@@ -145,10 +147,10 @@ class _RemoteViewState extends State<RemoteView> {
     if (Get.isPhone) {
       // arguments 参数来自 [package:glidea/views/setting.dart] 中的 [_SettingViewState.toRouter]
       var arg = '${Get.arguments}';
-      if (arg == 'commentSetting') {
+      if (arg == Tran.commentSetting) {
         childWidget = _buildConfig(isRemote: false);
       } else {
-        arg = 'remote';
+        arg = Tran.remote;
         childWidget = _buildConfig(isRemote: true);
       }
       return Scaffold(
@@ -159,7 +161,7 @@ class _RemoteViewState extends State<RemoteView> {
     // 远程和评论的分组
     childWidget = GroupWidget(
       isTop: true,
-      groups: const {'basicSetting', 'commentSetting'},
+      groups: const {Tran.basicSetting, Tran.commentSetting},
       children: [
         _buildConfig(isRemote: true),
         _buildConfig(isRemote: false),
@@ -289,7 +291,7 @@ class _RemoteViewState extends State<RemoteView> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Obx(() {
-            Widget child = Text('testConnection'.tr);
+            Widget child = Text(Tran.testConnection.tr);
             if (site.inRemoteDetect.value) {
               child = Row(
                 mainAxisSize: MainAxisSize.min,
@@ -306,7 +308,7 @@ class _RemoteViewState extends State<RemoteView> {
           }),
           FilledButton(
             onPressed: _saveConfig,
-            child: Text('save'.tr),
+            child: Text(Tran.save.tr),
           ),
         ],
       ),
@@ -319,12 +321,12 @@ class _RemoteViewState extends State<RemoteView> {
       IconButton(
         onPressed: _resetConfig,
         icon: const Icon(PhosphorIconsRegular.clockCounterClockwise),
-        tooltip: 'reset'.tr,
+        tooltip: Tran.reset.tr,
       ),
       IconButton(
         onPressed: _saveConfig,
         icon: const Icon(PhosphorIconsRegular.boxArrowDown),
-        tooltip: 'save'.tr,
+        tooltip: Tran.save.tr,
       ),
     ];
   }
@@ -521,7 +523,7 @@ class _RemoteViewState extends State<RemoteView> {
       comments.addAll(configs[DisqusSetting]!.values);
       site.updateRemoteConfig(remotes: remotes, comments: comments);
     } catch (e) {
-      Get.error('saveError');
+      Get.error(Tran.saveError);
     }
   }
 

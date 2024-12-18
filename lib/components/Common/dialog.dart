@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Trans;
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/lang/base.dart';
 
 /// 放入 [Dialog] 显示中显示的控件
 class DialogWidget extends StatelessWidget {
@@ -39,7 +40,7 @@ class DialogWidget extends StatelessWidget {
     Widget headerWidget = header ??
         Padding(
           padding: kAllPadding16,
-          child: Text('⚠️${"warning".tr}', textScaler: const TextScaler.linear(1.2)),
+          child: Text('⚠️${Tran.warning.tr}', textScaler: const TextScaler.linear(1.2)),
         );
     // 内容
     Widget contentWidget = Flexible(
@@ -47,7 +48,7 @@ class DialogWidget extends StatelessWidget {
       child: content ??
           Padding(
             padding: kAllPadding16,
-            child: Text('deleteWarning'.tr),
+            child: Text(Tran.deleteWarning.tr),
           ),
     );
     // 操作按钮
@@ -66,7 +67,7 @@ class DialogWidget extends StatelessWidget {
               FilledButton(
                 onPressed: onConfirm,
                 style: style,
-                child: Text('confirm'.tr),
+                child: Text(Tran.confirm.tr),
               ),
             ],
           ),

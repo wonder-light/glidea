@@ -14,6 +14,7 @@ import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:glidea/models/post.dart';
@@ -79,12 +80,12 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   Future<void> publishSite() async {
     // 检测主题是否有效
     if (!selectThemeValid) {
-      Get.error('noValidCurrentTheme');
+      Get.error(Tran.noValidCurrentTheme);
       return;
     }
     // 检测是否可以发布
     if (!checkPublish) {
-      Get.error('syncWarning');
+      Get.error(Tran.syncWarning);
       return;
     }
     try {
@@ -96,7 +97,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       await renderAll();
       await Deploy.create(state).publish();
       // 成功
-      Get.success('syncSuccess');
+      Get.success(Tran.syncSuccess);
     } on Mistake catch (e) {
       Log.i(e);
       Get.error(e.hint);
@@ -108,7 +109,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 预览站点
   Future<void> previewSite() async {
     if (!selectThemeValid) {
-      Get.error('noValidCurrentTheme');
+      Get.error(Tran.noValidCurrentTheme);
       return;
     }
     try {
@@ -118,7 +119,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       // 启动静态文件服务
       await _enableStaticServer();
       // 成功
-      Get.success('renderSuccess');
+      Get.success(Tran.renderSuccess);
     } on Mistake catch (e) {
       Log.i(e);
       Get.error(e.hint);
@@ -158,7 +159,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       }
     });
     // 通知
-    Get.success('themeConfigSaved');
+    Get.success(Tran.themeConfigSaved);
   }
 
   /// 远程检测
@@ -169,7 +170,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       state.themeConfig.domain = state.remote.domain;
       await Deploy.create(state).remoteDetect();
       // 成功通知
-      Get.success('connectSuccess');
+      Get.success(Tran.connectSuccess);
       // 检测完毕
       inRemoteDetect.value = false;
     } on Mistake catch (e) {
@@ -177,7 +178,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       // 检测完毕
       inRemoteDetect.value = false;
       // 失败通知
-      Get.error('connectFailed');
+      Get.error(Tran.connectFailed);
     }
   }
 

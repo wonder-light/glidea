@@ -1,4 +1,4 @@
-﻿import 'dart:math';
+﻿import 'dart:math' show Random, cos, pi, sin;
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Trans;

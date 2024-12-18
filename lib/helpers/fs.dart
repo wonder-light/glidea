@@ -1,6 +1,6 @@
 ﻿import 'dart:io' show Directory, File, FileSystemEntity;
 
-import 'package:archive/archive_io.dart' show Archive, ArchiveFile, InputFileStream, OutputFileStream, ZipDecoder, extractArchiveToDisk;
+import 'package:archive/archive_io.dart' show Archive, InputFileStream, OutputFileStream, ZipDecoder;
 import 'package:flutter/services.dart' show Uint8List, rootBundle;
 import 'package:glidea/helpers/crypto.dart';
 import 'package:path/path.dart' as p;
@@ -184,61 +184,4 @@ class FS {
 
 extension FileExt on File {
   Future<String> getHash() => Crypto.cryptoFile(this);
-/*
-  Future<String> getFileHashMd5() async {
-    final fileLength = lengthSync();
-    // 小文件直接获取
-    if (fileLength < fileSize10M) {
-      return md5.convert(readAsBytesSync()).toString();
-    }
-    // 大文件分块获取
-    final sFile = await open();
-    try {
-      // 输出块
-      final output = AccumulatorSink<Digest>();
-      final input = md5.startChunkedConversion(output);
-      int x = 0;
-      while (x < fileLength) {
-        final tmpLen = fileLength - x > fileSize10M ? fileSize10M : fileLength - x;
-        // 分块获取
-        input.add(sFile.readSync(tmpLen));
-        x += tmpLen;
-      }
-      input.close();
-
-      final hash = output.events.single;
-      return hash.toString();
-    } finally {
-      unawaited(sFile.close());
-    }
-  }
-
-  Future<String> getFileHashSh1() async {
-    final fileLength = lengthSync();
-    // 小文件直接获取
-    if (fileLength < fileSize10M) {
-      return sha1.convert(readAsBytesSync()).toString();
-    }
-    // 大文件分块获取
-    final sFile = await open();
-    try {
-      // 输出块
-      final output = AccumulatorSink<Digest>();
-      final input = sha1.startChunkedConversion(output);
-      int x = 0;
-      while (x < fileLength) {
-        final tmpLen = fileLength - x > fileSize10M ? fileSize10M : fileLength - x;
-        // 分块获取
-        input.add(sFile.readSync(tmpLen));
-        x += tmpLen;
-      }
-      input.close();
-
-      final hash = output.events.single;
-      return hash.toString();
-    } finally {
-      unawaited(sFile.close());
-    }
-  }
-*/
 }

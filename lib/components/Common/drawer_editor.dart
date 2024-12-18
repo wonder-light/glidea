@@ -3,6 +3,7 @@ import 'package:get/get.dart' show BoolExtension, Get, Inst, Obx, Trans;
 import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 /// 用时在抽屉中使用的编辑器框架
@@ -146,14 +147,14 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
             OutlinedButton(
               style: actionStyle,
               onPressed: onClose,
-              child: Text('cancel'.tr),
+              child: Text(Tran.cancel.tr),
             ),
           if (!widget.hideCancel) Container(padding: kRightPadding8),
           Obx(
             () => FilledButton(
               style: actionStyle,
               onPressed: canSave.value ? onSave : null,
-              child: Text('save'.tr),
+              child: Text(Tran.save.tr),
             ),
           ),
         ],

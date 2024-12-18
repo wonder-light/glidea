@@ -1,10 +1,10 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show FilteringTextInputFormatter;
-import 'package:get/get.dart' show Get, Inst;
+import 'package:get/get.dart' show Get;
 import 'package:glidea/components/Common/drawer_editor.dart';
-import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/tag.dart';
 
 /// 编辑标签的控件
@@ -15,7 +15,7 @@ class TagEditor extends DrawerEditor<Tag> {
     super.controller,
     super.onClose,
     super.onSave,
-    super.header = 'tag',
+    super.header = Tran.tag,
   });
 
   @override
@@ -43,7 +43,7 @@ class TagEditorState extends DrawerEditorState<TagEditor> {
   List<Widget> buildContent(BuildContext context) {
     // 名称控件
     final nameWidget = wrapperField(
-      name: 'tagName',
+      name: Tran.tagName,
       child: TextFormField(
         controller: nameController,
         decoration: const InputDecoration(
@@ -55,7 +55,7 @@ class TagEditorState extends DrawerEditorState<TagEditor> {
     );
     // 连接控件
     final linkWidget = wrapperField(
-      name: 'tagUrl',
+      name: Tran.tagUrl,
       child: TextFormField(
         controller: urlController,
         decoration: const InputDecoration(
@@ -93,7 +93,7 @@ class TagEditorState extends DrawerEditorState<TagEditor> {
         ..name = nameController.text
         ..slug = urlController.text;
       if (!site.checkTag(newTag, widget.entity)) {
-        Get.error('tagUrlRepeatTip');
+        Get.error(Tran.tagUrlRepeatTip);
         return;
       }
       widget.onSave?.call(newTag);

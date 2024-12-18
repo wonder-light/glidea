@@ -1,4 +1,4 @@
-﻿import 'dart:io' show Directory, File;
+﻿import 'dart:io' show Directory;
 import 'dart:ui' show Locale;
 
 import 'package:flutter/foundation.dart' show AsyncCallback;

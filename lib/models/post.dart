@@ -1,5 +1,4 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, JsonProperty;
-import 'package:glidea/controller/mixin/remote.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/uid.dart';

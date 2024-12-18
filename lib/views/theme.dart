@@ -6,6 +6,7 @@ import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/get.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/render.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -54,10 +55,11 @@ class _ThemeViewState extends State<ThemeView> {
     if (Get.isPhone) {
       // arguments 参数来自 [package:glidea/views/setting.dart] 中的 [_SettingViewState.toRouter]
       var arg = '${Get.arguments}';
-      if (arg == 'customConfig') {
+      if (arg == Tran.customConfig) {
+        site.isThemeCustomPage = true;
         childWidget = buildCustomConfig();
       } else {
-        arg = 'theme';
+        arg = Tran.theme;
         childWidget = buildThemeConfig();
       }
       return Scaffold(
@@ -68,7 +70,7 @@ class _ThemeViewState extends State<ThemeView> {
     // 主题和自定义主题的分组
     childWidget = GroupWidget(
       isTop: true,
-      groups: const {'basicSetting', 'customConfig'},
+      groups: const {Tran.basicSetting, Tran.customConfig},
       children: [
         buildThemeConfig(),
         buildCustomConfig(),
@@ -102,7 +104,7 @@ class _ThemeViewState extends State<ThemeView> {
         return Container(
           alignment: Alignment.center,
           padding: kAllPadding16,
-          child: Text('noCustomConfigTip'.tr),
+          child: Text(Tran.noCustomConfigTip.tr),
         );
       }
 
@@ -156,11 +158,11 @@ class _ThemeViewState extends State<ThemeView> {
         children: [
           OutlinedButton(
             onPressed: resetConfig,
-            child: Text('reset'.tr),
+            child: Text(Tran.reset.tr),
           ),
           FilledButton(
             onPressed: saveConfig,
-            child: Text('save'.tr),
+            child: Text(Tran.save.tr),
           ),
         ],
       ),
@@ -173,12 +175,12 @@ class _ThemeViewState extends State<ThemeView> {
       IconButton(
         onPressed: resetConfig,
         icon: const Icon(PhosphorIconsRegular.clockCounterClockwise),
-        tooltip: 'reset'.tr,
+        tooltip: Tran.reset.tr,
       ),
       IconButton(
         onPressed: saveConfig,
         icon: const Icon(PhosphorIconsRegular.boxArrowDown),
-        tooltip: 'save'.tr,
+        tooltip: Tran.save.tr,
       ),
     ];
   }
@@ -198,7 +200,7 @@ class _ThemeViewState extends State<ThemeView> {
       site.updateThemeConfig(themes: themeConfig.value, customs: themeCustomConfig.value);
       resetConfig();
     } catch (e) {
-      Get.error('saveError');
+      Get.error(Tran.saveError);
     }
   }
 }

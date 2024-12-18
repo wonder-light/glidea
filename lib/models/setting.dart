@@ -113,68 +113,6 @@ mixin class RemoteProxy {
 @jsonSerializable
 class RemoteSetting extends RemoteCoding with RemoteProxy, RemoteSftp, RemoteNetlify {}
 
-/*/// 远程设置
-@jsonSerializable
-class RemoteSetting {
-  /// 部署平台
-  @JsonProperty()
-  DeployPlatform platform = DeployPlatform.github;
-  /// 域名
-  @JsonProperty()
-  String domain = '';
-  /// 仓库
-  @JsonProperty()
-  String repository = '';
-  /// 分支
-  @JsonProperty()
-  String branch = '';
-  /// 用户名
-  @JsonProperty()
-  String username = '';
-  /// 邮箱
-  @JsonProperty()
-  String email = '';
-  /// token 用户名
-  @JsonProperty()
-  String tokenUsername = '';
-  /// token 值
-  @JsonProperty()
-  String token = '';
-  /// 域名解析 DNS 解析的 cname 值
-  @JsonProperty()
-  String cname = '';
-  /// 端口
-  @JsonProperty()
-  String port = '';
-  /// 服务
-  @JsonProperty()
-  String server = '';
-  /// 密码
-  @JsonProperty()
-  String password = '';
-  /// 私钥
-  @JsonProperty()
-  String privateKey = '';
-  /// 远程路径
-  @JsonProperty()
-  String remotePath = '';
-  /// 代理路径
-  @JsonProperty()
-  String proxyPath = '';
-  /// 代理端口
-  @JsonProperty()
-  String proxyPort = '';
-  /// 启用代理
-  @JsonProperty()
-  ProxyWay enabledProxy = ProxyWay.direct;
-  /// netflix访问令牌
-  @JsonProperty()
-  String netlifyAccessToken = '';
-  /// netflix访问密钥
-  @JsonProperty()
-  String netlifySiteId = '';
-}*/
-
 /// disqus 评论设置
 @jsonSerializable
 class DisqusSetting {

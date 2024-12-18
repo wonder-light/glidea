@@ -2,6 +2,7 @@
 import 'package:get/get.dart' show Get, StateController;
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
 
@@ -29,23 +30,23 @@ mixin MenuSite on StateController<Application>, DataProcess {
     }
     try {
       await saveSiteData();
-      Get.success('menuSuccess');
+      Get.success(Tran.menuSuccess);
     } catch (e) {
-      Get.error('saveError');
+      Get.error(Tran.saveError);
     }
   }
 
   /// 删除新标签
   void removeMenu(Menu menu) async {
     if (!state.menus.remove(menu)) {
-      Get.error('menuDeleteFailure');
+      Get.error(Tran.menuDeleteFailure);
       return;
     }
     try {
       await saveSiteData();
-      Get.success('menuDelete');
+      Get.success(Tran.menuDelete);
     } catch (e) {
-      Get.error('menuDeleteFailure');
+      Get.error(Tran.menuDeleteFailure);
     }
   }
 

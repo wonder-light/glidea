@@ -1,4 +1,4 @@
-﻿import 'dart:io';
+﻿import 'dart:io' show File, HttpClient;
 
 import 'package:dio/dio.dart' show Dio, Options, Response;
 import 'package:dio/io.dart' show IOHttpClientAdapter;

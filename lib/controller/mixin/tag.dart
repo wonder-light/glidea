@@ -2,6 +2,7 @@
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/uid.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/tag.dart';
 
@@ -48,7 +49,7 @@ mixin TagSite on StateController<Application>, DataProcess {
     } catch (e) {
       Log.w('update tag failed: $e');
     }
-    Get.success('tagSuccess');
+    Get.success(Tran.tagSuccess);
   }
 
   /// 删除新标签
@@ -57,7 +58,7 @@ mixin TagSite on StateController<Application>, DataProcess {
     if (tag.used) return;
     // 判断是否移除失败
     if (!state.tags.remove(tag)) {
-      Get.error('tagDeleteFailure');
+      Get.error(Tran.tagDeleteFailure);
       return;
     }
     // 移除映射中的标签
@@ -67,7 +68,7 @@ mixin TagSite on StateController<Application>, DataProcess {
     } catch (e) {
       Log.w('remove tag failed: $e');
     }
-    Get.success('tagDelete');
+    Get.success(Tran.tagDelete);
   }
 
   /// 检测 [Tag] 的命名是否添加或者更新

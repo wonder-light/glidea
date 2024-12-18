@@ -1,7 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/Common/dialog.dart';
-import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/menu/menu_editor.dart';
@@ -9,6 +8,7 @@ import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -30,7 +30,7 @@ class _MenuViewState extends State<MenuView> {
         IconButton(
           onPressed: addNewMenu,
           icon: const Icon(PhosphorIconsRegular.plus),
-          tooltip: 'newMenu'.tr,
+          tooltip: Tran.newMenu.tr,
         ),
       ],
       child: Obx(
@@ -105,7 +105,7 @@ class _MenuViewState extends State<MenuView> {
   void editorMenu(Menu menu) {
     final isPhone = Get.isPhone;
     Get.showDrawer(
-      direction: isPhone ? DrawerDirection.center : DrawerDirection. rightToLeft,
+      direction: isPhone ? DrawerDirection.center : DrawerDirection.rightToLeft,
       stepHeight: isPhone ? 20 : null,
       builder: (context) => MenuEditor(
         entity: menu,

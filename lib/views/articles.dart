@@ -9,6 +9,7 @@ import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
@@ -48,7 +49,7 @@ class _ArticlesViewState extends State<ArticlesView> {
               suffixIcon: const Icon(PhosphorIconsRegular.magnifyingGlass),
               // 覆盖 suffixIcon 的约束
               suffixIconConstraints: const BoxConstraints(minWidth: kMinInteractiveDimension),
-              labelText: 'searchArticle'.tr,
+              labelText: Tran.searchArticle.tr,
             ),
             onChanged: searchPost,
           ),
@@ -56,7 +57,7 @@ class _ArticlesViewState extends State<ArticlesView> {
         IconButton(
           onPressed: addNewPost,
           icon: const Icon(PhosphorIconsRegular.plus),
-          tooltip: 'newArticle'.tr,
+          tooltip: Tran.newArticle.tr,
         ),
       ],
       child: Obx(
@@ -87,7 +88,7 @@ class _ArticlesViewState extends State<ArticlesView> {
     // 子列表
     final lists = <TIconData>[
       // 发布
-      post.published ? (name: 'published', icon: PhosphorIconsRegular.check) : (name: 'draft', icon: PhosphorIconsRegular.x),
+      post.published ? (name: Tran.published, icon: PhosphorIconsRegular.check) : (name: Tran.draft, icon: PhosphorIconsRegular.x),
       // 日期
       (name: post.date.format(pattern: site.themeConfig.dateFormat), icon: PhosphorIconsRegular.calendarDots),
     ];

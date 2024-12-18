@@ -7,6 +7,7 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/markdown.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/models/render.dart';
 import 'package:markdown_widget/markdown_widget.dart' show MarkdownConfig, MarkdownGenerator, MarkdownWidget;
@@ -19,7 +20,7 @@ class PostEditor extends DrawerEditor<Post> {
     super.key,
     required super.entity,
     super.controller,
-    super.header = 'postSettings',
+    super.header = Tran.postSettings,
     super.showAction = false,
     this.preview = true,
     this.markdown,
@@ -57,11 +58,11 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
     final post = widget.entity;
     expansions.value.addAll([
       (expanded: true, build: _buildUrl, header: 'URL'),
-      (expanded: false, build: _buildDate, header: 'createAt'),
-      (expanded: false, build: _buildTags, header: 'tag'),
-      (expanded: false, build: _buildImage, header: 'featureImage'),
-      (expanded: false, build: _buildHide, header: 'hideInList'),
-      (expanded: false, build: _buildTop, header: 'topArticles'),
+      (expanded: false, build: _buildDate, header: Tran.createAt),
+      (expanded: false, build: _buildTags, header: Tran.tag),
+      (expanded: false, build: _buildImage, header: Tran.featureImage),
+      (expanded: false, build: _buildHide, header: Tran.hideInList),
+      (expanded: false, build: _buildTop, header: Tran.topArticles),
     ]);
     dateController = TextEditingController(text: post.date.format(pattern: site.themeConfig.dateFormat));
     isHide.value = post.hideInList;

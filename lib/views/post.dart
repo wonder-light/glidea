@@ -3,7 +3,6 @@ import 'package:file_picker/file_picker.dart' show FilePicker, FilePickerResult,
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show BoolExtension, ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxBool, Trans;
 import 'package:glidea/components/Common/dialog.dart';
-import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/Common/visibility.dart';
 import 'package:glidea/components/post/post_editor.dart';
@@ -14,6 +13,7 @@ import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/models/render.dart';
 import 'package:glidea/routes/router.dart';
@@ -162,11 +162,11 @@ class _PostViewState extends State<PostView> {
     // 工具栏按钮
     toolbars.addAll([
       //(name: '', call: showPostStats, icon: PhosphorIconsRegular.warningCircle),
-      (name: 'insertEmoji', call: showEmoji, icon: PhosphorIconsRegular.smiley),
-      (name: 'insertImage', call: insertImage, icon: PhosphorIconsRegular.image),
-      (name: 'insertMore', call: insertSeparator, icon: PhosphorIconsRegular.dotsThreeOutline),
-      (name: 'postSettings', call: openPostSetting, icon: PhosphorIconsRegular.gear),
-      (name: 'preview', call: previewPost, icon: PhosphorIconsRegular.eye),
+      (name: Tran.insertEmoji, call: showEmoji, icon: PhosphorIconsRegular.smiley),
+      (name: Tran.insertImage, call: insertImage, icon: PhosphorIconsRegular.image),
+      (name: Tran.insertMore, call: insertSeparator, icon: PhosphorIconsRegular.dotsThreeOutline),
+      (name: Tran.postSettings, call: openPostSetting, icon: PhosphorIconsRegular.gear),
+      (name: Tran.preview, call: previewPost, icon: PhosphorIconsRegular.eye),
     ]);
     // 上下文菜单
     contextMenus.addAll([]);
@@ -222,14 +222,14 @@ class _PostViewState extends State<PostView> {
           IconButton(
             onPressed: backToArticlePage,
             icon: const Icon(PhosphorIconsRegular.arrowLeft),
-            tooltip: 'back'.tr,
+            tooltip: Tran.back.tr,
           ),
           // 存草稿
           Obx(
             () => IconButton(
               onPressed: isDisable.value ? null : saveAsDraft,
               icon: const Icon(PhosphorIconsRegular.check),
-              tooltip: 'saveDraft'.tr,
+              tooltip: Tran.saveDraft.tr,
             ),
           ),
           // 保存发布
@@ -237,7 +237,7 @@ class _PostViewState extends State<PostView> {
             () => IconButton(
               onPressed: isDisable.value ? null : savePost,
               icon: Icon(PhosphorIconsRegular.check, color: isDisable.value ? null : colorScheme.primary),
-              tooltip: 'save'.tr,
+              tooltip: Tran.save.tr,
             ),
           )
         ],
@@ -266,7 +266,7 @@ class _PostViewState extends State<PostView> {
           fillColor: Colors.transparent,
           focusColor: Colors.transparent,
           border: InputBorder.none,
-          hintText: isRich ? 'startWriting'.tr : 'title'.tr,
+          hintText: isRich ? Tran.startWriting.tr : Tran.title.tr,
           hintStyle: style?.copyWith(color: theme.colorScheme.outlineVariant),
         ),
         onChanged: (str) {
@@ -410,7 +410,7 @@ class _PostViewState extends State<PostView> {
     Get.dialog(DialogWidget(
       content: Padding(
         padding: kAllPadding16,
-        child: Text('unsavedWarning'.tr),
+        child: Text(Tran.unsavedWarning.tr),
       ),
       onCancel: () {
         // 关闭弹窗
@@ -432,12 +432,12 @@ class _PostViewState extends State<PostView> {
   void savePost({bool published = true}) async {
     // 看 fileName 是否包含 '/'
     if (currentPost.fileName.contains('/')) {
-      Get.error('postUrlIncludeTip');
+      Get.error(Tran.postUrlIncludeTip);
       return;
     }
     // 检测 post 是否可以保存
     if (!site.checkPost(currentPost, postData)) {
-      Get.error('postUrlRepeatTip');
+      Get.error(Tran.postUrlRepeatTip);
       return;
     }
     currentPost.published = published;
@@ -454,9 +454,9 @@ class _PostViewState extends State<PostView> {
 
   /// 打开 post 设置
   void openPostSetting({bool preview = false}) {
-    var width = !preview ? null: MediaQuery.sizeOf(context).width / 1.5;
+    var width = !preview ? null : MediaQuery.sizeOf(context).width / 1.5;
     var stepWidth = 60.0;
-    if(Get.isPhone) {
+    if (Get.isPhone) {
       width = null;
       stepWidth = double.infinity;
     }
@@ -465,7 +465,7 @@ class _PostViewState extends State<PostView> {
       width: width,
       builder: (ctx) => PostEditor(
         preview: preview,
-        header: preview ? '' : 'postSettings',
+        header: preview ? '' : Tran.postSettings.tr,
         entity: currentPost,
         markdown: preview ? contentController.text : '',
         picture: picture,
@@ -482,13 +482,14 @@ class _PostViewState extends State<PostView> {
     // 位置
     var end = selection.end;
     // 文本为空
-    if(selection.start < 0 && selection.end < 0) {
+    if (selection.start < 0 && selection.end < 0) {
       end = 0;
     }
     // 插入摘要分隔符
     contentController.text = '${content.substring(0, end)}$separator${content.substring(end)}';
     // 复原位置
-    contentController.selection = TextSelection.collapsed(offset: end + separator.length);;
+    contentController.selection = TextSelection.collapsed(offset: end + separator.length);
+    ;
   }
 
   /// 插入图片

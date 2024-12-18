@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt;
 import 'package:glidea/enum/enums.dart';
-import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints;
 
 /// 这个类用于关闭抽屉
 class DraController extends ValueNotifier<bool> {
