@@ -48,7 +48,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       DeployPlatform.github ||
       DeployPlatform.gitee ||
       DeployPlatform.coding =>
-        remote.branch.isNotEmpty && remote.domain.isNotEmpty && remote.token.isNotEmpty && remote.repository.isNotEmpty,
+        remote.username.isNotEmpty && remote.branch.isNotEmpty && remote.domain.isNotEmpty && remote.token.isNotEmpty && remote.repository.isNotEmpty,
       // TODO: Handle this case.
       DeployPlatform.sftp => throw UnimplementedError(),
       DeployPlatform.netlify => remote.netlifySiteId.isNotEmpty && remote.netlifyAccessToken.isNotEmpty,
@@ -106,9 +106,9 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       await Deploy.create(state).publish();
       // 成功
       Get.success(Tran.syncSuccess);
-    } on Mistake catch (e) {
-      Log.i(e);
-      Get.error(e.hint);
+    } on Mistake catch (e, s) {
+      Log.i('$e\n$s');
+      Get.error(e.hint.isEmpty ? Tran.syncError1 : e.hint);
     } finally {
       inBeingSync.value = false;
     }
@@ -173,6 +173,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 远程检测
   Future<void> remoteDetect() async {
     try {
+      if(!checkPublish) return;
       // 设置正在检测中
       inRemoteDetect.value = true;
       state.themeConfig.domain = state.remote.domain;
