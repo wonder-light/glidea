@@ -14,7 +14,7 @@ class Crypto {
   static Future<String> cryptoStr(String src, {Hash hash = sha1}) async {
     var bytes = utf8.encode(src);
     int strLength = bytes.length;
-    bool useSegment = strLength < fileSize10M;
+    bool useSegment = strLength > fileSize10M;
     return _crypto(
       hash: hash,
       length: strLength,
@@ -22,7 +22,6 @@ class Crypto {
         if (!useSegment) bytes;
         return bytes.sublist(index, length);
       },
-      close: () async => bytes.clear(),
     );
   }
 
@@ -63,8 +62,8 @@ class Crypto {
     AsyncCallback? close,
   }) async {
     try {
-      if (length < segmentSize) {
-        return hash.convert(await getter(0, segmentSize)).toString();
+      if (length <= segmentSize) {
+        return hash.convert(await getter(0, length)).toString();
       }
       // 大文件分块获取
       // 输出块
