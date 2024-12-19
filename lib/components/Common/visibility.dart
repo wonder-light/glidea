@@ -35,7 +35,7 @@ class AnimatedVisibility extends StatefulWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(FlagProperty('visible', value: visible));
+    properties.add(FlagProperty('visible', value: visible, ifTrue: 'show widget', ifFalse: 'hide widget'));
   }
 }
 
