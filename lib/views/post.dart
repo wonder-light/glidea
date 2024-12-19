@@ -150,6 +150,9 @@ class _PostViewState extends State<PostView> {
   /// 上下文菜单内容
   final List<TActions> contextMenus = [];
 
+  /// 表情符号配置
+  late final Config emojiConfig = _getEmojiConfig();
+
   /// 图片配置
   final picture = PictureConfig();
 
@@ -310,31 +313,8 @@ class _PostViewState extends State<PostView> {
 
   /// 构建表情控件
   Widget _buildEmojiView() {
+    final colorScheme = Get.theme.colorScheme;
     Widget child = Obx(() {
-      final theme = Get.theme;
-      final colorScheme = theme.colorScheme;
-      const width = 320.0;
-      const height = 350.0;
-      const columns = 8;
-      const emojiSize = 24.0;
-      const tabBarHeight = 32.0;
-      final config = Config(
-        height: height,
-        emojiViewConfig: EmojiViewConfig(
-          columns: columns,
-          emojiSizeMax: emojiSize,
-          backgroundColor: theme.scaffoldBackgroundColor,
-        ),
-        categoryViewConfig: CategoryViewConfig(
-          tabBarHeight: tabBarHeight,
-          backgroundColor: theme.scaffoldBackgroundColor,
-          indicatorColor: colorScheme.primary,
-          iconColor: colorScheme.outlineVariant,
-          iconColorSelected: colorScheme.primary,
-          backspaceColor: colorScheme.primary,
-        ),
-        bottomActionBarConfig: const BottomActionBarConfig(enabled: false),
-      );
       // 动画
       return AnimatedVisibility(
         visible: isShowEmoji.value,
@@ -348,19 +328,12 @@ class _PostViewState extends State<PostView> {
                 blurRadius: 5,
               ),
             ],
-            border: Border.fromBorderSide(
-              BorderSide(
-                color: colorScheme.outlineVariant,
-                width: 0.5,
-              ),
-            ),
+            border: Border.fromBorderSide(BorderSide(color: colorScheme.outlineVariant, width: 0.5)),
           ),
-          constraints: const BoxConstraints.expand(width: width, height: height),
+          constraints: const BoxConstraints.expand(width: _emojiHeight - 30, height: _emojiHeight),
           child: EmojiPicker(
-            onEmojiSelected: (category, emojis) {
-              insertSeparator(separator: emojis.emoji);
-            },
-            config: config,
+            onEmojiSelected: (category, emojis) => insertSeparator(separator: emojis.emoji),
+            config: emojiConfig,
           ),
         ),
       );
@@ -541,5 +514,29 @@ class _PostViewState extends State<PostView> {
       return;
     }
     currentBool = null;
+  }
+
+  /// 获取标签符号的配置
+  Config _getEmojiConfig() {
+    // 表情符号配置
+    final theme = Get.theme;
+    final colorScheme = theme.colorScheme;
+    return Config(
+      height: _emojiHeight,
+      emojiViewConfig: EmojiViewConfig(
+        columns: 8,
+        emojiSizeMax: 24,
+        backgroundColor: theme.scaffoldBackgroundColor,
+      ),
+      categoryViewConfig: CategoryViewConfig(
+        tabBarHeight: 32,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        indicatorColor: colorScheme.primary,
+        iconColor: colorScheme.outlineVariant,
+        iconColorSelected: colorScheme.primary,
+        backspaceColor: colorScheme.primary,
+      ),
+      bottomActionBarConfig: const BottomActionBarConfig(enabled: false),
+    );
   }
 }
