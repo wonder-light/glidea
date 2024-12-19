@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' show BoolExtension, ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxBool, Trans;
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/page_action.dart';
+import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/Common/visibility.dart';
 import 'package:glidea/components/post/post_editor.dart';
 import 'package:glidea/controller/site.dart';
@@ -150,11 +151,17 @@ class _PostViewState extends State<PostView> {
   /// 上下文菜单内容
   final List<TActions> contextMenus = [];
 
+  /// head 上的操作按钮
+  final List<TCallData> actions = [];
+
   /// 表情符号配置
   late final Config emojiConfig = _getEmojiConfig();
 
   /// 图片配置
   final picture = PictureConfig();
+
+  /// 标签符号页面的高度
+  static const _emojiHeight = 350.0;
 
   @override
   void initState() {
@@ -173,6 +180,12 @@ class _PostViewState extends State<PostView> {
     ]);
     // 上下文菜单
     contextMenus.addAll([]);
+    //head 上的操作按钮
+    actions.addAll([
+      (call: backToArticlePage, dis: backToArticlePage, icon: PhosphorIconsRegular.arrowLeft, color: null, msg: Tran.back),
+      (call: saveAsDraft, dis: null, icon: PhosphorIconsRegular.check, color: null, msg: Tran.saveDraft),
+      (call: savePost, dis: null, icon: PhosphorIconsRegular.check, color: Get.theme.colorScheme.primary, msg: Tran.save),
+    ]);
   }
 
   @override
@@ -183,6 +196,7 @@ class _PostViewState extends State<PostView> {
     isShowEmoji.dispose();
     toolbars.clear();
     contextMenus.clear();
+    actions.clear();
     site.off(themeSaveEvent);
     super.dispose();
   }
@@ -222,27 +236,16 @@ class _PostViewState extends State<PostView> {
       child: PageAction(
         contentPadding: EdgeInsets.zero,
         actions: [
-          IconButton(
-            onPressed: backToArticlePage,
-            icon: const Icon(PhosphorIconsRegular.arrowLeft),
-            tooltip: Tran.back.tr,
-          ),
-          // 存草稿
-          Obx(
-            () => IconButton(
-              onPressed: isDisable.value ? null : saveAsDraft,
-              icon: const Icon(PhosphorIconsRegular.check),
-              tooltip: Tran.saveDraft.tr,
+          for (var item in actions)
+            TipWidget.down(
+              message: item.msg.tr,
+              child: Obx(
+                () => IconButton(
+                  onPressed: isDisable.value ? item.dis : item.call,
+                  icon: Icon(item.icon, color: isDisable.value ? null : item.color),
+                ),
+              ),
             ),
-          ),
-          // 保存发布
-          Obx(
-            () => IconButton(
-              onPressed: isDisable.value ? null : savePost,
-              icon: Icon(PhosphorIconsRegular.check, color: isDisable.value ? null : colorScheme.primary),
-              tooltip: Tran.save.tr,
-            ),
-          )
         ],
         child: childWidget,
       ),

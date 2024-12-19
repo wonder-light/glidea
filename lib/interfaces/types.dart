@@ -10,6 +10,8 @@ typedef TIconData = ({String name, IconData icon});
 
 typedef TLinkData = ({String name, String link});
 
+typedef TCallData = ({VoidCallback call, Color? color, VoidCallback? dis, IconData icon, String msg});
+
 typedef TJsonMap = Map<String, dynamic>;
 
 typedef TMap<T> = Map<String, T>;
