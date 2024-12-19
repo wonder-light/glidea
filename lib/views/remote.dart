@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, Trans, BoolExtension;
 import 'package:glidea/components/Common/animated.dart';
 import 'package:glidea/components/Common/dropdown.dart';
+import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/render/array.dart';
 import 'package:glidea/components/render/group.dart';
 import 'package:glidea/components/render/input.dart';
@@ -318,15 +319,19 @@ class _RemoteViewState extends State<RemoteView> {
   /// 手机端的 action 按钮
   List<Widget> getActionButton() {
     return [
-      IconButton(
-        onPressed: _resetConfig,
-        icon: const Icon(PhosphorIconsRegular.clockCounterClockwise),
-        tooltip: Tran.reset.tr,
+      TipWidget.down(
+        message: Tran.reset.tr,
+        child: IconButton(
+          onPressed: _resetConfig,
+          icon: const Icon(PhosphorIconsRegular.clockCounterClockwise),
+        ),
       ),
-      IconButton(
-        onPressed: _saveConfig,
-        icon: const Icon(PhosphorIconsRegular.boxArrowDown),
-        tooltip: Tran.save.tr,
+      TipWidget.down(
+        message: Tran.save.tr,
+        child: IconButton(
+          onPressed: _saveConfig,
+          icon: const Icon(PhosphorIconsRegular.boxArrowDown),
+        ),
       ),
     ];
   }

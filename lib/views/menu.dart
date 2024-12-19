@@ -3,6 +3,7 @@ import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst,
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/page_action.dart';
+import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/menu/menu_editor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
@@ -27,10 +28,12 @@ class _MenuViewState extends State<MenuView> {
   Widget build(BuildContext context) {
     return PageAction(
       actions: [
-        IconButton(
-          onPressed: addNewMenu,
-          icon: const Icon(PhosphorIconsRegular.plus),
-          tooltip: Tran.newMenu.tr,
+        TipWidget.down(
+          message: Tran.newMenu.tr,
+          child: IconButton(
+            onPressed: addNewMenu,
+            icon: const Icon(PhosphorIconsRegular.plus),
+          ),
         ),
       ],
       child: Obx(

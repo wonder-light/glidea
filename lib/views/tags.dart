@@ -2,6 +2,7 @@
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/page_action.dart';
+import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/tag/tag_editor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
@@ -29,10 +30,12 @@ class _TagsViewState extends State<TagsView> {
   Widget build(BuildContext context) {
     return PageAction(
       actions: [
-        IconButton(
-          onPressed: addNewTag,
-          icon: const Icon(PhosphorIconsRegular.plus),
-          tooltip: Tran.newTag.tr,
+        TipWidget.down(
+          message: Tran.newTag.tr,
+          child: IconButton(
+            onPressed: addNewTag,
+            icon: const Icon(PhosphorIconsRegular.plus),
+          ),
         ),
       ],
       child: Obx(

@@ -290,11 +290,12 @@ class _PostViewState extends State<PostView> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         for (var item in toolbars)
-          // TODO: 悬浮提示设置水平偏移
-          IconButton(
-            onPressed: item.call,
-            icon: Icon(item.icon, color: colorScheme.outlineVariant),
-            //tooltip: item.name.tr,
+          TipWidget.left(
+            message: item.name.tr,
+            child: IconButton(
+              onPressed: item.call,
+              icon: Icon(item.icon, color: colorScheme.outlineVariant),
+            ),
           ),
       ],
     );

@@ -3,6 +3,7 @@ import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst,
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/page_action.dart';
+import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
@@ -54,10 +55,12 @@ class _ArticlesViewState extends State<ArticlesView> {
             onChanged: searchPost,
           ),
         ),
-        IconButton(
-          onPressed: addNewPost,
-          icon: const Icon(PhosphorIconsRegular.plus),
-          tooltip: Tran.newArticle.tr,
+        TipWidget.down(
+          message: Tran.newArticle.tr,
+          child: IconButton(
+            onPressed: addNewPost,
+            icon: const Icon(PhosphorIconsRegular.plus),
+          ),
         ),
       ],
       child: Obx(

@@ -316,11 +316,13 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       if (fileServer == null) {
         // 启动服务
         var handler = createStaticHandler(state.buildDir, defaultDocument: 'index.html');
-        fileServer = await shelf_io.serve(handler, 'localhost', state.previewPort);
+        fileServer = await shelf_io.serve(handler, 'localhost', state.previewPort, shared: true);
       }
       // 打开网址
       await launchUrlString(state.themeConfig.domain);
     } catch (e) {
+      fileServer?.close(force: true);
+      fileServer = null;
       throw Mistake(message: 'enable static server failed: \n$e', hint: 'renderError');
     }
   }

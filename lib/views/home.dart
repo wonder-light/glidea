@@ -5,6 +5,7 @@ import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutl
 import 'package:glidea/components/Common/animated.dart';
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/loading.dart';
+import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/setting/setting_editor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
@@ -98,7 +99,7 @@ class _HomeViewState extends State<HomeView> with WindowListener {
   @override
   void onWindowClose() {
     print('onWindowClose');
-    if(!site.isDisposed) {
+    if (!site.isDisposed) {
       site.dispose();
     }
     super.onWindowClose();
@@ -219,12 +220,14 @@ class _HomeViewState extends State<HomeView> with WindowListener {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               for (var item in actions.skip(2))
-                IconButton(
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints.expand(width: kButtonHeight, height: kButtonHeight),
-                  onPressed: item.call,
-                  icon: Icon(item.icon),
-                  tooltip: item.name.tr,
+                TipWidget.up(
+                  message: item.name.tr,
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints.expand(width: kButtonHeight, height: kButtonHeight),
+                    onPressed: item.call,
+                    icon: Icon(item.icon),
+                  ),
                 ),
             ],
           ),

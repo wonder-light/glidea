@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show BoolExtension, Get, GetNavigationExt, Inst, Obx, Trans;
+import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/render/array.dart';
 import 'package:glidea/components/render/group.dart';
 import 'package:glidea/controller/site.dart';
@@ -172,15 +173,19 @@ class _ThemeViewState extends State<ThemeView> {
   /// 手机端的 action 按钮
   List<Widget> getActionButton() {
     return [
-      IconButton(
-        onPressed: resetConfig,
-        icon: const Icon(PhosphorIconsRegular.clockCounterClockwise),
-        tooltip: Tran.reset.tr,
+      TipWidget.down(
+        message: Tran.reset.tr,
+        child: IconButton(
+          onPressed: resetConfig,
+          icon: const Icon(PhosphorIconsRegular.clockCounterClockwise),
+        ),
       ),
-      IconButton(
-        onPressed: saveConfig,
-        icon: const Icon(PhosphorIconsRegular.boxArrowDown),
-        tooltip: Tran.save.tr,
+      TipWidget.down(
+        message: Tran.save.tr,
+        child: IconButton(
+          onPressed: saveConfig,
+          icon: const Icon(PhosphorIconsRegular.boxArrowDown),
+        ),
       ),
     ];
   }
