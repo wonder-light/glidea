@@ -1,4 +1,6 @@
-﻿import 'package:dart_json_mapper/dart_json_mapper.dart'
+﻿import 'dart:convert' show base64, utf8;
+
+import 'package:dart_json_mapper/dart_json_mapper.dart'
     show DeserializationContext, DeserializationOptions, EnumConverterShort, JsonMapper, JsonMapperAdapter, SerializationOptions, typeOf;
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/crypto.dart';
@@ -34,6 +36,9 @@ extension JsonStringExtend on String {
 
   /// 获取加密哈希值
   Future<String> getHash() => Crypto.cryptoStr(this);
+
+  /// 获取 base64 字符串
+  String getBase64() => base64.encode(utf8.encode(this));
 
   /// 分割字符串同时包含分隔符
   List<String> splitWithSep(Pattern pattern) => pattern.allMatchesWithSep(this);

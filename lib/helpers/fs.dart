@@ -1,4 +1,5 @@
-﻿import 'dart:io' show Directory, File, FileSystemEntity;
+﻿import 'dart:convert' show base64;
+import 'dart:io' show Directory, File, FileSystemEntity;
 
 import 'package:archive/archive_io.dart' show Archive, InputFileStream, OutputFileStream, ZipDecoder;
 import 'package:flutter/services.dart' show Uint8List, rootBundle;
@@ -32,6 +33,12 @@ class FS {
 
   /// 使用给定的Encoding以字符串的形式同步读取整个文件内容
   static String readStringSync(String path) => File(path).readAsStringSync();
+
+  /// 方法将整个文件内容作为 base64 字符串读取 - 异步
+  static Future<String> readAsBase64(String path) => File(path).readAsBase64();
+
+  /// 方法将整个文件内容作为 base64 字符串读取
+  static String readAsBase64Sync(String path) => File(path).readAsBase64Sync();
 
   /// 同步地将字符串写入文件 - 异步
   static Future<File> writeString(String path, String content) => File(path).writeAsString(content);
@@ -183,5 +190,16 @@ class FS {
 }
 
 extension FileExt on File {
+  /// 获取 hash 值
   Future<String> getHash() => Crypto.cryptoFile(this);
+
+  /// 方法将整个文件内容作为 base64 字符串读取
+  ///
+  /// 如果操作失败，抛出[FileSystemException]
+  Future<String> readAsBase64() async => base64.encode(await readAsBytes());
+
+  /// 方法将整个文件内容作为 base64 字符串读取
+  ///
+  /// 如果操作失败，抛出[FileSystemException]
+  String readAsBase64Sync() => base64.encode(readAsBytesSync());
 }
