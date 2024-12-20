@@ -82,6 +82,13 @@ enum DrawerDirection {
   Alignment get toAlign => Alignment(value.dx, value.dy);
 }
 
+/// action 类型
+enum ActionType {
+  create,
+  update,
+  delete,
+}
+
 extension EnumStringExt on String {
   T? toEnum<T extends Enum>(Iterable<T> values) {
     return values.firstWhereOrNull((t) => this == t.name);

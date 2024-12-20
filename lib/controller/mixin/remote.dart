@@ -58,7 +58,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 匹配 feature 本地图片路径的正则
   ///
   /// r'file.*/post-images/'
-  RegExp get featureReg => RegExp(r'file.*/post-images/');
+  RegExp get featureReg => RegExp(r'(file)?.*/post-images/');
 
   /// 渲染 post 的数据
   List<PostRender> _postsData = [];
