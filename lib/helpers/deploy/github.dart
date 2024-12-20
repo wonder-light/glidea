@@ -7,7 +7,7 @@ import 'package:glidea/models/application.dart';
 
 import 'deploy.dart';
 
-/// Github 部署, 包括 github、gitee、coding
+/// Github 部署, 包括 github、gitee、coding TODO: 测试令牌需要的权限
 ///
 /// 更多请查看详情 [github API git](https://docs.github.com/zh/rest/authentication/endpoints-available-for-fine-grained-personal-access-tokens?apiVersion=2022-11-28#git)
 class GithubDeploy extends GitDeploy {
@@ -52,13 +52,12 @@ class GithubDeploy extends GitDeploy {
       final options = Options(headers: headers);
       // 结果
       var result = await Deploy.dio.get('$api/branches/${remote.branch}', options: options);
-      if (result.statusCode != 200) {
-        result.checkStateCode(equal: 404, normal: false);
+      if (result.statusCode == 404) {
         // 状态码为400时可能是该分支为空, 需要在该分支创建内容
         final data = {"message": "create ${remote.branch} branches, and add readme.md", "branch": remote.branch, "content": ""};
         result = await Deploy.dio.put('$api/contents/${"README.md"}', options: options, data: data);
-        result.checkStateCode();
       }
+      result.checkStateCode();
       final data = result.data['commit'];
       // 获取信息
       _branchInfo = (
@@ -72,7 +71,8 @@ class GithubDeploy extends GitDeploy {
 
   @override
   Future<void> createCommits() async {
-    final fileSha = await _createBlobSha();
+    final changes = await _getLocalChangeBlob(_branchInfo.treeSha);
+    final fileSha = await _createBlobSha(changes);
     final newTreeSha = await _createTree(fileSha, _branchInfo.treeSha);
     final newCommitSha = await _generateCommit(_branchInfo.commitSha, newTreeSha);
     await _updateRef(newCommitSha);
@@ -113,25 +113,69 @@ class GithubDeploy extends GitDeploy {
     }
   }
 
+  /// 获取本地需要更新的文件, 已经远程需要输出的文件
+  ///
+  /// 返回值是一个键值对, key: 相对路径, value: true - 需要更新, false - 需要删除
+  Future<Map<String, bool>> _getLocalChangeBlob(String treeSha) async {
+    try {
+      // 选项
+      final options = Options(headers: headers);
+      // 获取 Get a tree
+      var result = await Deploy.dio.get('$api/git/trees/$treeSha?recursive=1', options: options);
+      result.checkStateCode();
+      final Map<String, bool> fileLists = {};
+      // 获取需要更新和输出的文件路径和 sha
+      for (var tree in (result.data['tree'] as List)) {
+        // 检查文件
+        if (tree['type'] != 'blob') continue;
+        final path = tree['path'];
+        final absolute = FS.join(buildDir, path);
+        // 不存在的要删除
+        if (!FS.fileExistsSync(absolute)) {
+          fileLists[path] = false;
+        } else if (tree['sha'] != await getFileBlobSha(absolute)) {
+          // 比较 sha, 不同则要更新
+          fileLists[path] = true;
+        }
+      }
+      // 添加远程中没有的本地的文件
+      final diff = FS.getFilesSync(buildDir).map((t) => FS.relative(t.path, buildDir)).toSet().difference(fileLists.keys.toSet());
+      fileLists.addAll({for (var item in diff) item: true});
+      // 返回
+      return fileLists;
+    } catch (e) {
+      throw Mistake.add(message: 'get local change blob failed: ', hint: Tran.connectFailed, error: e);
+    }
+  }
+
   /// 创建文件的 blob sha, 并返回一个 [文件路径 - blob sha] 的映射
+  ///
+  /// [fileLists] 使用 [_getLocalChangeBlob] 的返回结果
+  ///
+  /// 返回值是一个键值对, key: 相对路径, value: 文件的 sha 值, 为 null 时删除文件
   ///
   /// 出现错误时抛出 [Mistake] 异常类
   ///
   /// link: [create-a-blob](https://docs.github.com/zh/rest/git/blobs#create-a-blob)
-  Future<TMap<String>> _createBlobSha() async {
+  Future<TMap<String?>> _createBlobSha(Map<String, bool> fileLists) async {
     try {
       final options = Options(headers: headers);
-      final TMap<String> fileList = {};
-      for (var file in FS.getFilesSync(buildDir)) {
-        // "index.html": "907d14fb3af2b0d4f18c2d46abe8aedce17367bd"
-        var path = FS.relative(file.path, buildDir);
+      // 文件相对路径 - 文件 blob sha
+      final TMap<String?> fileShaLists = {};
+      for (var MapEntry(:key, :value) in fileLists.entries) {
+        // false: 需要删除, 将 sha 设置为 null 即可
+        if (!value) {
+          fileShaLists[key] = null;
+          continue;
+        }
+        // ture: 需要添加
         // 创建 blob, 图片只能转 base64 格式的字符串
-        final data = {'content': await file.readAsBase64(), 'encoding': 'base64'};
+        final data = {'content': await FS.readAsBase64(FS.join(buildDir, key)), 'encoding': 'base64'};
         // 获取文件的 blob sha
         final result = await Deploy.dio.post('$api/git/blobs', options: options, data: data);
-        fileList[path] = result.data['sha'];
+        fileShaLists[key] = result.data['sha'];
       }
-      return fileList;
+      return fileShaLists;
     } catch (e) {
       throw Mistake.add(message: 'github create blob sha failed: ', hint: Tran.connectFailed, error: e);
     }
@@ -144,7 +188,7 @@ class GithubDeploy extends GitDeploy {
   /// 出现错误时抛出 [Mistake] 异常类
   ///
   /// link: [create-a-tree](https://docs.github.com/zh/rest/git/trees?apiVersion=2022-11-28#create-a-tree)
-  Future<String> _createTree(TMap<String> fileList, String treeSha) async {
+  Future<String> _createTree(TMap<String?> fileList, String treeSha) async {
     try {
       // 选项
       final options = Options(headers: headers);
@@ -162,7 +206,7 @@ class GithubDeploy extends GitDeploy {
         ]
       };
       // 生成 tree
-      final result = await Deploy.dio.post('$api/git/trees', options: options, data: data);
+      var result = await Deploy.dio.post('$api/git/trees', options: options, data: data);
       // 创建出现异常
       result.checkStateCode();
       return result.data['sha'] as String;
