@@ -1,5 +1,6 @@
 ﻿import 'package:collection/collection.dart' show IterableExtension;
 import 'package:dio/dio.dart' show Options;
+import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
@@ -25,10 +26,6 @@ class GiteeDeploy extends GitDeploy {
 
   // 分支的 commit sha
   late final String commitSha;
-
-  static const String _create = 'create';
-  static const String _update = 'update';
-  static const String _delete = 'delete';
 
   @override
   Future<void> remoteDetect() async {
@@ -131,13 +128,11 @@ class GiteeDeploy extends GitDeploy {
     }
   }
 
-  /// 获取分支目录 Tree
+  /// 获取分支目录 Tree, 并与本地文件进行比较, 获取需要更新或删除的文件和操作
   ///
-  /// 返回结果为 文件相对路径 - 文件操作类型
-  Future<Map<String, String>> _getBranchTree(String treeSha) async {
+  /// 返回值是一个键值对, key: 相对路径, value: create - 创建, update - 更新, delete - 删除
+  Future<Map<String, ActionType>> _getBranchTree(String treeSha) async {
     try {
-      // 例如: { 'README.md': 'update' }
-      final Map<String, String> fileMaps = {};
       // 查询参数
       var params = {
         'access_token': token,
@@ -147,38 +142,37 @@ class GiteeDeploy extends GitDeploy {
       // 获取目录 tree
       var result = await Deploy.dio.get('$api/git/trees/$treeSha', queryParameters: params);
       result.checkStateCode();
-      // 获取所有文件包括目录, blob 是文件, tree 是目录
-      var lists = result.data['tree'] as List;
-      // 循环检测哪些需要删除, 哪些需要更新, 哪些需要添加
-      for (var item in lists) {
-        // 相对目录
-        final path = item['path'];
-        final absolute = FS.join(buildDir, item['path']);
-        // 是文件
-        if (FS.fileExistsSync(absolute)) {
-          fileMaps[path] = _update; //(action: _update, sha: item['sha']);
-        } else if (!FS.dirExistsSync(absolute)) {
-          // 将目录排除在 fileMaps 外
-          // 文件和目录都不存在, 则删除
-          fileMaps[path] = _delete; //(action: _delete, sha: item['sha']);
+      // 例如: { 'README.md': 'update' }
+      final Map<String, ActionType> fileLists = {};
+      // 记录的路径
+      final Set<String> filePaths = {};
+      // 获取需要更新和输出的文件路径和 sha
+      for (var tree in (result.data['tree'] as List)) {
+        // 检查文件
+        if (tree['type'] != 'blob') continue;
+        final path = tree['path'];
+        final absolute = FS.join(buildDir, path);
+        filePaths.add(path);
+        // 不存在的要删除
+        if (!FS.fileExistsSync(absolute)) {
+          fileLists[path] = ActionType.delete;
+        } else if (tree['sha'] != await getFileBlobSha(absolute)) {
+          // 比较 sha, 不同则要更新
+          fileLists[path] = ActionType.update;
         }
       }
-      // 获取本地中需要添加的文件 - 相对于 [buildDir] 的相对目录
-      var filePaths = FS.getFilesSync(buildDir).map((t) => FS.relative(t.path, buildDir)).toSet();
-      // 获取未添加的文件路径
-      filePaths = filePaths.difference(fileMaps.keys.toSet());
-      fileMaps.addAll({
-        for (var item in filePaths) item: _create, //(action: _create, sha: null)
-      });
+      // 添加远程中没有的本地的文件
+      final diff = FS.getFilesSync(buildDir).map((t) => FS.relative(t.path, buildDir)).toSet().difference(filePaths);
+      fileLists.addAll({for (var item in diff) item: ActionType.create});
       // 返回
-      return fileMaps;
+      return fileLists;
     } catch (e) {
       throw Mistake.add(message: 'get gitee branch tree failed: ', hint: Tran.connectFailed, error: e);
     }
   }
 
   /// 提交多个文件变更
-  Future<void> _commitMultipleFile(Map<String, String> updateFiles) async {
+  Future<void> _commitMultipleFile(Map<String, ActionType> updateFiles) async {
     try {
       final options = Options(headers: headers, contentType: 'application/json');
       // delete => action, path
@@ -192,9 +186,9 @@ class GiteeDeploy extends GitDeploy {
           for (var MapEntry(:key, :value) in updateFiles.entries)
             {
               'path': key,
-              'action': value,
-              if (value != _delete) 'encoding': 'base64',
-              if (value != _delete) 'content': await FS.readAsBase64(FS.join(buildDir, key)),
+              'action': value.name,
+              if (value != ActionType.delete) 'encoding': 'base64',
+              if (value != ActionType.delete) 'content': await FS.readAsBase64(FS.join(buildDir, key)),
             },
         ],
       };

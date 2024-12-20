@@ -123,13 +123,17 @@ class GithubDeploy extends GitDeploy {
       // 获取 Get a tree
       var result = await Deploy.dio.get('$api/git/trees/$treeSha?recursive=1', options: options);
       result.checkStateCode();
+      // 例如: { 'README.md': true }
       final Map<String, bool> fileLists = {};
+      // 记录的路径
+      final Set<String> filePaths = {};
       // 获取需要更新和输出的文件路径和 sha
       for (var tree in (result.data['tree'] as List)) {
         // 检查文件
         if (tree['type'] != 'blob') continue;
         final path = tree['path'];
         final absolute = FS.join(buildDir, path);
+        filePaths.add(path);
         // 不存在的要删除
         if (!FS.fileExistsSync(absolute)) {
           fileLists[path] = false;
@@ -139,7 +143,7 @@ class GithubDeploy extends GitDeploy {
         }
       }
       // 添加远程中没有的本地的文件
-      final diff = FS.getFilesSync(buildDir).map((t) => FS.relative(t.path, buildDir)).toSet().difference(fileLists.keys.toSet());
+      final diff = FS.getFilesSync(buildDir).map((t) => FS.relative(t.path, buildDir)).toSet().difference(filePaths);
       fileLists.addAll({for (var item in diff) item: true});
       // 返回
       return fileLists;
