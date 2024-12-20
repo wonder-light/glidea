@@ -483,11 +483,11 @@ class _RemoteViewState extends State<RemoteView> {
 
   /// 字段变化时调用
   void _fieldChange(dynamic str, {String? field}) {
+    checkPublish.value = site.checkPublish;
     switch (field) {
       case _remotePlatform:
         platform.value = DeployPlatform.values.firstWhereOrNull((t) => t.name == str) ?? DeployPlatform.github;
         site.remote.platform = platform.value;
-        checkPublish.value = site.checkPublish;
         break;
       case _commentPlatform:
         commentPlatform.value = CommentPlatform.values.firstWhereOrNull((t) => t.name == str) ?? CommentPlatform.gitalk;

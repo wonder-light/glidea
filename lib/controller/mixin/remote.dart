@@ -6,7 +6,7 @@ import 'package:glidea/controller/mixin/data.dart';
 import 'package:glidea/controller/mixin/theme.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/date.dart';
-import 'package:glidea/helpers/deploy.dart';
+import 'package:glidea/helpers/deploy/deploy.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
