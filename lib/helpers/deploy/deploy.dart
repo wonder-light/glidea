@@ -1,10 +1,13 @@
-﻿import 'dart:io' show HttpClient;
+﻿import 'dart:convert' show ascii, utf8;
+import 'dart:io' show HttpClient;
 
 import 'package:dio/dio.dart' show BaseOptions, Dio, InterceptorsWrapper, Response;
 import 'package:dio/io.dart' show IOHttpClientAdapter;
 import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/crypto.dart';
 import 'package:glidea/helpers/deploy/gitee.dart';
 import 'package:glidea/helpers/error.dart';
+import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/setting.dart';
 
@@ -107,7 +110,7 @@ abstract class Deploy {
 
 /// git 部署
 abstract class GitDeploy extends Deploy {
-  GitDeploy(Application site, {String? api, String? token}) : super(site, api: api, token: token);
+  GitDeploy(super.site, {super.api = null, super.token = null});
 
   @override
   Future<void> publish() async {
@@ -136,6 +139,13 @@ abstract class GitDeploy extends Deploy {
   ///
   /// 出现错误时抛出 [Mistake] 异常类
   Future<void> updatePages();
+
+  /// 返回路径为 [path] 的文件的 blob sha 值
+  Future<String> getFileBlobSha(String path) async {
+    final bytes = await FS.readAsBytes(path);
+    final head = utf8.encode('blob ${bytes.length}${ascii.decode([0])}');
+    return await Crypto.cryptoBytes(head + bytes);
+  }
 }
 
 extension ResponseExt<T> on Response<T> {

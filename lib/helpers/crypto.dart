@@ -25,6 +25,20 @@ class Crypto {
     );
   }
 
+  /// 编码字节
+  static Future<String> cryptoBytes(List<int> bytes, {Hash hash = sha1}) async {
+    int length = bytes.length;
+    bool useSegment = length > fileSize10M;
+    return _crypto(
+      hash: hash,
+      length: length,
+      getter: (index, length) async {
+        if (!useSegment) return bytes;
+        return bytes.sublist(index, length);
+      },
+    );
+  }
+
   /// 编码文件
   static Future<String> cryptoFile(File file, {Hash hash = sha1}) async {
     RandomAccessFile? xFile;
@@ -58,7 +72,7 @@ class Crypto {
     required Hash hash,
     required int length,
     int segmentSize = fileSize10M,
-    required AsyncGetterValue<Uint8List> getter,
+    required AsyncGetterValue<List<int>> getter,
     AsyncCallback? close,
   }) async {
     try {
