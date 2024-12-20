@@ -28,6 +28,12 @@ class FS {
   /// 如果目录不存在，则同步创建该目录
   static void createDirSync(String path) => Directory(path).createSync(recursive: true);
 
+  /// 以字节列表的形式读取整个文件内容。 - 异步
+  static Future<Uint8List> readAsBytes(String path) => File(path).readAsBytes();
+
+  /// 以字节列表的形式读取整个文件内容。
+  static Uint8List readAsBytesSync(String path) => File(path).readAsBytesSync();
+
   /// 使用给定的Encoding以字符串的形式同步读取整个文件内容 - 异步
   static Future<String> readString(String path) => File(path).readAsString();
 
@@ -107,11 +113,12 @@ class FS {
   ///     join('path', '/to', 'foo'); // -> 'path/to/foo'
   ///     join('path', '/to', '/foo'); // -> 'path/to/foo'
   static String join(String part1, [String? part2, String? part3, String? part4, String? part5]) {
+    Uri;
     return FS.normalize(p.join(part1, _remove(part2), _remove(part3), _remove(part4), _remove(part5)));
   }
 
   /// 路径序列化
-  static String normalize(String path) => p.normalize(path).replaceAll('\\', '/');
+  static String normalize(String path) => Uri.parse(path).normalizePath().toString();
 
   /// 获取 [path] 相对于 [from] 的相对路径
   ///
