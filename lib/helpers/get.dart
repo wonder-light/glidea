@@ -1,4 +1,5 @@
 ﻿import 'dart:io' show Platform;
+import 'dart:ui' show clampDouble;
 
 import 'package:elegant_notification/elegant_notification.dart' show ElegantNotification;
 import 'package:elegant_notification/resources/arrays.dart' show AnimationType, NotificationType;
@@ -86,15 +87,15 @@ extension GetExt on GetInterface {
   /// 提示
   void _snackbar({
     required String message,
-    double? width = 240,
-    double? height = 60,
+    double? width,
+    double? height,
     String? title,
     IconData? icon,
     Color? iconColor,
   }) {
     ElegantNotification(
-      width: width,
-      height: height,
+      width: width ?? clampDouble(width ?? (this.width * 0.4), 240, 350),
+      height: height ?? clampDouble(height ?? (this.height * 0.12), 60, 80),
       icon: Icon(icon, color: iconColor),
       iconSize: 18,
       progressIndicatorColor: iconColor ?? theme.colorScheme.primary,
