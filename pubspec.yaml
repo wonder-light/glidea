@@ -73,6 +73,7 @@ dependencies:
   elegant_notification: ^2.4.0
   window_manager: ^0.4.3
   archive: ^4.0.1
+  dartssh2: ^2.11.0
 
 dev_dependencies:
   flutter_test:
