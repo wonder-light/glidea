@@ -72,7 +72,7 @@ mixin class RemoteSftp {
   @JsonProperty()
   String port = '';
 
-  /// 服务
+  /// 主机服务 host
   @JsonProperty()
   String server = '';
 
@@ -83,10 +83,6 @@ mixin class RemoteSftp {
   /// 密码
   @JsonProperty()
   String password = '';
-
-  /// 私钥
-  @JsonProperty()
-  String privateKey = '';
 
   /// 远程路径
   @JsonProperty()

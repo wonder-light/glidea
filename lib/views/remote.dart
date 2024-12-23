@@ -31,7 +31,6 @@ class _RemoteViewState extends State<RemoteView> {
   static const _remotePlatform = 'platform';
   static const _commentPlatform = 'commentPlatform';
   static const _enabledProxy = 'enabledProxy';
-  static const _connectType = 'connectType';
   static const _password = 'password';
   static const _privateKey = 'privateKey';
   static const _remotePath = 'remotePath';
@@ -59,11 +58,6 @@ class _RemoteViewState extends State<RemoteView> {
 
   /// 代理方式
   final proxyWay = ProxyWay.direct.obs;
-
-  /// SFTP 的链接方式
-  ///
-  /// password, key
-  final sftpIsKey = false.obs;
 
   /// 检测是否可以进行发布
   ///
@@ -130,7 +124,6 @@ class _RemoteViewState extends State<RemoteView> {
   void dispose() {
     platform.dispose();
     proxyWay.dispose();
-    sftpIsKey.dispose();
     fieldConfigs.dispose();
     checkPublish.dispose();
     commentPlatform.dispose();
@@ -208,9 +201,6 @@ class _RemoteViewState extends State<RemoteView> {
           // 代理, 全部加进去
           names.addAll(nameLists[RemoteProxy]!);
         }
-      } else {
-        // SFTP
-        names.remove(sftpIsKey.value ? _password : _privateKey);
       }
 
       final configs = fieldConfigs.value[RemoteSetting] ?? {};
@@ -382,9 +372,6 @@ class _RemoteViewState extends State<RemoteView> {
       _enabledProxy: [
         for (var item in ProxyWay.values) SelectOption().setValues(label: item.name.tr, value: item.name),
       ],
-      _connectType: [
-        for (var item in nameLists[_connectType]!) SelectOption().setValues(label: item.tr, value: item),
-      ],
       _commentPlatform: [
         for (var item in CommentPlatform.values) SelectOption().setValues(label: item.name.tr, value: item.name),
       ],
@@ -403,7 +390,6 @@ class _RemoteViewState extends State<RemoteView> {
     maps.addAll({
       _remotePlatform: FieldType.select,
       _enabledProxy: FieldType.radio,
-      _connectType: FieldType.radio,
     });
     return maps;
   }
@@ -416,11 +402,6 @@ class _RemoteViewState extends State<RemoteView> {
     // DeployPlatform.github
     final githubNames = List.of(codingNames);
     githubNames.remove(_tokenUsername);
-    // DeployPlatform.sftp
-    final sftpNames = getKeys<RemoteSftp>();
-    final index = sftpNames.indexOf(_password);
-    // 插入
-    sftpNames.insert(index, _connectType);
     return {
       RemoteBase: getKeys<RemoteBase>(),
       RemoteProxy: getKeys<RemoteProxy>(),
@@ -428,8 +409,7 @@ class _RemoteViewState extends State<RemoteView> {
       DeployPlatform.gitee: githubNames,
       DeployPlatform.coding: codingNames,
       DeployPlatform.netlify: getKeys<RemoteNetlify>(),
-      DeployPlatform.sftp: sftpNames,
-      _connectType: [_password, _privateKey],
+      DeployPlatform.sftp: getKeys<RemoteSftp>(),
     };
   }
 
@@ -443,8 +423,6 @@ class _RemoteViewState extends State<RemoteView> {
         if (key == RemoteSetting) {
           // 远程
           values = site.remote.toMap();
-          final strList = nameLists[_connectType]!;
-          values?.addAll({_connectType: sftpIsKey.value ? strList.last : strList.first});
         } else if (key == CommentSetting) {
           // 基础评论
           values = site.comment.toMap();
@@ -497,9 +475,6 @@ class _RemoteViewState extends State<RemoteView> {
         proxyWay.value = ProxyWay.values.firstWhereOrNull((t) => t.name == str) ?? ProxyWay.direct;
         site.remote.enabledProxy = proxyWay.value;
         break;
-      case _connectType:
-        sftpIsKey.value = nameLists[_connectType]!.last == str;
-        break;
     }
   }
 
@@ -510,7 +485,6 @@ class _RemoteViewState extends State<RemoteView> {
     commentPlatform.value = site.comment.commentPlatform;
     checkPublish.value = site.checkPublish;
     proxyWay.value = remote.enabledProxy;
-    sftpIsKey.value = remote.privateKey.isNotEmpty;
     // 配置
     fieldConfigs.value = _getFieldConfig();
   }
