@@ -59,7 +59,10 @@ class GroupWidget extends StatelessWidget {
           tabs: _buildTabs(),
         ),
         content: Expanded(
-          child: TabBarView(children: children),
+          child: TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
+            children: children,
+          ),
         ),
       ),
     );
