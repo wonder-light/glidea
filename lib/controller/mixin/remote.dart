@@ -43,14 +43,12 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   ///
   /// [true] - 可以进行发布
   bool get checkPublish {
-    final remote = state.remote;
     return switch (remote.platform) {
-      DeployPlatform.github ||
-      DeployPlatform.gitee ||
-      DeployPlatform.coding =>
-        remote.username.isNotEmpty && remote.branch.isNotEmpty && remote.domain.isNotEmpty && remote.token.isNotEmpty && remote.repository.isNotEmpty,
-      DeployPlatform.sftp => remote.port.isNotEmpty && remote.server.isNotEmpty && remote.username.isNotEmpty && remote.password.isNotEmpty,
-      DeployPlatform.netlify => remote.netlifySiteId.isNotEmpty && remote.netlifyAccessToken.isNotEmpty,
+      DeployPlatform.github => _isCheckGitPublish(remote),
+      DeployPlatform.gitee => _isCheckGitPublish(remote),
+      DeployPlatform.coding => _isCheckGitPublish(remote),
+      DeployPlatform.sftp => _isCheckSftpPublish(),
+      DeployPlatform.netlify => _isCheckNetlifyPublish(),
     };
   }
 
@@ -427,5 +425,22 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     }
 
     return FS.join(themeConfig.domain, 'post-images', feature.replaceAll(featureReg, ''));
+  }
+
+  /// 检测 github, gitee, coding
+  bool _isCheckGitPublish(RemoteGithub github) {
+    return github.username.isNotEmpty && github.branch.isNotEmpty && remote.domain.isNotEmpty && github.token.isNotEmpty && github.repository.isNotEmpty;
+  }
+
+  /// 检测 sftp
+  bool _isCheckSftpPublish() {
+    final sftp = remote;
+    return sftp.port.isNotEmpty && sftp.server.isNotEmpty && sftp.username.isNotEmpty && sftp.password.isNotEmpty;
+  }
+
+  /// 检测 netlify
+  bool _isCheckNetlifyPublish() {
+    final netlify = remote;
+    return netlify.netlifySiteId.isNotEmpty && netlify.netlifyAccessToken.isNotEmpty;
   }
 }

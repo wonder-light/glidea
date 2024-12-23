@@ -3,7 +3,7 @@ import 'package:glidea/enum/enums.dart';
 
 /// 基础远程设置
 @jsonSerializable
-class RemoteBase {
+mixin class RemoteBase {
   /// 部署平台
   @JsonProperty()
   DeployPlatform platform = DeployPlatform.github;
@@ -13,9 +13,25 @@ class RemoteBase {
   String domain = '';
 }
 
+/// proxy 的远程设置
+@jsonSerializable
+mixin class RemoteProxy {
+  /// 启用代理
+  @JsonProperty()
+  ProxyWay enabledProxy = ProxyWay.direct;
+
+  /// 代理路径
+  @JsonProperty()
+  String proxyPath = '';
+
+  /// 代理端口
+  @JsonProperty()
+  String proxyPort = '';
+}
+
 /// github 的远程设置
 @jsonSerializable
-class RemoteGithub extends RemoteBase {
+class RemoteGithub {
   /// 仓库
   @JsonProperty()
   String repository = '';
@@ -89,25 +105,9 @@ mixin class RemoteSftp {
   String remotePath = '';
 }
 
-/// proxy 的远程设置
-@jsonSerializable
-mixin class RemoteProxy {
-  /// 启用代理
-  @JsonProperty()
-  ProxyWay enabledProxy = ProxyWay.direct;
-
-  /// 代理路径
-  @JsonProperty()
-  String proxyPath = '';
-
-  /// 代理端口
-  @JsonProperty()
-  String proxyPort = '';
-}
-
 /// 远程设置
 @jsonSerializable
-class RemoteSetting extends RemoteCoding with RemoteProxy, RemoteSftp, RemoteNetlify {}
+class RemoteSetting extends RemoteCoding with RemoteBase, RemoteProxy, RemoteNetlify, RemoteSftp {}
 
 /// disqus 评论设置
 @jsonSerializable

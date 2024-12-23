@@ -247,8 +247,13 @@ mixin DataProcess on StateController<Application> {
       // 判断是否存在
       if (FS.fileExistsSync(path)) {
         try {
+          final config = FS.readStringSync(path).deserialize<TJsonMap>()!;
+          // 更改 setting.json 中 config 的名称
+          if (path.contains('setting.json')) {
+            config['setting'] = config['config'];
+          }
           // 合并配置
-          data = data.mergeMaps(FS.readStringSync(path).deserialize<TJsonMap>()!);
+          data = data.mergeMaps(config);
         } catch (e) {
           Log.w('read gridea data failed: $e');
         }
@@ -272,7 +277,11 @@ mixin DataProcess on StateController<Application> {
       data['remote'] = data.remove('setting');
     }
     if (data.containsKey('config')) {
-      data['themeConfig'] = data.remove('config');
+      final config = data.remove('config');
+      config['tagUrlFormat'] = (config['tagUrlFormat'] as String).camelCase;
+      config['postUrlFormat'] = (config['postUrlFormat'] as String).camelCase;
+      // 将字符串格式化
+      data['themeConfig'] = config;
     }
     if (data.containsKey('customConfig')) {
       data['themeCustomConfig'] = data.remove('customConfig');
@@ -298,11 +307,6 @@ mixin DataProcess on StateController<Application> {
           post['tags'] = tags.map((tagName) => tagsMap[tagName]).toList();
         }
       }
-    }
-    // 将字符串格式化
-    if (data.containsKey('themeConfig')) {
-      data['tagUrlFormat'] = (data['tagUrlFormat'] as String).camelCase;
-      data['postUrlFormat'] = (data['postUrlFormat'] as String).camelCase;
     }
     // 将字符串格式化
     if (data['menus'] case List<Map> menus when menus.isNotEmpty) {
