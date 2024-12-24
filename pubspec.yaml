@@ -186,7 +186,7 @@ targets:
           - no/files
 
 # 生成文档
-# dart doc
+# dart doc --output=docs/api
 #
 # 查看文档
 # dart pub global activate dhttpd
