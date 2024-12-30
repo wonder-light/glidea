@@ -9,6 +9,6 @@
 >  可以方便的进行写作并将其部署到服务器上
 
 [GitHub](https://github.com/wonder-light/glidea)
-[开 始](docs/readme.md)
+[开 始](docs/)
 
 ![coverpage](../assets/images/R-C.jpg)
