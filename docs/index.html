@@ -8,47 +8,24 @@
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" />
   <link rel="stylesheet" href="./assets/css/main.css">
 </head>
 
 <body>
   <div id="app"></div>
-  <script>
-    window.$docsify = {
-      name: '',
-      repo: '',
-      // 禁用相对路径
-      relativePath: false,
-      basePath: "/",
-      homepage: "readme.md",
-      loadNavbar: true,
-      // 小屏设备下合并导航栏到侧边栏
-      mergeNavbar: true,
-      loadSidebar: true,
-      hideSidebar: true,
-      autoHeader: true,
-      // 执行文档里的 script 标签里的脚本
-      executeScript: true,
-      coverpage: ['/', '/en-us/'],
-      // 路由模式
-      routerMode: 'history',
-      formatUpdated: '{YYYY}/{MM}/{DD} {HH}:{mm}:{ss}',
-      // vue 全局选项
-      vueGlobalOptions: {
-        data() {
-          return {
-            count: 0,
-          };
-        },
-      },
-    }
-  </script>
+  <!-- docsify 配置 -->
+  <script src="./assets/js/main.js"></script>
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <!-- 表情 -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
   <!-- 如果文档里的 script 是内联脚本，可以直接执行；而如果是外链脚本（即 js 文件内容由 src 属性引入），则需要使用此插件 -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/external-script.min.js"></script>
+  <!-- 代码复制 -->
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+  <!-- 侧边栏折叠 -->
+  <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
   <!-- docsify 的分页导航插件 -->
   <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
   <!-- docsify内置的代码高亮 -->

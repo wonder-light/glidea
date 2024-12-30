@@ -58,3 +58,18 @@
   color: inherit;
   opacity: 0.8;
 }
+
+/* 没有元素时隐藏侧边栏 */
+.b-main-hide button.sidebar-toggle{
+  display: none !important;
+}
+
+.b-main-hide aside.sidebar {
+  display: none !important;
+  transform: none !important;
+}
+
+.b-main-hide section.content {
+  transform: none !important;
+  left: 0 !important;
+}
