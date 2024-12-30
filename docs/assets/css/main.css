@@ -1,0 +1,60 @@
+.p-big {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.img-normal {
+  width: 240px;
+  height: auto;
+  object-fit: cover;
+}
+
+.img-normal svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.img-theme {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: all 0.3s;
+  transform: scale(1);
+}
+
+.img-theme:hover {
+  transform: scale(1.1);
+  box-shadow: -5px 5px 5px #cecece;
+}
+
+/*.b-normal {
+  display: flex;
+  flex-wrap: wrap;
+}*/
+
+.a-button, .a-button-cover {
+  border-radius: 2rem;
+  border-width: 1px;
+  border-style: solid;
+  border-image: initial;
+  border-color: var(--theme-color, #42b983);
+  color: var(--theme-color, #42b983);
+  box-sizing: border-box;
+  display: inline-block;
+  font-size: 1.05rem;
+  letter-spacing: 0.1rem;
+  margin: 0.5rem 1rem;
+  padding: 0.75em 2rem;
+  text-decoration: none;
+  transition: 0.15s;
+}
+
+.a-button-cover {
+  background-color: var(--theme-color, #42b983);
+  color: #fff !important;
+}
+
+.a-button:hover, .a-button-cover:hover {
+  color: inherit;
+  opacity: 0.8;
+}

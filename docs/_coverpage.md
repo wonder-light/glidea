@@ -4,13 +4,11 @@
 
 # Glidea <small>1.0</small>
 
-> 一个神奇的文档网站生成器。
-
-- 简单、轻便 (压缩后 ~21kB)
-- 无需生成 html 文件
-- 众多主题
+> 一个神器的静态博客写作客户端,
+> 
+>  可以方便的进行写作并将其部署到服务器上
 
 [GitHub](https://github.com/wonder-light/glidea)
-[快速开始](docs/readme.md)
+[开 始](docs/readme.md)
 
 ![coverpage](../assets/images/R-C.jpg)
