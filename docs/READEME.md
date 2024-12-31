@@ -2,7 +2,7 @@
 
 <div align="center">
 
-  <br>
+  <br/>
 
   ![markdown](./assets/images/markdown.svg ':class=img-normal')
 
@@ -10,7 +10,7 @@
 
   知道你钟爱 Markdown 写作，我们也是
 
-  <br>
+  <br/>
 
   ![safe](./assets/images/safe.svg ':class=img-normal')
 
@@ -18,7 +18,7 @@
 
   所有文件都在本地，更快的构建静态网站，无需管理数据库，向 Wordpress 说拜拜
 
-  <br>
+  <br/>
 
   ![simple](./assets/images/simple.svg ':class=img-normal')
 
@@ -26,7 +26,7 @@
 
   简单几步即可搭建网站。强大的自定义能力，轻松驾驭
 
-  <br>
+  <br/>
 
   ![open-source](./assets/images/open-source.svg ':class=img-normal')
 
@@ -34,7 +34,7 @@
 
   Glidea 基于此 MIT 许可发布, 并将始终保持免费和开源
 
-  <br>
+  <br/>
 
   ![themes](./assets/images/themes.svg ':class=img-normal')
 
@@ -42,7 +42,7 @@
 
   根据自己的喜好和需求，选择或设计独特的界面主题
 
-  <br>
+  <br/>
 
   ![manager](./assets/images/manager.svg ':class=img-normal')
 
@@ -52,14 +52,14 @@
 
 </div>
 
-<br>
-<br>
+<br/>
+<br/>
 
 # 主题
 
 <div align="center">
 
-  <br>
+  <br/>
 
   ![theme-1](./assets/images/background_14.jpg ':class=img-theme')
 
@@ -67,8 +67,8 @@
 
 </div>
 
-<br>
-<br>
+<br/>
+<br/>
 
 # 客户端下载
 
