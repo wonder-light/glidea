@@ -19,8 +19,9 @@ function hideEmptySidebar(hook, vm) {
 
 // docsify 配置
 window.$docsify = {
-  name: "",
+  name: "glidea",
   repo: "",
+  logo: "/assets/images/logo.png",
   // 禁用相对路径
   relativePath: false,
   basePath: "/",
@@ -40,6 +41,10 @@ window.$docsify = {
   // 路由模式
   routerMode: "history",
   formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}:{ss}",
+  alias: {
+    "/.*/_navbar.md": "/_navbar.md",
+    "/([a-z]*-[a-z]*)/docs/.*/_sidebar.md": "/$1/docs/_sidebar.md",
+  },
   plugins: [hideEmptySidebar],
   // vue 全局选项
   vueGlobalOptions: {

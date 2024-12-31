@@ -1,3 +1,7 @@
+:root {
+  --app-name-img-width: 80px;
+}
+
 .p-big {
   font-size: 1.4rem;
   font-weight: 700;
@@ -72,4 +76,9 @@
 .b-main-hide section.content {
   transform: none !important;
   left: 0 !important;
+}
+
+/* logo 图片 */
+a.app-name-link img {
+  width: var(--app-name-img-width);
 }
