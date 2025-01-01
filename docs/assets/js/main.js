@@ -26,6 +26,7 @@ window.$docsify = {
   relativePath: false,
   basePath: "/",
   homepage: "READEME.md",
+  notFoundPage: 'not-found.md',
   loadNavbar: true,
   // 小屏设备下合并导航栏到侧边栏
   mergeNavbar: false,
