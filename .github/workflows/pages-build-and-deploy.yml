@@ -38,6 +38,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      # 复制 index.html 为 404.html
+      - name: Create 404
+        run: |
+          cp ./docs/index.html ./docs/404.html
+          ls ./docs/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
