@@ -1,0 +1,48 @@
+
+# 部署静态页面
+name: pages build and deploy
+
+
+on: 
+  # 针对 main 分支的推送运行
+  push:
+    branches:
+      - 'main'
+    paths: 
+      - 'docs/**'
+  # 针对 main 分支的拉取请求
+  pull_request: 
+    branches: 
+      - 'main'
+    paths: 
+      - 'docs/**'
+  # 可以手动触发
+  workflow_dispatch: 
+
+#设置GITHUB_TOKEN的权限以允许部署到GitHub页面
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  # 部署
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # 官方action, 将代码拉取到虚拟机
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # 上传 docs 目录
+          path: './docs'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

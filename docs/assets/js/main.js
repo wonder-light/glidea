@@ -28,7 +28,7 @@ window.$docsify = {
   homepage: "READEME.md",
   loadNavbar: true,
   // 小屏设备下合并导航栏到侧边栏
-  mergeNavbar: true,
+  mergeNavbar: false,
   loadSidebar: true,
   hideSidebar: false,
   subMaxLevel: 3,

@@ -1,1 +1,64 @@
-# struct
+
+# 文件结构 :id=struct
+
+> 主题有一些强约定的目录结构和可选的静态资源目录
+
+
+## ejs 结构 :id=ejs
+
+```
+fly - 主题文件夹名称 (建议用小写，中划线分隔)
+├── assets - 资源文件夹（可选，不可更名）
+│   ├── media - 主题静态资源存放目录（可选，不可更名）
+│   │   └── fonts - 字体图标文件夹（示例）
+│   │   └── images - 主题用图片文件（示例）
+│   ├── styles - 样式文件夹（可选，不可更名）
+│   │  └── main.less - 主样式文件 (可选，不可更名)
+├── static - 静态资源（可选，不可更名）
+│   │  └── robots.txt
+└── templates - 页面模版文件夹（必须，不可更名）
+│   ├── _blocks - 页面模版文件夹（可选，可自定义命名）
+│   │   ├── footer.ejs
+│   │   ├── head.ejs
+│   │   ├── header.ejs
+│   ├── index.ejs - 主页，列表页 (必须，不可更名)
+│   ├── post.ejs - 文章页 (必须，不可更名)
+│   ├── archives.ejs - 归档页 (必须，不可更名)
+│   ├── tags.ejs - 标签列表页 (必须，不可更名)
+│   ├── tag.ejs - 标签详情页 (必须，不可更名)
+│   └── friends.ejs - 自定义模版 (可选，任意命名)
+├── config.json - 主题配置文件 (可选，推荐)
+└── style-override.js - 主题样式自定义文件 (可选)
+```
+
+
+## dart 结构 :id=dart
+
+```
+fly - 主题文件夹名称 (建议用小写，中划线分隔)
+├── assets - 资源文件夹（可选，不可更名）
+│   ├── media - 主题静态资源存放目录（可选，不可更名）
+│   │   └── fonts - 字体图标文件夹（示例）
+│   │   └── images - 主题用图片文件（示例）
+│   ├── styles - 样式文件夹（可选，不可更名）
+│   │  └── main.less - 主样式文件 (可选，不可更名)
+├── static - 静态资源（可选，不可更名）
+│   │  └── robots.txt
+└── templates - 页面模版文件夹（必须，不可更名）
+│   ├── _blocks - 页面模版文件夹（可选，可自定义命名）
+│   │   ├── footer.dart
+│   │   ├── head.dart
+│   │   ├── header.dart
+│   ├── index.dart - 主页，列表页 (必须，不可更名)
+│   ├── post.dart - 文章页 (必须，不可更名)
+│   ├── archives.dart - 归档页 (必须，不可更名)
+│   ├── tags.dart - 标签列表页 (必须，不可更名)
+│   ├── tag.dart - 标签详情页 (必须，不可更名)
+│   └── friends.dart - 自定义模版 (可选，任意命名)
+├── config.json - 主题配置文件 (可选，推荐)
+└── style-override.dart - 主题样式自定义文件 (可选)
+```
+<br/>
+
+如你所见，必须文件只有 6 个，`main.less`, `index.ejs`, `post.ejs`, `archives.ejs`, `tags.ejs`, `tag.ejs`
+（需按照对应目录组织）
