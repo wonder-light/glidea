@@ -3,14 +3,14 @@
 
 > Glidea 提供了强大的主题自定义能力，你可以自行设计自定义配置提供给主题使用者
 
-每一个主题都可选地搭配一个 `config.json` 配置文件和一个 `style-override.js` 样式覆盖文件
+每一个主题都可选地搭配一个 `config.json` 配置文件和一个 `style-override.dart` 样式覆盖文件
 
 
 ## 示例 :id=example
 
 ### config.json
 
- ```json
+```json
 {
   "name": "Notes",
   "version": "1.0.0",
@@ -100,75 +100,63 @@
     }
   ]
 }
- ``` 
+``` 
 
- ### style-override.js
+ ### style-override.dart
 
- ```js
-const generateOverride = (params = {}) => {
-  letresult = "";
+```dart
+void generateOverride(Map<String, dynamic> params) {
+  var result = "";
   //暗黑皮肤
-  if (params.skin && params.skin !== "white") {
-    result += `
+  if (params[skin] case String skin when skin !== "white") {
+    result += '''
       body{
         color:#dee2e6;
       }
       a,.link{
         color:#e9ecef;
       }
-    `;
+    ''';
   }
   //内容区最大宽度-contentMaxWidth
-  if (params.contentMaxWidth && params.contentMaxWidth !== "800px") {
-    result += `
+  if (params[contentMaxWidth] case String value when value !== "800px") {
+    result += '''
       .main{
-        max-width:${params.contentMaxWidth};
+        max-width:${value};
       }
-    `;
+    ''';
   }
   //正文内容文字大小-textSize
-  if (params.textSize && params.textSize !== "16px") {
-    result += `
+  if (params[textSize] case String size when &size !== "16px") {
+    result += '''
       .post-detail.post.post-contentp{
-        font-size:${params.textSize};
+        font-size:${size};
       }
-    `;
+   ''';
   }
   //网页背景色-pageBgColor
-  if (params.pageBgColor && params.pageBgColor !== "#ffffff") {
-    result += `
+  if (params[pageBgColor] case String bg when bg !== "#ffffff") {
+    result += '''
       body{
-        background:${params.pageBgColor};
+        background:${bg};
       }
-    `;
+    ''';
   }
   //文字颜色-textColor
-  if (params.textColor && params.textColor !== "#333333") {
-    result += `
+  if (params[textColor] case String color when color !== "#333333") {
+    result += '''
       body{
-        color: ${params.textColor};
+        color: ${color};
       }
-    `;
-  }
-  //文字颜色-textColor
-  if (params.textColor && params.textColor !== "#333333") {
-    result += `
-      body{
-        color:${params.textColor};
-      }
-    `;
+    ''';
   }
   //自定义CSS-customCss
-  if (params.customCss) {
-    result += `
-      ${params.customCss}
-    `;
+  if (params.customCss case String css) {
+    result += css;
   }
-  returnresult;
+  return result;
 };
-
-module.exports = generateOverride;
- ```
+```
 
 是的，如你所见，自定义配置就是这么简单，清晰。下面让我们详细了解一下具体字段和使用方法：
 
@@ -181,14 +169,15 @@ module.exports = generateOverride;
 其中有一个特殊的字段 `customConfig`，这便是自定义配置字段了，类型为数组，\
 每项元素的格式如下：
 
- ```json
+```json
 {
   "name": "字段变量名称，可在模版或样式覆盖文件中使用",
   "label": "字段展示名称，在软件中显示的名称",
   "group": "字段所属分组，在软件中显示的分组名称",
   "value": "字段默认值",
-  "type": "字段输入类型，可选值：'input', 'select', 'textarea', 'radio', 'switch', 'picture-upload', 'markdown'（可提供一个 markdown 的输入框）, 'array'",
-  "note": "输入框 placeholder 提示文案, type 为 'input', 'textarea' 时可用, 若为其他type 类型，则展示在表单空间下面",
+  "type": "字段输入类型，可选值：'input', 'select', 'textarea', 'radio', 'switch', 'picture', 'array', 'slider'",
+  "note": "输入框 placeholder 提示文案，展示在表单空间下面",
+  "hint": "type 为 input 或 textarea 时可用",
   "card": "字段附属 Card, 可选值: 'color'（提供一个推荐颜色卡片快捷选择），'post'（提供文章数据卡片提供选择), type 为 'input' 时可用",
   "options": [ // type 为 'select'， 'radio' 时可用
     {
@@ -197,26 +186,40 @@ module.exports = generateOverride;
     }
   ]
 }
- ```
+```
 
 
  ## 图片类型配置 :id=image-config
 
- ```json
+```json
 {
   "name": "sidebarBgImage",
   "label": "侧边栏背景图",
   "group": "图片",
   "value": "/media/images/sidebar-bg.jpg",
-  "type": "picture-upload",
+  "type": "picture",
   "note": ""
 }
- ```
+```
 
+
+ ## 滑块类型配置 :id=slider-config
+
+```json
+{
+  "name": "slider",
+  "label": "数量",
+  "group": "滑块",
+  "value": 10, //整数
+  "max": 100, // min = 0, max > 1, 整数
+  "type": "slider",
+  "note": ""
+}
+```
 
  ## 数组类型配置 :id=array-config
 
- ```json
+```json
 {
 
   "name": "friends",
@@ -236,7 +239,9 @@ module.exports = generateOverride;
       "siteLogo": "",
       "description": "一个静态博客写作客户端"
     }
-  ], // 若无默认数据，可写成 []
+  ], 
+  // 若无默认数据，可写成 []
+  // 子项为其它字段类型配置
   "arrayItems": [
     {
       "label": "名称",
@@ -262,10 +267,10 @@ module.exports = generateOverride;
       "type": "textarea",
       "value": ""
     }
-  ], // 数组对象的字段定义
+  ],
   "note": ""
 }
- ```
+```
 
 大部分情况下，使用 input 类型的就够用了
 
@@ -278,23 +283,22 @@ module.exports = generateOverride;
 
 当然，在样式覆盖文件中也可以使用：
 
- ```js
-const generateOverride = (params = {}) => {
+```dart
+void generateOverride(Map<String, dynamic> params) {
   // params 即自定义字段对象，可以根据字段值来添加自定义 css
-  let result = ''
+  var result = ''
   // 正文内容文字大小 - textSize
-  if (params.textSize && params.textSize !== '16px') {
-    result += `
+  if (params[textSize] case String size when size !== '16px') {
+    result += '''
       body {
-        font-size: ${params.textSize};
+        font-size: ${size};
       }
-    `
+    ''';
   }
   // 最终结果会放在 `main.css` 的文件末尾
-  return result
+  return result;
 }
-module.exports = generateOverride
- ```
+```
 
  到这里，相信你已经搞清楚如何给主题增加自定义配置能力了，快去开发一个属于自己的主题吧，分享给其他人会更佳呦！
 

@@ -132,15 +132,10 @@ menu: {
 文章字段
 
 ```js
-site: {
+post: {
   content: '<p><strong>Gridea</strong> 一个静态博客写作客户端 <!-- more --></p>\n<p>👏 欢迎使用 <strong>Gridea</strong> ！  </p>\n<p>🌈 <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ... </p>',
   fileName: 'hello-gridea',
   abstract: '<p><strong>Gridea</strong> 一个静态博客写作客户端 </p>\n',
-  description: '一个静态博客写作客户端 欢迎使用 Gridea！Gridea 一个静态博客写作客户端。你可以用它来记录你的生...', // 智能截取文章开始内容填充此字段，可用作未设置摘要时备用字段
-  title: 'Hello Gridea',
-  tags: [@tag, @tag, @tag], // 文章 tag 数组，具体可见下面 tag 字段
-  date: 'December 12o 2018, am',
-  dateFormat: '2018-12-12', // 依据 Gridea 应用内日期格式化后字段
   description: '一个静态博客写作客户端 欢迎使用 Gridea！Gridea 一个静态博客写作客户端。你可以用它来记录你的生...', // 智能截取文章开始内容填充此字段，可用作未设置摘要时备用字段
   title: 'Hello Gridea',
   tags: [@tag, @tag, @tag], // 文章 tag 数组，具体可见下面 tag 字段
@@ -163,6 +158,8 @@ site: {
 ```js
 tag: {
   name: 'Gridea',
+  use: true,
+  count: 1,
   slug: 'gridea',
   link: 'https://xxx.com/tag/gridea',
 }
@@ -174,21 +171,24 @@ tag: {
 
 ```js
 themeConfig: {
+  selectTheme: "tech",
+  domain: "https://github.com",
   archivesPageSize: 50,
   archivesPath: "archives", // 归档页路径前缀，应用内可自定义，例如 'blog', 'news' 等
-  dateFormat: "YYYY-MM-DD",
+  dateFormat: "yyyy-MM-dd",
   feedCount: 10,
-  feedFullText: true,
+  useFeed: false,
   footerInfo: "Powered by <a href=\"https://github.com/getgridea/gridea\" target=\"_blank\">Gridea</a>",
   postPageSize: 12,
   postPath: "post",
-  postUrlFormat: "SLUG",
+  postUrlFormat: "slug",
   showFeatureImage: true,
   siteDescription: "Every 🐦 has an 🦅's dream.",
   siteName: "海岛心hey",
   tagPath: "tag",
-  tagUrlFormat: "SHORT_ID",
-  themeName: "tech"
+  tagUrlFormat: "shortId",
+  generateSiteMap: true,
+  robotsText: "",
 }
 ```
 
@@ -238,17 +238,17 @@ commentSetting: {
 ### 头像 :id=avatar
 
 ```html
-<img class="avatar" src="<%= themeConfig.domain %>/images/avatar.png" alt="" width="32px" height="32px">
+<img class="avatar" src="{{ themeConfig.domain }}/images/avatar.png" alt="" width="32px" height="32px">
 ```
 
 ### 网页图标 :id=favicon
 
 ```html
-<link rel="shortcut icon" href="<%= themeConfig.domain %>/favicon.ico">
+<link rel="shortcut icon" href="{{ themeConfig.domain }}/favicon.ico">
 ```
 
 ### 样式文件 :id=main.css
 
 ```html
-<link rel="stylesheet" href="<%= themeConfig.domain %>/styles/main.css">
+<link rel="stylesheet" href="{{ themeConfig.domain }}/styles/main.css">
 ```
