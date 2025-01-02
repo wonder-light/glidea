@@ -1,3 +1,34 @@
+// vue3 主题卡片组件
+const themeCard = {
+  template: `
+    <div class="theme-card">
+      <div class="theme-content">
+        <a class="theme-img" :style='{ backgroundImage: "url(\\"" + secr +"\\")" }'></a>
+        <div class="theme-button">
+          <div class="theme-text">{{name}}{{foo}}</div>
+          <div>
+            <a :href="prev" class="theme-icon" target="_blank">
+              <img src="/assets/images/eye.svg" alt="预览"/>
+            </a>
+            <a :href="repo" class="theme-icon" target="_blank">
+              <img src="/assets/images/download.svg" alt="仓库"/>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+  props: {
+    name: String, // 主题名
+    secr: String, // 截图
+    prev: String, // 预览地址
+    repo: String, // 仓库地址
+  },
+  data() {
+    return {}
+  },
+};
+
 // 隐藏空侧边栏的插件函数
 function hideEmptySidebar(hook, vm) {
   const setHide = () => {
@@ -26,7 +57,7 @@ window.$docsify = {
   relativePath: false,
   basePath: "/",
   homepage: "READEME.md",
-  notFoundPage: 'not-found.md',
+  notFoundPage: "not-found.md",
   loadNavbar: true,
   // 小屏设备下合并导航栏到侧边栏
   mergeNavbar: false,
@@ -47,6 +78,10 @@ window.$docsify = {
     "/([a-z]*-[a-z]*)/docs/.*/_sidebar.md": "/$1/docs/_sidebar.md",
   },
   plugins: [hideEmptySidebar],
+  // vue 组件
+  vueComponents: {
+    "theme-card": themeCard,
+  },
   // vue 全局选项
   vueGlobalOptions: {
     data() {

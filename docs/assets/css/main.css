@@ -36,7 +36,8 @@
   flex-wrap: wrap;
 }*/
 
-.a-button, .a-button-cover {
+.a-button,
+.a-button-cover {
   border-radius: 2rem;
   border-width: 1px;
   border-style: solid;
@@ -58,13 +59,14 @@
   color: #fff !important;
 }
 
-.a-button:hover, .a-button-cover:hover {
+.a-button:hover,
+.a-button-cover:hover {
   color: inherit;
   opacity: 0.8;
 }
 
 /* 没有元素时隐藏侧边栏 */
-.b-main-hide button.sidebar-toggle{
+.b-main-hide button.sidebar-toggle {
   display: none !important;
 }
 
@@ -81,4 +83,58 @@
 /* logo 图片 */
 a.app-name-link img {
   width: var(--app-name-img-width);
+}
+
+/* 主题卡片 */
+.theme-card {
+  padding: 1rem;
+  width: 100%;
+  min-width: 300px;
+}
+
+.theme-content {
+  position: relative;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  box-shadow: rgb(0, 0, 0, 0.1) 0 1px 3px 0, rgb(0, 0, 0, 0.06) 0 1px 2px 0;
+  transition: all 0.2s;
+}
+
+.theme-img {
+  width: 100%;
+  color: inherit;
+  text-decoration: inherit;
+  display: block;
+  padding-top: 56.25%;
+  background-color: transparent;
+  background-size: cover;
+}
+
+.theme-button {
+  display: flex;
+  padding: 1rem;
+  border-top: 1px rgb(234, 234, 234);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.theme-text {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.theme-icon {
+  color: inherit;
+  text-decoration: inherit;
+  font-size: 0.875rem;
+  background-color: transparent;
+}
+
+.theme-icon:first-of-type {
+  margin-right: 1rem;
+}
+
+.theme-icon img{
+  width: 1rem;
 }
