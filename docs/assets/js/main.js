@@ -34,7 +34,7 @@ const themeList = {
   template: `
     <div>
       <div align="center">
-        <a class="a-button-cover" style="display: inline-flex; cursor: pointer">
+        <a href="/zh-cn/docs/theme/shared" class="a-button-cover" style="display: inline-flex; cursor: pointer">
           <img src="/assets/images/clothes-line.svg" alt="clothes-line.svg" style="width: 1rem; margin-right: 0.5rem;"/>
           {{ shared }}
           <img src="/assets/images/right-arrow.svg" alt="right-arrow.svg" style="width: 1rem; margin-left: 0.4rem;"/>
