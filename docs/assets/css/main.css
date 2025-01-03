@@ -1,5 +1,11 @@
+/* #ffd100 */
+
 :root {
   --app-name-img-width: 80px;
+}
+
+.jc-center {
+  justify-content: center;
 }
 
 .p-big {
@@ -49,7 +55,7 @@
   font-size: 1.05rem;
   letter-spacing: 0.1rem;
   margin: 0.5rem 1rem;
-  padding: 0.75em 2rem;
+  padding: 0.5em 1rem;
   text-decoration: none;
   transition: 0.15s;
 }
@@ -63,6 +69,11 @@
 .a-button-cover:hover {
   color: inherit;
   opacity: 0.8;
+}
+
+.a-button .icon,
+.a-button-cover .icon {
+  color: currentColor;
 }
 
 /* 没有元素时隐藏侧边栏 */
@@ -135,6 +146,37 @@ a.app-name-link img {
   margin-right: 1rem;
 }
 
-.theme-icon img{
+.theme-icon img {
   width: 1rem;
+}
+
+.left-segm {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.left-segm .el-segmented {
+  --el-segmented-item-selected-color: var(--el-text-color-primary);
+  --el-segmented-item-selected-bg-color: var(--theme-color, #42b983);
+  --el-border-radius-base: 16px;
+}
+
+.left-segm .el-segmented__item {
+  padding: 0.5rem 1rem;
+}
+
+.theme-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.theme-list .theme-card {
+  width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .theme-list .theme-card {
+    width: 50%;
+  }
 }

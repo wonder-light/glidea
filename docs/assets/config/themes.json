@@ -1,0 +1,24 @@
+{
+  "defaultItems": [
+    {
+      "name": "fog",
+      "owner": "wonder-light",
+      "intr": "静态博客主题，不适合追求简洁的博主使用",
+      "secr": "https://github.com/user-attachments/assets/f6e63470-f264-441e-b59f-3534f193ea00",
+      "prev": "https://blog.nianian.cn",
+      "repo": "https://github.com/wonder-light/glidea-theme-fog",
+      "star": 1
+    }
+  ],
+  "githubItems": [
+    {
+      "name": "fog",
+      "owner": "wonder-light",
+      "intr": "静态博客主题，不适合追求简洁的博主使用",
+      "secr": "https://github.com/user-attachments/assets/f6e63470-f264-441e-b59f-3534f193ea00",
+      "prev": "https://blog.nianian.cn",
+      "repo": "https://github.com/wonder-light/glidea-theme-fog",
+      "star": 0
+    }
+  ]
+}

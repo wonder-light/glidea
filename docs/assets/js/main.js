@@ -3,9 +3,9 @@ const themeCard = {
   template: `
     <div class="theme-card">
       <div class="theme-content">
-        <a class="theme-img" :style='{ backgroundImage: "url(\\"" + secr +"\\")" }'></a>
+        <a class="theme-img" :style='{ backgroundImage: "url(" + secr +")" }'></a>
         <div class="theme-button">
-          <div class="theme-text">{{name}}{{foo}}</div>
+          <div class="theme-text">{{name}}</div>
           <div>
             <a :href="prev" class="theme-icon" target="_blank">
               <img src="/assets/images/eye.svg" alt="预览"/>
@@ -25,7 +25,64 @@ const themeCard = {
     repo: String, // 仓库地址
   },
   data() {
-    return {}
+    return {};
+  },
+};
+
+// 主题列表
+const themeList = {
+  template: `
+    <div>
+      <div align="center">
+        <a class="a-button-cover" style="display: inline-flex; cursor: pointer">
+          <img src="/assets/images/clothes-line.svg" alt="clothes-line.svg" style="width: 1rem; margin-right: 0.5rem;"/>
+          {{ shared }}
+          <img src="/assets/images/right-arrow.svg" alt="right-arrow.svg" style="width: 1rem; margin-left: 0.4rem;"/>
+        </a>
+      </div>
+      <div class="left-segm" style="padding-right: 1rem">
+        <el-segmented v-model="currentOption" :options="options"></el-segmented>
+      </div>
+      <div v-if="getItems.length > 0" :class="{ 'theme-list': true, 'jc-center': getItems.length <= 1 }">
+        <theme-card v-for="item in getItems" :name="item.name" :secr="item.secr" :prev="item.prev" :repo="item.repo"> </theme-card>
+      </div>
+      <div v-else>
+        <el-empty :image-size="200"></el-empty>
+      </div>
+      <div v-if="hasMoreData" align="center">
+        <div class="a-button" style="display: inline-block; cursor: pointer">
+          {{ loadTip }}
+        </div>
+      </div>
+    </div>
+  `,
+  inject: ["defaultItems", "githubItems"],
+  props: {
+    label: String,
+    shared: String,
+  },
+  data() {
+    return {
+      currentOption: this.label,
+      options: [this.label, "Github"],
+      hasMoreData: false,
+    };
+  },
+  computed: {
+    isGithub() {
+      return this.currentOption == "Github";
+    },
+    getItems() {
+      return this.isGithub ? this.githubItems : this.defaultItems;
+    },
+  },
+  created() {
+    fetch("/assets/config/themes.json")
+      .then((response) => response.json())
+      .then((data) => {
+        this.githubItems = data.githubItems;
+        this.defaultItems = data.defaultItems;
+      });
   },
 };
 
@@ -81,12 +138,28 @@ window.$docsify = {
   // vue 组件
   vueComponents: {
     "theme-card": themeCard,
+    "theme-list": themeList,
+    ElSegmented: ElementPlus.ElSegmented,
+    ElEmpty: ElementPlus.ElEmpty,
   },
   // vue 全局选项
   vueGlobalOptions: {
     data() {
       return {
-        count: 0,
+        defaultItems: [],
+        githubItems: [],
+      };
+    },
+    provide() {
+      return {
+        defaultItems: Vue.computed({
+          get: () => this.defaultItems,
+          set: (value) => (this.defaultItems = value),
+        }),
+        githubItems: Vue.computed({
+          get: () => this.githubItems,
+          set: (value) => (this.githubItems = value),
+        }),
       };
     },
   },
