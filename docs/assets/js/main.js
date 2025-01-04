@@ -113,8 +113,10 @@ window.$docsify = {
   // 禁用相对路径
   relativePath: false,
   basePath: "/",
-  homepage: "READEME.md",
+  homepage: "README.md",
   notFoundPage: "not-found.md",
+  // 切换页面后是否自动跳转到页面顶部
+  auto2top: true,
   loadNavbar: true,
   // 小屏设备下合并导航栏到侧边栏
   mergeNavbar: false,
@@ -131,7 +133,8 @@ window.$docsify = {
   routerMode: "history",
   formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}:{ss}",
   alias: {
-    "/.*/_navbar.md": "/_navbar.md",
+    "/zh-cn/.*/_navbar.md": "/_navbar.md",
+    "/en-us/.*/_navbar.md": "/en-us/_navbar.md",
     "/([a-z]*-[a-z]*)/docs/.*/_sidebar.md": "/$1/docs/_sidebar.md",
   },
   plugins: [hideEmptySidebar],

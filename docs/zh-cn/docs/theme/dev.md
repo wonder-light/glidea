@@ -3,7 +3,7 @@
 
 > Glidea 采用 Jinja 作为主题的模版引擎
 
-你可以在这里查看应用的默认主题 [Default Thems](https://github.com/wonder-light/glidea/tree/main/public/default-files.zip)
+你可以在这里查看应用的默认主题 [Default Themes](https://github.com/wonder-light/glidea/tree/main/public/default-files.zip)
 
 基于 Jinja 的语法你可以很快开发出一个心仪的自定义主题
 
@@ -11,10 +11,10 @@
 
 ## 约定 :id=agreement
 
-我们建议你将主题命名为 **gridea-theme-\<name\>** 以便用户可以更好地搜索，\
-例如 **gridea-theme-notes**，\
-同时我们建议你将主题提交至 Github，并设置 topic，\
-以便用户可以直接点击 topic 即可搜索到你的主题 `grideagridea-theme`
+我们建议你将主题命名为 `glidea-theme-`**\<name\>** 以便用户可以更好地搜索，\
+例如 **glidea-theme-notes**，\
+同时我们建议你将主题提交至 Github，并设置 **topic**，\
+以便用户可以直接点击 **topic** 即可搜索到你的主题 **glidea-theme-notes**
 
 示例：
 
@@ -30,23 +30,23 @@
 ```json
 {
   "themeConfig": {
-    "footerInfo": "Powered by Gridea",
+    "footerInfo": "Powered by Glidea",
     "pageSize": 10,
     "showFeatureImage": true,
     "siteDescription": "温故而知新",
-    "siteName": "Gridea",
+    "siteName": "Glidea",
     "themeName": "notes"
   },
   "posts": [
     {
-      "abstract": "<strong>Gridea</strong> 一个静态博客写作客户端 ",
-      "content": "<strong>Gridea</strong> 一个静态博客写作客户端 <!-- more -->↵↵👏 欢迎使用 <strong>Gridea</strong> ！",
+      "abstract": "<strong>Glidea</strong> 一个静态博客写作客户端 ",
+      "content": "<strong>Glidea</strong> 一个静态博客写作客户端 <!-- more -->↵↵👏 欢迎使用 <strong>Glidea</strong> ！",
       "date": "2019-01-15 08:00:00",
       "dateFormat": "2019-01-15",
-      "feature": "/post-images/hello-gridea.png",
+      "feature": "/post-images/hello-glidea.png",
       "published": true,
-      "tags": ["Gridea"],
-      "fileName": "hello-gridea"
+      "tags": ["Glidea"],
+      "fileName": "hello-glidea"
     }
   ]
 }

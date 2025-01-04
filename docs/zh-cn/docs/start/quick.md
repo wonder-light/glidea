@@ -2,7 +2,7 @@
 
 # 快速开始 :id=start
 
-> 你好，欢迎开始愉快的 Gridea 之旅呀～
+> 你好，欢迎开始愉快的 Glidea 之旅呀～
 
 
 ## 安装 :id=install
@@ -23,7 +23,7 @@
 
   - 点击 [Github](https://github.com/)，进行注册
   - 登录 GitHub 之后，点击[这里](https://github.com/settings/tokens/new)创建一个 Token，**勾选上 repo 的相关权限即可**
-  - 生成之后记得把 Token 复制到你的本地，因为一旦关闭网页将不能再看到它
+  - 生成之后记得把 **Token** 复制到你的本地，因为一旦关闭网页将不能再看到它
 
   ![token](../../../assets/images/quick-new-token.jpg ':class=img-cover')
   ![access](../../../assets/images/quick-access-token.png ':class=img-cover')
@@ -40,7 +40,7 @@
 
 4.**同步**
   
-  - 点击 Gridea 中的 同步按钮即可。初次部署等待几分钟之后就可以去浏览器访问了，默认地址为你在第 3 步所填写的域名
+  - 点击 Glidea 中的 同步按钮即可。初次部署等待几分钟之后就可以去浏览器访问了，默认地址为你在第 3 步所填写的域名
 
 <br/>
 

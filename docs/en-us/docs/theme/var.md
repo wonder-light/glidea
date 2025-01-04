@@ -1,11 +1,11 @@
 
-# 页面变量 :id=variables 
+# Page Variable :id=variables 
 
-> 在创建页面时引入的变量，不同的页面引入的变量也会有所不同
+> The variables introduced during the creation of the page will vary from page to page
 
-## 页面变量示例 :id=page-example
+## Page variable example :id=page-example
   
-### index 页面 :id=index-page
+### index page :id=index-page
 
 - [posts](#posts)
 - [menus](#menus)
@@ -13,7 +13,7 @@
 - [themeConfig](#themeconfig)
 - [site](#site)
 
-### post 页面 :id=post-page
+### post page :id=post-page
 
 - [post](#post)
 - [menus](#menus)
@@ -21,7 +21,7 @@
 - [commentSetting](#commentsetting)
 - [site](#site)
 
-### archives 页面 :id=archives-page
+### archives page :id=archives-page
 
 - [posts](#posts)
 - [menus](#menus)
@@ -29,14 +29,14 @@
 - [themeConfig](#themeconfig)
 - [site](#site)
 
-### tags 页面 :id=tags-page
+### tags page :id=tags-page
 
 - [tags](#tags)
 - [menus](#menus)
 - [themeConfig](#themeconfig)
 - [site](#site)
 
-### tag 页面 :id=tag-page
+### tag page :id=tag-page
 
 - [tag](#tag)
 - [posts](#posts)
@@ -45,44 +45,47 @@
 - [themeConfig](#themeconfig)
 - [site](#site)
 
-### 自定义模板 :id=custom-template
+### custom template :id=custom-template
 
-可以在 templates 文件夹创建自定义模版，\
-例如 `friends.j2`, `about.j2`, `projects.j2`, `404.j2` 等等，\
-最终生成的访问路径为\
+You can create a custom template in the templates folder，\
+for example, `friends.j2`, `about.j2`, `projects.j2`, `404.j2` and so on，\
+the resulting access path is\
 `http(s)://域名/friends`,\
 `http(s)://域名/about`,\
 `http(s)://域名/projects`,\
 `http(s)://域名/404`
 
-可用变量如下:
+Available variables are as follows:
 
 - [menus](#menus)
 - [themeConfig](#themeconfig)
 - [commentSetting](#commentsetting)
 - [site](#site)
 
-?> 注：若主题包含自定义模版，若自定义渲染模板的 URL 与文章 URL 产生冲突，自定义渲染模版优先级高于文章 URL
+?> Note: If the theme contains a custom template, \
+if the URL of the custom rendering template conflicts with the article URL, \
+the custom rendering template takes precedence over the article URL
 
-## 变量值示例 :id=variable-example
 
-?> @ 符号为引用其他字段标志，仅作为此文档字段说明使用
+## Variable value example :id=variable-example
+
+?> The @ symbol is a reference to another field flag and is used only as a field description for this document
 
 ### menus
 
-菜单数组，具体 Menu 字段可见 [menu](#menu)
+Menu array, specific menu field visible [menu](#menu)
 
 ```js
 menus: [
-  @menu, 
-  @menu, 
-  @menu
+  @menu,
+  @menu,
+  @menn
 ]
 ```
 
 ### posts
 
-文章数组，具体 Post 字段可见 [post](#post)
+Article array, specific Post field visible [post](#post)
 
 ```js
 posts: [
@@ -94,7 +97,7 @@ posts: [
 
 ### tags
 
-标签数组，具体 Tag 字段可见 [tag](#tag)
+Tag array, specific tag field visible [tag](#tag)
 
 ```js
 tags: [
@@ -106,54 +109,54 @@ tags: [
 
 ### pagination
 
-文章列表的分页字段
+Page field for the article list
 
 ```js
 pagination: {
-  prev: '', // 上一页的链接
-  next: '', // 下一页的链接
+  prev: '', // Link to previous page
+  next: '', // Link to next page
 }
 ```
 
 ### menu
 
-菜单字段
+Menu field
 
 ```js
 menu: {
   name: '首页',
   link: '/',
-  openType: 'internal', // 打开类型: 内链或外链
+  openType: 'internal', // Open type: internal or external
 }
 ```
 
 ### post
 
-文章字段
+Article field
 
 ```js
 post: {
-  content: '<p><strong>Glidea</strong> 一个静态博客写作客户端 </p>',
+  content: '<p><strong>Glidea</strong> A static blog writing client </p>',
   fileName: 'hello-glidea',
   abstract: '',
-  description: '一个静态博客写作客户端 欢迎使用 Glidea', // 智能截取文章开始内容填充此字段，可用作未设置摘要时备用字段
+  description: 'A static blog writing client, welcome to Glidea',
   title: 'Hello Glidea',
-  tags: [@tag, @tag, @tag], // 文章 tag 数组，具体可见下面 tag 字段
+  tags: [@tag, @tag, @tag], // Article tag array, specifically see the tag field below
   date: 'December 12o 2018, am',
-  dateFormat: '2018-12-12', // 依据 Glidea 应用内日期格式化后字段
-  feature: 'post-images/hello-glidea.png', // 若无封面图，则为''
+  dateFormat: '2018-12-12', // Fields formatted according to Glidea in-app dates
+  feature: 'post-images/hello-glidea.png', // If there is no cover picture, it is ''
   link: 'https://xxx.com/post/hello-glidea',
-  hideInList: false, // 仅对未设置标签文章生效
-  isTop: false, // 是否是置顶文章
+  hideInList: false, // Takes effect only for articles with no label set
+  isTop: false, // Whether the top article
   toc: '<ul class="markdownIt-TOC"><li><ul><li><a href="#demo" class="">DEMO</a></li></ul></li></ul>', // 文章目录字段
-  prevPost: @post, // 若是为第一篇文章，则无此字段
-  nextPost: @post, // 若是为最后一篇文章，则无此字段
+  prevPost: @post, // If it is the first article, this field is not available
+  nextPost: @post, // If it is the last article, this field is not available
 }
 ```
 
 ### tag
 
-标签字段
+Tag field
 
 ```js
 tag: {
@@ -167,14 +170,14 @@ tag: {
 
 ### themeConfig
 
-主题配置字段
+Theme configuration field
 
 ```js
 themeConfig: {
   selectTheme: "tech",
   domain: "https://github.com",
   archivesPageSize: 50,
-  archivesPath: "archives", // 归档页路径前缀，应用内可自定义，例如 'blog', 'news' 等
+  archivesPath: "archives", // Archive page path prefix, which can be customized within the application, such as 'blog', 'news', etc
   dateFormat: "yyyy-MM-dd",
   feedCount: 10,
   useFeed: false,
@@ -184,7 +187,7 @@ themeConfig: {
   postUrlFormat: "slug",
   showFeatureImage: true,
   siteDescription: "Every 🐦 has an 🦅's dream.",
-  siteName: "海岛心hey",
+  siteName: "hey",
   tagPath: "tag",
   tagUrlFormat: "shortId",
   generateSiteMap: true,
@@ -194,7 +197,7 @@ themeConfig: {
 
 ### site
 
-site 字段
+Site field
 
 ```js
 site: {
@@ -202,8 +205,8 @@ site: {
   tags: @tags,
   menus: @menus,
   themeConfig: @themeConfig,
-  isHomepage: false, // 是否为首页，使用 index.j2 渲染，且为第一页的时候为 true
-  customConfig: {}, // 主题自定义配置字段，若无则为 {}
+  isHomepage: false, // Whether it is the home page, it is rendered using index.j2, and it is true when it is the first page
+  customConfig: {}, // Topic Custom configuration field, if none {}
   utils: {
     now: "1577006772710", // Date.now()
   },
@@ -212,7 +215,7 @@ site: {
 
 ### commentSetting
 
-评论字段
+Comment setting
 
 ```js
 commentSetting: {
@@ -228,26 +231,26 @@ commentSetting: {
     owner: 'EryouHao',
     repository: 'EryouHao.github.io'
   },
-  showComment: false // 是否显示评论，可根据此字段进行评论的展示与否
+  showComment: false // Whether to display comments. You can display comments according to this field
 }
 ```
 
 
-## 其它 :id=other
+## Other :id=other
 
-### 头像 :id=avatar
+### Avatar :id=avatar
 
 ```html
 <img class="avatar" src="{{ themeConfig.domain }}/images/avatar.png" alt="" width="32px" height="32px">
 ```
 
-### 网页图标 :id=favicon
+### Web icon :id=favicon
 
 ```html
 <link rel="shortcut icon" href="{{ themeConfig.domain }}/favicon.ico">
 ```
 
-### 样式文件 :id=main.css
+### Style file :id=main.css
 
 ```html
 <link rel="stylesheet" href="{{ themeConfig.domain }}/styles/main.css">

@@ -1,6 +1,6 @@
 ---
 name: Question
-about: 对 Gridea 有任何问题吗？
+about: 对 Glidea 有任何问题吗？
 title: ''
 labels: 'question'
 assignees: ''

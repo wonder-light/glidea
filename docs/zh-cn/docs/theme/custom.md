@@ -102,13 +102,13 @@
 }
 ``` 
 
- ### style-override.dart
+### style-override.dart
 
 ```dart
 void generateOverride(Map<String, dynamic> params) {
   var result = "";
   //暗黑皮肤
-  if (params[skin] case String skin when skin !== "white") {
+  if (params[skin] case String skin when skin != "white") {
     result += '''
       body{
         color:#dee2e6;
@@ -118,44 +118,44 @@ void generateOverride(Map<String, dynamic> params) {
       }
     ''';
   }
-  //内容区最大宽度-contentMaxWidth
-  if (params[contentMaxWidth] case String value when value !== "800px") {
+  //内容区最大宽度 - contentMaxWidth
+  if (params[contentMaxWidth] case String value when value != "800px") {
     result += '''
       .main{
         max-width:${value};
       }
     ''';
   }
-  //正文内容文字大小-textSize
-  if (params[textSize] case String size when &size !== "16px") {
+  //正文内容文字大小 - textSize
+  if (params[textSize] case String size when size != "16px") {
     result += '''
       .post-detail.post.post-contentp{
         font-size:${size};
       }
    ''';
   }
-  //网页背景色-pageBgColor
-  if (params[pageBgColor] case String bg when bg !== "#ffffff") {
+  //网页背景色 - pageBgColor
+  if (params[pageBgColor] case String bg when bg != "#ffffff") {
     result += '''
       body{
         background:${bg};
       }
     ''';
   }
-  //文字颜色-textColor
-  if (params[textColor] case String color when color !== "#333333") {
+  //文字颜色 - textColor
+  if (params[textColor] case String color when color != "#333333") {
     result += '''
       body{
         color: ${color};
       }
     ''';
   }
-  //自定义CSS-customCss
+  //自定义CSS - customCss
   if (params.customCss case String css) {
     result += css;
   }
   return result;
-};
+}
 ```
 
 是的，如你所见，自定义配置就是这么简单，清晰。下面让我们详细了解一下具体字段和使用方法：
@@ -189,7 +189,7 @@ void generateOverride(Map<String, dynamic> params) {
 ```
 
 
- ## 图片类型配置 :id=image-config
+## 图片类型配置 :id=image-config
 
 ```json
 {
@@ -203,7 +203,7 @@ void generateOverride(Map<String, dynamic> params) {
 ```
 
 
- ## 滑块类型配置 :id=slider-config
+## 滑块类型配置 :id=slider-config
 
 ```json
 {
@@ -217,7 +217,7 @@ void generateOverride(Map<String, dynamic> params) {
 }
 ```
 
- ## 数组类型配置 :id=array-config
+## 数组类型配置 :id=array-config
 
 ```json
 {
@@ -279,6 +279,7 @@ void generateOverride(Map<String, dynamic> params) {
 
 在模版中使用时，你可以尽情发挥你的想象，社交、统计、友链、外链背景图、背景音乐...
 
+
 ## 样式覆盖配置 :id=style-override
 
 当然，在样式覆盖文件中也可以使用：
@@ -286,9 +287,9 @@ void generateOverride(Map<String, dynamic> params) {
 ```dart
 void generateOverride(Map<String, dynamic> params) {
   // params 即自定义字段对象，可以根据字段值来添加自定义 css
-  var result = ''
+  var result = '';
   // 正文内容文字大小 - textSize
-  if (params[textSize] case String size when size !== '16px') {
+  if (params[textSize] case String size when size != '16px') {
     result += '''
       body {
         font-size: ${size};

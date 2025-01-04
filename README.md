@@ -22,7 +22,7 @@
 
 👏  欢迎使用 **Glidea** ！
 
-🔔  **Glidea** 是对 [Gridea](https://github.com/getGlidea/Glidea) 的 flutter 实现, 完全免费开源
+🔔  **Glidea** 是对 [Gridea](https://github.com/getGlidea/Gridea) 的 flutter 实现, 完全免费开源
 
 ✍️  **Glidea** 一个静态博客写作客户端, 可以用来记录你的生活、心情、想法... ...
 

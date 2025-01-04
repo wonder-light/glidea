@@ -4,11 +4,11 @@
 
 # Glidea <small>1.0</small>
 
-> 一个神器的静态博客写作客户端,
+> An artifact of static blog writing client,
 > 
->  可以方便的进行写作并将其部署到服务器上
+>  It can be easily written and deployed to the server
 
 [GitHub](https://github.com/wonder-light/glidea)
-[开 始](zh-cn/docs/)
+[Start](en-us/docs/)
 
 ![coverpage](../assets/images/R-C.jpg)

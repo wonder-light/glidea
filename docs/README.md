@@ -66,7 +66,7 @@
     <img class="img-theme" src="./assets/images/background_14.jpg" alt="theme-1"/>
   </div>
 
-  [👗浏览更多](./zh-cn/themes/readme.md ':class=a-button-cover')
+  [👗浏览更多](/zh-cn/themes/ ':class=a-button-cover')
 
 </div>
 
@@ -86,9 +86,7 @@ ______
 
 [源码地址](https://github.com/wonder-light/glidea)
 
-[讨论区]()
-
-[微博]()
+[讨论区](https://github.com/wonder-light/glidea/discussions/3)
 
 [赞助]()
 
