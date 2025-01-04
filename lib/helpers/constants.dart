@@ -10,7 +10,7 @@ const String defaultPostPath = 'post';
 const String defaultTagPath = 'tag';
 const String defaultPostFeaturePath = '/post-images/post-feature.jpg';
 const String defaultRobotsPath = 'User-agent: *\nDisallow:';
-const String defaultDateFormat = 'yyyy-MM-dd hh:mm:ss';
+const String defaultDateFormat = 'yyyy-MM-dd HH:mm:ss';
 
 /// 加载 [Post] 中的本地图片的前缀
 const String featurePrefix = 'file://';

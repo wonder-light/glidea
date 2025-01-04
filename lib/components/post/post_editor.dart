@@ -99,7 +99,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            for (var tag in post.tags)
+            for (var tag in site.getTagsWithPost(post))
               Container(
                 padding: kVerPadding4 + kHorPadding8,
                 decoration: BoxDecoration(
@@ -187,7 +187,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
 
   /// 设置中的标签
   Widget _buildTags() {
-    final slugSet = widget.entity.tags.map((t) => t.slug).toSet();
+    final slugSet = widget.entity.tags.toSet();
     return DropdownWidget(
       itemHeight: 40,
       enableSearch: true,
@@ -208,7 +208,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
           ),
       ],
       multipleCallback: (items) {
-        widget.entity.tags = items.toList();
+        widget.entity.tags = items.map((t) => t.slug).toList();
       },
     );
   }

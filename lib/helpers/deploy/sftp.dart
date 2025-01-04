@@ -54,7 +54,7 @@ extension SftpClientExt on SftpClient {
     if (remoteDir.trim().isEmpty) {
       remoteDir = '/';
     }
-    for (var entry in FS.getEntity(localDir)) {
+    for (var entry in FS.getEntitySync(localDir)) {
       // 需要以 / 开头
       final path = FS.join(remoteDir, FS.relative(entry.path, localDir));
       if (entry case File file) {

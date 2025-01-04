@@ -167,6 +167,7 @@ class _PostViewState extends State<PostView> {
   void initState() {
     super.initState();
     updatePostData();
+    updateContent();
     // 禁用
     updateDisable();
     // 工具栏按钮
@@ -203,7 +204,6 @@ class _PostViewState extends State<PostView> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Get.theme.colorScheme;
     // 内容
     Widget childWidget = Expanded(
       // 滚动
@@ -276,9 +276,7 @@ class _PostViewState extends State<PostView> {
           hintStyle: style?.copyWith(color: theme.colorScheme.outlineVariant),
         ),
         onChanged: (str) {
-          if (isRich) {
-            currentPost.content = str;
-          } else {
+          if (!isRich) {
             currentPost.title = str;
           }
           updateDisable();
@@ -413,13 +411,13 @@ class _PostViewState extends State<PostView> {
       return;
     }
     // 检测 post 是否可以保存
-    if (!site.checkPost(currentPost, postData)) {
+    if (!site.checkPost(currentPost, postData) && contentController.text.isNotEmpty) {
       Get.error(Tran.postUrlRepeatTip);
       return;
     }
     currentPost.published = published;
     await site.emit(themeSaveEvent);
-    site.updatePost(newData: currentPost, oldData: postData);
+    site.updatePost(newData: currentPost, oldData: postData, fileContent: contentController.text);
     // 更新数据
     setState(() => updatePostData());
   }
@@ -501,13 +499,17 @@ class _PostViewState extends State<PostView> {
     // 复制
     currentPost = postData.copy<Post>()!;
     titleController.text = currentPost.title;
-    contentController.text = currentPost.content;
     picture.value = postData.feature;
+  }
+
+  /// 从文件读取内容
+  Future<void> updateContent() async {
+    contentController.text = await FS.readString(FS.join(site.state.appDir, 'posts', '${postData.fileName}.md'));
   }
 
   /// 更新保存按钮是否禁用
   void updateDisable() {
-    isDisable.value = currentPost.title.isEmpty || currentPost.content.isEmpty;
+    isDisable.value = currentPost.title.isEmpty || contentController.text.isEmpty;
   }
 
   /// 鼠标点击事件, 用于关闭 emoji, stats 视图

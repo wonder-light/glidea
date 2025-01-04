@@ -76,11 +76,28 @@ class FS {
     }
   }
 
+  /// 所有目录下的所有文件和目录 - 异步迭代
+  static Stream<T> getEntity<T extends FileSystemEntity>(String path, {bool recursive = true}) async* {
+    final entities = Directory(path).list(recursive: recursive);
+    await for (var item in entities) {
+      if (item is T) yield item;
+    }
+  }
+
   /// 所有目录下的所有文件和目录
-  static List<FileSystemEntity> getEntity(String path, {bool recursive = true}) => Directory(path).listSync(recursive: recursive);
+  static List<T> getEntitySync<T extends FileSystemEntity>(String path, {bool recursive = true}) {
+    final entities = Directory(path).listSync(recursive: recursive);
+    if (T is FileSystemEntity) {
+      return entities as List<T>;
+    }
+    return entities.whereType<T>().toList();
+  }
+
+  /// 所有目录下的所有文件 - 异步迭代
+  static Stream<File> getFiles(String path, {bool recursive = true}) => getEntity<File>(path, recursive: recursive);
 
   /// 所有目录下的所有文件
-  static List<File> getFilesSync(String path, {bool recursive = true}) => getEntity(path, recursive: recursive).whereType<File>().toList();
+  static List<File> getFilesSync(String path, {bool recursive = true}) => getEntitySync<File>(path, recursive: recursive);
 
   /// 移动子目录下的所有文件到指定目录, 包括文件
   static void moveSubFile(String src, String target) async {
@@ -102,7 +119,7 @@ class FS {
   static void deleteDirSync(String src, {bool recursive = true}) => Directory(src).deleteSync(recursive: recursive);
 
   /// 获取指定文件夹中子目录的属性
-  static List<Directory> subDirInfo(String path) => getEntity(path, recursive: false).whereType<Directory>().toList();
+  static List<Directory> subDirInfo(String path) => getEntitySync<Directory>(path, recursive: false);
 
   /// 获取指定文件夹中子目录的名称
   static List<String> subDir(String path) => subDirInfo(path).map((f) => p.basename(f.path)).toList();
@@ -143,6 +160,18 @@ class FS {
   ///     extension('path.to/foo');         // -> ''
   ///     extension('path/to/foo.dart.js'); // -> '.js'
   static String extension(String path) => p.extension(path);
+
+  /// 获取[path]在最后一个分隔符之后的部分, 带有扩展名
+  ///
+  ///     basename('path/to/foo.dart'); // -> 'foo.dart'
+  ///     basename('path/to');          // -> 'to'
+  static String basenameExt(String path) => p.basename(path);
+
+  /// 获取[path]在最后一个分隔符之后的部分, 不带扩展名
+  ///
+  ///     basename('path/to/foo.dart'); // -> 'foo'
+  ///     basename('path/to');          // -> 'to'
+  static String basename(String path) => p.basenameWithoutExtension(path);
 
   // 去除开头的 /
   static String? _remove(String? str) {

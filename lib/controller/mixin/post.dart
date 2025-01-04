@@ -74,44 +74,37 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
     ];
   }
 
-  /// 对文章链接进行筛选
-  List<TLinkData> filterPostLink(String data) {
-    // 筛选文章链接
-    return getPostLink().where((p) => p.link.contains(data)).toList();
-  }
-
   /// 更新或者添加 post
-  void updatePost({required Post newData, Post? oldData}) async {
-    // 获取 [posts] 中的实例
-    oldData = state.posts.firstWhereOrNull((p) => p == oldData);
-    // 添加新的 post
-    if (oldData == null) {
-      state.posts.add(newData);
-    } else {
-      // 更新数据
-      oldData
-        ..title = newData.title
-        ..content = newData.content
-        ..fileName = newData.fileName
-        ..date = newData.date
-        ..feature = newData.feature
-        ..hideInList = newData.hideInList
-        ..isTop = newData.isTop
-        ..published = newData.published
-        // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
-        ..abstract = newData.content.split(summaryRegExp).firstOrNull ?? ''
-        // 标签
-        ..tags = newData.tags;
+  void updatePost({required Post newData, Post? oldData, String fileContent = ''}) async {
+    // 旧文件名
+    String? oldFileName;
+    // oldData 在 post 中存在
+    if (state.posts.remove(oldData)) {
+      oldFileName = oldData!.fileName;
     }
+    // 添加或更新 post
+    newData
+      ..content = ''
+      // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
+      ..abstract = newData.content.split(summaryRegExp).firstOrNull ?? '';
+    state.posts.add(newData);
     // 更新标签
-    updateTagUsedField(addTag: true);
+    updateTagUsedField();
     try {
       // 保存
       await saveSiteData();
+      // 路径
+      final path = FS.join(state.appDir, 'posts');
+      // 文件名不同时先移除再保存内容
+      if (oldFileName != null && oldFileName != newData.fileName) {
+        FS.deleteDirSync(FS.join(path, '$oldFileName.md'));
+      }
+      await FS.writeString(FS.join(path, '${newData.fileName}.md'), fileContent);
+      Get.success(newData.published ? Tran.saved : Tran.draftSuccess);
     } catch (e) {
-      Log.w('update post failed: \n$e');
+      Log.e('update post failed: \n$e');
+      Get.error(Tran.saveError);
     }
-    Get.success(newData.published ? Tran.saved : Tran.draftSuccess);
   }
 
   /// 删除 post
@@ -122,15 +115,18 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
       return;
     }
     // 标签
-    updateTagUsedField(addTag: false);
+    updateTagUsedField();
     try {
       // 保存
       await saveSiteData();
+      // 移除文件
+      FS.deleteDirSync(FS.join(state.appDir, 'posts', '${data.fileName}.md'));
+      // 菜单中的列表不必管
+      Get.success(Tran.articleDelete);
     } on Mistake catch (e) {
-      Log.w(e.message);
+      Log.e(e.message);
+      Get.success(Tran.articleDeleteFailure);
     }
-    // 菜单中的列表不必管
-    Get.success(Tran.articleDelete);
   }
 
   /// 检测 [Post] 的命名是否添加或者更新
@@ -140,7 +136,7 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
   /// false: 文章的 URL 与其他文章重复
   bool checkPost(Post data, [Post? oldData]) {
     // 必须要有标题和内容
-    if (data.title.trim().isEmpty || data.content.trim().isEmpty) {
+    if (data.title.trim().isEmpty) {
       return false;
     }
     // fileName
@@ -148,8 +144,7 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
       return false;
     }
     // 判断 fileName 是否有重复的
-    final length = state.posts.where((p) => p.fileName == data.fileName && p != oldData).length;
-    return length <= 0;
+    return state.posts.any((p) => p.fileName == data.fileName && p != oldData);
   }
 
   /// 比较 post 是否相等
@@ -157,7 +152,6 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
     // 标签
     // 其它
     return prev.title == next.title &&
-        prev.content == next.content &&
         prev.fileName == next.fileName &&
         prev.date == next.date &&
         prev.feature == next.feature &&
@@ -167,9 +161,9 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
   }
 
   /// 比较 post 中的 tags 是否相等
-  bool equalPostTags(List<Tag> prev, List<Tag> next) {
-    final tag1 = prev.map((t) => t.slug).toSet();
-    final tag2 = next.map((t) => t.slug).toSet();
+  bool equalPostTags(List<String> prev, List<String> next) {
+    final tag1 = prev.toSet();
+    final tag2 = next.toSet();
     final tag3 = tag1.union(tag2);
     return tag1.length == tag3.length && tag3.length == tag2.length;
   }

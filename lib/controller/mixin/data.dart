@@ -135,6 +135,7 @@ mixin DataProcess on StateController<Application> {
   ///
   /// 出错时掏出 [Mistake] 异常
   Future<Application> loadSiteData(Application site) async {
+    final postsPath = FS.join(site.appDir, 'posts');
     final configPath = FS.join(site.appDir, 'config');
     final configJsonPath = FS.join(configPath, 'config.json');
 
@@ -143,6 +144,8 @@ mixin DataProcess on StateController<Application> {
       TJsonMap config = FS.readStringSync(configJsonPath).deserialize<TJsonMap>()!;
       // 将配置全部合并到 base 中
       site = site.copyWith<Application>(config)!;
+      // 移除文件不存在的 post
+      site.posts.removeWhere((post) => !FS.fileExistsSync(FS.join(postsPath, '${post.fileName}.md')));
       // 主题名列表
       var themeConfig = site.themeConfig;
       var themes = site.themes = FS.subDir(FS.join(site.appDir, 'themes'));
@@ -184,6 +187,10 @@ mixin DataProcess on StateController<Application> {
       final customThemePath = FS.join(configPath, 'theme.${state.themeConfig.selectTheme}.config.json');
       FS.writeStringSync(customThemePath, state.themeCustomConfig.toJson());
       // 更新应用配置
+      // 将 post 的 content 设为 ''
+      for (var post in state.posts) {
+        post.content = '';
+      }
       FS.writeStringSync(FS.join(configPath, 'config.json'), state.copy<ApplicationDb>()!.toJson());
     } finally {
       // 设置状态

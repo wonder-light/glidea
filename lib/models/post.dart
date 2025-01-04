@@ -73,9 +73,9 @@ class PostData extends PostDataBase {
   @JsonProperty()
   bool published = false;
 
-  /// 标签
+  /// 标签的 slug 集合
   @JsonProperty()
-  List<Tag> tags = [];
+  List<String> tags = [];
 }
 
 /// 文章

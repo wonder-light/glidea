@@ -334,8 +334,8 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 筛选发布的文章并移除文章中无效的标签
   bool _filterPublishPost(Post post) {
     for (var i = post.tags.length - 1; i >= 0; i--) {
-      var tag = post.tags[i];
-      var value = _tagsMap[tag.slug];
+      var tagSlug = post.tags[i];
+      var value = _tagsMap[tagSlug];
       // 需要移除的标签, 确保标签都是有效的
       if (value == null) {
         post.tags.removeAt(i);
@@ -353,7 +353,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// Post to PostRender
   PostRender _postToRender(Post post) {
     // 变换标签
-    var currentTags = post.tags.map((t) => _tagsMap[t.slug]!.toMap());
+    var currentTags = post.tags.map((slug) => _tagsMap[slug]!.toMap());
     // TOC 目录
     var toc = '';
     // 将文章中本地图片路径，变更为线上路径

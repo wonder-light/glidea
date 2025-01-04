@@ -129,7 +129,7 @@ class _ArticlesViewState extends State<ArticlesView> {
           ],
           if (post.tags.isNotEmpty) ...[
             const Icon(PhosphorIconsRegular.tag),
-            for (var tag in post.tags) Text(tag.name),
+            for (var tag in site.getTagsWithPost(post)) Text(tag.name),
           ],
         ],
       ),
