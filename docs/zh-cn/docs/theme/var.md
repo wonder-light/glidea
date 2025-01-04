@@ -36,7 +36,7 @@
 - [themeConfig](#themeconfig)
 - [site](#site)
 
-### tag 页面键 :id=tag-page
+### tag 页面 :id=tag-page
 
 - [tag](#tag)
 - [posts](#posts)

@@ -13,6 +13,10 @@
   font-weight: 700;
 }
 
+.img-cover {
+  width: 80%;
+}
+
 .img-normal {
   width: 240px;
   height: auto;
@@ -24,6 +28,13 @@
   height: 100% !important;
 }
 
+.img-theme-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 2rem;
+  width: 80%;
+}
+
 .img-theme {
   width: 100%;
   height: auto;
@@ -33,14 +44,9 @@
 }
 
 .img-theme:hover {
-  transform: scale(1.1);
+  transform: scale(1.06);
   box-shadow: -5px 5px 5px #cecece;
 }
-
-/*.b-normal {
-  display: flex;
-  flex-wrap: wrap;
-}*/
 
 .a-button,
 .a-button-cover {
@@ -94,6 +100,11 @@
 /* logo 图片 */
 a.app-name-link img {
   width: var(--app-name-img-width);
+}
+
+/* 导航栏列表 */
+.app-nav li:hover ul {
+  width: max-content;
 }
 
 /* 主题卡片 */
@@ -176,6 +187,10 @@ a.app-name-link img {
 }
 
 @media screen and (min-width: 768px) {
+  .img-cover {
+    width: 60%;
+  }
+  
   .theme-list .theme-card {
     width: 50%;
   }

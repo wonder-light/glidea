@@ -25,18 +25,18 @@
   - 登录 GitHub 之后，点击[这里](https://github.com/settings/tokens/new)创建一个 Token，**勾选上 repo 的相关权限即可**
   - 生成之后记得把 Token 复制到你的本地，因为一旦关闭网页将不能再看到它
 
-  ![token](../../../assets/images/quick-new-token.jpg)
-  ![access](../../../assets/images/quick-access-token.png)
+  ![token](../../../assets/images/quick-new-token.jpg ':class=img-cover')
+  ![access](../../../assets/images/quick-access-token.png ':class=img-cover')
 
 2.**创建公开仓库，存放构建后的网站文件**
   
-  ![new-repo](../../../assets/images/quick-new-github-repo.jpg)
+  ![new-repo](../../../assets/images/quick-new-github-repo.jpg ':class=img-cover')
 
 3.**进入 Glidea 进行远程设置**
 
   - 按照下图的示例进行设置，然后点击「检测远程链接」，进行配置检查
 
-  ![sync](../../../assets/images/quick-github-sync.png)
+  ![sync](../../../assets/images/quick-github-sync.png ':class=img-cover')
 
 4.**同步**
   

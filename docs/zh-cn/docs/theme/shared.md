@@ -78,23 +78,23 @@ fog
 
   仓库的命令格式为 `glidea-theme-`\<name\>
 
-  ![theme-shared-repo-1](../../../assets/images/theme-shared-repo-1.png)
+  ![theme-shared-repo-1](../../../assets/images/theme-shared-repo-1.png ':class=img-cover')
 
 - 更新 README.md
 
   请按照[模板](#template)更新, 示例如下: 
 
-  ![theme-shared-repo-2](../../../assets/images/theme-shared-repo-2.png)
+  ![theme-shared-repo-2](../../../assets/images/theme-shared-repo-2.png ':class=img-cover')
 
 - 设置 topics
 
   请添加 `glidea-theme` 主题, 以便其它小伙伴可以搜索到
 
-  ![theme-shared-repo-3](../../../assets/images/theme-shared-repo-3.png)
+  ![theme-shared-repo-3](../../../assets/images/theme-shared-repo-3.png ':class=img-cover')
 
 
 ## 讨论 :id=discuss
 
 请将其作为评论发表, 而不是作为回复发表
 
-![theme-shared-discuss-1](../../../assets/images/theme-shared-discuss-1.png)
+![theme-shared-discuss-1](../../../assets/images/theme-shared-discuss-1.png ':class=img-cover')

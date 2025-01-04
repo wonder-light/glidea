@@ -18,7 +18,7 @@
 
 示例：
 
-![topic](../../../assets/images/glidea-theme-topic.jpg)
+![topic](../../../assets/images/glidea-theme-topic.jpg ':class=img-cover')
 
 
 ## Jinja 基础介绍 :id=Jinja
@@ -54,15 +54,15 @@
 
 ### 标签 :id=tag
 
-- {{ ... }} 用于把表达式的结果打印到模板上
+- `{​{ ... }​}` 用于把表达式的结果打印到模板上
 ``` django
-{{% themeConfig.siteName %}}
-{{% themeConfig.siteName|e %}} // 对其进行转义
+{{ themeConfig.siteName }}
+{{ themeConfig.siteName|e }} // 对其进行转义
 ```
 
 
 
-- {% ... %} 用于执行诸如 for 循环 或赋值的语句
+- `{% ... %}` 用于执行诸如 for 循环 或赋值的语句
 ``` django
 {% for item in posts %}
   <li>
@@ -73,7 +73,7 @@
 
 ### 包含 :id=include
 
-include 语句用于包含一个模板，\
+`include` 语句用于包含一个模板，\
 并在当前命名空间中返回那个文件的内容渲染结果:
 
 ``` django
@@ -84,7 +84,7 @@ include 语句用于包含一个模板，\
 
 ### 条件判断 :id=if
 
-你可以用 if 和 elif 和 else 来构建多个分支
+你可以用 `if` 和 `elif` 和 `else` 来构建多个分支
 
 ``` django
 {% if themeConfig.sick %}

@@ -58,10 +58,13 @@
 # 主题
 
 <div align="center">
-
   <br/>
-
-  ![theme-1](./assets/images/background_14.jpg ':class=img-theme')
+  <div class="img-theme-list">
+    <img class="img-theme" src="./assets/images/background_14.jpg" alt="theme-1"/>
+    <img class="img-theme" src="./assets/images/background_14.jpg" alt="theme-1"/>
+    <img class="img-theme" src="./assets/images/background_14.jpg" alt="theme-1"/>
+    <img class="img-theme" src="./assets/images/background_14.jpg" alt="theme-1"/>
+  </div>
 
   [👗浏览更多](./zh-cn/themes/readme.md ':class=a-button-cover')
 
@@ -72,17 +75,7 @@
 
 # 客户端下载
 
-[windows](https://github.com/wonder-light/glidea/releases/windows  ':class=a-button')
-
-[linux](https://github.com/wonder-light/glidea/releases/linux ':class=a-button')
-
-[macos](https://github.com/wonder-light/glidea/releases/macos ':class=a-button')
-
-[android](https://github.com/wonder-light/glidea/releases/android ':class=a-button')
-
-[windows](https://github.com/wonder-light/glidea/releases/windows ':class=a-button')
-
-[andriod](https://github.com/wonder-light/glidea/releases/android ':class=a-button')
+[install](./commont/install.md ':include')
 
 当前版本: v1.0.0 [✨ What's new?](https://github.com/wonder-light/glidea/releases)
 
