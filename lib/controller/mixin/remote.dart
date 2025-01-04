@@ -78,7 +78,7 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     inBeingSync.dispose();
     inRemoteDetect.dispose();
     await fileServer?.close(force: true);
-    return super.disposeState();
+    await super.disposeState();
   }
 
   /// 发布站点

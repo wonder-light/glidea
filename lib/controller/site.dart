@@ -22,9 +22,9 @@ class SiteController extends StateController<Application> with EventBus, DataPro
   void onInit() async {
     super.onInit();
     setLoading();
-    setSuccess(await initData());
+    value = await initData();
     initState();
-    refresh();
+    setSuccess(value);
   }
 
   @override

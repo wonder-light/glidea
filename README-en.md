@@ -22,8 +22,6 @@ English | [简体中文](README.md)
 
 👏  Welcome to use **Glidea** ！
 
-🔔  **Glidea** is a flutter implementation of [Gridea](https://github.com/getgridea/gridea) that is completely free and open source
-
 ✍️  **Glidea** A static blog writing client. You can use it to record your life, mood, and ideas... ...
 
 ## Features👇

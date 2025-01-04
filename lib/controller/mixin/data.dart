@@ -2,7 +2,7 @@
 import 'dart:ui' show Locale;
 
 import 'package:flutter/foundation.dart' show AsyncCallback;
-import 'package:get/get.dart' show Get, GetNavigationExt, GetStringUtils, StateController;
+import 'package:get/get.dart' show Get, GetNavigationExt, StateController;
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
@@ -21,7 +21,7 @@ mixin DataProcess on StateController<Application> {
   /// 语言代码
   Map<String, String> get languages => TranslationsService.languages;
 
-  /// 初始化数据
+  /// 在控制价初始化时进行数据的的初始化
   Future<Application> initData() async {
     var site = Application();
     try {
@@ -36,7 +36,7 @@ mixin DataProcess on StateController<Application> {
   }
 
   /// 控制器状态设置为 success 后调佣
-  void initState() async {
+  void initState() {
     // 设置语言
     setLanguage(state.language);
   }
@@ -46,20 +46,42 @@ mixin DataProcess on StateController<Application> {
     await saveSiteData();
   }
 
-  /// 检查 .glidea 文件夹是否存在，如果不存在，则将其初始化
+  /// 在站点目录下创建文件和目录, 或者将不存在的文件或目录补全
   ///
-  /// throw [Mistake] exception
+  /// 创建或更新输出目录或配置
+  ///
+  /// 站点目录结构如下:
+  /// ```
+  /// config.json ------------- 配置文件夹
+  /// │   ├── config.json ----- 配置文件
+  /// │   └── ...... ---------- 其它文件
+  /// images ------------------ 图片文件夹
+  /// │   ├── avatar.png ------ 头像
+  /// │   └── ...... ---------- 其它图片
+  /// post-images ------------- 文章的图片文件夹
+  /// │   ├── post-feature.jpg - 默认封面
+  /// │   └── ...... ----------- 其它封面
+  /// posts -------------------- 文章文件夹
+  /// │   ├── about.md --------- Markdown 文章
+  /// │   └── ...... ----------- 其它文章
+  /// static ------------------- 静态文件夹
+  /// │   └── 404.html --------- 404 页面
+  /// themes ------------------- 主题文件夹
+  /// │   ├── simple ----------- simple 主题文件夹
+  /// │   └── ...... ----------- 其它主题文件夹
+  /// favicon.ico -------------- 图标
+  /// ```
+  ///
+  /// 出错时掏出 [Mistake] 异常
   Future<void> checkDir(Application site) async {
-    // 创建开始
+    // 创建开始, 只使用一次
     final isCreate = _isCreate;
+    const dirField = 'appDir';
     _isCreate = false;
     // 应用程序支持目录, 即配置所在的目录
     final appConfigFolder = FS.normalize((await getApplicationSupportDirectory()).path);
     // 应用程序文档目录
     final document = FS.normalize((await getApplicationDocumentsDirectory()).path);
-    // 检查是否存在 .hve-notes 文件夹，如果存在，则加载它，否则使用默认配置。
-    final appConfigFolderOld1 = FS.join(appConfigFolder, '.hve-notes');
-    final appConfigFolderOld2 = FS.join(appConfigFolder, '.glidea');
     final appConfigPath = FS.join(appConfigFolder, 'config.json');
     var defaultSiteDir = FS.join(document, 'glidea');
 
@@ -70,35 +92,25 @@ mixin DataProcess on StateController<Application> {
     site.supportDir = appConfigFolder;
 
     try {
-      // 如果存在的话 '.gridea' 配置文件夹，则将其移动到 appConfigFolder 目录下
-      if (FS.pathExistsSync(appConfigFolderOld2)) {
-        FS.moveSubFile(appConfigFolderOld2, appConfigFolder);
-      }
-      // 如果存在的话 '.hve-notes' 配置文件夹，则将其移动到 appConfigFolder 目录下
-      if (FS.pathExistsSync(appConfigFolderOld1)) {
-        FS.moveSubFile(appConfigFolderOld1, appConfigFolder);
-      }
-    } catch (e) {
-      throw Mistake(message: 'move old config folder failed: \n$e');
-    }
-    try {
       // 创建 config.json 文件
-      if (!FS.pathExistsSync(appConfigPath)) {
-        FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
+      if (!FS.fileExistsSync(appConfigPath)) {
+        FS.writeStringSync(appConfigPath, '{"$dirField": "${site.appDir}"}');
       } else {
         final appConfig = FS.readStringSync(appConfigPath).deserialize<TJsonMap>()!;
-        defaultSiteDir = FS.normalize(appConfig['sourceFolder']);
-        // 如果时默认目录则进行覆盖
-        if (isCreate) {
-          site.appDir = defaultSiteDir;
-        }
+        defaultSiteDir = FS.normalize(appConfig[dirField]);
+      }
+      // 在刚打开应用时应该直接进行覆盖, 而不用进行其它操作
+      if (isCreate) {
+        site.appDir = defaultSiteDir;
+        // 将不存在的文件解压到指定路径
+        FS.unzip('assets/public/default-files.zip', site.appDir, isAsset: true, cover: false);
       }
       // 输出目录
-      if (!FS.pathExistsSync(site.buildDir)) {
+      if (!FS.dirExistsSync(site.buildDir)) {
         FS.createDirSync(site.buildDir);
       }
     } catch (e) {
-      throw Mistake(message: 'create or read config.json file failed: \n$e');
+      throw Mistake.add(message: 'create or read config.json file, or copy default files to appDir failed', error: e);
     }
     // 当保存的目录修改后将旧目录移动到新目录
     if (site.appDir != defaultSiteDir) {
@@ -111,44 +123,26 @@ mixin DataProcess on StateController<Application> {
           FS.deleteDirSync(defaultSiteDir);
         }
 
-        FS.writeStringSync(appConfigPath, '{"sourceFolder": "${site.appDir}"}');
+        FS.writeStringSync(appConfigPath, '{"$dirField": "${site.appDir}"}');
         return;
       } catch (e) {
-        throw Mistake(message: 'move appDir failed: \n$e');
-      }
-    }
-    if (isCreate) {
-      try {
-        // 将不存在的文件解压到指定路径
-        FS.unzip('assets/public/default-files.zip', site.appDir, isAsset: true, cover: false);
-      } catch (e) {
-        throw Mistake(message: 'copy default files to appDir failed: \n$e');
+        throw Mistake.add(message: 'move appDir failed', error: e);
       }
     }
   }
 
-  /// 加载配置
+  /// 从 config/config.json 中加载配置
   ///
-  /// throw [Mistake] exception
+  /// 出错时掏出 [Mistake] 异常
   Future<Application> loadSiteData(Application site) async {
     final configPath = FS.join(site.appDir, 'config');
     final configJsonPath = FS.join(configPath, 'config.json');
 
-    if (FS.fileExistsSync(configJsonPath)) {
-      try {
-        // 获取配置
-        TJsonMap config = FS.readStringSync(configJsonPath).deserialize<TJsonMap>()!;
-        // 将配置全部合并到 base 中
-        site = site.copyWith<Application>(config)!;
-      } catch (e) {
-        throw Mistake(message: 'read and merge site data failed: \n$e');
-      }
-    } else {
-      // 兼容 Gridea, 获取数据
-      site = _transformDataForPath(site);
-    }
-
     try {
+      // 获取配置
+      TJsonMap config = FS.readStringSync(configJsonPath).deserialize<TJsonMap>()!;
+      // 将配置全部合并到 base 中
+      site = site.copyWith<Application>(config)!;
       // 主题名列表
       var themeConfig = site.themeConfig;
       var themes = site.themes = FS.subDir(FS.join(site.appDir, 'themes'));
@@ -157,12 +151,12 @@ mixin DataProcess on StateController<Application> {
         themeConfig.selectTheme = themes.first;
       }
       // 使用选定主题数据
-      var themePath = FS.join(site.appDir, 'config', 'theme.${themeConfig.selectTheme}.config.json');
+      var themePath = FS.join(configPath, 'theme.${themeConfig.selectTheme}.config.json');
       if (FS.fileExistsSync(themePath)) {
         site.themeCustomConfig = FS.readStringSync(themePath).deserialize<TJsonMap>()!;
       }
     } catch (e) {
-      throw Mistake(message: 'set theme data failed: \n$e');
+      throw Mistake.add(message: 'set theme data failed', error: e);
     }
     // APP 信息
     var packageInfo = await PackageInfo.fromPlatform();
@@ -174,43 +168,34 @@ mixin DataProcess on StateController<Application> {
     return site;
   }
 
-  /// 保存配置到文件, 保存后进行 [refresh]
+  /// 将配置保存到 config/config.json 文件, 保存后进行 [refresh]
   ///
-  /// throw [Mistake] exception
+  /// 出错时掏出 [Mistake] 异常
   Future<void> saveSiteData({AsyncCallback? callback}) async {
     // 设置状态
     setLoading();
     try {
       // 先执行回调
       await callback?.call();
-    } catch (e) {
-      setSuccess(state);
-      rethrow;
-    }
-    final site = state;
-    // 检查目录
-    await checkDir(site);
-    final configPath = FS.join(site.appDir, 'config');
-    try {
+      // 检查目录
+      await checkDir(state);
+      final configPath = FS.join(state.appDir, 'config');
       // 自定义主题配置
-      if (site.themeCustomConfig.isNotEmpty) {
-        final customThemePath = FS.join(configPath, 'theme.${site.themeConfig.selectTheme}.config.json');
-        FS.writeStringSync(customThemePath, site.themeCustomConfig.toJson());
-      }
+      final customThemePath = FS.join(configPath, 'theme.${state.themeConfig.selectTheme}.config.json');
+      FS.writeStringSync(customThemePath, state.themeCustomConfig.toJson());
       // 更新应用配置
-      FS.writeStringSync(FS.join(configPath, 'config.json'), site.copy<ApplicationDb>()!.toJson());
-    } catch (e) {
-      throw Mistake(message: 'write application config failed: \n$e');
+      FS.writeStringSync(FS.join(configPath, 'config.json'), state.copy<ApplicationDb>()!.toJson());
+    } finally {
+      // 设置状态
+      setSuccess(state);
+      // 保存后刷新数据
+      refresh();
     }
-    // 设置状态
-    setSuccess(state);
-    // 保存后刷新数据
-    refresh();
   }
 
   /// 更新站点的全部数据
   ///
-  /// throw [Mistake] exception
+  /// 出错时掏出 [Mistake] 异常
   void updateSite(Application site) {
     saveSiteData(callback: () async {
       await Future.delayed(const Duration(milliseconds: 10));
@@ -226,95 +211,5 @@ mixin DataProcess on StateController<Application> {
     state.language = code;
     var [lang, country] = code.split('_');
     Get.updateLocale(Locale(lang, country));
-  }
-
-  // 从路径中获取 Gridea 的数据
-  Application _transformDataForPath(Application site) {
-    // 数据
-    TJsonMap data = {};
-    // config 路径
-    final configPath = FS.join(site.appDir, 'config');
-    // 配置路径
-    final paths = {
-      // post 数据
-      FS.join(configPath, 'posts.json'),
-      // remote 数据
-      FS.join(configPath, 'setting.json'),
-      // theme 数据
-      FS.join(configPath, 'theme.json'),
-    };
-    for (var path in paths) {
-      // 判断是否存在
-      if (FS.fileExistsSync(path)) {
-        try {
-          final config = FS.readStringSync(path).deserialize<TJsonMap>()!;
-          // 更改 setting.json 中 config 的名称
-          if (path.contains('setting.json')) {
-            config['setting'] = config['config'];
-          }
-          // 合并配置
-          data = data.mergeMaps(config);
-        } catch (e) {
-          Log.w('read gridea data failed: $e');
-        }
-      }
-    }
-    if (data.isNotEmpty) {
-      try {
-        // 将配置全部合并到 base 中
-        site = site.copyWith<Application>(_transformData(data))!;
-      } catch (e) {
-        Log.w('merge gridea data failed: $e');
-      }
-    }
-    return site;
-  }
-
-  /// 将 Gridea 的数据处理为适合该应用的数据
-  TJsonMap _transformData(TJsonMap data) {
-    // 修改 json 中的部分名称
-    if (data.containsKey('setting')) {
-      data['remote'] = data.remove('setting');
-    }
-    if (data.containsKey('config')) {
-      final config = data.remove('config');
-      config['tagUrlFormat'] = (config['tagUrlFormat'] as String).camelCase;
-      config['postUrlFormat'] = (config['postUrlFormat'] as String).camelCase;
-      // 将字符串格式化
-      data['themeConfig'] = config;
-    }
-    if (data.containsKey('customConfig')) {
-      data['themeCustomConfig'] = data.remove('customConfig');
-    }
-    // 扁平化 post 中的 data 字段
-    if (data['posts'] case List<Map> posts when posts.isNotEmpty) {
-      // 最外层的标签源数据 tag.name - tag
-      TJsonMap tagsMap = {};
-      // 记录标签
-      if (data['tags'] case List<Map> tags when tags.isNotEmpty) {
-        for (var tag in tags) {
-          tagsMap[tag['name']] = tag;
-        }
-      }
-      // 对每个 post 进行处理
-      for (var post in posts) {
-        // 扁平化 data
-        if (post['data'] is Map) {
-          post.addAll(post.remove('data'));
-        }
-        // 更改 tags 的内容
-        if (post['tags'] case List<String> tags when tags.isNotEmpty) {
-          post['tags'] = tags.map((tagName) => tagsMap[tagName]).toList();
-        }
-      }
-    }
-    // 将字符串格式化
-    if (data['menus'] case List<Map> menus when menus.isNotEmpty) {
-      for (var menu in menus) {
-        menu['openType'] = (menu['openType'] as String).camelCase;
-      }
-    }
-    // 将配置全部合并到 base 中
-    return data;
   }
 }
