@@ -200,12 +200,18 @@ class FS {
   }
 
   /// 解压缩文件到指定路径
+  ///
+  /// [src] 压缩文件来源
+  ///
+  /// [target] 解压位置
+  ///
+  /// [isAsset] 是否是资源文件
+  ///
+  /// [cover] 是否覆盖已有的文件
   static Future<void> unzip(String src, String target, {bool isAsset = false, bool cover = false}) async {
     final archive = await getZipArchive(src, isAsset: isAsset);
     // 创建目录
     createDirSync(target);
-    // 解压文件到磁盘
-    //await extractArchiveToDisk(archive, target);
     // 循环
     for (final entry in archive) {
       // 路径

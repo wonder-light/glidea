@@ -1,7 +1,7 @@
 ﻿import 'dart:io' show File;
 
 import 'package:flutter/material.dart';
-import 'package:image/image.dart' as img show Image, copyResize, encodeJpg, writeFile;
+import 'package:image/image.dart' as img show Image, copyResize, encodeJpg, writeFile, decodeImageFile;
 
 ///  扩展 FileImage, 在图片变化时可以进行更新, 包括路径变化、大小变化等
 class FileImageExpansion extends FileImage {
@@ -31,7 +31,7 @@ class FileImageExpansion extends FileImage {
   }
 }
 
-extension ImageSaveExt on img.Image {
+extension ImageExt on img.Image {
   /// 复制压缩图片到指定路径
   ///
   /// [quality] => [0, 100]
@@ -40,5 +40,12 @@ extension ImageSaveExt on img.Image {
     var image = img.copyResize(this, width: (width * scale).toInt(), height: (height * scale).toInt());
     var lists = img.encodeJpg(image, quality: quality);
     return img.writeFile(path, lists);
+  }
+
+  /// 将 [path] 的图片复制压缩到 [target]
+  static Future<bool> compress(String path, String target) async {
+    var image = await img.decodeImageFile(path);
+    if(image == null) return false;
+    return await image.compressImage(target);
   }
 }

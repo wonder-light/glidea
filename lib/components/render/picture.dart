@@ -209,8 +209,7 @@ class _PictureWidgetState extends State<PictureWidget> {
       initPath = FS.join(pathData.dirPath, '${DateTime.now().millisecondsSinceEpoch}${FS.extension(path.value)}');
     }
     // 保存并压缩
-    var image = await img.decodeImageFile(path.value);
-    await image?.compressImage(initPath);
+    await ImageExt.compress(path.value, initPath);
     // 恢复原有的路径
     path.value = initPath;
     // 更新

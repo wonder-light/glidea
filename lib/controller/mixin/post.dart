@@ -9,7 +9,6 @@ import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/post.dart';
-import 'package:glidea/models/tag.dart';
 
 import 'data.dart';
 import 'tag.dart';
@@ -78,16 +77,20 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
   void updatePost({required Post newData, Post? oldData, String fileContent = ''}) async {
     // 旧文件名
     String? oldFileName;
-    // oldData 在 post 中存在
-    if (state.posts.remove(oldData)) {
-      oldFileName = oldData!.fileName;
-    }
+    final index = oldData == null ? -1 : state.posts.indexOf(oldData);
     // 添加或更新 post
     newData
       ..content = ''
       // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
       ..abstract = newData.content.split(summaryRegExp).firstOrNull ?? '';
-    state.posts.add(newData);
+    // oldData 在 post 中存在
+    if (index >= 0) {
+      oldFileName = oldData!.fileName;
+      state.posts[index] = newData;
+    } else {
+      // 插入到开头
+      state.posts.insert(0, newData);
+    }
     // 更新标签
     updateTagUsedField();
     try {
@@ -144,7 +147,7 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
       return false;
     }
     // 判断 fileName 是否有重复的
-    return state.posts.any((p) => p.fileName == data.fileName && p != oldData);
+    return !state.posts.any((p) => p.fileName == data.fileName && p != oldData);
   }
 
   /// 比较 post 是否相等

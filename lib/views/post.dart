@@ -12,6 +12,7 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
+import 'package:glidea/helpers/image.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
@@ -129,6 +130,9 @@ class _PostViewState extends State<PostView> {
 
   /// 用于进行修改的 [postData] 副本
   late Post currentPost;
+
+  /// 初始 post 内容
+  String initContent = '';
 
   /// 判断是否禁用保存图标
   final isDisable = false.obs;
@@ -464,7 +468,6 @@ class _PostViewState extends State<PostView> {
     contentController.text = '${content.substring(0, end)}$separator${content.substring(end)}';
     // 复原位置
     contentController.selection = TextSelection.collapsed(offset: end + separator.length);
-    ;
   }
 
   /// 插入图片
@@ -477,9 +480,12 @@ class _PostViewState extends State<PostView> {
 
     if (result?.paths.firstOrNull?.isEmpty ?? true) return;
     // 选择的图片路径
-    final path = FS.normalize(result!.paths.first!);
+    var path = FS.normalize(result!.paths.first!);
+    var target = FS.join(site.state.appDir, 'post-images', '${DateTime.now().millisecondsSinceEpoch}${FS.extension(path)}');
+    // 保存并压缩
+    await ImageExt.compress(path, target);
     // 在 markdown 插入图片
-    insertSeparator(separator: '![]($featurePrefix$path)');
+    insertSeparator(separator: '![]($featurePrefix$target)');
   }
 
   /// 显示表情符号
@@ -504,12 +510,14 @@ class _PostViewState extends State<PostView> {
 
   /// 从文件读取内容
   Future<void> updateContent() async {
-    contentController.text = await FS.readString(FS.join(site.state.appDir, 'posts', '${postData.fileName}.md'));
+    final path = FS.join(site.state.appDir, 'posts', '${currentPost.fileName}.md');
+    initContent = FS.fileExistsSync(path) ? await FS.readString(path) : '';
+    contentController.text = initContent;
   }
 
   /// 更新保存按钮是否禁用
   void updateDisable() {
-    isDisable.value = currentPost.title.isEmpty || contentController.text.isEmpty;
+    isDisable.value = currentPost.title.isEmpty || initContent == contentController.text;
   }
 
   /// 鼠标点击事件, 用于关闭 emoji, stats 视图
