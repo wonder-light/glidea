@@ -104,58 +104,49 @@ Each theme is optionally paired with a `config.json` configuration file and a `s
 
 ### style-override.dart
 
-```dart
-void generateOverride(Map<String, dynamic> params) {
-  var result = "";
-  //Dark skin
-  if (params[skin] case String skin when skin != "white") {
-    result += '''
-      body{
-        color:#dee2e6;
-      }
-      a,.link{
-        color:#e9ecef;
-      }
-    ''';
+```django
+{# Dark skin #}
+{% if skin and skin != "white" %}
+  body{
+    color: #dee2e6;
   }
-  //Maximum width of the content area - contentMaxWidth
-  if (params[contentMaxWidth] case String value when value != "800px") {
-    result += '''
-      .main{
-        max-width:${value};
-      }
-    ''';
+  a, .link{
+    color: #e9ecef;
   }
-  //Text content Text size - textSize
-  if (params[textSize] case String size when size != "16px") {
-    result += '''
-      .post-detail.post.post-contentp{
-        font-size:${size};
-      }
-   ''';
+{% endif %}
+
+{# Maximum width of the content area - contentMaxWidth #}
+{% if contentMaxWidth and contentMaxWidth != "800px" %}
+  .main{
+    max-width: {{ contentMaxWidth }};
   }
-  // Page background color - pageBgColor
-  if (params[pageBgColor] case String bg when bg != "#ffffff") {
-    result += '''
-      body{
-        background:${bg};
-      }
-    ''';
+{% endif %}
+
+{# Text content Text size - textSize #}
+{% if textSize and textSize != "16px" %}
+  .post-detail.post.post-content{
+    font-size: {{ textSize }};
   }
-  //Text color - textColor
-  if (params[textColor] case String color when color != "#333333") {
-    result += '''
-      body{
-        color: ${color};
-      }
-    ''';
+{% endif %}
+
+{# Page background color - pageBgColor #}
+{% if pageBgColor and pageBgColor != "#ffffff" %}
+  body{
+    background: {{ pageBgColor }};
   }
-  //Custom CSS - customCss
-  if (params.customCss case String css) {
-    result += css;
+{% endif %}
+
+{# Text color - textColor #}
+{% if textColor and textColor != "#333333" %}
+  body{
+  color: {{ textColor }};
   }
-  return result;
-}
+{% endif %}
+
+{# Custom CSS - customCss #}
+{% if customCss %}
+  {{ customCss }}
+{% endif %}
 ```
 
 Yes, as you can see, custom configuration is as simple and clear as that. Let's take a look at the specific fields and how to use them:
@@ -283,21 +274,15 @@ When used in the template, you can play your imagination, social, statistics, fr
 
 Of course, it can also be used in style overlay files:
 
-```dart
-void generateOverride(Map<String, dynamic> params) {
-  // params are custom field objects. You can add custom css based on field values
-  var result = '';
-  // Text content Text size - textSize
-  if (params[textSize] case String size when size != '16px') {
-    result += '''
-      body {
-        font-size: ${size};
-      }
-    ''';
+```django
+{# The current context is customConfig #}
+{# Text content Text size - textSize #}
+{% if textSize and textSize != "16px" %}
+  .post-detail.post.post-content{
+    font-size: {{ textSize }};
   }
-  // The final result is placed at the end of the 'main.css' file
-  return result;
-}
+{% endif %}
+{# The final result is placed at the end of the 'main.css' file #}
 ```
 
 Here, I believe you have figured out how to add custom configuration capabilities to the theme,

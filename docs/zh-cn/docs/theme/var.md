@@ -138,7 +138,7 @@ post: {
   abstract: '',
   description: '一个静态博客写作客户端 欢迎使用 Glidea', // 智能截取文章开始内容填充此字段，可用作未设置摘要时备用字段
   title: 'Hello Glidea',
-  tags: [@tag, @tag, @tag], // 文章 tag 数组，具体可见下面 tag 字段
+  tags: ['Glidea', 'dev', 'test'], // 文章 tag 数组，具体可见下面 tag 字段
   date: 'December 12o 2018, am',
   dateFormat: '2018-12-12', // 依据 Glidea 应用内日期格式化后字段
   feature: 'post-images/hello-glidea.png', // 若无封面图，则为''
@@ -175,7 +175,7 @@ themeConfig: {
   domain: "https://github.com",
   archivesPageSize: 50,
   archivesPath: "archives", // 归档页路径前缀，应用内可自定义，例如 'blog', 'news' 等
-  dateFormat: "yyyy-MM-dd",
+  dateFormat: "yyyy-MM-dd HH:mm:ss",
   feedCount: 10,
   useFeed: false,
   footerInfo: "Powered by <a href=\"https://github.com/wonder-light/glidea\" target=\"_blank\">Glidea</a>",

@@ -102,60 +102,51 @@
 }
 ``` 
 
-### style-override.dart
+### style-override.j2
 
-```dart
-void generateOverride(Map<String, dynamic> params) {
-  var result = "";
-  //暗黑皮肤
-  if (params[skin] case String skin when skin != "white") {
-    result += '''
-      body{
-        color:#dee2e6;
-      }
-      a,.link{
-        color:#e9ecef;
-      }
-    ''';
+```django
+{# 暗黑皮肤 #}
+{% if skin and skin != "white" %}
+  body{
+    color: #dee2e6;
   }
-  //内容区最大宽度 - contentMaxWidth
-  if (params[contentMaxWidth] case String value when value != "800px") {
-    result += '''
-      .main{
-        max-width:${value};
-      }
-    ''';
+  a, .link{
+    color: #e9ecef;
   }
-  //正文内容文字大小 - textSize
-  if (params[textSize] case String size when size != "16px") {
-    result += '''
-      .post-detail.post.post-contentp{
-        font-size:${size};
-      }
-   ''';
+{% endif %}
+
+{# 内容区最大宽度 - contentMaxWidth #}
+{% if contentMaxWidth and contentMaxWidth != "800px" %}
+  .main{
+    max-width: {{ contentMaxWidth }};
   }
-  //网页背景色 - pageBgColor
-  if (params[pageBgColor] case String bg when bg != "#ffffff") {
-    result += '''
-      body{
-        background:${bg};
-      }
-    ''';
+{% endif %}
+
+{# 正文内容文字大小 - textSize #}
+{% if textSize and textSize != "16px" %}
+  .post-detail.post.post-content{
+    font-size: {{ textSize }};
   }
-  //文字颜色 - textColor
-  if (params[textColor] case String color when color != "#333333") {
-    result += '''
-      body{
-        color: ${color};
-      }
-    ''';
+{% endif %}
+
+{# 网页背景色 - pageBgColor #}
+{% if pageBgColor and pageBgColor != "#ffffff" %}
+  body{
+    background: {{ pageBgColor }};
   }
-  //自定义CSS - customCss
-  if (params.customCss case String css) {
-    result += css;
+{% endif %}
+
+{# 文字颜色 - textColor #}
+{% if textColor and textColor != "#333333" %}
+  body{
+  color: {{ textColor }};
   }
-  return result;
-}
+{% endif %}
+
+{# 自定义CSS - customCss #}
+{% if customCss %}
+  {{ customCss }}
+{% endif %}
 ```
 
 是的，如你所见，自定义配置就是这么简单，清晰。下面让我们详细了解一下具体字段和使用方法：
@@ -284,21 +275,15 @@ void generateOverride(Map<String, dynamic> params) {
 
 当然，在样式覆盖文件中也可以使用：
 
-```dart
-void generateOverride(Map<String, dynamic> params) {
-  // params 即自定义字段对象，可以根据字段值来添加自定义 css
-  var result = '';
-  // 正文内容文字大小 - textSize
-  if (params[textSize] case String size when size != '16px') {
-    result += '''
-      body {
-        font-size: ${size};
-      }
-    ''';
+```django
+{# 当前上下文即为 customConfig #}
+{# 正文内容文字大小 - textSize #}
+{% if textSize and textSize != "16px" %}
+  .post-detail.post.post-content{
+    font-size: {{ textSize }};
   }
-  // 最终结果会放在 `main.css` 的文件末尾
-  return result;
-}
+{% endif %}
+{# 最终结果会放在 `main.css` 的文件末尾 #}
 ```
 
  到这里，相信你已经搞清楚如何给主题增加自定义配置能力了，快去开发一个属于自己的主题吧，分享给其他人会更佳呦！

@@ -141,7 +141,7 @@ post: {
   abstract: '',
   description: 'A static blog writing client, welcome to Glidea',
   title: 'Hello Glidea',
-  tags: [@tag, @tag, @tag], // Article tag array, specifically see the tag field below
+  tags: ['Glidea', 'dev', 'test'], // Article tag array, specifically see the tag field below
   date: 'December 12o 2018, am',
   dateFormat: '2018-12-12', // Fields formatted according to Glidea in-app dates
   feature: 'post-images/hello-glidea.png', // If there is no cover picture, it is ''
@@ -178,7 +178,7 @@ themeConfig: {
   domain: "https://github.com",
   archivesPageSize: 50,
   archivesPath: "archives", // Archive page path prefix, which can be customized within the application, such as 'blog', 'news', etc
-  dateFormat: "yyyy-MM-dd",
+  dateFormat: "yyyy-MM-dd HH:mm:ss",
   feedCount: 10,
   useFeed: false,
   footerInfo: "Powered by <a href=\"https://github.com/wonder-light/glidea\" target=\"_blank\">Glidea</a>",
