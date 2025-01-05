@@ -1,13 +1,15 @@
-﻿import 'package:flutter/foundation.dart' show kReleaseMode;
+﻿import 'dart:collection' show ListQueue;
+
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:glidea/helpers/fs.dart';
-import 'package:logger/logger.dart' show AdvancedFileOutput, Level, Logger, MultiOutput, ProductionFilter, StreamOutput;
+import 'package:logger/logger.dart' show AdvancedFileOutput, Level, Logger, MemoryOutput, MultiOutput, OutputEvent, ProductionFilter;
 import 'package:path_provider/path_provider.dart' show getApplicationSupportDirectory;
 
 class Log {
   // [Logger] 实例
   static late final Logger instance;
 
-  static late final Stream<List<String>> stream;
+  static late final ListQueue<OutputEvent> buffer;
 
   /// 应用程序当前的日志级别.
   ///
@@ -20,10 +22,10 @@ class Log {
   static Future<void> initialized() async {
     Level level = kReleaseMode ? Level.info : Level.trace;
     // 流输出
-    StreamOutput streamOutput = StreamOutput();
-    stream = streamOutput.stream;
+    MemoryOutput memoryOutput = MemoryOutput(bufferSize: 50);
+    buffer = memoryOutput.buffer;
     // 列表
-    final lists = [if (!kReleaseMode) Logger.defaultOutput(), streamOutput];
+    final lists = [if (!kReleaseMode) Logger.defaultOutput(), memoryOutput];
     // 文件输出
     if (kReleaseMode) {
       // 应用程序支持目录, 即配置所在的目录

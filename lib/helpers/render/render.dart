@@ -1,4 +1,5 @@
 ﻿import 'dart:io' show FileMode;
+import 'dart:math' show min;
 
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
@@ -389,7 +390,7 @@ final class RemoteRender {
 
     for (var i = 1; condition(i); i++) {
       // 以 pageSize 进行分割
-      final posts = postList.sublist((i - 1) * pageSize, i * pageSize);
+      final posts = postList.sublist((i - 1) * pageSize, min(i * pageSize, postList.length));
       // home 页面的 urlPath == ''
       final isHomepage = urlPath == '' && i <= 1;
       // i <= 1 => urlPath

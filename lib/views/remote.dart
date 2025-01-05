@@ -451,12 +451,14 @@ class _RemoteViewState extends State<RemoteView> {
   /// 更新域名字段
   void _updateDomainField() {
     InputConfig field = fieldConfigs.value[RemoteSetting]![_domain]! as InputConfig;
-    if (field.value.startsWith('https://')) {
-      domainPrefix = 'https://';
+    final prefix = RegExp(r'https?://').stringMatch(field.value);
+    if (prefix != null) {
+      domainPrefix = prefix;
+      domainController.text = field.value.substring(prefix.length);
     } else {
-      domainPrefix = 'http://';
+      domainPrefix = 'https://';
+      domainController.text = field.value;
     }
-    domainController.text = field.value.substring(domainPrefix.length);
   }
 
   /// 字段变化时调用

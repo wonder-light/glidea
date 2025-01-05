@@ -79,9 +79,9 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       await Deploy.create(state).publish();
       // 成功
       Get.success(Tran.syncSuccess);
-    } on Mistake catch (e, s) {
+    } catch (e, s) {
       Log.i('$e\n$s');
-      Get.error(e.hint.isEmpty ? Tran.syncError1 : e.hint);
+      Get.error(e is Mistake && e.hint.isNotEmpty ? e.hint : Tran.syncError1);
     } finally {
       inBeingSync.value = false;
     }
@@ -101,9 +101,9 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       await _enableStaticServer();
       // 成功
       Get.success(Tran.renderSuccess);
-    } on Mistake catch (e) {
-      Log.i(e);
-      Get.error(e.hint);
+    } catch (e, s) {
+      Log.i('$e\n$s');
+      Get.error(e is Mistake ? e.hint : Tran.renderError);
     }
   }
 
