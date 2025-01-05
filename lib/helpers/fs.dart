@@ -1,5 +1,5 @@
 ﻿import 'dart:convert' show base64;
-import 'dart:io' show Directory, File, FileSystemEntity;
+import 'dart:io' show Directory, File, FileMode, FileSystemEntity;
 
 import 'package:archive/archive_io.dart' show Archive, InputFileStream, OutputFileStream, ZipDecoder;
 import 'package:flutter/services.dart' show Uint8List, rootBundle;
@@ -50,7 +50,7 @@ class FS {
   static Future<File> writeString(String path, String content) => File(path).writeAsString(content);
 
   /// 同步地将字符串写入文件
-  static void writeStringSync(String path, String content) => File(path).writeAsStringSync(content);
+  static void writeStringSync(String path, String content, {FileMode mode = FileMode.write}) => File(path).writeAsStringSync(content, mode: mode);
 
   /// 拷贝文件夹或者文件
   static void copySync(String src, String target) {

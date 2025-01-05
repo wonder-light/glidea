@@ -12,6 +12,13 @@ const String defaultPostFeaturePath = '/post-images/post-feature.jpg';
 const String defaultRobotsPath = 'User-agent: *\nDisallow:';
 const String defaultDateFormat = 'yyyy-MM-dd HH:mm:ss';
 
+// 模板名称
+const homeTemplate = 'index.j2';
+const postTemplate = 'post.j2';
+const archivesTemplate = 'archives.j2';
+const tagsTemplate = 'tags.j2';
+const tagTemplate = 'tag.j2';
+
 /// 加载 [Post] 中的本地图片的前缀
 const String featurePrefix = 'file://';
 

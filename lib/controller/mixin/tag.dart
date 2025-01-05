@@ -93,7 +93,7 @@ mixin TagSite on StateController<Application>, DataProcess {
 
   /// 更新标签中 [Tag.used] 字段的值
   ///
-  /// [addTag] == true, 将 [post] 中的标签添加到 [site.tags] 中, 否则删除它
+  /// [addTag] == true, 将 [post] 中的标签添加到 [state.tags] 中, 否则删除它
   void updateTagUsedField() {
     // 清空
     _tagsMap = {
