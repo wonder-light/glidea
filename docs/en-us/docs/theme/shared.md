@@ -1,4 +1,4 @@
-# Share Theme
+# Share Theme :id=share
 
 > Share your theme with your friends on GitHub
 

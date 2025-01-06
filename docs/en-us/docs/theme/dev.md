@@ -116,3 +116,8 @@ Macros can then be called like functions:
 <p>{{ input('username') }}</p>
 <p>{{ input('password', type='password') }}</p
 ```
+
+
+## Custom rendering :id=custom
+
+Need to customize the rendering template can refer to [here](/en-us/docs/theme/render) Oh!

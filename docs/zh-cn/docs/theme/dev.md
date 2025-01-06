@@ -113,3 +113,7 @@
 <p>{{ input('username') }}</p>
 <p>{{ input('password', type='password') }}</p
 ```
+
+## 自定义渲染 :id=custom
+
+需要自定义渲染模板的可以参考[这里](/zh-cn/docs/theme/render)哦!

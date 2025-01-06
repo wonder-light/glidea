@@ -1,4 +1,4 @@
-# Why do you like Glidea <!-- {docsify-ignore-all} -->
+# Why do you like Glidea :id=like <!-- {docsify-ignore-all} -->
 
 <div align="center">
 
@@ -55,7 +55,7 @@
 <br/>
 <br/>
 
-# Themes
+# Themes :id=theme
 
 <div align="center">
 
@@ -74,7 +74,7 @@
 <br/>
 <br/>
 
-# Client download
+# Client download :id=install
 
 [install](../commont/install.md ':include')
 
@@ -82,7 +82,7 @@ Current version: v1.0.0 [✨ What's new?](https://github.com/wonder-light/glidea
 
 ______
 
-### Other
+### Other :id=other
 
 [Source address](https://github.com/wonder-light/glidea)
 

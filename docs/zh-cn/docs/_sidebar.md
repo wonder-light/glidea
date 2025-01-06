@@ -9,6 +9,7 @@
   * [变量](zh-cn/docs/theme/var.md)
   * [自定义](zh-cn/docs/theme/custom.md)
   * [分享](zh-cn/docs/theme/shared.md)
+  * [渲染](zh-cn/docs/theme/render.md)
 * 指南
   * [安装](zh-cn/docs/guide/install.md)
   * [常见问题](zh-cn/docs/guide/faq.md)

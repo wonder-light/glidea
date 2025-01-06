@@ -1,5 +1,5 @@
 
-# Theme customization
+# Theme customization :id=theme-custom
 
 > Glidea provides powerful theme customization capabilities, you can design your own custom configuration to provide theme users
 
@@ -8,7 +8,7 @@ Each theme is optionally paired with a `config.json` configuration file and a `s
 
 ## Example :id=example
 
-### config.json
+### config.json :id=config
 
 ```json
 {
@@ -102,7 +102,7 @@ Each theme is optionally paired with a `config.json` configuration file and a `s
 }
 ``` 
 
-### style-override.dart
+### style-override.dart :id=style-override
 
 ```django
 {# Dark skin #}
@@ -208,6 +208,7 @@ the format for each element is as follows：
 }
 ```
 
+
 ## Array type configuration :id=array-config
 
 ```json
@@ -266,9 +267,10 @@ the format for each element is as follows：
 In most cases, using the input type is sufficient
 
 
-These fields can be used either in the template (corresponding to: [`site.customconfig.customField`](#configjson)) or in the style overlay file (corresponding to: input)
+These fields can be used either in the template (corresponding to: [`site.customconfig.customField`](#config)) or in the style overlay file (corresponding to: input)
 
 When used in the template, you can play your imagination, social, statistics, friend chain, external chain background map, background music...
+
 
 ## Style overlay configuration :id=style-override
 

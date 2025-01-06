@@ -1,4 +1,4 @@
-# 为什么喜欢使用 Glidea <!-- {docsify-ignore-all} -->
+# 为什么喜欢使用 Glidea :id=like <!-- {docsify-ignore-all} -->
 
 <div align="center">
 
@@ -55,7 +55,7 @@
 <br/>
 <br/>
 
-# 主题
+# 主题 :id=theme
 
 <div align="center">
   <br/>
@@ -73,7 +73,7 @@
 <br/>
 <br/>
 
-# 客户端下载
+# 客户端下载 :id=install
 
 [install](./commont/install.md ':include')
 
@@ -82,7 +82,7 @@
 
 ______
 
-### 其它
+### 其它 :id=other
 
 [源码地址](https://github.com/wonder-light/glidea)
 

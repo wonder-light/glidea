@@ -1,5 +1,5 @@
 
-# 主题自定义
+# 主题自定义 :id=theme-custom
 
 > Glidea 提供了强大的主题自定义能力，你可以自行设计自定义配置提供给主题使用者
 
@@ -8,7 +8,7 @@
 
 ## 示例 :id=example
 
-### config.json
+### config.json :id=config
 
 ```json
 {
@@ -102,7 +102,7 @@
 }
 ``` 
 
-### style-override.j2
+### style-override.j2 :id=style-override
 
 ```django
 {# 暗黑皮肤 #}
@@ -208,6 +208,7 @@
 }
 ```
 
+
 ## 数组类型配置 :id=array-config
 
 ```json
@@ -266,7 +267,7 @@
 大部分情况下，使用 input 类型的就够用了
 
 
-这些字段都可以在模版中（对应: [`site.customConfig.自定义字段`](#configjson)）或样式覆盖文件（对应：入参）中使用
+这些字段都可以在模版中（对应: [`site.customConfig.自定义字段`](#config)）或样式覆盖文件（对应：入参）中使用
 
 在模版中使用时，你可以尽情发挥你的想象，社交、统计、友链、外链背景图、背景音乐...
 

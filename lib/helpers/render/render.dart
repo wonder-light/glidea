@@ -1,4 +1,4 @@
-﻿import 'dart:io' show FileMode;
+﻿import 'dart:io' show Directory, FileMode;
 import 'dart:math' show min;
 
 import 'package:glidea/helpers/constants.dart';
@@ -16,7 +16,8 @@ import 'package:glidea/models/post.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:glidea/models/theme.dart';
 import 'package:jinja/jinja.dart' show Environment;
-import 'package:jinja/loaders.dart';
+import 'package:jinja/loaders.dart' show FileSystemLoader;
+import 'package:process_runner/process_runner.dart' show ProcessRunner;
 
 typedef _TChangeData = TChangeCallback<TJsonMap, TJsonMap>;
 
@@ -30,15 +31,11 @@ final class RemoteRender {
   /// 主题路径
   late final String themePath = FS.join(site.appDir, 'themes', site.themeConfig.selectTheme);
 
+  /// 是否执行自定义模板解析
+  bool isCustom = false;
+
   /// jinja 执行环境
   late Environment env;
-
-  /// 匹配 feature 本地图片路径的正则
-  ///
-  /// 'file://.*/post-images/' => '/post-images/'
-  ///
-  /// (?<=匹配开头).*(?=匹配结尾)
-  late final RegExp featureReg = RegExp(featurePrefix + r'.*(?=/post-images)');
 
   /// 渲染 post 的数据
   final List<PostRender> postsData = [];
@@ -53,8 +50,18 @@ final class RemoteRender {
   /// 菜单数据
   List<Menu> menusData = [];
 
-  /// 站点地图
-  late Sitemap sitemap;
+  /// 自定义模板
+  Set<String> customTemplates = {};
+
+  /// 站点 URL 记录
+  ///
+  ///     index => '', 'page/2/'
+  ///     archives => 'archives/', 'archives/page/2/'
+  ///     tags => 'tags/'
+  ///     post => 'post/{fileName}/'
+  ///     tag => 'tag/{slug}/', 'tag/{slug}/page/2/'
+  ///     custom => 404, start/
+  TMapList<String, String> siteUrls = {};
 
   String get domain => site.themeConfig.domain;
 
@@ -182,21 +189,27 @@ final class RemoteRender {
 
   /// 构建模板
   Future<void> buildTemplate() async {
-    sitemap = Sitemap();
-    env = Environment(
-      globals: {
-        'site': {
-          'posts': postsData,
-          'tags': tagsData,
-          'menus': menusData,
-          'themeConfig': themeConfig,
-          'customConfig': customConfig,
-          'utils': {
-            'now': DateTime.now().millisecondsSinceEpoch,
-          },
-          'isHomepage': false,
+    final siteData = {
+      'site': {
+        'posts': postsData,
+        'tags': tagsData,
+        'menus': menusData,
+        'themeConfig': themeConfig,
+        'customConfig': customConfig,
+        'commentSetting': site.comment,
+        'utils': {
+          'now': DateTime.now().millisecondsSinceEpoch,
         },
+        'isHomepage': false,
       },
+    };
+    await _recordSiteUrl();
+    if (await customBuildTemplate(siteData)) {
+      return;
+    }
+
+    env = Environment(
+      globals: siteData,
       autoReload: true,
       loader: FileSystemLoader(
         paths: ['$themePath/templates'],
@@ -214,6 +227,38 @@ final class RemoteRender {
     await buildTagDetail();
     await buildCustomPage();
     await buildSiteMap();
+  }
+
+  /// 自定义构建模板
+  Future<bool> customBuildTemplate(TJsonMap data) async {
+    final processFilePath = FS.join(themePath, 'config.json');
+    final renderDataPath = FS.join(site.supportDir, 'render', 'config.json');
+    final renderPathData = FS.join(site.supportDir, 'render', 'paths.json');
+    // 检测 config.json 是否存在
+    if (!FS.fileExistsSync(processFilePath)) return false;
+    // 获取 process 字段
+    final config = FS.readStringSync(processFilePath).deserialize<TJsonMap>();
+    // 获取命令行
+    final exec = (config?['process'] as String?)?.split(RegExp(r'\s*')) ?? [];
+    if (exec.isEmpty) return false;
+    // 写入渲染数据
+    FS.writeStringSync(renderDataPath, data.toJson());
+    // 模板的输出路径数据
+    final pathData = {
+      for (var MapEntry(:key, :value) in siteUrls.entries)
+        key: [
+          for (var url in value) FS.join(site.buildDir, url == '404' ? '404.html' : url, 'index.html'),
+        ],
+    };
+    FS.writeStringSync(renderPathData, pathData.toJson());
+    // 加入构建目录
+    exec.add(site.buildDir);
+    // 加入渲染数据的路径
+    exec.add(renderDataPath);
+    // 执行程序
+    final process = ProcessRunner(environment: {'buildDir': site.buildDir, 'renderData': renderDataPath, 'renderPath': renderPathData});
+    final result = await process.runProcess(exec, workingDirectory: Directory(themePath));
+    return true;
   }
 
   /// 构建 css
@@ -248,7 +293,6 @@ final class RemoteRender {
       'themeConfig': themeConfig,
     });
     FS.writeStringSync(renderPath, html);
-    addSiteUrl('tags', '/');
   }
 
   /// 呈现文章详细信息页面，包括隐藏的文章
@@ -264,7 +308,6 @@ final class RemoteRender {
       });
       FS.createDirSync(renderFolderPath);
       FS.writeStringSync(FS.join(renderFolderPath, 'index.html'), html);
-      addSiteUrl(themeConfig.postPath, post.fileName, '/');
     }
 
     for (var i = 0, length = showPosts.length; i < length; i++) {
@@ -306,27 +349,19 @@ final class RemoteRender {
 
   /// 渲染自定义页面
   Future<void> buildCustomPage() async {
-    final customTemplates = env.listTemplates().toSet().difference({
-      homeTemplate, postTemplate, archivesTemplate, tagsTemplate, tagTemplate,
-      // 👇 Glidea 保护字，因为这些文件名是 Glidea 文件夹的名称
-      'images.j2', 'media.j2', 'post-images.j2', 'styles.j2',
-    });
-    for (var template in customTemplates) {
+    for (var name in customTemplates) {
       String renderPath;
-      // 404 页面在根目录下创建
-      final name = FS.basename(template);
       if (name == '404') {
         renderPath = FS.join(site.buildDir, '404.html');
       } else {
         renderPath = FS.join(site.buildDir, name, 'index.html');
       }
-      final html = env.getTemplate(template).render({
+      final html = env.getTemplate('$name.j2').render({
         'menus': menusData,
         'themeConfig': themeConfig,
         'commentSetting': site.comment,
       });
       FS.writeStringSync(renderPath, html);
-      addSiteUrl(themeConfig.postPath, name, name == '404' ? '' : '/');
     }
   }
 
@@ -336,6 +371,15 @@ final class RemoteRender {
     var str = '${themeConfig.robotsText}\nSitemap: $domain/sitemap.xml';
     FS.writeStringSync(FS.join(site.buildDir, 'robots.txt'), str);
     // 创建一个站点地图
+    final sitemap = Sitemap();
+
+    /// 添加站点地图的 URl
+    for (var lists in siteUrls.values) {
+      for (var url in lists) {
+        sitemap.add(SitemapEntry(location: FS.join(domain, url)));
+      }
+    }
+
     FS.writeStringSync(FS.join(site.buildDir, 'sitemap.xml'), sitemap.generate());
     if (themeConfig.useFeed) {
       str = Feed(
@@ -348,6 +392,45 @@ final class RemoteRender {
         rights: 'All rights reserved 2025, Glidea',
       ).generate();
       FS.writeStringSync(FS.join(site.buildDir, 'atom.xml'), str);
+    }
+  }
+
+  /// 记录站点 URL
+  Future<void> _recordSiteUrl() async {
+    final postPagesize = (showPosts.length / themeConfig.postPageSize).ceil();
+    final archivePagesize = (showPosts.length / themeConfig.archivesPageSize).ceil();
+    List<String> setAt(String base, int size, [bool isUpdate = false, bool skipEmpty = false]) {
+      return [
+        base,
+        for (var i = 2; i <= postPagesize; i++) FS.join(base, 'page', '$i', '/'),
+      ];
+    }
+
+    var name = FS.basename(homeTemplate);
+    siteUrls[name] = setAt('', postPagesize);
+    name = FS.basename(archivesTemplate);
+    siteUrls[name] = setAt(FS.join(themeConfig.archivePath, '/'), archivePagesize);
+    name = FS.basename(tagsTemplate);
+    siteUrls[name] = setAt('tags/', 1);
+    name = FS.basename(postTemplate);
+    siteUrls[name] = [...postsData.map((p) => FS.join(themeConfig.postPath, p.fileName, '/'))];
+    name = FS.basename(tagTemplate);
+    final tagUrls = siteUrls[name] = [];
+    for (var tag in tagsData) {
+      tagUrls.addAll(setAt(FS.join(themeConfig.tagPath, tag.slug, '/'), (tag.count / themeConfig.postPageSize).ceil()));
+    }
+
+    final templates = {
+      ...siteUrls.keys,
+      // 👇 Glidea 保护字，因为这些文件名是 Glidea 文件夹的名称
+      'images', 'media', 'post-images', 'styles',
+    };
+    final custom = siteUrls['custom'] = [];
+    final files = FS.getFilesSync(FS.join(themePath, 'templates'), recursive: false);
+    customTemplates = files.map((file) => FS.basename(file.path)).toSet().difference(templates);
+    for (var name in customTemplates) {
+      if (templates.contains(name)) continue;
+      custom.add(name == '404' ? name : '$name/');
     }
   }
 
@@ -421,13 +504,17 @@ final class RemoteRender {
       final html = env.getTemplate(templatePath).render(update == null ? renderData : update(renderData));
       // 写入文件
       FS.writeStringSync(renderPath, html);
-      addSiteUrl(currentUrlPath);
     }
   }
 
   /// 将文章中本地图片路径，变更为线上路径
   String _changeImageUrlToDomain(String content) {
-    return content.replaceAll(featureReg, domain);
+    /// 匹配 feature 本地图片路径的正则
+    ///
+    /// 'file://.*/post-images/' => '/post-images/'
+    ///
+    /// (?<=匹配开头).*(?=匹配结尾)
+    return content.replaceAll(RegExp(featurePrefix + r'.*(?=/post-images)'), domain);
   }
 
   /// 获取内容摘要
@@ -468,10 +555,5 @@ final class RemoteRender {
     // time
     stats.time = (minutes * 60).floor() * 1000;
     return stats;
-  }
-
-  /// 添加站点地图的 URl
-  void addSiteUrl(String path1, [String? path2, String? path3]) {
-    sitemap.add(SitemapEntry(location: FS.join(domain, path1, path2, path3)));
   }
 }

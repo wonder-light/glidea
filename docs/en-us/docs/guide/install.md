@@ -1,4 +1,4 @@
-# Installing the client
+# Installing the client :id=install
 
 [install](../../../commont/install.md ':include')
 

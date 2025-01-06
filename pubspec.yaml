@@ -76,6 +76,7 @@ dependencies:
   dartssh2: ^2.11.0
   jinja: ^0.6.0
   xml: ^6.5.0
+  process_runner: ^4.2.0
 
 dev_dependencies:
   flutter_test:

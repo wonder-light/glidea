@@ -946,6 +946,22 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "6.0.1"
+  process:
+    dependency: transitive
+    description:
+      name: process
+      sha256: "107d8be718f120bbba9dcd1e95e3bd325b1b4a4f07db64154635ba03f2567a0d"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "5.0.3"
+  process_runner:
+    dependency: "direct main"
+    description:
+      name: process_runner
+      sha256: "4763f660895a1aea3c097bba3204794094b828cb9a279a65a2506a9b93d47d12"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.2.0"
   provider:
     dependency: transitive
     description:
