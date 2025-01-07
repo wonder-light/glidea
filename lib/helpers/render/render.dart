@@ -243,7 +243,7 @@ final class RemoteRender {
     exec.add(renderDataPath);
     // 执行程序
     final process = ProcessRunner(environment: {'buildDir': site.buildDir, 'renderData': renderDataPath, 'renderPath': renderPathData});
-    final result = await process.runProcess(exec, workingDirectory: Directory(themePath));
+    await process.runProcess(exec, workingDirectory: Directory(themePath));
     return true;
   }
 

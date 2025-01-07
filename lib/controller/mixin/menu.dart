@@ -1,4 +1,4 @@
-﻿import 'package:get/get.dart' show Get, StateController;
+﻿import 'package:get/get.dart' show StateController;
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';

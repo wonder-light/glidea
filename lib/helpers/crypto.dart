@@ -3,7 +3,7 @@ import 'dart:io' show File, RandomAccessFile;
 
 import 'package:convert/convert.dart' show AccumulatorSink;
 import 'package:crypto/crypto.dart' show Digest, Hash, sha1;
-import 'package:flutter/foundation.dart' show AsyncCallback, Uint8List;
+import 'package:flutter/foundation.dart' show AsyncCallback;
 import 'package:glidea/helpers/constants.dart';
 
 typedef AsyncGetterValue<T> = Future<T> Function(int start, int length);

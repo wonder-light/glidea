@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart' show GlobalCupertinoLocalizations, GlobalMaterialLocalizations, GlobalWidgetsLocalizations;
-import 'package:get/get.dart' show Get, Translations, GetNavigationExt;
+import 'package:get/get.dart' show Translations;
 
 import 'en_us.dart';
 import 'fr_fr.dart';

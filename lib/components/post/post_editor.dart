@@ -230,7 +230,6 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
 
   /// 图片
   Widget _buildImage() {
-    final post = widget.entity;
     return ArrayWidget.create(
       config: widget.picture,
       randomName: true,

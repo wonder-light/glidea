@@ -15,8 +15,6 @@ import 'package:glidea/routes/router.dart';
 import 'package:responsive_framework/responsive_framework.dart'
     show Breakpoint, Condition, DESKTOP, PHONE, ResponsiveBreakpoints, ResponsiveScaledBox, ResponsiveValue, TABLET;
 
-import 'controller/site.dart';
-
 // \'package\:(?!.*(?:material|show|glidea))(.*);
 // 查找 package 包, 同时排除 material, show, glidea
 
@@ -57,7 +55,6 @@ class App extends StatelessWidget {
       useInheritedMediaQuery: true,
       scrollBehavior: scrollBehavior,
       locale: DevicePreview.locale(context),
-      //Get.deviceLocale,
       translations: TranslationsService(),
       fallbackLocale: TranslationsService.fallbackLocale,
       supportedLocales: TranslationsService.supportedLocales,

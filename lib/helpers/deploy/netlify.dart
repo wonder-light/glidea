@@ -38,8 +38,6 @@ class NetlifyDeploy extends Deploy {
     final fileList = await prepareLocalFilesList();
     // 需要上传的文件的哈希值
     final hashOfFilesToUpload = await requestFiles(fileList);
-    // 异常
-    final mistake = Mistake(message: 'netlify deploy upload file failed', hint: Tran.connectFailed);
     // 开始上传
     for (var filePath in hashOfFilesToUpload) {
       // 出错时尝试两次

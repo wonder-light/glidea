@@ -1,6 +1,5 @@
-﻿import 'package:get/get.dart' show Get, StateController, Trans;
+﻿import 'package:get/get.dart' show StateController, Trans;
 import 'package:glidea/enum/enums.dart';
-import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';

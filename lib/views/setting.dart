@@ -31,6 +31,7 @@ class _SettingViewState extends State<SettingView> {
   @override
   void initState() {
     super.initState();
+    // TODO: setting -> theme -> remote -> post
   }
 
   @override

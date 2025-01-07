@@ -7,10 +7,8 @@ import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/image.dart';
-import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/models/render.dart';
-import 'package:image/image.dart' as img show decodeImageFile;
 
 import 'base.dart';
 
