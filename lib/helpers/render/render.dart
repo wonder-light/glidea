@@ -3,13 +3,11 @@ import 'dart:math' show min;
 
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
-import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/helpers/render/sitemap.dart';
 import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:glidea/models/post.dart';
@@ -73,117 +71,105 @@ final class RemoteRender {
 
   /// 清理输出目录
   Future<void> clearOutputFolder() async {
-    try {
-      FS.deleteDirSync(site.buildDir);
-      FS.createDirSync(site.buildDir);
-    } catch (e) {
-      throw Mistake(message: 'clear output folder failed: \n$e', hint: 'renderError');
-    }
+    FS.deleteDirSync(site.buildDir);
+    FS.createDirSync(site.buildDir);
   }
 
   /// 为呈现页面格式化数据
   Future<void> formatDataForRender() async {
-    try {
-      // 标签
-      tagsData.clear();
-      _tagsMap.clear();
-      for (var tag in site.tags) {
-        // 创建 TagRender
-        final link = FS.join(domain, themeConfig.tagPath, tag.slug, '/');
-        final value = tag.copyWith<TagRender>({'link': link})!;
-        // 记录 TagRender
-        _tagsMap[value.slug] = value;
-        tagsData.add(value);
-      }
-      // 文章
-      postsData.clear();
-      for (var post in site.posts) {
-        // 未发布的不要
-        if (!post.published) continue;
-        // 序列化后的标签
-        final List<TJsonMap?> postTags = [];
-        // 文章的标签
-        for (var i = post.tags.length - 1; i >= 0; i--) {
-          var tagSlug = post.tags[i];
-          var tag = _tagsMap[tagSlug];
-          // 需要移除的标签, 确保标签都是有效的
-          if (tag == null) {
-            post.tags.removeAt(i);
-          } else {
-            postTags.add(tag.toMap());
-            // 未隐藏则数量加一
-            if (!post.hideInList) tag.count++;
-          }
-        }
-        // TOC 目录
-        var toc = '';
-        // 将文章中本地图片路径，变更为线上路径
-        var content = FS.readStringSync(FS.join(site.appDir, 'posts', '${post.fileName}.md'));
-        content = _changeImageUrlToDomain(content);
-        var abstract = Markdown.markdownToHtml(_changeImageUrlToDomain(post.abstract));
-        var html = Markdown.markdownToHtml(content, tocCallback: (data) => toc = data);
-        // 渲染 MarkDown to HTML
-        // 返回数据
-        final postRender = post.copyWith<PostRender>({
-          'tags': postTags,
-          'toc': toc,
-          'content': html,
-          'abstract': Markdown.markdownToHtml(_changeImageUrlToDomain(post.abstract)),
-          'description': abstract.isNotEmpty ? abstract : _getSummaryForContent(content),
-          'dateFormat': themeConfig.dateFormat.isNotEmpty ? post.date.format(pattern: themeConfig.dateFormat) : post.date,
-          'feature': _getPostFeature(post.feature),
-          'link': FS.join(domain, themeConfig.postPath, post.fileName, '/'),
-          'stats': _statsCalc(content).toMap(),
-        })!;
-        postsData.add(postRender);
-      }
-      // 对 post 进行排序, 置顶优先, 其次新发布的在前
-      // compareFn(a, b) 返回值    排序顺序
-      //  > 0	                    a 在 b 后，如 [b, a]
-      //  < 0	                    a 在 b 前，如 [a, b]
-      //  === 0	                  保持 a 和 b 原来的顺序
-      postsData.sort((prev, next) {
-        int com = (next.isTop ? 1 : 0) - (prev.isTop ? 1 : 0);
-        if (com != 0) return com;
-        com = next.date.compareTo(prev.date);
-        return com;
-      });
-      // 添加未隐藏的 post
-      showPosts.clear();
-      showPosts.addAll(postsData.where((p) => !p.hideInList));
-      // 菜单数据
-      menusData = site.menus.map((m) => m.copy<Menu>()!).toList();
-    } catch (e) {
-      throw Mistake.add(message: 'format data failed', hint: Tran.renderError, error: e);
+    // 标签
+    tagsData.clear();
+    _tagsMap.clear();
+    for (var tag in site.tags) {
+      // 创建 TagRender
+      final link = FS.join(domain, themeConfig.tagPath, tag.slug, '/');
+      final value = tag.copyWith<TagRender>({'link': link})!;
+      // 记录 TagRender
+      _tagsMap[value.slug] = value;
+      tagsData.add(value);
     }
+    // 文章
+    postsData.clear();
+    for (var post in site.posts) {
+      // 未发布的不要
+      if (!post.published) continue;
+      // 序列化后的标签
+      final List<TJsonMap?> postTags = [];
+      // 文章的标签
+      for (var i = post.tags.length - 1; i >= 0; i--) {
+        var tagSlug = post.tags[i];
+        var tag = _tagsMap[tagSlug];
+        // 需要移除的标签, 确保标签都是有效的
+        if (tag == null) {
+          post.tags.removeAt(i);
+        } else {
+          postTags.add(tag.toMap());
+          // 未隐藏则数量加一
+          if (!post.hideInList) tag.count++;
+        }
+      }
+      // TOC 目录
+      var toc = '';
+      // 将文章中本地图片路径，变更为线上路径
+      var content = FS.readStringSync(FS.join(site.appDir, 'posts', '${post.fileName}.md'));
+      content = _changeImageUrlToDomain(content);
+      var abstract = Markdown.markdownToHtml(_changeImageUrlToDomain(post.abstract));
+      var html = Markdown.markdownToHtml(content, tocCallback: (data) => toc = data);
+      // 渲染 MarkDown to HTML
+      // 返回数据
+      final postRender = post.copyWith<PostRender>({
+        'tags': postTags,
+        'toc': toc,
+        'content': html,
+        'abstract': Markdown.markdownToHtml(_changeImageUrlToDomain(post.abstract)),
+        'description': abstract.isNotEmpty ? abstract : _getSummaryForContent(content),
+        'dateFormat': themeConfig.dateFormat.isNotEmpty ? post.date.format(pattern: themeConfig.dateFormat) : post.date,
+        'feature': _getPostFeature(post.feature),
+        'link': FS.join(domain, themeConfig.postPath, post.fileName, '/'),
+        'stats': _statsCalc(content).toMap(),
+      })!;
+      postsData.add(postRender);
+    }
+    // 对 post 进行排序, 置顶优先, 其次新发布的在前
+    // compareFn(a, b) 返回值    排序顺序
+    //  > 0	                    a 在 b 后，如 [b, a]
+    //  < 0	                    a 在 b 前，如 [a, b]
+    //  === 0	                  保持 a 和 b 原来的顺序
+    postsData.sort((prev, next) {
+      int com = (next.isTop ? 1 : 0) - (prev.isTop ? 1 : 0);
+      if (com != 0) return com;
+      com = next.date.compareTo(prev.date);
+      return com;
+    });
+    // 添加未隐藏的 post
+    showPosts.clear();
+    showPosts.addAll(postsData.where((p) => !p.hideInList));
+    // 菜单数据
+    menusData = site.menus.map((m) => m.copy<Menu>()!).toList();
   }
 
   /// 复制文件
   Future<void> copyFiles() async {
-    try {
-      final items = {
-        (input: 'post-images', output: 'post-images', isThemePath: false),
-        (input: 'images', output: 'images', isThemePath: false),
-        (input: 'favicon.ico', output: 'favicon.ico', isThemePath: false),
-        (input: 'static', output: '', isThemePath: false),
-        (input: 'static', output: '', isThemePath: true),
-        (input: 'assets/media', output: 'media', isThemePath: true),
-        (input: 'assets/styles', output: 'styles', isThemePath: true),
-      };
-      for (var item in items) {
-        final inputPath = FS.join(item.isThemePath ? themePath : site.appDir, item.input);
-        final outputPath = FS.join(site.buildDir, item.output);
-        if (FS.pathExistsSync(inputPath)) {
-          FS.copySync(inputPath, outputPath);
-        }
+    final items = {
+      (input: 'post-images', output: 'post-images', isThemePath: false),
+      (input: 'images', output: 'images', isThemePath: false),
+      (input: 'favicon.ico', output: 'favicon.ico', isThemePath: false),
+      (input: 'static', output: '', isThemePath: false),
+      (input: 'static', output: '', isThemePath: true),
+      (input: 'assets/media', output: 'media', isThemePath: true),
+      (input: 'assets/styles', output: 'styles', isThemePath: true),
+    };
+    for (var item in items) {
+      final inputPath = FS.join(item.isThemePath ? themePath : site.appDir, item.input);
+      final outputPath = FS.join(site.buildDir, item.output);
+      if (FS.pathExistsSync(inputPath)) {
+        FS.copySync(inputPath, outputPath);
       }
-      // CNAME
-      final cnamePath = FS.join(site.buildDir, 'CNAME');
-      if (cname.isNotEmpty) {
-        FS.writeStringSync(cnamePath, cname);
-      }
-    } catch (e) {
-      throw Mistake(message: 'copy files failed on render all: \n$e', hint: 'renderError');
+    }
+    // CNAME
+    final cnamePath = FS.join(site.buildDir, 'CNAME');
+    if (cname.isNotEmpty) {
+      FS.writeStringSync(cnamePath, cname);
     }
   }
 

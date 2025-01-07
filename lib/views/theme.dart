@@ -199,13 +199,11 @@ class _ThemeViewState extends State<ThemeView> {
 
   /// 保存配置
   void saveConfig() async {
-    try {
-      // 保存前需要发出保存事件以便于图片进行保存
-      await site.emit(themeSaveEvent);
-      site.updateThemeConfig(themes: themeConfig.value, customs: themeCustomConfig.value);
-      resetConfig();
-    } catch (e) {
-      Get.error(Tran.saveError);
-    }
+    // 保存前需要发出保存事件以便于图片进行保存
+    await site.emit(themeSaveEvent);
+    site.updateThemeConfig(themes: themeConfig.value, customs: themeCustomConfig.value).then((value) {
+      value ? Get.success(Tran.themeConfigSaved) : Get.error(Tran.saveError);
+    });
+    resetConfig();
   }
 }

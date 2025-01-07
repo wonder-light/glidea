@@ -1,7 +1,7 @@
 ﻿import 'package:get/get.dart' show Trans;
 
 /// 错误
-class Mistake extends Error implements Exception {
+class Mistake implements Exception {
   /// 创建 Mistake 异常类
   ///
   /// [message] 错误消息
@@ -34,11 +34,11 @@ class Mistake extends Error implements Exception {
   Mistake addMessage(String? message) {
     return Mistake.add(
       message: this.message,
-      hint: this.hint,
+      hint: hint,
       error: message,
     );
   }
 
   @override
-  String toString() => message ?? 'failed';
+  String toString() => 'message';
 }

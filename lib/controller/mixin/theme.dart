@@ -2,11 +2,9 @@
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
-import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/render.dart';
 import 'package:glidea/models/theme.dart';
@@ -82,7 +80,7 @@ mixin ThemeSite on StateController<Application>, DataProcess {
 
   /// 获取主题的控件配置
   ///
-  /// 都需要 [ArrayConfig] 时, throw [Mistake] exception
+  /// 都需要 [ArrayConfig] 时, throw [Exception] exception
   List<ConfigBase> getThemeWidgetConfig() {
     // 主题列表
     _themeOptions ??= state.themes.map((t) => SelectOption().setValues(label: t, value: t)).toList();
@@ -112,10 +110,10 @@ mixin ThemeSite on StateController<Application>, DataProcess {
 
   /// 获取自定义主题的控件配置
   List<ConfigBase> getThemeCustomWidgetConfig() {
-    List<ConfigBase> lists = [];
-    // 自定义配置 - 字段的值
-    var values = state.themeCustomConfig;
     try {
+      List<ConfigBase> lists = [];
+      // 自定义配置 - 字段的值
+      var values = state.themeCustomConfig;
       // 自定义主题的配置文件路径
       final configPath = FS.join(state.appDir, 'themes', state.themeConfig.selectTheme, 'config.json');
       if (!FS.fileExistsSync(configPath)) return [];
@@ -142,8 +140,8 @@ mixin ThemeSite on StateController<Application>, DataProcess {
       }
 
       return lists;
-    } catch (e) {
-      Log.w('get custom theme render config failed: \n$e');
+    } catch (e, s) {
+      Log.e('get custom theme render config failed', error: e, stackTrace: s);
       return [];
     }
   }
@@ -189,11 +187,11 @@ mixin ThemeSite on StateController<Application>, DataProcess {
 
   /// 更新主题的配置
   ///
-  /// throw [Mistake] exception
-  void updateThemeConfig({List<ConfigBase> themes = const [], List<ConfigBase> customs = const []}) async {
-    // 保存数据
-    await saveSiteData(callback: () async {
-      try {
+  /// throw [Exception] exception
+  Future<bool> updateThemeConfig({List<ConfigBase> themes = const [], List<ConfigBase> customs = const []}) async {
+    try {
+      // 保存数据
+      await saveSiteData(callback: () async {
         // 更新主题数据
         TJsonMap items = {for (var config in themes) config.name: config.value};
         state.themeConfig = state.themeConfig.copyWith<Theme>(items)!;
@@ -201,11 +199,11 @@ mixin ThemeSite on StateController<Application>, DataProcess {
         items = {for (var config in customs) config.name: config.value};
         // Map 在合并后需要使用新的 Map 对象, 旧的 Map 对象在序列化时会报错
         state.themeCustomConfig = state.themeCustomConfig.mergeMaps(items);
-      } catch (e) {
-        throw Mistake(message: 'update theme config and custom theme config failed: \n$e');
-      }
-    });
-    // 通知
-    Get.success(Tran.themeConfigSaved);
+      });
+      return true;
+    } catch (e, s) {
+      Log.e('update or add theme config failed', error: e, stackTrace: s);
+      return false;
+    }
   }
 }

@@ -1,8 +1,6 @@
-﻿import 'package:collection/collection.dart' show IterableExtension;
-import 'package:get/get.dart' show Get, StateController;
-import 'package:glidea/helpers/get.dart';
+﻿import 'package:get/get.dart' show Get, StateController;
+import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
 
@@ -17,36 +15,39 @@ mixin MenuSite on StateController<Application>, DataProcess {
   Menu createMenu() => Menu();
 
   /// 更新菜单
-  void updateMenu({required Menu newData, Menu? oldData}) async {
-    oldData = state.menus.firstWhereOrNull((m) => m == oldData);
-    if (oldData == null) {
-      // 添加标签
-      state.menus.add(newData);
-    } else {
-      // 更新
-      oldData.name = newData.name;
-      oldData.openType = newData.openType;
-      oldData.link = newData.link;
-    }
+  ///
+  /// 返回值是 true 就是更新成功, 否则就是更新失败
+  Future<bool> updateMenu({required Menu newData, Menu? oldData}) async {
     try {
+      final index = oldData == null ? -1 : state.menus.indexOf(oldData);
+      // oldData 在 menus 中存在
+      if (index >= 0) {
+        state.menus[index] = newData;
+      } else {
+        // 添加标签
+        state.menus.add(newData);
+      }
       await saveSiteData();
-      Get.success(Tran.menuSuccess);
-    } catch (e) {
-      Get.error(Tran.saveError);
+      return true;
+    } catch (e, s) {
+      Log.e('update or add menu failed', error: e, stackTrace: s);
+      return false;
     }
   }
 
   /// 删除新标签
-  void removeMenu(Menu menu) async {
-    if (!state.menus.remove(menu)) {
-      Get.error(Tran.menuDeleteFailure);
-      return;
-    }
+  ///
+  /// 返回值是 true 就是删除成功, 否则就是删除失败
+  Future<bool> removeMenu(Menu menu) async {
     try {
+      if (!state.menus.remove(menu)) {
+        return false;
+      }
       await saveSiteData();
-      Get.success(Tran.menuDelete);
-    } catch (e) {
-      Get.error(Tran.menuDeleteFailure);
+      return true;
+    } catch (e, s) {
+      Log.e('delete menu failed', error: e, stackTrace: s);
+      return false;
     }
   }
 

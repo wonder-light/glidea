@@ -160,8 +160,8 @@ class _HomeViewState extends State<HomeView> with WindowListener {
     if (!site.isDisposed) {
       try {
         await site.saveSiteData();
-      } catch (e) {
-        Log.e('$e');
+      } catch (e, s) {
+        Log.e('on exit request save site data failed', error: e, stackTrace: s);
       }
     }
     return AppExitResponse.exit;

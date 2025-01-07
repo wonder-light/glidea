@@ -98,7 +98,9 @@ class _TagsViewState extends State<TagsView> {
       builder: (context) => TagEditor(
         entity: tag,
         onSave: (data) {
-          site.updateTag(newData: data, oldData: tag);
+          site.updateTag(newData: data, oldData: tag).then((value){
+            value ? Get.success(Tran.tagSuccess) : Get.error(Tran.saveError);
+          });
         },
       ),
     );
@@ -112,7 +114,9 @@ class _TagsViewState extends State<TagsView> {
         Get.backLegacy();
       },
       onConfirm: () {
-        site.removeTag(tag);
+        site.removeTag(tag).then((value) {
+          value ? Get.success(Tran.tagDelete) : Get.error(Tran.tagDeleteFailure);
+        });
         Get.backLegacy();
       },
     ));

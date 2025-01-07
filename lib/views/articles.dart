@@ -157,12 +157,7 @@ class _ArticlesViewState extends State<ArticlesView> {
       },
       onConfirm: () {
         site.removePost(post).then((value) {
-          if (value) {
-            Get.success(Tran.articleDelete);
-          } else {
-            // 删除失败
-            Get.error(Tran.articleDeleteFailure);
-          }
+          value ? Get.success(Tran.articleDelete) : Get.error(Tran.articleDeleteFailure);
         });
         Get.backLegacy();
       },

@@ -422,7 +422,9 @@ class _PostViewState extends State<PostView> {
     }
     currentPost.published = published;
     await site.emit(themeSaveEvent);
-    site.updatePost(newData: currentPost, oldData: postData, fileContent: contentController.text);
+    site.updatePost(newData: currentPost, oldData: postData, fileContent: contentController.text).then((value){
+      value ? Get.success(published ? Tran.saved : Tran.draftSuccess): Get.error(Tran.saveError);
+    });
     // 更新数据
     setState(() => updatePostData());
   }

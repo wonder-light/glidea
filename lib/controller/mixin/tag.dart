@@ -44,36 +44,34 @@ mixin TagSite on StateController<Application>, DataProcess {
   }
 
   /// 更新或添加标签, 当 [oldData] 为 null 时添加标签, 否则就会更新标签
-  void updateTag({required Tag newData, Tag? oldData}) async {
-    // 更新
-    state.tags.remove(oldData);
-    state.tags.add(newData);
-    _tagsMap.remove(oldData?.slug);
-    // 添加新的标签
-    _tagsMap[newData.slug] = newData;
+  Future<bool> updateTag({required Tag newData, Tag? oldData}) async {
     try {
+      // 更新
+      state.tags.remove(oldData);
+      state.tags.add(newData);
+      _tagsMap.remove(oldData?.slug);
+      // 添加新的标签
+      _tagsMap[newData.slug] = newData;
       await saveSiteData();
-      Get.success(Tran.tagSuccess);
-    } catch (e) {
-      Log.e('update tag failed: $e');
-      Get.error(Tran.saveError);
+      return true;
+    } catch (e, s) {
+      Log.e('update or add tag failed', error: e, stackTrace: s);
+      return false;
     }
   }
 
   /// 删除标签
-  void removeTag(Tag tag) async {
-    // 判断是否还在使用
-    if (tag.used) return;
-    // 删除标签
-    state.tags.remove(tag);
-    // 移除映射中的标签
-    _tagsMap.remove(tag.slug);
+  Future<bool> removeTag(Tag tag) async {
     try {
+      // 删除标签
+      state.tags.remove(tag);
+      // 移除映射中的标签
+      _tagsMap.remove(tag.slug);
       await saveSiteData();
-      Get.success(Tran.tagDelete);
-    } catch (e) {
-      Log.w('remove tag failed: $e');
-      Get.error(Tran.tagDeleteFailure);
+      return true;
+    } catch (e, s) {
+      Log.e('remove tag failed', error: e, stackTrace: s);
+      return false;
     }
   }
 
@@ -107,7 +105,8 @@ mixin TagSite on StateController<Application>, DataProcess {
       // 循环 post 中的 tags
       for (var tagSlug in post.tags) {
         // 判断是否有对应的 tag
-        if (_tagsMap[tagSlug] is Tag) {
+        if (_tagsMap[tagSlug] case Tag tag) {
+          tag.used = true;
           tags.add(tagSlug);
         }
       }

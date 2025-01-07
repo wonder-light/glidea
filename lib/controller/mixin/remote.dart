@@ -5,7 +5,6 @@ import 'package:glidea/controller/mixin/data.dart';
 import 'package:glidea/controller/mixin/theme.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/deploy/deploy.dart';
-import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
@@ -61,18 +60,18 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   }
 
   /// 发布站点
-  Future<void> publishSite() async {
-    // 检测主题是否有效
-    if (!selectThemeValid) {
-      Get.error(Tran.noValidCurrentTheme);
-      return;
-    }
-    // 检测是否可以发布
-    if (!checkPublish) {
-      Get.error(Tran.syncWarning);
-      return;
-    }
+  Future<Notif> publishSite() async {
     try {
+      // 检测主题是否有效
+      if (!selectThemeValid) {
+        Get.error(Tran.noValidCurrentTheme);
+        return Notif(hint: Tran.noValidCurrentTheme);
+      }
+      // 检测是否可以发布
+      if (!checkPublish) {
+        Get.error(Tran.syncWarning);
+        return Notif(hint: Tran.syncWarning);
+      }
       // 设置同步中
       inBeingSync.value = true;
       // 设置域名
@@ -82,37 +81,39 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
       await Deploy.create(state).publish();
       // 成功
       Get.success(Tran.syncSuccess);
+      return Notif(hint: Tran.syncSuccess);
     } catch (e, s) {
-      Log.i('$e\n$s');
-      Get.error(e is Mistake && e.hint.isNotEmpty ? e.hint : Tran.syncError1);
+      Log.i('publish site failed', error: e, stackTrace: s);
+      return Notif(hint: Tran.syncError1);
     } finally {
       inBeingSync.value = false;
     }
   }
 
   /// 预览站点
-  Future<void> previewSite() async {
-    if (!selectThemeValid) {
-      Get.error(Tran.noValidCurrentTheme);
-      return;
-    }
+  Future<Notif> previewSite() async {
     try {
+      if (!selectThemeValid) {
+        return Notif(hint: Tran.noValidCurrentTheme);
+      }
       // 设置域名
       state.themeConfig.domain = 'http://localhost:${state.previewPort}';
       await renderAll();
       // 启动静态文件服务
       await _enableStaticServer();
       // 成功
-      Get.success(Tran.renderSuccess);
+      return Notif(hint: Tran.renderSuccess);
     } catch (e, s) {
-      Log.i('$e\n$s');
-      Get.error(e is Mistake ? e.hint : Tran.renderError);
+      fileServer?.close(force: true);
+      fileServer = null;
+      Log.e('preview site failed', error: e, stackTrace: s);
+      return Notif(hint: Tran.renderError);
     }
   }
 
   /// 渲染所有
   ///
-  /// 当构建失败时抛出 [Mistake] 错误
+  /// 当构建失败时抛出 [Exception] 错误
   Future<void> renderAll() async {
     final render = RemoteRender(site: state);
     await render.clearOutputFolder();
@@ -122,10 +123,10 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   }
 
   /// 更新远程配置
-  Future<void> updateRemoteConfig({List<ConfigBase> remotes = const [], List<ConfigBase> comments = const []}) async {
-    // 保存数据
-    await saveSiteData(callback: () async {
-      try {
+  Future<bool> updateRemoteConfig({List<ConfigBase> remotes = const [], List<ConfigBase> comments = const []}) async {
+    try {
+      // 保存数据
+      await saveSiteData(callback: () async {
         // 远程
         TJsonMap items = {for (var config in remotes) config.name: config.value};
         state.remote = state.remote.copyWith<RemoteSetting>(items)!;
@@ -138,50 +139,42 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
           'disqusSetting': items,
           'gitalkSetting': items,
         })!;
-      } catch (e) {
-        throw Mistake(message: 'RemoteSite.updateRemoteConfig save remote config failed: \n$e');
-      }
-    });
-    // 通知
-    Get.success(Tran.themeConfigSaved);
+      });
+      return true;
+    } catch (e, s) {
+      Log.e('remote detect failed', error: e, stackTrace: s);
+      return false;
+    }
   }
 
   /// 远程检测
-  Future<void> remoteDetect() async {
+  Future<bool> remoteDetect() async {
     try {
-      if (!checkPublish) return;
       // 设置正在检测中
       inRemoteDetect.value = true;
       state.themeConfig.domain = state.remote.domain;
       await Deploy.create(state).remoteDetect();
-      // 成功通知
-      Get.success(Tran.connectSuccess);
+      return true;
+    } catch (e, s) {
+      Log.e('remote detect failed', error: e, stackTrace: s);
+      return false;
+    } finally {
       // 检测完毕
       inRemoteDetect.value = false;
-    } on Mistake catch (e) {
-      Log.w(e);
-      // 检测完毕
-      inRemoteDetect.value = false;
-      // 失败通知
-      Get.error(Tran.connectFailed);
     }
   }
 
   /// 启动静态文件服务器
+  ///
+  /// 出错时抛出 [Exception] 异常
   Future<void> _enableStaticServer() async {
-    try {
-      if (fileServer == null) {
-        // 启动服务
-        var handler = createStaticHandler(state.buildDir, defaultDocument: 'index.html');
-        fileServer = await shelf_io.serve(handler, 'localhost', state.previewPort, shared: true);
-      }
-      // 打开网址
-      await launchUrlString(state.themeConfig.domain);
-    } catch (e) {
-      fileServer?.close(force: true);
-      fileServer = null;
-      throw Mistake(message: 'enable static server failed: \n$e', hint: 'renderError');
+    if (fileServer == null) {
+      // 启动服务
+      var handler = createStaticHandler(state.buildDir, defaultDocument: 'index.html');
+      fileServer = await shelf_io.serve(handler, 'localhost', state.previewPort, shared: true);
     }
+    // 打开网址
+    await launchUrlString(state.themeConfig.domain);
   }
 
   /// 检测 github, gitee, coding

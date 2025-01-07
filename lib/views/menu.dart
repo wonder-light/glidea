@@ -9,7 +9,6 @@ import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
-import 'package:glidea/helpers/log.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
@@ -121,11 +120,8 @@ class _MenuViewState extends State<MenuView> {
       builder: (context) => MenuEditor(
         entity: menu,
         onSave: (data) {
-          site.updateMenu(newData: data, oldData: menu).then((_) {
-            Get.success(Tran.menuSuccess);
-          }).onError((e, s) {
-            Log.e(e, stackTrace: s);
-            Get.error(Tran.saveError);
+          site.updateMenu(newData: data, oldData: menu).then((value) {
+            value ? Get.success(Tran.menuSuccess) : Get.error(Tran.saveError);
           });
         },
       ),
@@ -140,6 +136,9 @@ class _MenuViewState extends State<MenuView> {
         Get.backLegacy();
       },
       onConfirm: () {
+        site.removeMenu(menu).then((value) {
+          value ? Get.success(Tran.menuDelete) : Get.error(Tran.menuDeleteFailure);
+        });
         site.removeMenu(menu);
         Get.backLegacy();
       },

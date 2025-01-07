@@ -95,13 +95,15 @@ class _HomeDownPanelState extends State<HomeDownPanel> {
   }
 
   /// 预览网页
-  void preview() {
-    site.previewSite();
+  void preview() async {
+    final notif = await site.previewSite();
+    notif.exec();
   }
 
   /// 发布网页
-  void publish() {
-    site.publishSite();
+  void publish() async {
+    final notif = await site.publishSite();
+    notif.exec();
   }
 
   /// 打开设置

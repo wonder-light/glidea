@@ -3,7 +3,6 @@ import 'dart:ui' show Locale;
 
 import 'package:flutter/foundation.dart' show AsyncCallback;
 import 'package:get/get.dart' show Get, GetNavigationExt, StateController;
-import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
@@ -29,8 +28,8 @@ mixin DataProcess on StateController<Application> {
       await checkDir(site);
       // 加载数据
       site = await loadSiteData(site);
-    } catch (e) {
-      Log.e(e);
+    } catch (e, s) {
+      Log.e('load site data failed', error: e, stackTrace: s);
     }
     return site;
   }
@@ -43,7 +42,11 @@ mixin DataProcess on StateController<Application> {
 
   /// 释放状态
   Future<void> disposeState() async {
-    await saveSiteData();
+    try {
+      await saveSiteData();
+    } catch (e, s) {
+      Log.e('dispose site controller state failed', error: e, stackTrace: s);
+    }
   }
 
   /// 在站点目录下创建文件和目录, 或者将不存在的文件或目录补全
@@ -72,7 +75,7 @@ mixin DataProcess on StateController<Application> {
   /// favicon.ico -------------- 图标
   /// ```
   ///
-  /// 出错时掏出 [Mistake] 异常
+  /// 出错时掏出 [Exception] 异常
   Future<void> checkDir(Application site) async {
     // 创建开始, 只使用一次
     final isCreate = _isCreate;
@@ -91,75 +94,63 @@ mixin DataProcess on StateController<Application> {
     site.buildDir = FS.join(appConfigFolder, 'output');
     site.supportDir = appConfigFolder;
 
-    try {
-      // 创建 config.json 文件
-      if (!FS.fileExistsSync(appConfigPath)) {
-        FS.writeStringSync(appConfigPath, '{"$dirField": "${site.appDir}"}');
-      } else {
-        final appConfig = FS.readStringSync(appConfigPath).deserialize<TJsonMap>()!;
-        defaultSiteDir = FS.normalize(appConfig[dirField]);
-      }
-      // 在刚打开应用时应该直接进行覆盖, 而不用进行其它操作
-      if (isCreate) {
-        site.appDir = defaultSiteDir;
-        // 将不存在的文件解压到指定路径
-        FS.unzip('assets/public/default-files.zip', site.appDir, isAsset: true, cover: false);
-      }
-      // 输出目录
-      if (!FS.dirExistsSync(site.buildDir)) {
-        FS.createDirSync(site.buildDir);
-      }
-    } catch (e) {
-      throw Mistake.add(message: 'create or read config.json file, or copy default files to appDir failed', error: e);
+    // 创建 config.json 文件
+    if (!FS.fileExistsSync(appConfigPath)) {
+      FS.writeStringSync(appConfigPath, '{"$dirField": "${site.appDir}"}');
+    } else {
+      final appConfig = FS.readStringSync(appConfigPath).deserialize<TJsonMap>()!;
+      defaultSiteDir = FS.normalize(appConfig[dirField]);
     }
+    // 在刚打开应用时应该直接进行覆盖, 而不用进行其它操作
+    if (isCreate) {
+      site.appDir = defaultSiteDir;
+      // 将不存在的文件解压到指定路径
+      FS.unzip('assets/public/default-files.zip', site.appDir, isAsset: true, cover: false);
+    }
+    // 输出目录
+    if (!FS.dirExistsSync(site.buildDir)) {
+      FS.createDirSync(site.buildDir);
+    }
+
     // 当保存的目录修改后将旧目录移动到新目录
     if (site.appDir != defaultSiteDir) {
-      try {
-        if (!FS.dirExistsSync(site.appDir)) {
-          // 目录不存在时才可以重命名
-          FS.renameDirSync(defaultSiteDir, site.appDir);
-        } else {
-          FS.copySync(defaultSiteDir, site.appDir);
-          FS.deleteDirSync(defaultSiteDir);
-        }
-
-        FS.writeStringSync(appConfigPath, '{"$dirField": "${site.appDir}"}');
-        return;
-      } catch (e) {
-        throw Mistake.add(message: 'move appDir failed', error: e);
+      if (!FS.dirExistsSync(site.appDir)) {
+        // 目录不存在时才可以重命名
+        FS.renameDirSync(defaultSiteDir, site.appDir);
+      } else {
+        FS.copySync(defaultSiteDir, site.appDir);
+        FS.deleteDirSync(defaultSiteDir);
       }
+
+      FS.writeStringSync(appConfigPath, '{"$dirField": "${site.appDir}"}');
     }
   }
 
   /// 从 config/config.json 中加载配置
   ///
-  /// 出错时掏出 [Mistake] 异常
+  /// 出错时掏出 [Exception] 异常
   Future<Application> loadSiteData(Application site) async {
     final postsPath = FS.join(site.appDir, 'posts');
     final configPath = FS.join(site.appDir, 'config');
     final configJsonPath = FS.join(configPath, 'config.json');
 
-    try {
-      // 获取配置
-      TJsonMap config = FS.readStringSync(configJsonPath).deserialize<TJsonMap>()!;
-      // 将配置全部合并到 base 中
-      site = site.copyWith<Application>(config)!;
-      // 移除文件不存在的 post
-      site.posts.removeWhere((post) => !FS.fileExistsSync(FS.join(postsPath, '${post.fileName}.md')));
-      // 主题名列表
-      var themeConfig = site.themeConfig;
-      var themes = site.themes = FS.subDir(FS.join(site.appDir, 'themes'));
-      // 设置使用的主题名
-      if (themes.isNotEmpty && !themes.contains(themeConfig.selectTheme)) {
-        themeConfig.selectTheme = themes.first;
-      }
-      // 使用选定主题数据
-      var themePath = FS.join(configPath, 'theme.${themeConfig.selectTheme}.config.json');
-      if (FS.fileExistsSync(themePath)) {
-        site.themeCustomConfig = FS.readStringSync(themePath).deserialize<TJsonMap>()!;
-      }
-    } catch (e) {
-      throw Mistake.add(message: 'set theme data failed', error: e);
+    // 获取配置
+    TJsonMap config = FS.readStringSync(configJsonPath).deserialize<TJsonMap>()!;
+    // 将配置全部合并到 base 中
+    site = site.copyWith<Application>(config)!;
+    // 移除文件不存在的 post
+    site.posts.removeWhere((post) => !FS.fileExistsSync(FS.join(postsPath, '${post.fileName}.md')));
+    // 主题名列表
+    var themeConfig = site.themeConfig;
+    var themes = site.themes = FS.subDir(FS.join(site.appDir, 'themes'));
+    // 设置使用的主题名
+    if (themes.isNotEmpty && !themes.contains(themeConfig.selectTheme)) {
+      themeConfig.selectTheme = themes.first;
+    }
+    // 使用选定主题数据
+    var themePath = FS.join(configPath, 'theme.${themeConfig.selectTheme}.config.json');
+    if (FS.fileExistsSync(themePath)) {
+      site.themeCustomConfig = FS.readStringSync(themePath).deserialize<TJsonMap>()!;
     }
     // APP 信息
     var packageInfo = await PackageInfo.fromPlatform();
@@ -173,11 +164,11 @@ mixin DataProcess on StateController<Application> {
 
   /// 将配置保存到 config/config.json 文件, 保存后进行 [refresh]
   ///
-  /// 出错时掏出 [Mistake] 异常
+  /// 出错时掏出 [Exception] 异常
   Future<void> saveSiteData({AsyncCallback? callback}) async {
-    // 设置状态
-    setLoading();
     try {
+      // 设置状态
+      setLoading();
       // 先执行回调
       await callback?.call();
       // 检查目录
@@ -202,7 +193,7 @@ mixin DataProcess on StateController<Application> {
 
   /// 更新站点的全部数据
   ///
-  /// 出错时掏出 [Mistake] 异常
+  /// 出错时掏出 [Exception] 异常
   void updateSite(Application site) {
     saveSiteData(callback: () async {
       await Future.delayed(const Duration(milliseconds: 10));

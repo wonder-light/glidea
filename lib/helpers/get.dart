@@ -26,6 +26,22 @@ class RxObject<T> extends Rx<T> {
   }
 }
 
+/// 通知相关
+class Notif {
+  Notif({required this.hint, this.success = false});
+
+  /// 本地化语言提示
+  final String hint;
+
+  /// true: 成功的消息, false: 失败的消息
+  final bool success;
+
+  /// 执行通知
+  void exec() {
+    success ? Get.success(hint) : Get.error(hint);
+  }
+}
+
 ///  obs 方法
 extension RxObjectT<T extends Object> on T {
   /// Returns a `Rx` instance with [this] `T` as initial value.

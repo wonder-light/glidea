@@ -1,12 +1,9 @@
 ﻿import 'package:collection/collection.dart' show IterableExtension;
-import 'package:get/get.dart' show Get, StateController;
+import 'package:get/get.dart' show StateController;
 import 'package:glidea/helpers/constants.dart';
-import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
-import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/post.dart';
 
@@ -74,26 +71,26 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
   }
 
   /// 更新或者添加 post
-  void updatePost({required Post newData, Post? oldData, String fileContent = ''}) async {
-    // 旧文件名
-    String? oldFileName;
-    final index = oldData == null ? -1 : state.posts.indexOf(oldData);
-    // 添加或更新 post
-    newData
-      ..content = ''
-      // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
-      ..abstract = newData.content.split(summaryRegExp).firstOrNull ?? '';
-    // oldData 在 post 中存在
-    if (index >= 0) {
-      oldFileName = oldData!.fileName;
-      state.posts[index] = newData;
-    } else {
-      // 插入到开头
-      state.posts.insert(0, newData);
-    }
-    // 更新标签
-    updateTagUsedField();
+  Future<bool> updatePost({required Post newData, Post? oldData, String fileContent = ''}) async {
     try {
+      // 旧文件名
+      String? oldFileName;
+      final index = oldData == null ? -1 : state.posts.indexOf(oldData);
+      // 添加或更新 post
+      newData
+        ..content = ''
+        // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
+        ..abstract = newData.content.split(summaryRegExp).firstOrNull ?? '';
+      // oldData 在 post 中存在
+      if (index >= 0) {
+        oldFileName = oldData!.fileName;
+        state.posts[index] = newData;
+      } else {
+        // 插入到开头
+        state.posts.insert(0, newData);
+      }
+      // 更新标签
+      updateTagUsedField();
       // 保存
       await saveSiteData();
       // 路径
@@ -103,32 +100,29 @@ mixin PostSite on StateController<Application>, DataProcess, TagSite {
         FS.deleteDirSync(FS.join(path, '$oldFileName.md'));
       }
       await FS.writeString(FS.join(path, '${newData.fileName}.md'), fileContent);
-      Get.success(newData.published ? Tran.saved : Tran.draftSuccess);
-    } catch (e) {
-      Log.e('update post failed: \n$e');
-      Get.error(Tran.saveError);
+      return true;
+    } catch (e, s) {
+      Log.e('update or add post failed', error: e, stackTrace: s);
+      return false;
     }
   }
 
   /// 删除 post
-  void removePost(Post data) async {
-    if (!state.posts.remove(data)) {
-      // 删除失败
-      Get.error(Tran.articleDeleteFailure);
-      return;
-    }
-    // 标签
-    updateTagUsedField();
+  Future<bool> removePost(Post data) async {
     try {
+      if (!state.posts.remove(data)) {
+        return false;
+      }
+      // 标签
+      updateTagUsedField();
       // 保存
       await saveSiteData();
       // 移除文件
       FS.deleteDirSync(FS.join(state.appDir, 'posts', '${data.fileName}.md'));
-      // 菜单中的列表不必管
-      Get.success(Tran.articleDelete);
-    } on Mistake catch (e) {
-      Log.e(e.message);
-      Get.success(Tran.articleDeleteFailure);
+      return true;
+    } catch (e, s) {
+      Log.e('delete post failed', error: e, stackTrace: s);
+      return false;
     }
   }
 

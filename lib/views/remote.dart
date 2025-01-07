@@ -496,20 +496,19 @@ class _RemoteViewState extends State<RemoteView> {
 
   /// 保持配置
   void _saveConfig() async {
-    try {
-      final configs = fieldConfigs.value;
-      final remotes = configs[RemoteSetting]!.values.toList();
-      final comments = configs[CommentSetting]!.values.toList();
-      comments.addAll(configs[GitalkSetting]!.values);
-      comments.addAll(configs[DisqusSetting]!.values);
-      site.updateRemoteConfig(remotes: remotes, comments: comments);
-    } catch (e) {
-      Get.error(Tran.saveError);
-    }
+    final configs = fieldConfigs.value;
+    final remotes = configs[RemoteSetting]!.values.toList();
+    final comments = configs[CommentSetting]!.values.toList();
+    comments.addAll(configs[GitalkSetting]!.values);
+    comments.addAll(configs[DisqusSetting]!.values);
+    site.updateRemoteConfig(remotes: remotes, comments: comments).then((value) {
+      value ? Get.success(Tran.themeConfigSaved) : Get.error(Tran.saveError);
+    });
   }
 
   /// 检测远程连接
   void _testConnection() async {
-    await site.remoteDetect();
+    final value = await site.remoteDetect();
+    value ? Get.success(Tran.connectSuccess) : Get.error(Tran.connectFailed);
   }
 }

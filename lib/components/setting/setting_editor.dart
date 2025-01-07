@@ -296,8 +296,9 @@ class SettingEditorState extends DrawerEditorState<SettingEditor> {
       setState(() {});
       // 进行通知
       Get.success(Tran.saveSuccess);
-    } catch (e) {
-      Get.error('${Tran.saveError}\n$e');
+    } catch (e, s) {
+      Log.e('Failed to save data in the Settings screen on the large screen. Procedure', error: e, stackTrace: s);
+      Get.error(Tran.saveError);
     }
   }
 
@@ -317,10 +318,9 @@ class SettingEditorState extends DrawerEditorState<SettingEditor> {
       } catch (e) {
         Log.i('网站打开失败 ${site.domain}');
       }
-    } else if (isPublish) {
-      await site.publishSite();
     } else {
-      await site.previewSite();
+      final notif = isPublish ? await site.publishSite() : await site.previewSite();
+      notif.exec();
     }
   }
 }
