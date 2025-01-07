@@ -3,27 +3,25 @@
 import 'package:device_preview_plus/device_preview_plus.dart' show DevicePreview;
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show GetMaterialApp, Transition;
+import 'package:get/get.dart' show Get, GetMaterialApp, Inst, Transition;
+import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/theme.dart';
 import 'package:glidea/helpers/windows.dart';
 import 'package:glidea/lang/translations.dart';
-import 'package:glidea/routes/bindings.dart';
 import 'package:glidea/routes/router.dart';
-import 'package:responsive_framework/responsive_framework.dart';
+import 'package:responsive_framework/responsive_framework.dart'
+    show Breakpoint, Condition, DESKTOP, PHONE, ResponsiveBreakpoints, ResponsiveScaledBox, ResponsiveValue, TABLET;
+
+import 'controller/site.dart';
 
 // \'package\:(?!.*(?:material|show|glidea))(.*);
 // 查找 package 包, 同时排除 material, show, glidea
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Log.initialized();
-  JsonHelp.initialized();
-  await WindowsHelp.initialized();
-
-  //runApp(const App());
+  await App.initialized();
   runApp(DevicePreview(
     enabled: !kReleaseMode,
     availableLocales: TranslationsService.supportedLocales,
@@ -33,6 +31,15 @@ void main() async {
 
 class App extends StatelessWidget {
   const App({super.key});
+
+  /// [App] 初始化
+  static Future<void> initialized() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Log.initialized();
+    JsonHelp.initialized();
+    WindowsHelp.initialized();
+    Get.put<SiteController>(SiteController(), tag: SiteController.tag, permanent: true);
+  }
 
   // This widget is the root of your application.
   @override
@@ -58,7 +65,6 @@ class App extends StatelessWidget {
       getPages: AppRouter.routes,
       initialRoute: AppRouter.articles,
       defaultTransition: Transition.fadeIn,
-      binds: SiteBind.bings,
       enableLog: !kReleaseMode,
       builder: Responsive.builder,
     );
