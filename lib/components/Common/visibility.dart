@@ -96,8 +96,8 @@ class _AnimatedVisibilityState extends State<AnimatedVisibility> with SingleTick
     var visible = widget.visible || _shouldAnimateTween();
     return Visibility(
       visible: visible,
-      child: Opacity(
-        opacity: _animation.value,
+      child: FadeTransition(
+        opacity: _animation,
         child: widget.child,
       ),
     );

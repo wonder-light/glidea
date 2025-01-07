@@ -90,10 +90,8 @@ class DrawerWidget extends StatelessWidget {
     final DraController internalController = controller ?? DraController();
     internalController._onClose = onClose;
     // 背景板
-    Widget backboard = Opacity(
-      opacity: opacity,
-      child: Container(color: opacityColor ?? theme.colorScheme.outlineVariant),
-    );
+    final bgColor = opacityColor ?? theme.colorScheme.outlineVariant;
+    Widget backboard = Container(color: bgColor.withAlpha(Color.getAlphaFromOpacity(opacity)));
     // 模糊效果
     if (blur) {
       backboard = ClipRRect(
