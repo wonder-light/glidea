@@ -84,6 +84,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
 
   /// 构建预览
   Widget _buildPreview() {
+    // TODO: 改善性能 - 使用 WebView 或者其它方式
     final colorScheme = Get.theme.colorScheme;
     final textTheme = Get.theme.textTheme;
     final post = widget.entity;

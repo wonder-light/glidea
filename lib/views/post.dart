@@ -64,6 +64,7 @@ class CustomTextController extends TextEditingController {
 
   @override
   TextSpan buildTextSpan({required BuildContext context, TextStyle? style, required bool withComposing}) {
+    // TODO: 改善编辑器性能
     final bool composingRegionOutOfRange = !value.isComposingRangeValid || !withComposing;
     if (!composingRegionOutOfRange) {
       return super.buildTextSpan(context: context, style: style, withComposing: withComposing);

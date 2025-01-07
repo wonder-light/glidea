@@ -21,6 +21,9 @@ import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
 
 /// 混合 - 远程
 mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
+  /// 发布的网址
+  String get domain => state.remote.domain;
+
   /// 是否这正在同步中
   final inBeingSync = false.obs;
 

@@ -3,7 +3,7 @@
 extension DateTimeExt on DateTime {
   /// 将 [DateTime] 格式化为字符串
   String format({String? pattern}) {
-    if (pattern == null || pattern.trim().isEmpty) {
+    if (pattern == null || pattern.isEmpty) {
       toIso8601String();
     }
     // YYYY-MM-DD HH:mm:ss => yyyy-MM-dd HH:mm:ss

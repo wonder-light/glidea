@@ -12,10 +12,7 @@ import 'package:glidea/models/application.dart';
 
 /// 站点控制器
 class SiteController extends StateController<Application> with EventBus, DataProcess, TagSite, MenuSite, PostSite, ThemeSite, RemoteSite {
-  /// 发布的网址
-  String get domain => state.remote.domain;
-
-  /// site 控制器标签
+  /// [SiteController] 的控制器标签
   static const String tag = 'site';
 
   @override
