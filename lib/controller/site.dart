@@ -1,4 +1,6 @@
-﻿import 'package:get/get.dart' show StateController;
+﻿import 'dart:async' show Completer;
+
+import 'package:get/get.dart' show StateController;
 import 'package:glidea/controller/mixin/data.dart';
 import 'package:glidea/controller/mixin/menu.dart';
 import 'package:glidea/controller/mixin/post.dart';
@@ -15,6 +17,9 @@ class SiteController extends StateController<Application> with EventBus, DataPro
   /// [SiteController] 的控制器标签
   static const String tag = 'site';
 
+  /// 初始化时的任务
+  final Completer initTask = Completer();
+
   @override
   void onInit() async {
     super.onInit();
@@ -22,6 +27,7 @@ class SiteController extends StateController<Application> with EventBus, DataPro
     value = await initData();
     initState();
     setSuccess(value);
+    initTask.complete(true);
   }
 
   @override

@@ -1,7 +1,7 @@
 ﻿import 'dart:ui' show AppExitResponse;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, StateExt, StringExtension, Trans;
+import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, Trans;
 import 'package:glidea/components/Common/loading.dart';
 import 'package:glidea/components/home/down_panel.dart';
 import 'package:glidea/components/home/up_panel.dart';
@@ -69,25 +69,25 @@ class _HomeViewState extends State<HomeView> with WindowListener {
   @override
   Widget build(BuildContext context) {
     Get.responsive = ResponsiveBreakpoints.of(context);
-    // 构建控件
     return Scaffold(
-      body: SafeArea(
-        child: site.obx(
-          (_) {
-            if (Get.isPhone) {
-              return _buildBody();
-            }
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildLeftPanel(),
-                const VerticalDivider(thickness: 1, width: 1),
-                Expanded(child: _buildBody()),
-              ],
-            );
-          },
-          onLoading: const Center(child: LoadingWidget()),
-        ),
+      body: FutureBuilder(
+        future: site.initTask.future,
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: LoadingWidget());
+          }
+          if (Get.isPhone) {
+            return _buildBody();
+          }
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildLeftPanel(),
+              const VerticalDivider(thickness: 1, width: 1),
+              Expanded(child: _buildBody()),
+            ],
+          );
+        },
       ),
       bottomNavigationBar: _buildMobileBottomNav(),
     );
