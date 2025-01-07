@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Obx, StringExtension, Trans;
+import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/Common/list_item.dart';
+import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
@@ -16,6 +17,9 @@ class HomeUpPanel extends StatefulWidget {
 }
 
 class _HomeUpPanelState extends State<HomeUpPanel> {
+  /// 站点控制器
+  final site = Get.find<SiteController>(tag: SiteController.tag);
+
   /// 菜单数据
   final List<TRouterData> menus = [
     (name: Tran.article, route: AppRouter.articles, icon: PhosphorIconsRegular.article),
@@ -27,6 +31,13 @@ class _HomeUpPanelState extends State<HomeUpPanel> {
 
   /// 桌面端的当前路由索引
   final currentRouter = AppRouter.articles.obs;
+
+  /// 数据的数量
+  late final dataNum = {
+    Tran.article: site.posts.length,
+    Tran.menu: site.menus.length,
+    Tran.tag: site.tags.length,
+  };
 
   @override
   void initState() {
@@ -41,7 +52,7 @@ class _HomeUpPanelState extends State<HomeUpPanel> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (Get.isDesktop && menus.length > 5 ) {
+    if (Get.isDesktop && menus.length > 5) {
       menus.removeLast();
     }
     addTabletMenu();
@@ -83,7 +94,7 @@ class _HomeUpPanelState extends State<HomeUpPanel> {
                 onTap: () => toName(item.route),
                 leading: Icon(item.icon),
                 title: Text(item.name.tr),
-                //trailing: Text(site.getHomeLeftPanelNum(item.name)),
+                trailing: Text('${dataNum[item.name] ?? ''}'),
                 constraints: const BoxConstraints.expand(height: itemHeight),
                 selected: currentRouter.value == item.route,
                 selectedColor: colorScheme.surfaceContainerLow,
@@ -98,9 +109,9 @@ class _HomeUpPanelState extends State<HomeUpPanel> {
   }
 
   /// 添加平板端的菜单
-  void addTabletMenu(){
+  void addTabletMenu() {
     // 平板端
-    if (Get.isTablet && menus.length == 5 ) {
+    if (Get.isTablet && menus.length == 5) {
       menus.add((name: Tran.setting, route: AppRouter.tabletSetting, icon: PhosphorIconsRegular.slidersHorizontal));
     }
   }

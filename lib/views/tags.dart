@@ -52,8 +52,6 @@ class _TagsViewState extends State<TagsView> {
 
   /// 构建标签按钮
   Widget _buildTagButton(Tag tag) {
-    // 使用中不可删除
-    final select = tag.used ? [false] : [false, false];
     // 边距
     final padding = kHorPadding8 + kVerPadding4;
     // 按钮
@@ -76,7 +74,7 @@ class _TagsViewState extends State<TagsView> {
     ];
     // 按钮
     return ToggleButtons(
-      isSelected: select,
+      isSelected: [false, if(!tag.used) false],
       children: buttons,
       onPressed: (index) {
         (index <= 0 ? editorTag : deleteTag)(tag);
