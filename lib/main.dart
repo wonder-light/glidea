@@ -71,14 +71,14 @@ class Responsive extends StatelessWidget {
   /// [GetMaterialApp.builder] 构建
   static Widget builder(BuildContext context, Widget? child) {
     final isMobile = Platform.isAndroid || Platform.isIOS;
-    return ResponsiveBreakpoints.builder(
+    return ResponsiveBreakpoints(
       useShortestSide: true,
-      child: Responsive(child: child!),
       breakpoints: [
         if (isMobile) const Breakpoint(start: 0, end: windowMinWidth - 1, name: PHONE),
         if (isMobile) const Breakpoint(start: windowMinWidth, end: double.infinity, name: TABLET),
         if (!isMobile) const Breakpoint(start: 0, end: double.infinity, name: DESKTOP),
       ],
+      child: Responsive(child: child!),
     );
   }
 

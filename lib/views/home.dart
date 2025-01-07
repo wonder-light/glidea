@@ -13,6 +13,7 @@ import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
+import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints;
 import 'package:window_manager/window_manager.dart' show WindowListener;
 
 class HomeView extends StatefulWidget {
@@ -67,6 +68,7 @@ class _HomeViewState extends State<HomeView> with WindowListener {
 
   @override
   Widget build(BuildContext context) {
+    Get.responsive = ResponsiveBreakpoints.of(context);
     // 构建控件
     return Scaffold(
       body: SafeArea(

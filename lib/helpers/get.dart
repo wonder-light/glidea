@@ -34,7 +34,13 @@ extension RxObjectT<T extends Object> on T {
 
 extension GetExt on GetInterface {
   /// 关于当前屏幕的响应性数据
-  ResponsiveBreakpointsData get breakpoints => ResponsiveBreakpoints.of(context!);
+  static ResponsiveBreakpointsData? _responsive;
+
+  ResponsiveBreakpointsData get responsive => _responsive ?? ResponsiveBreakpoints.of(context!);
+
+  set responsive(value) {
+    _responsive = value;
+  }
 
   /// 判断是否是桌面端
   bool get isDesktop {
@@ -42,7 +48,7 @@ extension GetExt on GetInterface {
     if (kReleaseMode) {
       desktop = !(Platform.isAndroid || Platform.isIOS);
     }
-    return desktop && breakpoints.isDesktop;
+    return desktop && responsive.isDesktop;
   }
 
   /// 判断是否是平板移动端
@@ -51,7 +57,7 @@ extension GetExt on GetInterface {
     if (kReleaseMode) {
       isMobile = Platform.isAndroid || Platform.isIOS;
     }
-    return isMobile && breakpoints.isTablet;
+    return isMobile && responsive.isTablet;
   }
 
   /// 判断是否是手机移动端
@@ -60,11 +66,11 @@ extension GetExt on GetInterface {
     if (kReleaseMode) {
       isMobile = Platform.isAndroid || Platform.isIOS;
     }
-    return isMobile && breakpoints.isPhone;
+    return isMobile && responsive.isPhone;
   }
 
   /// 是竖放还是横放
-  Orientation get orientation => breakpoints.orientation;
+  Orientation get orientation => responsive.orientation;
 
   /// 成功信息
   void success(String message) {
