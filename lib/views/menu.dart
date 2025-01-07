@@ -9,6 +9,7 @@ import 'package:glidea/controller/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
+import 'package:glidea/helpers/log.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/menu.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
@@ -24,6 +25,31 @@ class _MenuViewState extends State<MenuView> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
+  // 配色方案
+  final colors = Get.theme.colorScheme;
+  final textTheme = Get.theme.textTheme;
+
+  // 形状
+  late final shapeBorder = ContinuousRectangleBorder(
+    side: BorderSide(
+      color: colors.onSurface,
+      width: 0.15,
+    ),
+    borderRadius: BorderRadius.circular(10.0),
+  );
+
+  /// 子标题样式
+  late final subtitleTextStyle = textTheme.bodySmall?.copyWith(color: colors.outline);
+
+  /// 装饰器
+  late final decoration = BoxDecoration(
+    color: colors.surfaceContainerLow,
+    border: Border.all(
+      color: colors.outlineVariant,
+      width: 0.4,
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     return PageAction(
@@ -38,9 +64,7 @@ class _MenuViewState extends State<MenuView> {
       ],
       child: Obx(
         () => ListView.separated(
-          itemBuilder: (BuildContext context, int index) {
-            return _buildMenuItem(site.menus[index]);
-          },
+          itemBuilder: _buildMenuItem,
           itemCount: site.menus.length,
           separatorBuilder: (BuildContext context, int index) {
             return Container(height: listSeparated);
@@ -51,19 +75,11 @@ class _MenuViewState extends State<MenuView> {
   }
 
   /// 构建菜单项
-  Widget _buildMenuItem(Menu menu) {
-    // 配色方案
-    final colors = Get.theme.colorScheme;
-    final textTheme = Get.theme.textTheme;
+  Widget _buildMenuItem(BuildContext context, int index) {
+    final menu = site.menus[index];
     // 菜单项目
     return ListItem(
-      shape: ContinuousRectangleBorder(
-        side: BorderSide(
-          color: colors.onSurface,
-          width: 0.15,
-        ),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
+      shape: shapeBorder,
       constraints: const BoxConstraints(maxHeight: 80),
       contentPadding: kVerPadding8 + kHorPadding16,
       leadingMargin: kRightPadding16,
@@ -72,13 +88,7 @@ class _MenuViewState extends State<MenuView> {
       subtitle: Row(
         children: [
           DecoratedBox(
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerLow,
-              border: Border.all(
-                color: colors.outlineVariant,
-                width: 0.4,
-              ),
-            ),
+            decoration: decoration,
             child: Padding(
               padding: kHorPadding8,
               child: Text(menu.openType.name.tr),
@@ -88,9 +98,7 @@ class _MenuViewState extends State<MenuView> {
           Text(menu.link),
         ],
       ),
-      subtitleTextStyle: textTheme.bodySmall?.copyWith(
-        color: colors.outline,
-      ),
+      subtitleTextStyle: subtitleTextStyle,
       trailing: IconButton(
         onPressed: () => deleteMenu(menu),
         icon: const Icon(PhosphorIconsRegular.trash),
@@ -113,7 +121,12 @@ class _MenuViewState extends State<MenuView> {
       builder: (context) => MenuEditor(
         entity: menu,
         onSave: (data) {
-          site.updateMenu(newData: data, oldData: menu);
+          site.updateMenu(newData: data, oldData: menu).then((_) {
+            Get.success(Tran.menuSuccess);
+          }).onError((e, s) {
+            Log.e(e, stackTrace: s);
+            Get.error(Tran.saveError);
+          });
         },
       ),
     );

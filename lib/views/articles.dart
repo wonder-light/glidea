@@ -9,7 +9,6 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/markdown.dart';
-import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/routes/router.dart';
@@ -31,6 +30,25 @@ class _ArticlesViewState extends State<ArticlesView> {
 
   /// 文章搜索控制器
   final TextEditingController textController = TextEditingController();
+
+  /// 判断是否是手机端
+  final isDesktop = !Get.isPhone;
+
+  // 主题配置
+  final textTheme = Get.theme.textTheme;
+  final colorScheme = Get.theme.colorScheme;
+
+  /// 记录时间
+  final Map<int, String> dates = {};
+
+  // 形状
+  late final shapeBorder = ContinuousRectangleBorder(
+    side: BorderSide(
+      color: colorScheme.onSurface,
+      width: 0.15,
+    ),
+    borderRadius: BorderRadius.circular(10.0),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -82,37 +100,17 @@ class _ArticlesViewState extends State<ArticlesView> {
 
   /// 构建菜单项
   Widget _buildListItem(Post post) {
-    // 主题配置
-    final ThemeData(:textTheme, :colorScheme) = Get.theme;
-
-    /// 判断是否是手机端
-    final isDesktop = !Get.isPhone;
-
-    // 子列表
-    final lists = <TIconData>[
-      // 发布
-      post.published ? (name: Tran.published, icon: PhosphorIconsRegular.check) : (name: Tran.draft, icon: PhosphorIconsRegular.x),
-      // 日期
-      (name: post.date.format(pattern: site.themeConfig.dateFormat), icon: PhosphorIconsRegular.calendarDots),
-    ];
-
     // 头部组件
     final leading = isDesktop ? ImageConfig.builderImg(site.getFeaturePath(post)) : null;
-
     //内容边距
     final contentPadding = isDesktop ? kRightPadding16 : null;
-
     // 大小
     final constraints = isDesktop ? const BoxConstraints(maxHeight: 80) : const BoxConstraints(minHeight: 100);
+    // 时间
+    final date = dates[post.date.millisecondsSinceEpoch] ??= post.date.format(pattern: site.themeConfig.dateFormat);
 
     return ListItem(
-      shape: ContinuousRectangleBorder(
-        side: BorderSide(
-          color: colorScheme.onSurface,
-          width: 0.15,
-        ),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
+      shape: shapeBorder,
       contentPadding: contentPadding,
       constraints: constraints,
       leading: leading,
@@ -120,17 +118,16 @@ class _ArticlesViewState extends State<ArticlesView> {
       subtitle: Wrap(
         spacing: kRightPadding4.right,
         children: [
-          for (var item in lists) ...[
-            Icon(item.icon),
-            Padding(
-              padding: kRightPadding4,
-              child: Text(item.name.tr),
-            ),
-          ],
-          if (post.tags.isNotEmpty) ...[
-            const Icon(PhosphorIconsRegular.tag),
+          const Icon(PhosphorIconsRegular.check),
+          Padding(
+            padding: kRightPadding4,
+            child: Text(post.published ? Tran.published.tr : Tran.draft.tr),
+          ),
+          const Icon(PhosphorIconsRegular.calendarDots),
+          Padding(padding: kRightPadding4, child: Text(date)),
+          if (post.tags.isNotEmpty) const Icon(PhosphorIconsRegular.tag),
+          if (post.tags.isNotEmpty)
             for (var tag in site.getTagsWithPost(post)) Text(tag.name),
-          ],
         ],
       ),
       trailing: IconButton(
@@ -159,7 +156,14 @@ class _ArticlesViewState extends State<ArticlesView> {
         Get.backLegacy();
       },
       onConfirm: () {
-        site.removePost(post);
+        site.removePost(post).then((value) {
+          if (value) {
+            Get.success(Tran.articleDelete);
+          } else {
+            // 删除失败
+            Get.error(Tran.articleDeleteFailure);
+          }
+        });
         Get.backLegacy();
       },
     ));
