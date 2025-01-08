@@ -90,7 +90,7 @@ class _PictureWidgetState extends State<PictureWidget> {
       isVertical: widget.isVertical,
       config: widget.config.value,
       child: OutlinedButton(
-        onPressed: () => changeImage(path),
+        onPressed: changeImage,
         style: ButtonStyle(
           enableFeedback: true,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -120,7 +120,7 @@ class _PictureWidgetState extends State<PictureWidget> {
   }
 
   /// 改变图片
-  void changeImage(RxString path) async {
+  void changeImage() async {
     /*
     //实例化选择图片
     final picker = ImagePicker();

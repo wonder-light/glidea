@@ -1,4 +1,6 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'dart:io';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart' show HtmlWidget;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/image.dart';
@@ -192,7 +194,7 @@ class ImageConfig extends ImgConfig {
 
   /// 构建图片
   static Widget builderImg(String url, {Map<String, String>? attributes, BoxFit fit = BoxFit.cover}) {
-    if (url.trim().isEmpty) {
+    if (url.isEmpty) {
       return Image.asset('assets/images/upload_image.jpg', errorBuilder: buildError);
     }
     // 网络图片

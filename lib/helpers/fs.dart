@@ -4,7 +4,7 @@ import 'dart:io' show Directory, File, FileMode, FileSystemEntity;
 import 'package:archive/archive_io.dart' show Archive, InputFileStream, OutputFileStream, ZipDecoder;
 import 'package:flutter/services.dart' show Uint8List, rootBundle;
 import 'package:glidea/helpers/crypto.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as p show url;
 
 class FS {
   /// 同步查询该路径下的文件系统实体是否存在
@@ -65,12 +65,12 @@ class FS {
       for (var file in directory.listSync(recursive: true)) {
         var isFile = file is File;
         // 获取目录的相对路径
-        var relative = p.relative(isFile ? file.parent.path : file.path, from: src);
-        FS.createDirSync(p.join(target, relative));
+        var relative = p.url.relative(isFile ? file.parent.path : file.path, from: src);
+        FS.createDirSync(p.url.join(target, relative));
         if (isFile) {
           // 获取文件的相对路径
-          relative = p.relative(file.path, from: src);
-          file.copySync(p.join(target, relative));
+          relative = p.url.relative(file.path, from: src);
+          file.copySync(p.url.join(target, relative));
         }
       }
     }
@@ -104,8 +104,8 @@ class FS {
     if (dirExistsSync(target)) createDirSync(target);
     for (var item in Directory(src).listSync()) {
       // 获取文件的相对路径
-      var relative = p.relative(item.path, from: src);
-      item.renameSync(p.join(target, relative));
+      var relative = p.url.relative(item.path, from: src);
+      item.renameSync(p.url.join(target, relative));
     }
   }
 
@@ -122,7 +122,7 @@ class FS {
   static List<Directory> subDirInfo(String path) => getEntitySync<Directory>(path, recursive: false);
 
   /// 获取指定文件夹中子目录的名称
-  static List<String> subDir(String path) => subDirInfo(path).map((f) => p.basename(f.path)).toList();
+  static List<String> subDir(String path) => subDirInfo(path).map((f) => p.url.basename(f.path)).toList();
 
   /// 链接路径
   ///
@@ -130,18 +130,17 @@ class FS {
   ///     join('path', '/to', 'foo'); // -> 'path/to/foo'
   ///     join('path', '/to', '/foo'); // -> 'path/to/foo'
   static String join(String part1, [String? part2, String? part3, String? part4, String? part5]) {
-    Uri;
-    return FS.normalize(p.join(part1, _remove(part2), _remove(part3), _remove(part4), _remove(part5)));
+    return normalize(p.url.join(part1, _remove(part2), _remove(part3), _remove(part4), _remove(part5)));
   }
 
   /// 路径序列化
-  static String normalize(String path) => Uri.parse(path).normalizePath().toString();
+  static String normalize(String path) => p.url.normalize(path).replaceAll('\\', '/');
 
   /// 获取 [path] 相对于 [from] 的相对路径
   ///
   ///     relative('/root/path/a/b.dart', from: '/root/path'); // -> 'a/b.dart'
   //      relative('/root/other.dart', from: '/root/path');    // -> '../other.dart'
-  static String relative(String path, String from) => normalize(p.relative(path, from: from));
+  static String relative(String path, String from) => normalize(p.url.relative(path, from: from));
 
   /// 获取最后一个分隔符之前的 [path] 部分
   ///
@@ -151,7 +150,7 @@ class FS {
   /// 尾随分隔符将被忽略
   ///
   ///     dirname('path/to/'); // -> 'path'
-  static String dirname(String path) => normalize(p.dirname(path));
+  static String dirname(String path) => normalize(p.url.dirname(path));
 
   /// 获取[path]的文件扩展名
   ///
@@ -159,19 +158,19 @@ class FS {
   ///     extension('path/to/foo');         // -> ''
   ///     extension('path.to/foo');         // -> ''
   ///     extension('path/to/foo.dart.js'); // -> '.js'
-  static String extension(String path) => p.extension(path);
+  static String extension(String path) => p.url.extension(path);
 
   /// 获取[path]在最后一个分隔符之后的部分, 带有扩展名
   ///
   ///     basename('path/to/foo.dart'); // -> 'foo.dart'
   ///     basename('path/to');          // -> 'to'
-  static String basenameExt(String path) => p.basename(path);
+  static String basenameExt(String path) => p.url.basename(path);
 
   /// 获取[path]在最后一个分隔符之后的部分, 不带扩展名
   ///
   ///     basename('path/to/foo.dart'); // -> 'foo'
   ///     basename('path/to');          // -> 'to'
-  static String basename(String path) => p.basenameWithoutExtension(path);
+  static String basename(String path) => p.url.basenameWithoutExtension(path);
 
   // 去除开头的 /
   static String? _remove(String? str) {

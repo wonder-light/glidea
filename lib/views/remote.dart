@@ -155,11 +155,11 @@ class _RemoteViewState extends State<RemoteView> {
     // 远程和评论的分组
     childWidget = GroupWidget(
       isTop: true,
-      groups: const {Tran.basicSetting, Tran.commentSetting},
-      children: [
-        _buildConfig(isRemote: true),
-        _buildConfig(isRemote: false),
-      ],
+      groups: const [Tran.basicSetting, Tran.commentSetting],
+      itemBuilder: (ctx, index) {
+        if(index <= 0) return _buildConfig(isRemote: true);
+        return _buildConfig(isRemote: false);
+      },
     );
     // 返回
     return Material(

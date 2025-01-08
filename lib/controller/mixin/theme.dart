@@ -59,8 +59,9 @@ mixin ThemeSite on StateController<Application>, DataProcess {
     'showFeatureImage': FieldType.toggle,
     'postPageSize': FieldType.slider,
     'archivesPageSize': FieldType.slider,
-    'postUrlFormat': FieldType.radio,
-    'tagUrlFormat': FieldType.radio,
+    // TODO: 设置 post 和 tag 的 URL 格式, slug => hello-word, shortId => 3ji39
+    //'postUrlFormat': FieldType.radio,
+    //'tagUrlFormat': FieldType.radio,
     'postPath': FieldType.input,
     'tagPath': FieldType.input,
     'archivePath': FieldType.input,
@@ -93,12 +94,13 @@ mixin ThemeSite on StateController<Application>, DataProcess {
       fieldValues: state.themeConfig.toMap()!,
       options: {
         'selectTheme': _themeOptions!,
-        'postUrlFormat': _urlFormatOptions!,
-        'tagUrlFormat': _urlFormatOptions!,
+        //'postUrlFormat': _urlFormatOptions!,
+        //'tagUrlFormat': _urlFormatOptions!,
       },
       fieldNotes: {
         'siteDescription': 'htmlSupport',
         'footerInfo': 'htmlSupport',
+        'dateFormat': 'yyyy-MM-dd HH:mm:ss',
         'robotsText': 'htmlSupport',
       },
       sliderMax: {

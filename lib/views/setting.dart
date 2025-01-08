@@ -34,7 +34,6 @@ class _SettingViewState extends State<SettingView> {
   /// 内边距
   final padding = kVerPadding4 + kHorPadding12;
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
