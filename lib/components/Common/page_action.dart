@@ -21,41 +21,37 @@ class PageAction extends StatelessWidget {
   /// 分割线下的内容控件
   final Widget child;
 
+  /// 内容的内边距, 默认是 [kAllPadding16]
   final EdgeInsetsGeometry? contentPadding;
 
   @override
   Widget build(BuildContext context) {
-    // 操作列表
-    List<Widget> actionList = [
-      for (var item in actions)
-        Padding(
-          padding: kRightPadding8,
-          child: item,
-        ),
-    ];
+    // 标题
+    Widget content = leading != null ? leading! : const SizedBox.shrink();
     // 头部
-    Widget childWidget = Row(
+    content = Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Container(child: leading),
-        Row(children: actionList),
+        content,
+        Row(children: [
+          for (var item in actions)
+            Padding(
+              padding: kRightPadding8,
+              child: item,
+            ),
+        ])
       ],
     );
     // 加上分割线, 以及内容
     // 使用 [Material] 在切换路由时可以将背景变不透明, 不至于让两个页面看起来重叠在了一起
     final color = Get.theme.scaffoldBackgroundColor;
-    childWidget = Material(
+    // 返回控件
+    return Material(
       color: color,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ColoredBox(
-            color: color,
-            child: Padding(
-              padding: kAllPadding16.copyWith(bottom: 8),
-              child: childWidget,
-            ),
-          ),
+          content,
           const Divider(thickness: 1, height: 1),
           Expanded(
             child: Padding(
@@ -66,7 +62,5 @@ class PageAction extends StatelessWidget {
         ],
       ),
     );
-    // 返回控件
-    return childWidget;
   }
 }

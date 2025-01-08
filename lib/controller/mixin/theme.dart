@@ -177,7 +177,7 @@ mixin ThemeSite on StateController<Application>, DataProcess {
       config
         ..value = fieldValues?[key] ?? config.value
         ..name = key
-        ..label = fieldLabels?[key] ?? key.tr
+        ..label = fieldLabels?[key]?.tr ?? key.tr
         ..note = fieldNotes?[key]?.tr ?? '';
       children[key] = config;
     }

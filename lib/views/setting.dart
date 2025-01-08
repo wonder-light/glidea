@@ -28,16 +28,12 @@ class _SettingViewState extends State<SettingView> {
     (name: Tran.otherSetting, route: AppRouter.phoneOtherSetting, icon: PhosphorIconsRegular.slidersHorizontal),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    // TODO: setting -> theme -> remote -> post
-  }
+  /// 包括内边距的高度
+  final itemHeight = 68.0;
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  /// 内边距
+  final padding = kVerPadding4 + kHorPadding12;
+
 
   @override
   Widget build(BuildContext context) {
@@ -46,18 +42,17 @@ class _SettingViewState extends State<SettingView> {
         title: Text(Tran.setting.tr),
       ),
       body: ListView.builder(
-        itemExtent: 68,
+        itemExtent: itemHeight,
         itemCount: menus.length,
         itemBuilder: (BuildContext context, int index) {
-          //const itemHeight = 60.0;
           final item = menus[index];
           return Padding(
-            padding: kVerPadding4 + kHorPadding12,
+            padding: padding,
             child: ListItem(
               onTap: () => toRouter(item.route, arguments: item.name),
               leading: Icon(item.icon),
               title: Text(item.name.tr),
-              //constraints: const BoxConstraints.expand(height: itemHeight),
+              //constraints: const BoxConstraints.expand(height: itemHeight - 8),
               contentPadding: kHorPadding16,
               dense: true,
             ),
