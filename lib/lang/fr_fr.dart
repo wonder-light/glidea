@@ -180,7 +180,7 @@
   'password': 'Les mots de passe',
   'privateKey': 'Clé privée',
   'remotePath': 'Chemin à distance',
-  'netlifySiteId': 'ID du site',
-  'netlifyAccessToken': 'Accès au token',
+  'siteId': 'ID du site',
+  'accessToken': 'Accès au token',
   'previewPort': 'Prévisualiser le port',
 };

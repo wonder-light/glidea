@@ -12,20 +12,25 @@ import 'deploy.dart';
 /// 更多请查看详情 [github API git](https://docs.github.com/zh/rest/authentication/endpoints-available-for-fine-grained-personal-access-tokens?apiVersion=2022-11-28#git)
 class GithubDeploy extends GitDeploy {
   GithubDeploy(Application site) : super(site, api: null, token: null) {
-    api = 'https://api.github.com/repos/${site.remote.username}/${site.remote.repository}';
-    token = 'Bearer ${site.remote.token}';
+    final config = site.remote.github;
+    api = 'https://api.github.com/repos/${config.username}/${config.repository}';
+    token = 'Bearer ${config.token}';
     headers = {
       'User-Agent': 'Glidea',
       'Accept': 'application/vnd.github+json',
-      'Authorization': 'Bearer ${site.remote.token}',
+      'Authorization': 'Bearer ${config.token}',
       'X-GitHub-Api-Version': '2022-11-28',
       'Content-Type': 'application/json',
     };
   }
 
+  /// 分支
+  String get branch => remote.github.branch;
+
   /// 请求头
   late final Map<String, dynamic> headers;
 
+  /// 分支信息
   late ({String commitSha, String treeSha}) _branchInfo;
 
   @override
@@ -51,10 +56,10 @@ class GithubDeploy extends GitDeploy {
       // 获取存储库分支 - 可以替代 get ref, get commit
       final options = Options(headers: headers);
       // 结果
-      var result = await Deploy.dio.get('$api/branches/${remote.branch}', options: options);
+      var result = await Deploy.dio.get('$api/branches/$branch', options: options);
       if (result.statusCode == 404) {
         // 状态码为400时可能是该分支为空, 需要在该分支创建内容
-        final data = {"message": "create ${remote.branch} branches, and add readme.md", "branch": remote.branch, "content": ""};
+        final data = {"message": "create $branch branches, and add readme.md", "branch": branch, "content": ""};
         result = await Deploy.dio.put('$api/contents/${"README.md"}', options: options, data: data);
       }
       result.checkStateCode();
@@ -92,8 +97,8 @@ class GithubDeploy extends GitDeploy {
       var result = await Deploy.dio.get('$api/pages', options: options);
       // 数据
       var data = {
-        'cname': remote.cname,
-        'source': {'branch': remote.branch, 'path': '/'},
+        'cname': remote.github.cname,
+        'source': {'branch': branch, 'path': '/'},
       };
       // statusCode == 404 需要创建站点
       if (result.statusCode == 404) {
@@ -257,7 +262,7 @@ class GithubDeploy extends GitDeploy {
       // 数据
       final data = {'sha': newCommitSha, 'force': true};
       // 更新 Ref
-      var result = await Deploy.dio.patch('$api/git/refs/heads/${remote.branch}', options: options, data: data);
+      var result = await Deploy.dio.patch('$api/git/refs/heads/$branch', options: options, data: data);
       result.checkStateCode();
     } catch (e) {
       throw Mistake.add(message: '${remote.platform.name} update ref failed: ', hint: Tran.connectFailed, error: e);

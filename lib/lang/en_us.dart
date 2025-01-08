@@ -180,7 +180,7 @@
   'password': 'Password',
   'privateKey': 'Private key',
   'remotePath': 'Remote path',
-  'netlifySiteId': 'Site Id',
-  'netlifyAccessToken': 'Access token',
+  'siteId': 'Site Id',
+  'accessToken': 'Access token',
   'previewPort': 'Preview port',
 };

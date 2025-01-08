@@ -20,7 +20,6 @@ class RxObject<T> extends Rx<T> {
     var useUpdate = newValue == value;
     value = newValue;
     if (useUpdate) {
-      // subject.add(value);
       refresh();
     }
   }

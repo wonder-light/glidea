@@ -72,13 +72,13 @@ class RemoteCoding extends RemoteGitee {
 /// netlify 的远程设置
 @jsonSerializable
 mixin class RemoteNetlify {
-  /// netflix访问令牌
+  /// netflix 网站访问令牌
   @JsonProperty()
-  String netlifyAccessToken = '';
+  String accessToken = '';
 
-  /// netflix访问密钥
+  /// netflix 网站 ID
   @JsonProperty()
-  String netlifySiteId = '';
+  String siteId = '';
 }
 
 /// Sftp 的远程设置
@@ -107,7 +107,27 @@ mixin class RemoteSftp {
 
 /// 远程设置
 @jsonSerializable
-class RemoteSetting extends RemoteCoding with RemoteBase, RemoteProxy, RemoteNetlify, RemoteSftp {}
+class RemoteSetting with RemoteBase, RemoteProxy {
+  /// github 配置
+  @JsonProperty()
+  RemoteGithub github = RemoteGithub();
+
+  /// gitee 配置
+  @JsonProperty()
+  RemoteGitee gitee = RemoteGitee();
+
+  /// coding 配置
+  @JsonProperty()
+  RemoteCoding coding = RemoteCoding();
+
+  /// netlify 配置
+  @JsonProperty()
+  RemoteNetlify netlify = RemoteNetlify();
+
+  /// sftp 配置
+  @JsonProperty()
+  RemoteSftp sftp = RemoteSftp();
+}
 
 /// disqus 评论设置
 @jsonSerializable
@@ -145,9 +165,9 @@ class GitalkSetting {
   String owner = '';
 }
 
-/// 评论设置 评论设置
+/// 基础评论设置
 @jsonSerializable
-class CommentSetting {
+mixin class CommentBase {
   /// 评论平台
   @JsonProperty()
   CommentPlatform commentPlatform = CommentPlatform.gitalk;
@@ -155,7 +175,11 @@ class CommentSetting {
   // 显示评论
   @JsonProperty()
   bool showComment = false;
+}
 
+/// 评论设置 评论设置
+@jsonSerializable
+class CommentSetting with CommentBase {
   // disqus 评论
   @JsonProperty()
   DisqusSetting disqusSetting = DisqusSetting();

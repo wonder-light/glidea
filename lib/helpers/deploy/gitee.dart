@@ -12,7 +12,7 @@ import 'deploy.dart';
 
 class GiteeDeploy extends GitDeploy {
   GiteeDeploy(Application site) : super(site, api: null, token: null) {
-    final remote = site.remote;
+    final remote = site.remote.gitee;
     api = 'https://gitee.com/api/v5/repos/${remote.username}/${remote.repository}';
     token = remote.token;
     headers = {
@@ -26,6 +26,9 @@ class GiteeDeploy extends GitDeploy {
 
   // 分支的 commit sha
   late final String commitSha;
+
+  /// 分支
+  String get branch => remote.gitee.branch;
 
   @override
   Future<void> remoteDetect() async {
@@ -62,7 +65,7 @@ class GiteeDeploy extends GitDeploy {
           'access_token': token,
           'content': '# create'.getBase64(),
           'message': 'create a new file',
-          'branch': remote.branch,
+          'branch': branch,
         };
         result = await Deploy.dio.post('$api/contents/${"readme.md"}', options: options, data: body);
         // 创建失败
@@ -72,16 +75,16 @@ class GiteeDeploy extends GitDeploy {
         return;
       }
       // 获取分支的 commit sha
-      var branch = branchList.firstWhereOrNull((b) => b['name'] == remote.branch)?['commit']['sha'];
-      if (branch is String) {
-        commitSha = branch;
+      var bran = branchList.firstWhereOrNull((b) => b['name'] == branch)?['commit']['sha'];
+      if (bran is String) {
+        commitSha = bran;
         return;
       } else {
         // 没有分支, 测试创建
         var body = {
           'access_token': token,
           'refs': branchList.first['name'],
-          'branch_name': remote.branch,
+          'branch_name': branch,
         };
         result = await Deploy.dio.post('$api/branches', options: options, data: body);
         result.checkStateCode();
@@ -180,7 +183,7 @@ class GiteeDeploy extends GitDeploy {
       // create => action, path, encoding, content
       var body = {
         'access_token': token,
-        'branch': remote.branch,
+        'branch': branch,
         'message': 'create a commit of update site, now the time is ${DateTime.now()}',
         'actions': [
           for (var MapEntry(:key, :value) in updateFiles.entries)

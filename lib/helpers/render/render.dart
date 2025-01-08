@@ -1,6 +1,7 @@
 ﻿import 'dart:io' show Directory, FileMode;
 import 'dart:math' show min;
 
+import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/fs.dart';
@@ -67,7 +68,13 @@ final class RemoteRender {
 
   Map<String, dynamic> get customConfig => site.themeCustomConfig;
 
-  String get cname => site.remote.cname;
+  /// CNAME 域名
+  String get cname => switch (site.remote.platform) {
+        DeployPlatform.github => site.remote.github.cname,
+        DeployPlatform.gitee => site.remote.gitee.cname,
+        DeployPlatform.coding => site.remote.coding.cname,
+        _ => '',
+      };
 
   /// 清理输出目录
   Future<void> clearOutputFolder() async {

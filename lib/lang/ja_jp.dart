@@ -180,7 +180,7 @@
   'password': 'パスワード',
   'privateKey': '秘密鍵',
   'remotePath': 'リモートパス',
-  'netlifySiteId': 'サイトId',
-  'netlifyAccessToken': 'アクセストークン',
+  'siteId': 'サイトId',
+  'accessToken': 'アクセストークン',
   'previewPort': 'プレビュー港',
 };

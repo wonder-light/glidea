@@ -40,9 +40,9 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// [true] - 可以进行发布
   bool get checkPublish {
     return switch (remote.platform) {
-      DeployPlatform.github => _isCheckGitPublish(remote),
-      DeployPlatform.gitee => _isCheckGitPublish(remote),
-      DeployPlatform.coding => _isCheckGitPublish(remote),
+      DeployPlatform.github => _isCheckGitPublish(remote.github),
+      DeployPlatform.gitee => _isCheckGitPublish(remote.gitee),
+      DeployPlatform.coding => _isCheckGitPublish(remote.coding),
       DeployPlatform.sftp => _isCheckSftpPublish(),
       DeployPlatform.netlify => _isCheckNetlifyPublish(),
     };
@@ -184,13 +184,13 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
 
   /// 检测 sftp
   bool _isCheckSftpPublish() {
-    final sftp = remote;
+    final sftp = remote.sftp;
     return sftp.port.isNotEmpty && sftp.server.isNotEmpty && sftp.username.isNotEmpty && sftp.password.isNotEmpty;
   }
 
   /// 检测 netlify
   bool _isCheckNetlifyPublish() {
-    final netlify = remote;
-    return netlify.netlifySiteId.isNotEmpty && netlify.netlifyAccessToken.isNotEmpty;
+    final netlify = remote.netlify;
+    return netlify.siteId.isNotEmpty && netlify.accessToken.isNotEmpty;
   }
 }

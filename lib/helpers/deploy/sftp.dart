@@ -26,7 +26,7 @@ class SftpDeploy extends Deploy {
   @override
   Future<void> publish() async {
     try {
-      var remotePath = remote.remotePath;
+      var remotePath = remote.sftp.remotePath;
       if (remotePath.trim().isEmpty) remotePath = '/';
       final client = await getSftpClient();
       final ftp = await client.sftp();
@@ -39,10 +39,11 @@ class SftpDeploy extends Deploy {
 
   /// 获取 FTP 客户端
   Future<SSHClient> getSftpClient() async {
+    final sftp = remote.sftp;
     final client = SSHClient(
-      await SSHSocket.connect(remote.server, int.parse(remote.port)),
-      username: remote.username,
-      onPasswordRequest: () => remote.password,
+      await SSHSocket.connect(sftp.server, int.parse(sftp.port)),
+      username: sftp.username,
+      onPasswordRequest: () => sftp.password,
     );
     return client;
   }

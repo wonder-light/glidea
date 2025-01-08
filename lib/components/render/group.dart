@@ -11,6 +11,7 @@ class GroupWidget extends StatefulWidget {
     this.isTop = false,
     this.isScrollable = true,
     this.initialIndex = 0,
+    this.itemPadding,
     this.labelPadding,
     this.contentPadding,
     this.tabAlignment = TabAlignment.start,
@@ -30,6 +31,9 @@ class GroupWidget extends StatefulWidget {
   final bool isScrollable;
 
   /// 添加到每个制表标签上的填充
+  final EdgeInsets? itemPadding;
+
+  /// 整个 Tab 的内容边距
   final EdgeInsets? labelPadding;
 
   /// 整个 Tab 的内容边距
@@ -77,6 +81,10 @@ class _GroupWidgetState extends State<GroupWidget> {
       itemCount: widget.groups.length,
       itemBuilder: widget.itemBuilder,
     );
+    // 内容边距
+    if(widget.contentPadding != null) {
+      content = Padding(padding: widget.contentPadding!, child: content);
+    }
     // 大体布局
     final layout = widget.isTop ? Column.new : Row.new;
     return layout(
@@ -96,7 +104,7 @@ class _GroupWidgetState extends State<GroupWidget> {
   /// 构建 tabs 中的内容
   Widget _buildTabs() {
     // label 边距
-    final labelPadding = widget.labelPadding ?? ((widget.isTop ? kVerPadding16 : kVerPadding8) + kHorPadding8);
+    final labelPadding = widget.itemPadding ?? ((widget.isTop ? kVerPadding16 : kVerPadding8) + kHorPadding8);
     // 布局
     final layout = widget.isTop ? Row.new : Column.new;
     Widget content = layout(
@@ -138,7 +146,7 @@ class _GroupWidgetState extends State<GroupWidget> {
     }
     // 整体的边距
     return Padding(
-      padding: widget.contentPadding ?? kHorPadding16,
+      padding: widget.labelPadding ?? kHorPadding16,
       child: content,
     );
   }

@@ -180,7 +180,7 @@
   'password': '密码',
   'privateKey': '私钥',
   'remotePath': '远程路径',
-  'netlifySiteId': '站点ID',
-  'netlifyAccessToken': '访问令牌',
+  'siteId': '站点ID',
+  'accessToken': '访问令牌',
   'previewPort': '预览端口',
 };

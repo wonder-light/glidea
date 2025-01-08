@@ -180,7 +180,7 @@
   static const String password = 'password';
   static const String privateKey = 'privateKey';
   static const String remotePath = 'remotePath';
-  static const String netlifySiteId = 'netlifySiteId';
-  static const String netlifyAccessToken = 'netlifyAccessToken';
+  static const String siteId = 'siteId';
+  static const String accessToken = 'accessToken';
   static const String previewPort = 'previewPort';
 }

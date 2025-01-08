@@ -181,7 +181,7 @@
   'password': 'Пароль',
   'privateKey': 'Приватный ключ',
   'remotePath': 'Удаленный путь',
-  'netlifySiteId': 'Сайт ID',
-  'netlifyAccessToken': 'Талон доступа.',
+  'siteId': 'Сайт ID',
+  'accessToken': 'Талон доступа.',
   'previewPort': 'Предварительный просмотр портов',
 };

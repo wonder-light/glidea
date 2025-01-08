@@ -13,8 +13,8 @@ import 'deploy.dart';
 class NetlifyDeploy extends Deploy {
   NetlifyDeploy(Application site) : super(site, api: null, token: null) {
     api = 'https://api.netlify.com/api/v1/';
-    siteId = site.remote.netlifySiteId;
-    token = 'Bearer ${site.remote.netlifyAccessToken}';
+    siteId = site.remote.netlify.siteId;
+    token = 'Bearer ${site.remote.netlify.accessToken}';
     deployId = '';
     header = {
       'User-Agent': 'Glidea',
