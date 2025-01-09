@@ -183,4 +183,5 @@
   'siteId': '站点ID',
   'accessToken': '访问令牌',
   'previewPort': '预览端口',
+  'saveConfig': '请保存配置, 以使配置生效',
 };

@@ -73,7 +73,7 @@ class _HomeViewState extends State<HomeView> with WindowListener {
       body: FutureBuilder(
         future: site.initTask.future,
         builder: (ctx, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+          if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: LoadingWidget());
           }
           if (Get.isPhone) {

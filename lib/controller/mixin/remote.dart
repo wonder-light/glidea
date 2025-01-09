@@ -12,7 +12,6 @@ import 'package:glidea/helpers/render/render.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/application.dart';
-import 'package:glidea/models/render.dart';
 import 'package:glidea/models/setting.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io show serve;
 import 'package:shelf_static/shelf_static.dart' show createStaticHandler;
@@ -123,22 +122,14 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   }
 
   /// 更新远程配置
-  Future<bool> updateRemoteConfig({List<ConfigBase> remotes = const [], List<ConfigBase> comments = const []}) async {
+  Future<bool> updateRemoteConfig({TJsonMap remotes = const {}, TJsonMap comments = const {}}) async {
     try {
       // 保存数据
       await saveSiteData(callback: () async {
         // 远程
-        TJsonMap items = {for (var config in remotes) config.name: config.value};
-        state.remote = state.remote.copyWith<RemoteSetting>(items)!;
-        // 评论
-        items = {for (var config in comments) config.name: config.value};
+        state.remote = state.remote.copyWith<RemoteSetting>(remotes)!;
         // 合并
-        state.comment = state.comment.copyWith<CommentSetting>({
-          if (items['commentPlatform'] case String value) 'commentPlatform': value,
-          if (items['showComment'] case bool value) 'showComment': value,
-          'disqusSetting': items,
-          'gitalkSetting': items,
-        })!;
+        state.comment = state.comment.copyWith<CommentSetting>(comments)!;
       });
       return true;
     } catch (e, s) {

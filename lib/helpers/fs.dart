@@ -4,7 +4,7 @@ import 'dart:io' show Directory, File, FileMode, FileSystemEntity;
 import 'package:archive/archive_io.dart' show Archive, InputFileStream, OutputFileStream, ZipDecoder;
 import 'package:flutter/services.dart' show Uint8List, rootBundle;
 import 'package:glidea/helpers/crypto.dart';
-import 'package:path/path.dart' as p show url;
+import 'package:path/path.dart' as p;
 
 class FS {
   /// 同步查询该路径下的文件系统实体是否存在
@@ -122,7 +122,7 @@ class FS {
   static List<Directory> subDirInfo(String path) => getEntitySync<Directory>(path, recursive: false);
 
   /// 获取指定文件夹中子目录的名称
-  static List<String> subDir(String path) => subDirInfo(path).map((f) => p.url.basename(f.path)).toList();
+  static List<String> subDir(String path) => subDirInfo(path).map((f) => p.basename(f.path)).toList();
 
   /// 链接路径
   ///
@@ -150,7 +150,7 @@ class FS {
   /// 尾随分隔符将被忽略
   ///
   ///     dirname('path/to/'); // -> 'path'
-  static String dirname(String path) => normalize(p.url.dirname(path));
+  static String dirname(String path) => normalize(p.dirname(path));
 
   /// 获取[path]的文件扩展名
   ///
@@ -158,19 +158,19 @@ class FS {
   ///     extension('path/to/foo');         // -> ''
   ///     extension('path.to/foo');         // -> ''
   ///     extension('path/to/foo.dart.js'); // -> '.js'
-  static String extension(String path) => p.url.extension(path);
+  static String extension(String path) => p.extension(path);
 
   /// 获取[path]在最后一个分隔符之后的部分, 带有扩展名
   ///
   ///     basename('path/to/foo.dart'); // -> 'foo.dart'
   ///     basename('path/to');          // -> 'to'
-  static String basenameExt(String path) => p.url.basename(path);
+  static String basenameExt(String path) => p.basename(path);
 
   /// 获取[path]在最后一个分隔符之后的部分, 不带扩展名
   ///
   ///     basename('path/to/foo.dart'); // -> 'foo'
   ///     basename('path/to');          // -> 'to'
-  static String basename(String path) => p.url.basenameWithoutExtension(path);
+  static String basename(String path) => p.basenameWithoutExtension(path);
 
   // 去除开头的 /
   static String? _remove(String? str) {

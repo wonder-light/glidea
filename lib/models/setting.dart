@@ -182,9 +182,9 @@ mixin class CommentBase {
 class CommentSetting with CommentBase {
   // disqus 评论
   @JsonProperty()
-  DisqusSetting disqusSetting = DisqusSetting();
+  DisqusSetting disqus = DisqusSetting();
 
   // gitalk 评论
   @JsonProperty()
-  GitalkSetting gitalkSetting = GitalkSetting();
+  GitalkSetting gitalk = GitalkSetting();
 }

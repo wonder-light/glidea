@@ -183,4 +183,5 @@
   static const String siteId = 'siteId';
   static const String accessToken = 'accessToken';
   static const String previewPort = 'previewPort';
+  static const String saveConfig = 'saveConfig';
 }
