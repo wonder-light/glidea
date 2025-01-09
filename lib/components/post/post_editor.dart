@@ -2,9 +2,10 @@
 import 'package:get/get.dart' show Get, GetNavigationExt, Obx, Trans, BoolExtension;
 import 'package:glidea/components/Common/drawer_editor.dart';
 import 'package:glidea/components/Common/dropdown.dart';
-import 'package:glidea/components/render/array.dart';
+import 'package:glidea/components/render/picture.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
+import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/lang/base.dart';
@@ -230,10 +231,10 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
 
   /// 图片
   Widget _buildImage() {
-    return ArrayWidget.create(
-      config: widget.picture,
-      randomName: true,
-      onChanged: (str) => widget.entity.feature = str,
+    return PictureWidget(
+      constraints: const BoxConstraints(),
+      config: widget.picture.obs,
+      onChanged: saveImage,
     );
   }
 
@@ -273,5 +274,15 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
       widget.entity.date = result;
       dateController?.text = result.format(pattern: site.themeConfig.dateFormat);
     }
+  }
+
+  /// 保存图片
+  void saveImage(dynamic str) async {
+    //  /post-images/1292983484382.{jpg}
+    final path = FS.join('/post-images', '${DateTime.now().millisecondsSinceEpoch}${FS.extension(widget.picture.filePath)}');
+    // 设置
+    widget.picture.value = path;
+    widget.entity.feature = path;
+    await site.saveThemeImage(widget.picture);
   }
 }

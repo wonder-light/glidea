@@ -1,6 +1,7 @@
 ﻿import 'package:get/get.dart' show StateController, Trans;
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/fs.dart';
+import 'package:glidea/helpers/image.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
@@ -14,23 +15,6 @@ import 'data.dart';
 mixin ThemeSite on StateController<Application>, DataProcess {
   /// 拥有的主题名列表
   List<String> get themes => state.themes;
-
-  /// 当前是主题的自定义页面
-  bool? isThemeCustomPage;
-
-  /// 当前主题的资源目录
-  ///
-  /// themePage:
-  ///
-  ///     appDir,
-  ///
-  /// themeCustomPage:
-  ///
-  ///     appDir + selectTheme + assets,
-  String get currentThemeAssetsPath => switch (isThemeCustomPage) {
-        true => FS.join(state.appDir, 'themes', state.themeConfig.selectTheme, 'assets'),
-        _ => state.appDir,
-      };
 
   /// 主题配置
   Theme get themeConfig => state.themeConfig;
@@ -194,10 +178,22 @@ mixin ThemeSite on StateController<Application>, DataProcess {
       // 保存数据
       await saveSiteData(callback: () async {
         // 更新主题数据
-        TJsonMap items = {for (var config in themes) config.name: config.value};
+        TJsonMap items = {};
+        for (var config in themes) {
+          if (config is PictureConfig) {
+            await saveThemeImage(config);
+          }
+          items[config.name] = config.value;
+        }
         state.themeConfig = state.themeConfig.copyWith<Theme>(items)!;
         // 更新自定义主题数据
-        items = {for (var config in customs) config.name: config.value};
+        items = {};
+        for (var config in customs) {
+          if (config is PictureConfig) {
+            await saveThemeImage(config);
+          }
+          items[config.name] = config.value;
+        }
         // Map 在合并后需要使用新的 Map 对象, 旧的 Map 对象在序列化时会报错
         state.themeCustomConfig = state.themeCustomConfig.mergeMaps(items);
       });
@@ -206,5 +202,14 @@ mixin ThemeSite on StateController<Application>, DataProcess {
       Log.e('update or add theme config failed', error: e, stackTrace: s);
       return false;
     }
+  }
+
+  /// 保存主题配置中的图片
+  Future<void> saveThemeImage(PictureConfig picture) async {
+    final path = FS.join(picture.folder, picture.value);
+    if (picture.filePath == path) return;
+    // 保存并压缩
+    await ImageExt.compress(picture.filePath, path);
+    picture.filePath = path;
   }
 }

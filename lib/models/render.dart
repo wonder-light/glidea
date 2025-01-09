@@ -203,6 +203,16 @@ class SelectOption {
   }
 }
 
-mixin class PictureMixin{
+mixin class PictureMixin {
+  /// 包含图片路径的文件夹
+  ///
+  ///     theme: /
+  ///     customTheme: => /themes/fly/assets/
+  ///     post: => /
+  String folder = '';
+
+  /// 需要进行替换的图片的原始路径
+  ///
+  ///     c:/Root/.../image.jgp
   String filePath = '';
 }
