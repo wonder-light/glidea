@@ -58,7 +58,7 @@ extension MapExtend on Map<String, dynamic> {
   T? fromMap<T>([DeserializationOptions? options]) => JsonMapper.fromMap<T>(this, options);
 
   /// 递归深度合并两个映射
-  Map<String, dynamic> mergeMaps(Map<String, dynamic> map) => JsonMapper.mergeMaps(Map.from(this), map);
+  Map<String, dynamic> mergeMaps(Map<String, dynamic> map) => JsonMapper.mergeMaps(this, map);
 }
 
 extension RegExpExtension on Pattern {

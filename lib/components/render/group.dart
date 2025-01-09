@@ -10,6 +10,7 @@ class GroupWidget extends StatefulWidget {
     required this.itemBuilder,
     this.isTop = false,
     this.isScrollable = true,
+    this.allowImplicitScrolling = true,
     this.initialIndex = 0,
     this.itemPadding,
     this.labelPadding,
@@ -41,6 +42,11 @@ class GroupWidget extends StatefulWidget {
 
   /// 指定选项卡内选项卡的对齐方式
   final TabAlignment? tabAlignment;
+
+  /// 设置为 true, 缓存一个页面
+  ///
+  /// 设置为 false, 不缓存页面
+  final bool allowImplicitScrolling;
 
   /// 一个可选的回调在TabBar被点击时被调用
   final ValueChanged<int>? onTap;
@@ -77,7 +83,7 @@ class _GroupWidgetState extends State<GroupWidget> {
     Widget content = PageView.builder(
       physics: const NeverScrollableScrollPhysics(),
       controller: controller,
-      allowImplicitScrolling: true,
+      allowImplicitScrolling: widget.allowImplicitScrolling,
       itemCount: widget.groups.length,
       itemBuilder: widget.itemBuilder,
     );

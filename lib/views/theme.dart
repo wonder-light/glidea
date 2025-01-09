@@ -20,9 +20,6 @@ class ThemeView extends StatefulWidget {
 }
 
 class _ThemeViewState extends State<ThemeView> {
-  /// 是否可以保存
-  var canSave = false.obs;
-
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
@@ -30,24 +27,28 @@ class _ThemeViewState extends State<ThemeView> {
   final themeConfig = <ConfigBase>[].obs;
 
   /// 主题在加载中
-  final themeLoading = true.obs;
+  final themeLoading = false.obs;
 
   /// 自定义主题配置
   final themeCustomConfig = <ConfigBase>[].obs;
 
   /// 自定主题在加载中
-  final customLoading = true.obs;
+  final customLoading = false.obs;
 
   @override
   void initState() {
     super.initState();
     site.isThemeCustomPage = false;
-    resetConfig();
+    if (Get.isPhone) {
+      site.isThemeCustomPage = Get.arguments == Tran.customConfig;
+      site.isThemeCustomPage! ? loadCustom() : loadTheme();
+    } else {
+      loadTheme();
+    }
   }
 
   @override
   void dispose() {
-    canSave.dispose();
     themeConfig.dispose();
     themeLoading.dispose();
     customLoading.dispose();
@@ -65,11 +66,16 @@ class _ThemeViewState extends State<ThemeView> {
     Widget childWidget = GroupWidget(
       isTop: true,
       groups: const [Tran.basicSetting, Tran.customConfig],
-      itemBuilder: (ctx, index) {
-        if (index <= 0) return buildThemeConfig();
-        return buildCustomConfig();
+      itemBuilder: (ctx, index) => index <= 0 ? buildThemeConfig() : buildCustomConfig(),
+      onTap: (index) {
+        site.isThemeCustomPage = index > 0;
+        if (index > 0 && themeCustomConfig.value.isEmpty) {
+          loadCustom();
+        }
+        if (index <= 0 && themeConfig.value.isEmpty) {
+          loadTheme();
+        }
       },
-      onTap: (index) => site.isThemeCustomPage = index > 0,
     );
     // PC 端和平板端
     return Material(
@@ -89,19 +95,11 @@ class _ThemeViewState extends State<ThemeView> {
 
   /// 构建手机端
   Widget buildPhone() {
-    Widget childWidget;
     // arguments 参数来自 [package:glidea/views/setting.dart] 中的 [_SettingViewState.toRouter]
-    var arg = '${Get.arguments}';
-    if (arg == Tran.customConfig) {
-      site.isThemeCustomPage = true;
-      childWidget = buildCustomConfig();
-    } else {
-      arg = Tran.themeSetting;
-      childWidget = buildThemeConfig();
-    }
+    var arg = Get.arguments as String;
     return Scaffold(
       appBar: AppBar(title: Text(arg.tr), actions: getActionButton()),
-      body: childWidget,
+      body: site.isThemeCustomPage! ? buildCustomConfig() : buildThemeConfig(),
     );
   }
 
@@ -178,7 +176,7 @@ class _ThemeViewState extends State<ThemeView> {
       TipWidget.down(
         message: Tran.reset.tr,
         child: IconButton(
-          onPressed: resetConfig,
+          onPressed: site.isThemeCustomPage! ? loadCustom : loadTheme,
           icon: const Icon(PhosphorIconsRegular.clockCounterClockwise),
         ),
       ),
@@ -192,19 +190,24 @@ class _ThemeViewState extends State<ThemeView> {
     ];
   }
 
+  /// 加载主题
+  Future<void> loadTheme() async {
+    themeLoading.value = true;
+    themeConfig.value = site.getThemeWidgetConfig();
+    themeLoading.value = false;
+  }
+
+  /// 加载自定义主题
+  Future<void> loadCustom() async {
+    customLoading.value = true;
+    themeCustomConfig.value = site.getThemeCustomWidgetConfig();
+    customLoading.value = false;
+  }
+
   /// 重置配置
   void resetConfig() {
-    // 主题配置
-    themeLoading.value = true;
-    customLoading.value = true;
-    Future(() async {
-      themeConfig.value = site.getThemeWidgetConfig();
-      themeLoading.value = false;
-    });
-    Future(() async {
-      themeCustomConfig.value = site.getThemeCustomWidgetConfig();
-      customLoading.value = false;
-    });
+    loadTheme();
+    loadCustom();
   }
 
   /// 保存配置
