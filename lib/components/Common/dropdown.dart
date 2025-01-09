@@ -141,7 +141,7 @@ class DropdownWidget<T> extends StatefulWidget {
 
 class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   /// [MenuAnchor] 的全局键, 用于获取宽度
-  late final GlobalKey _key;
+  final _key = GlobalKey();
 
   /// 菜单宽度
   final _maxWidth = 350.0.obs;
@@ -177,8 +177,6 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
     assert(widget.initValue == null || widget.children.any((t) => t.value == widget.initValue), 'initValue 不在 children 中');
     _updateTextEditor();
     _updateSelectItems();
-    //_key = GlobalObjectKey<_DropdownWidgetState>(widget);
-    _key = LabeledGlobalKey(widget.toString());
   }
 
   @override
@@ -327,6 +325,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
       controller: menuController,
       crossAxisUnconstrained: false,
       menuChildren: children,
+      layerLink: LayerLink(),
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(theme.scaffoldBackgroundColor),
       ),
