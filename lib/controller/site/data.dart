@@ -94,7 +94,7 @@ mixin DataProcess on StateController<Application> {
     if (isCreate) {
       site.appDir = defaultSiteDir;
       // 将不存在的文件解压到指定路径
-      FS.unzip('assets/public/default-files.zip', site.appDir, isAsset: true, cover: false);
+      FS.unzip(src: 'assets/public/default-files.zip', target: site.appDir, cover: false);
     }
     // 输出目录
     if (!FS.dirExistsSync(site.buildDir)) {
@@ -160,18 +160,7 @@ mixin DataProcess on StateController<Application> {
       setLoading();
       // 先执行回调
       await callback?.call();
-      // 检查目录
-      await checkDir(state);
-      final configPath = FS.join(state.appDir, 'config');
-      // 自定义主题配置
-      final customThemePath = FS.join(configPath, 'theme.${state.themeConfig.selectTheme}.config.json');
-      FS.writeStringSync(customThemePath, state.themeCustomConfig.toJson());
-      // 更新应用配置
-      // 将 post 的 content 设为 ''
-      for (var post in state.posts) {
-        post.content = '';
-      }
-      FS.writeStringSync(FS.join(configPath, 'config.json'), state.copy<ApplicationDb>()!.toJson());
+      await Background.instance.saveSiteData(state);
     } finally {
       // 设置状态
       setSuccess(state);

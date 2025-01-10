@@ -24,15 +24,6 @@ mixin RemoteSite on DataProcess, ThemeSite {
     };
   }
 
-  /// 今天文件服务
-  HttpServer? fileServer;
-
-  @override
-  Future<void> disposeState() async {
-    await fileServer?.close(force: true);
-    await super.disposeState();
-  }
-
   /// 发布站点
   Future<Notif> publishSite() async {
     try {
@@ -46,11 +37,8 @@ mixin RemoteSite on DataProcess, ThemeSite {
         Get.error(Tran.syncWarning);
         return Notif(hint: Tran.syncWarning);
       }
-      // 设置域名
-      state.themeConfig.domain = state.remote.domain;
-      // render
-      await renderAll();
-      await Deploy.create(state).publish();
+      // 在后台进行发布
+      await Background.instance.publishSite(state);
       // 成功
       Get.success(Tran.syncSuccess);
       return Notif(hint: Tran.syncSuccess);
@@ -66,30 +54,14 @@ mixin RemoteSite on DataProcess, ThemeSite {
       if (!selectThemeValid) {
         return Notif(hint: Tran.noValidCurrentTheme);
       }
-      // 设置域名
-      state.themeConfig.domain = 'http://localhost:${state.previewPort}';
-      await renderAll();
-      // 启动静态文件服务
-      await _enableStaticServer();
+      // 在后台进行操作
+      await Background.instance.previewSite(state);
       // 成功
       return Notif(hint: Tran.renderSuccess);
     } catch (e, s) {
-      fileServer?.close(force: true);
-      fileServer = null;
       Log.e('preview site failed', error: e, stackTrace: s);
       return Notif(hint: Tran.renderError);
     }
-  }
-
-  /// 渲染所有
-  ///
-  /// 当构建失败时抛出 [Exception] 错误
-  Future<void> renderAll() async {
-    final render = RemoteRender(site: state);
-    await render.clearOutputFolder();
-    await render.formatDataForRender();
-    await render.copyFiles();
-    await render.buildTemplate();
   }
 
   /// 更新远程配置
@@ -112,26 +84,12 @@ mixin RemoteSite on DataProcess, ThemeSite {
   /// 远程检测
   Future<bool> remoteDetect() async {
     try {
-      state.themeConfig.domain = state.remote.domain;
-      await Deploy.create(state).remoteDetect();
+      await Background.instance.remoteDetect(state.remote, state.appDir, state.buildDir);
       return true;
     } catch (e, s) {
       Log.e('remote detect failed', error: e, stackTrace: s);
       return false;
     }
-  }
-
-  /// 启动静态文件服务器
-  ///
-  /// 出错时抛出 [Exception] 异常
-  Future<void> _enableStaticServer() async {
-    if (fileServer == null) {
-      // 启动服务
-      var handler = createStaticHandler(state.buildDir, defaultDocument: 'index.html');
-      fileServer = await shelf_io.serve(handler, 'localhost', state.previewPort, shared: true);
-    }
-    // 打开网址
-    await launchUrlString(state.themeConfig.domain);
   }
 
   /// 检测 github, gitee, coding

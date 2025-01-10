@@ -4,13 +4,14 @@ import 'dart:ui' show PointerDeviceKind;
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetMaterialApp, GetNavigationExt, Inst, Transition;
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/theme.dart';
 import 'package:glidea/helpers/windows.dart';
 import 'package:glidea/lang/translations.dart';
+import 'package:glidea/library/worker/worker.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:responsive_framework/responsive_framework.dart'
     show Breakpoint, Condition, DESKTOP, PHONE, ResponsiveBreakpoints, ResponsiveScaledBox, ResponsiveValue, TABLET;
@@ -26,6 +27,7 @@ class App extends StatelessWidget {
   /// [App] 初始化
   static Future<void> initialized() async {
     WidgetsFlutterBinding.ensureInitialized();
+    Background.initialized();
     await Log.initialized();
     JsonHelp.initialized();
     WindowsHelp.initialized();
