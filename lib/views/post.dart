@@ -9,7 +9,6 @@ import 'package:glidea/components/Common/visibility.dart';
 import 'package:glidea/components/post/post_editor.dart';
 import 'package:glidea/controller/site.dart';
 import 'package:glidea/helpers/constants.dart';
-import 'package:glidea/helpers/events.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/image.dart';
@@ -203,7 +202,6 @@ class _PostViewState extends State<PostView> {
     toolbars.clear();
     contextMenus.clear();
     actions.clear();
-    site.off(themeSaveEvent);
     super.dispose();
   }
 
@@ -421,7 +419,6 @@ class _PostViewState extends State<PostView> {
       return;
     }
     currentPost.published = published;
-    await site.emit(themeSaveEvent);
     site.updatePost(newData: currentPost, oldData: postData, fileContent: contentController.text).then((value){
       value ? Get.success(published ? Tran.saved : Tran.draftSuccess): Get.error(Tran.saveError);
     });
