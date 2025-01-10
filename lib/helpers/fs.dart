@@ -60,18 +60,19 @@ class FS {
       return;
     }
     // 如果 src 是目录
-    if (Directory(src) case Directory directory when directory.existsSync()) {
-      // 获取目录下的所有子目录包括文件
-      for (var file in directory.listSync(recursive: true)) {
-        var isFile = file is File;
-        // 获取目录的相对路径
-        var relative = p.url.relative(isFile ? file.parent.path : file.path, from: src);
-        FS.createDirSync(p.url.join(target, relative));
-        if (isFile) {
-          // 获取文件的相对路径
-          relative = p.url.relative(file.path, from: src);
-          file.copySync(p.url.join(target, relative));
-        }
+    final directory = Directory(src);
+    if (!directory.existsSync()) return;
+    // 获取目录下的所有子目录包括文件
+    for (var file in directory.listSync(recursive: true)) {
+      var isFile = file is File;
+      // 获取文件或者目录的相对路径
+      var relative = p.url.relative(file.path, from: src);
+      var filePath = join(target, relative);
+      var dir = isFile ? File(filePath).parent : Directory(filePath);
+      dir.createSync(recursive: true);
+      if (isFile) {
+        // 获取文件的相对路径
+        file.copySync(filePath);
       }
     }
   }
