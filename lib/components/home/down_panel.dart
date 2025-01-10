@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Inst, Trans;
+import 'package:get/get.dart' show Get, Inst, Obx, Trans;
+import 'package:glidea/components/Common/animated.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/setting/setting_editor.dart';
 import 'package:glidea/controller/site.dart';
@@ -22,6 +23,12 @@ class HomeDownPanel extends StatefulWidget {
 class _HomeDownPanelState extends State<HomeDownPanel> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
+
+  /// 是否这正在同步中
+  final inBeingSync = false.obs;
+
+  /// 预览是否这正在同步中
+  final inPreviewSync = false.obs;
 
   // 按钮样式
   final buttonStyle = const ButtonStyle(
@@ -83,27 +90,44 @@ class _HomeDownPanelState extends State<HomeDownPanel> {
         Text(item.name.tr),
       ],
     );
-
+    // 包裹
+    Widget content = Obx(() {
+      Widget widget = contentWidget;
+      if((isFilled && inBeingSync.value) || (!isFilled && inPreviewSync.value)) {
+        widget = const Align(
+          alignment: Alignment.center,
+          child: AutoAnimatedRotation(
+            child: Icon(PhosphorIconsRegular.arrowsClockwise),
+          ),
+        );
+      }
+      return widget;
+    });
+    // 返回
     return Padding(
       padding: kVerPadding8,
       child: build(
         onPressed: item.call,
         style: buttonStyle,
-        child: contentWidget,
+        child: content,
       ),
     );
   }
 
   /// 预览网页
   void preview() async {
+    inPreviewSync.value = true;
     final notif = await site.previewSite();
     notif.exec();
+    inPreviewSync.value = false;
   }
 
   /// 发布网页
   void publish() async {
+    inBeingSync.value = true;
     final notif = await site.publishSite();
     notif.exec();
+    inBeingSync.value = false;
   }
 
   /// 打开设置

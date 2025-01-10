@@ -22,12 +22,6 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 发布的网址
   String get domain => state.remote.domain;
 
-  /// 是否这正在同步中
-  final inBeingSync = false.obs;
-
-  /// 正在进行远程检测中
-  final inRemoteDetect = false.obs;
-
   /// 远程
   RemoteSetting get remote => state.remote;
 
@@ -52,8 +46,6 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
 
   @override
   Future<void> disposeState() async {
-    inBeingSync.dispose();
-    inRemoteDetect.dispose();
     await fileServer?.close(force: true);
     await super.disposeState();
   }
@@ -71,8 +63,6 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
         Get.error(Tran.syncWarning);
         return Notif(hint: Tran.syncWarning);
       }
-      // 设置同步中
-      inBeingSync.value = true;
       // 设置域名
       state.themeConfig.domain = state.remote.domain;
       // render
@@ -84,8 +74,6 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
     } catch (e, s) {
       Log.i('publish site failed', error: e, stackTrace: s);
       return Notif(hint: Tran.syncError1);
-    } finally {
-      inBeingSync.value = false;
     }
   }
 
@@ -141,17 +129,12 @@ mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
   /// 远程检测
   Future<bool> remoteDetect() async {
     try {
-      // 设置正在检测中
-      inRemoteDetect.value = true;
       state.themeConfig.domain = state.remote.domain;
       await Deploy.create(state).remoteDetect();
       return true;
     } catch (e, s) {
       Log.e('remote detect failed', error: e, stackTrace: s);
       return false;
-    } finally {
-      // 检测完毕
-      inRemoteDetect.value = false;
     }
   }
 

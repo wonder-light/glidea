@@ -27,6 +27,9 @@ class _RemoteViewState extends State<RemoteView> {
   /// 手机端的操作数据
   late final List<TActionData> actions;
 
+  /// 正在进行远程检测中
+  final inRemoteDetect = false.obs;
+
   final remoteKey = GlobalKey<RemoteSettingWidgetState>();
   final commentKey = GlobalKey<CommentSettingWidgetState>();
 
@@ -100,7 +103,7 @@ class _RemoteViewState extends State<RemoteView> {
         children: [
           Obx(() {
             Widget child = Text(Tran.testConnection.tr);
-            if (site.inRemoteDetect.value) {
+            if (inRemoteDetect.value) {
               child = Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -112,7 +115,7 @@ class _RemoteViewState extends State<RemoteView> {
             return TipWidget.up(
               message: Tran.saveConfig.tr,
               child: OutlinedButton(
-                onPressed: site.inRemoteDetect.value ? null : _testConnection,
+                onPressed: inRemoteDetect.value ? null : _testConnection,
                 child: child,
               ),
             );
@@ -153,7 +156,9 @@ class _RemoteViewState extends State<RemoteView> {
 
   /// 检测远程连接
   void _testConnection() async {
+    inRemoteDetect.value = true;
     final value = await site.remoteDetect();
     value ? Get.success(Tran.connectSuccess) : Get.error(Tran.connectFailed);
+    inRemoteDetect.value = false;
   }
 }
