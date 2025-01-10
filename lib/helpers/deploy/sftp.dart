@@ -9,7 +9,7 @@ import 'deploy.dart';
 
 /// SFTP 部署
 class SftpDeploy extends Deploy {
-  SftpDeploy(super.site, {super.api = ''});
+  SftpDeploy({required super.remote, super.appDir, super.buildDir});
 
   @override
   Future<void> remoteDetect() async {

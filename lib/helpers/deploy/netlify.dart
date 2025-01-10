@@ -5,16 +5,21 @@ import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
-import 'package:glidea/models/application.dart';
 
 import 'deploy.dart';
 
 /// Netlify 部署
 class NetlifyDeploy extends Deploy {
-  NetlifyDeploy(Application site) : super(site, api: null, token: null) {
+  NetlifyDeploy({
+    required super.remote,
+    super.appDir,
+    super.buildDir,
+    super.api = null,
+    super.token = null,
+  }) {
     api = 'https://api.netlify.com/api/v1/';
-    siteId = site.remote.netlify.siteId;
-    token = 'Bearer ${site.remote.netlify.accessToken}';
+    siteId = remote.netlify.siteId;
+    token = 'Bearer ${remote.netlify.accessToken}';
     deployId = '';
     header = {
       'User-Agent': 'Glidea',

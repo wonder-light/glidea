@@ -3,7 +3,6 @@ import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
-import 'package:glidea/models/application.dart';
 
 import 'deploy.dart';
 
@@ -11,14 +10,14 @@ import 'deploy.dart';
 ///
 /// 更多请查看详情 [github API git](https://docs.github.com/zh/rest/authentication/endpoints-available-for-fine-grained-personal-access-tokens?apiVersion=2022-11-28#git)
 class GithubDeploy extends GitDeploy {
-  GithubDeploy(Application site) : super(site, api: null, token: null) {
-    final config = site.remote.github;
-    api = 'https://api.github.com/repos/${config.username}/${config.repository}';
-    token = 'Bearer ${config.token}';
+  GithubDeploy({required super.remote, super.appDir, super.buildDir}) {
+    final github = remote.github;
+    api = 'https://api.github.com/repos/${github.username}/${github.repository}';
+    token = 'Bearer ${github.token}';
     headers = {
       'User-Agent': 'Glidea',
       'Accept': 'application/vnd.github+json',
-      'Authorization': 'Bearer ${config.token}',
+      'Authorization': 'Bearer ${github.token}',
       'X-GitHub-Api-Version': '2022-11-28',
       'Content-Type': 'application/json',
     };

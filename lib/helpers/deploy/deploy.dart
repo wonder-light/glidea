@@ -8,7 +8,6 @@ import 'package:glidea/helpers/crypto.dart';
 import 'package:glidea/helpers/deploy/gitee.dart';
 import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
-import 'package:glidea/models/application.dart';
 import 'package:glidea/models/setting.dart';
 
 import 'github.dart';
@@ -22,14 +21,17 @@ export 'sftp.dart';
 
 /// 部署抽象类
 abstract class Deploy {
-  Deploy(Application site, {String? api = '', String? token = ''}) {
-    appDir = site.appDir;
-    buildDir = site.buildDir;
-    remote = site.remote;
+  Deploy({
+    required this.remote,
+    this.appDir = '',
+    this.buildDir = '',
+    String? api = '',
+    String? token = '',
+  }) {
     if (api != null) this.api = api;
     if (token != null) this.token = token;
     // 更新代理
-    _updateProxy(site);
+    _updateProxy(remote);
   }
 
   /// 文件所在的目录
@@ -62,15 +64,17 @@ abstract class Deploy {
   Future<void> remoteDetect() async => throw Mistake(message: 'Deploy.remoteDetect no corresponding implementation');
 
   /// 创建部署
-  static Deploy create(Application site) {
-    return switch (site.remote.platform) {
-      DeployPlatform.netlify => NetlifyDeploy(site),
-      DeployPlatform.github => GithubDeploy(site),
-      DeployPlatform.gitee => GiteeDeploy(site),
-      DeployPlatform.sftp => SftpDeploy(site),
+  static Deploy create(RemoteSetting remote, String appDir, String buildDir) {
+    final build = switch (remote.platform) {
+      DeployPlatform.netlify => NetlifyDeploy.new,
+      DeployPlatform.github => GithubDeploy.new,
+      DeployPlatform.gitee => GiteeDeploy.new,
+      DeployPlatform.sftp => SftpDeploy.new,
       // TODO: Handle this case.
       DeployPlatform.coding => throw UnimplementedError(),
     };
+    // 构建
+    return build(remote: remote, appDir: appDir, buildDir: buildDir);
   }
 
   /// 创建 [Dio] 实例
@@ -92,16 +96,15 @@ abstract class Deploy {
   }
 
   /// 设置代理
-  void _updateProxy(Application site) {
+  void _updateProxy(RemoteSetting remote) {
     if (dio.httpClientAdapter is! IOHttpClientAdapter) return;
     final adapter = dio.httpClientAdapter as IOHttpClientAdapter;
-    adapter.createHttpClient ??= () {
+    adapter.createHttpClient = () {
       return HttpClient()
         ..findProxy = (uri) {
           // 将请求代理至 localhost:8888。
           // 请注意，代理会在你正在运行应用的设备上生效，而不是在宿主平台生效。
           // 'DIRECT; PROXY localhost:8888'
-          final remote = site.remote;
           return remote.enabledProxy == ProxyWay.proxy ? 'PROXY ${remote.proxyPath}:${remote.proxyPort}' : 'DIRECT';
         };
     };
@@ -110,7 +113,13 @@ abstract class Deploy {
 
 /// git 部署
 abstract class GitDeploy extends Deploy {
-  GitDeploy(super.site, {super.api = null, super.token = null});
+  GitDeploy({
+    required super.remote,
+    super.appDir,
+    super.buildDir,
+    super.api = null,
+    super.token = null,
+  });
 
   @override
   Future<void> publish() async {

@@ -6,15 +6,14 @@ import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/lang/base.dart';
-import 'package:glidea/models/application.dart';
 
 import 'deploy.dart';
 
 class GiteeDeploy extends GitDeploy {
-  GiteeDeploy(Application site) : super(site, api: null, token: null) {
-    final remote = site.remote.gitee;
-    api = 'https://gitee.com/api/v5/repos/${remote.username}/${remote.repository}';
-    token = remote.token;
+  GiteeDeploy({required super.remote, super.appDir, super.buildDir}) {
+    final gitee = remote.gitee;
+    api = 'https://gitee.com/api/v5/repos/${gitee.username}/${gitee.repository}';
+    token = gitee.token;
     headers = {
       'User-Agent': 'Glidea',
       'Content-Type': 'application/json',
