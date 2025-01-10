@@ -182,10 +182,16 @@ class FS {
   }
 
   /// 获取压缩存档
-  static Future<Archive> getZipArchive(String src, {bool isAsset = false}) async {
+  static Future<Archive> getZipArchive({String? src, Uint8List? bytes}) async {
+    assert(src != null || bytes != null, 'src or bytes must have one that is not null in getZipArchive');
     final zip = ZipDecoder();
     Archive archive;
-    if (isAsset) {
+    if (bytes?.isNotEmpty ?? false) {
+      // 从二进制加载
+      // 解压
+      archive = zip.decodeBytes(bytes!);
+    } else if (src!.startsWith('assets/')) {
+      // 资源
       // 获取2进制内容
       Uint8List bytes = (await rootBundle.load(src)).buffer.asUint8List();
       // 解压
@@ -207,9 +213,11 @@ class FS {
   ///
   /// [isAsset] 是否是资源文件
   ///
+  /// [bytes] 从二进制获取存档
+  ///
   /// [cover] 是否覆盖已有的文件
-  static Future<void> unzip(String src, String target, {bool isAsset = false, bool cover = false}) async {
-    final archive = await getZipArchive(src, isAsset: isAsset);
+  static Future<void> unzip({required String target, String? src, Uint8List? bytes, bool cover = false}) async {
+    final archive = await getZipArchive(src: src, bytes: bytes);
     // 创建目录
     createDirSync(target);
     // 循环
