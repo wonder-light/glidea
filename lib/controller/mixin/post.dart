@@ -1,17 +1,15 @@
 ﻿import 'package:collection/collection.dart' show IterableExtension;
-import 'package:get/get.dart' show StateController;
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/models/application.dart';
 import 'package:glidea/models/post.dart';
 
 import 'data.dart';
 import 'tag.dart';
 
 /// 混合 - 文章
-mixin PostSite on StateController<Application>, DataProcess, TagSite {
+mixin PostSite on DataProcess, TagSite {
   /// 菜单
   List<Post> get posts => state.posts;
 

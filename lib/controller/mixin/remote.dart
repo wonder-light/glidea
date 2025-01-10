@@ -1,6 +1,6 @@
 ﻿import 'dart:io' show HttpServer;
 
-import 'package:get/get.dart' show BoolExtension, Get, StateController;
+import 'package:get/get.dart' show BoolExtension, Get;
 import 'package:glidea/controller/mixin/data.dart';
 import 'package:glidea/controller/mixin/theme.dart';
 import 'package:glidea/enum/enums.dart';
@@ -18,7 +18,7 @@ import 'package:shelf_static/shelf_static.dart' show createStaticHandler;
 import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
 
 /// 混合 - 远程
-mixin RemoteSite on StateController<Application>, DataProcess, ThemeSite {
+mixin RemoteSite on DataProcess, ThemeSite {
   /// 发布的网址
   String get domain => state.remote.domain;
 

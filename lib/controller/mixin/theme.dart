@@ -1,18 +1,17 @@
-﻿import 'package:get/get.dart' show StateController, Trans;
+﻿import 'package:get/get.dart' show Trans;
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/image.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/models/application.dart';
 import 'package:glidea/models/render.dart';
 import 'package:glidea/models/theme.dart';
 
 import 'data.dart';
 
 /// 混合 - 主题
-mixin ThemeSite on StateController<Application>, DataProcess {
+mixin ThemeSite on DataProcess {
   /// 拥有的主题名列表
   List<String> get themes => state.themes;
 

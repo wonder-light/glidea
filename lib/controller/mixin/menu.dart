@@ -1,13 +1,11 @@
-﻿import 'package:get/get.dart' show StateController;
-import 'package:glidea/helpers/log.dart';
+﻿import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
 
 import 'data.dart';
 
 /// 混合 - 菜单
-mixin MenuSite on StateController<Application>, DataProcess {
+mixin MenuSite on DataProcess {
   /// 菜单
   List<Menu> get menus => state.menus;
 

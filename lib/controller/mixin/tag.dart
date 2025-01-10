@@ -1,14 +1,12 @@
-﻿import 'package:get/get.dart' show StateController;
-import 'package:glidea/helpers/log.dart';
+﻿import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/uid.dart';
-import 'package:glidea/models/application.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/models/tag.dart';
 
 import 'data.dart';
 
 /// 混合 - 标签
-mixin TagSite on StateController<Application>, DataProcess {
+mixin TagSite on DataProcess {
   /// 标签
   List<Tag> get tags => state.tags;
 
