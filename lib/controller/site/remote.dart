@@ -1,21 +1,4 @@
-﻿import 'dart:io' show HttpServer;
-
-import 'package:get/get.dart' show BoolExtension, Get;
-import 'package:glidea/controller/mixin/data.dart';
-import 'package:glidea/controller/mixin/theme.dart';
-import 'package:glidea/enum/enums.dart';
-import 'package:glidea/helpers/deploy/deploy.dart';
-import 'package:glidea/helpers/get.dart';
-import 'package:glidea/helpers/json.dart';
-import 'package:glidea/helpers/log.dart';
-import 'package:glidea/helpers/render/render.dart';
-import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/lang/base.dart';
-import 'package:glidea/models/application.dart';
-import 'package:glidea/models/setting.dart';
-import 'package:shelf/shelf_io.dart' as shelf_io show serve;
-import 'package:shelf_static/shelf_static.dart' show createStaticHandler;
-import 'package:url_launcher/url_launcher_string.dart' show launchUrlString;
+﻿part of 'site.dart';
 
 /// 混合 - 远程
 mixin RemoteSite on DataProcess, ThemeSite {

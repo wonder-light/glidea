@@ -1,16 +1,4 @@
-﻿import 'dart:io' show Directory;
-
-import 'package:flutter/foundation.dart' show AsyncCallback;
-import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, StateController;
-import 'package:glidea/helpers/fs.dart';
-import 'package:glidea/helpers/json.dart';
-import 'package:glidea/helpers/log.dart';
-import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/lang/translations.dart';
-import 'package:glidea/models/application.dart';
-import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
-import 'package:path_provider/path_provider.dart' show getApplicationDocumentsDirectory, getApplicationSupportDirectory;
+﻿part of 'site.dart';
 
 /// 混合 - 数据处理
 mixin DataProcess on StateController<Application> {
@@ -21,13 +9,14 @@ mixin DataProcess on StateController<Application> {
   Map<String, String> get languages => TranslationsService.languages;
 
   /// 在控制价初始化时进行数据的的初始化
-  Future<Application> initData() async {
+  @protected
+  Future<Application> loadSiteData() async {
     var site = Application();
     try {
       // 检查目录
-      await checkDir(site);
+      await _checkDir(site);
       // 加载数据
-      site = await loadSiteData(site);
+      site = await _loadSiteData(site);
     } catch (e, s) {
       Log.e('load site data failed', error: e, stackTrace: s);
     }
@@ -76,7 +65,7 @@ mixin DataProcess on StateController<Application> {
   /// ```
   ///
   /// 出错时掏出 [Exception] 异常
-  Future<void> checkDir(Application site) async {
+  Future<void> _checkDir(Application site) async {
     // 创建开始, 只使用一次
     final isCreate = _isCreate;
     const dirField = 'appDir';
@@ -129,7 +118,7 @@ mixin DataProcess on StateController<Application> {
   /// 从 config/config.json 中加载配置
   ///
   /// 出错时掏出 [Exception] 异常
-  Future<Application> loadSiteData(Application site) async {
+  Future<Application> _loadSiteData(Application site) async {
     final postsPath = FS.join(site.appDir, 'posts');
     final configPath = FS.join(site.appDir, 'config');
     final configJsonPath = FS.join(configPath, 'config.json');

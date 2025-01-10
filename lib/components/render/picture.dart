@@ -1,7 +1,7 @@
 ﻿import 'package:file_picker/file_picker.dart' show FilePicker, FilePickerResult, FileType;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, RxString, StringExtension;
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/markdown.dart';

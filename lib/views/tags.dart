@@ -4,7 +4,7 @@ import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/tag/tag_editor.dart';
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';

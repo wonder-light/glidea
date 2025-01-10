@@ -1,14 +1,4 @@
-﻿import 'package:get/get.dart' show Trans;
-import 'package:glidea/enum/enums.dart';
-import 'package:glidea/helpers/fs.dart';
-import 'package:glidea/helpers/image.dart';
-import 'package:glidea/helpers/json.dart';
-import 'package:glidea/helpers/log.dart';
-import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/models/render.dart';
-import 'package:glidea/models/theme.dart';
-
-import 'data.dart';
+﻿part of 'site.dart';
 
 /// 混合 - 主题
 mixin ThemeSite on DataProcess {

@@ -1,12 +1,4 @@
-﻿import 'package:collection/collection.dart' show IterableExtension;
-import 'package:glidea/helpers/constants.dart';
-import 'package:glidea/helpers/fs.dart';
-import 'package:glidea/helpers/log.dart';
-import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/models/post.dart';
-
-import 'data.dart';
-import 'tag.dart';
+﻿part of 'site.dart';
 
 /// 混合 - 文章
 mixin PostSite on DataProcess, TagSite {

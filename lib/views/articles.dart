@@ -4,7 +4,7 @@ import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/Common/tip.dart';
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/get.dart';

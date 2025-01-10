@@ -5,7 +5,7 @@ import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/remote/comment.dart';
 import 'package:glidea/components/remote/remote.dart';
 import 'package:glidea/components/render/group.dart';
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';

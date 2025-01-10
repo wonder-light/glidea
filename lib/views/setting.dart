@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Trans;
 import 'package:glidea/components/Common/list_item.dart';
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';

@@ -1,9 +1,4 @@
-﻿import 'package:glidea/helpers/log.dart';
-import 'package:glidea/helpers/uid.dart';
-import 'package:glidea/models/post.dart';
-import 'package:glidea/models/tag.dart';
-
-import 'data.dart';
+﻿part of 'site.dart';
 
 /// 混合 - 标签
 mixin TagSite on DataProcess {

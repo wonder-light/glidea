@@ -7,7 +7,7 @@ import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/Common/visibility.dart';
 import 'package:glidea/components/post/post_editor.dart';
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';

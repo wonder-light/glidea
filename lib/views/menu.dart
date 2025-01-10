@@ -5,7 +5,7 @@ import 'package:glidea/components/Common/list_item.dart';
 import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/menu/menu_editor.dart';
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';

@@ -5,7 +5,7 @@ import 'package:flutter/services.dart' show TextInputFormatter;
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxBool, Trans;
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/list_item.dart';
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/color.dart';
 import 'package:glidea/helpers/constants.dart';

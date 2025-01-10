@@ -5,7 +5,7 @@ import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutl
 import 'package:glidea/components/Common/loading.dart';
 import 'package:glidea/components/home/down_panel.dart';
 import 'package:glidea/components/home/up_panel.dart';
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';

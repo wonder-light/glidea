@@ -1,8 +1,4 @@
-﻿import 'package:glidea/helpers/log.dart';
-import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/models/menu.dart';
-
-import 'data.dart';
+﻿part of 'site.dart';
 
 /// 混合 - 菜单
 mixin MenuSite on DataProcess {

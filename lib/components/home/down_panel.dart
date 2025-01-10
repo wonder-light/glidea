@@ -3,7 +3,7 @@ import 'package:get/get.dart' show Get, Inst, Obx, Trans;
 import 'package:glidea/components/Common/animated.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/setting/setting_editor.dart';
-import 'package:glidea/controller/site.dart';
+import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
