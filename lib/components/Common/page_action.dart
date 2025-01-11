@@ -9,7 +9,8 @@ class PageAction extends StatelessWidget {
     required this.child,
     this.leading,
     this.actions = const [],
-    this.contentPadding,
+    this.contentPadding = kAllPadding16,
+    this.toolbarPadding = kAllPadding8,
   });
 
   /// 前面的操作控件
@@ -22,7 +23,10 @@ class PageAction extends StatelessWidget {
   final Widget child;
 
   /// 内容的内边距, 默认是 [kAllPadding16]
-  final EdgeInsetsGeometry? contentPadding;
+  final EdgeInsetsGeometry contentPadding;
+
+  /// 工具栏的内边距, 默认是 [kAllPadding8]
+  final EdgeInsetsGeometry toolbarPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +53,9 @@ class PageAction extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          content,
+          Padding(padding: toolbarPadding, child: content),
           const Divider(thickness: 1, height: 1),
-          Expanded(
-            child: Padding(
-              padding: contentPadding ?? kAllPadding16,
-              child: child,
-            ),
-          ),
+          Expanded(child: Padding(padding: contentPadding, child: child)),
         ],
       ),
     );

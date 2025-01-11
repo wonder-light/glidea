@@ -52,6 +52,7 @@ const double windowMinHeight = 600;
 /// 图片类型扩展
 const List<String> imageExt = ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'gif', 'tif', 'tiff', 'apng', 'jfif', 'avif'];
 
+const EdgeInsets kAllPadding8 = EdgeInsets.all(8);
 const EdgeInsets kAllPadding16 = EdgeInsets.all(16);
 const EdgeInsets kHorPadding8 = EdgeInsets.symmetric(horizontal: 8);
 const EdgeInsets kHorPadding12 = EdgeInsets.symmetric(horizontal: 12);
