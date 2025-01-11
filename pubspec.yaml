@@ -77,9 +77,13 @@ dependencies:
   jinja: ^0.6.0
   xml: ^6.5.0
   process_runner: ^4.2.0
+  re_editor: ^0.6.0
+  re_highlight: ^0.0.3
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to

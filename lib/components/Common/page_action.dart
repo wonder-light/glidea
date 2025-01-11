@@ -26,28 +26,26 @@ class PageAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 标题
-    Widget content = leading != null ? leading! : const SizedBox.shrink();
-    // 头部
-    content = Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    // 操作
+    Widget content = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        content,
-        Row(children: [
-          for (var item in actions)
-            Padding(
-              padding: kRightPadding8,
-              child: item,
-            ),
-        ])
+        for (var item in actions) Padding(padding: kRightPadding8, child: item),
       ],
     );
+    // 标题
+    if (leading != null) {
+      content = Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [leading!, content],
+      );
+    }
     // 加上分割线, 以及内容
     // 使用 [Material] 在切换路由时可以将背景变不透明, 不至于让两个页面看起来重叠在了一起
-    final color = Get.theme.scaffoldBackgroundColor;
+    final bgColor = Theme.of(Get.context!).scaffoldBackgroundColor;
     // 返回控件
     return Material(
-      color: color,
+      color: bgColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

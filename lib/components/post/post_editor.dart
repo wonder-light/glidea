@@ -7,11 +7,9 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
-import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/models/render.dart';
-import 'package:markdown_widget/markdown_widget.dart' show MarkdownConfig, MarkdownGenerator, MarkdownWidget;
 import 'package:omni_datetime_picker/omni_datetime_picker.dart' show showOmniDateTimePicker;
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -23,17 +21,10 @@ class PostEditor extends DrawerEditor<Post> {
     super.controller,
     super.header = Tran.postSettings,
     super.showAction = false,
-    this.preview = true,
-    this.markdown,
     required this.picture,
   });
 
-  /// 预览 post 文章
-  final bool preview;
-
-  /// markdown 内容
-  final String? markdown;
-
+  /// 图片配置
   final PictureConfig picture;
 
   @override
@@ -55,7 +46,6 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
   @override
   void initState() {
     super.initState();
-    if (widget.preview) return;
     final post = widget.entity;
     expansions.value.addAll([
       (expanded: true, build: _buildUrl, header: 'URL'),
@@ -80,62 +70,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
 
   @override
   List<Widget> buildContent(BuildContext context) {
-    return [widget.preview ? _buildPreview() : _buildSetting()];
-  }
-
-  /// 构建预览
-  Widget _buildPreview() {
-    // TODO: 改善性能 - 使用 WebView 或者其它方式
-    final colorScheme = Get.theme.colorScheme;
-    final textTheme = Get.theme.textTheme;
-    final post = widget.entity;
-    final dateStr = post.date.format(pattern: site.themeConfig.dateFormat);
-    final dateStyle = textTheme.bodyMedium?.copyWith(color: colorScheme.outline);
-    // 控件
-    final List<Widget> children = [
-      ImageConfig.builderImg(site.getFeaturePath(widget.entity)),
-      Text(post.title, style: textTheme.headlineSmall),
-      Text(dateStr, style: dateStyle),
-      if (post.tags.isNotEmpty)
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            for (var tag in site.getTagsWithPost(post))
-              Container(
-                padding: kVerPadding4 + kHorPadding8,
-                decoration: BoxDecoration(
-                  color: colorScheme.onInverseSurface,
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
-                ),
-                child: Text(tag.name, style: textTheme.bodySmall),
-              ),
-          ],
-        ),
-      MarkdownWidget(
-        data: widget.markdown ?? '',
-        shrinkWrap: true,
-        config: MarkdownConfig(configs: [
-          const ImageConfig(),
-        ]),
-        markdownGenerator: MarkdownGenerator(
-          extensionSet: Markdown.custom,
-          textGenerator: CustomTextNode.new,
-        ),
-      ),
-    ];
-    // 返回
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (var i = 0; i < children.length; i++)
-          Padding(
-            padding: i <= 0 ? kTopPadding8 : kTopPadding16,
-            child: children[i],
-          ),
-      ],
-    );
+    return [_buildSetting()];
   }
 
   /// 设置视图
