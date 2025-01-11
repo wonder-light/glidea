@@ -1,11 +1,4 @@
-﻿import 'package:collection/collection.dart' show IterableExtension;
-import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Trans;
-import 'package:glidea/components/Common/dropdown.dart';
-import 'package:glidea/helpers/constants.dart';
-import 'package:glidea/models/render.dart';
-
-import 'base.dart';
+﻿part of 'base.dart';
 
 /// 主题设置中的下拉选择按钮控件
 class SelectWidget extends ConfigBaseWidget<SelectConfig> {
@@ -21,28 +14,24 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
   final DropdownMenuItem<SelectOption>? bottomItem;
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildContent(BuildContext context) {
     final theme = Get.theme;
     final entry = config.value;
     final initValue = entry.options.firstWhereOrNull((t) => t.value == entry.value);
-    return ConfigLayoutWidget(
-      isVertical: isVertical,
-      config: config.value,
-      child: DropdownWidget<SelectOption>(
-        initValue: initValue,
-        itemHeight: 40,
-        itemPadding: kHorPadding16,
-        bottomItem: bottomItem,
-        onSelected: change,
-        displayStringForItem: (item) => item.label,
-        children: [
-          for (var option in config.value.options)
-            DropdownMenuItem(
-              value: option,
-              child: Text(option.label.tr, style: theme.textTheme.bodyMedium),
-            ),
-        ],
-      ),
+    return DropdownWidget<SelectOption>(
+      initValue: initValue,
+      itemHeight: 40,
+      itemPadding: kHorPadding16,
+      bottomItem: bottomItem,
+      onSelected: change,
+      displayStringForItem: (item) => item.label,
+      children: [
+        for (var option in config.value.options)
+          DropdownMenuItem(
+            value: option,
+            child: Text(option.label.tr, style: theme.textTheme.bodyMedium),
+          ),
+      ],
     );
   }
 

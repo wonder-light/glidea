@@ -1,19 +1,4 @@
-﻿import 'package:file_picker/file_picker.dart' show FilePicker;
-import 'package:flex_color_picker/flex_color_picker.dart' show ColorPicker, ColorPickerType;
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show TextInputFormatter;
-import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxBool, Trans;
-import 'package:glidea/components/Common/dialog.dart';
-import 'package:glidea/components/Common/list_item.dart';
-import 'package:glidea/controller/site/site.dart';
-import 'package:glidea/enum/enums.dart';
-import 'package:glidea/helpers/color.dart';
-import 'package:glidea/helpers/constants.dart';
-import 'package:glidea/helpers/fs.dart';
-import 'package:glidea/models/render.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
-
-import 'base.dart';
+﻿part of 'base.dart';
 
 /// 主题设置中的富文本控件
 class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
@@ -42,40 +27,30 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
   bool get hidePassword => false;
 
   @override
-  Widget build(BuildContext context) {
-    var theme = Get.theme;
-    final controller = this.controller ?? TextEditingController();
-    if (this.controller == null) {
-      controller.text = config.value.value;
-    }
-    return ConfigLayoutWidget(
-      isVertical: isVertical,
-      config: config.value,
-      child: Obx(() {
-        return TextFormField(
-          obscureText: hidePassword,
-          controller: controller,
-          readOnly: isReadOnly,
-          minLines: isTextarea ? 2 : null,
-          maxLines: isTextarea ? 30 : 1,
-          decoration: InputDecoration(
-            isDense: true,
-            contentPadding: kVer8Hor12,
-            hoverColor: Colors.transparent,
-            prefixIcon: getPrefixIcon(),
-            suffixIcon: getSuffixIcon(),
-            prefixIconConstraints: const BoxConstraints(),
-            suffixIconConstraints: const BoxConstraints(),
-            hintText: config.value.hint.tr,
-            hintStyle: theme.textTheme.bodySmall!.copyWith(
-              color: theme.colorScheme.outline,
-            ),
-          ),
-          onChanged: change,
-          inputFormatters: inputFormatters,
-        );
-      }),
-    );
+  Widget buildContent(BuildContext context) {
+    final theme = Theme.of(Get.context!);
+    return Obx(() {
+      return TextFormField(
+        obscureText: hidePassword,
+        controller: this.controller ?? TextEditingController(text: config.value.value),
+        readOnly: isReadOnly,
+        minLines: isTextarea ? 2 : null,
+        maxLines: isTextarea ? 30 : 1,
+        decoration: InputDecoration(
+          isDense: true,
+          contentPadding: kVer8Hor12,
+          hoverColor: Colors.transparent,
+          prefixIcon: getPrefixIcon(),
+          suffixIcon: getSuffixIcon(),
+          prefixIconConstraints: const BoxConstraints(),
+          suffixIconConstraints: const BoxConstraints(),
+          hintText: config.value.hint.tr,
+          hintStyle: theme.textTheme.bodySmall!.copyWith(color: theme.colorScheme.outline),
+        ),
+        onChanged: change,
+        inputFormatters: inputFormatters,
+      );
+    });
   }
 
   /// 内容值变化时调用

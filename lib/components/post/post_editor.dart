@@ -2,7 +2,7 @@
 import 'package:get/get.dart' show Get, GetNavigationExt, Obx, Trans, BoolExtension;
 import 'package:glidea/components/Common/drawer_editor.dart';
 import 'package:glidea/components/Common/dropdown.dart';
-import 'package:glidea/components/render/picture.dart';
+import 'package:glidea/components/render/base.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/fs.dart';

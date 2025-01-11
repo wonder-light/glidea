@@ -1,19 +1,4 @@
-﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Obx, RxBool;
-import 'package:glidea/enum/enums.dart';
-import 'package:glidea/helpers/get.dart';
-import 'package:glidea/helpers/json.dart';
-import 'package:glidea/interfaces/types.dart';
-import 'package:glidea/models/render.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
-
-import 'base.dart';
-import 'input.dart';
-import 'picture.dart';
-import 'radio.dart';
-import 'select.dart';
-import 'slider.dart';
-import 'toggle.dart';
+﻿part of 'base.dart';
 
 /// 渲染 [ArrayConfig] 的控件
 class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
@@ -25,53 +10,47 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
   });
 
   @override
-  Widget build(BuildContext context) {
-    return ConfigLayoutWidget(
-      isVertical: isVertical,
-      config: config.value,
-      child: Obx(() {
-        late List<Widget> childWidget;
-        var items = config.value.value;
-        if (items.isEmpty) {
-          childWidget = [
+  Widget buildContent(BuildContext context) {
+    return Obx(() {
+      var items = config.value.value;
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0, length = items.length; i < length; i++)
             Card(
-              child: TextButton(
-                onPressed: () => config.update(addItem),
-                child: const Icon(PhosphorIconsRegular.plus),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var entity in config.value.arrayItems) createWidget(entity, items[i]),
+                ],
               ),
             ),
-          ];
-        } else {
-          childWidget = [
-            for (var i = 0, length = items.length; i < length; i++)
-              Card(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (var entity in config.value.arrayItems) createWidget(entity, items[i]),
-                  ],
-                ),
-              ),
-          ];
-        }
-
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: childWidget,
-        );
-      }),
-    );
+          Card(
+            child: TextButton(
+              onPressed: () => config.update(addItem),
+              child: const Icon(PhosphorIconsRegular.plus),
+            ),
+          ),
+        ],
+      );
+    });
   }
 
   /// 在指定位置添加一系列字段的值
-  T addItem<T extends ArrayConfig>(T obj, {int index = 0}) {
+  T addItem<T extends ArrayConfig>(T obj, {int index = -1}) {
     TJsonMap entity = {};
     for (var item in obj.arrayItems) {
       entity[item.name] = item.value;
     }
-    obj.value.insert(index, entity);
+    if (index < 0) {
+      // 添加到末尾
+      obj.value.add(entity);
+    } else {
+      // 在 index 处插入
+      obj.value.insert(index, entity);
+    }
     onChanged?.call(obj.value);
     return obj;
   }

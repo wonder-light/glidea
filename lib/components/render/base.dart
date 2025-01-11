@@ -1,8 +1,33 @@
-﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Trans;
+﻿library render;
+
+import 'package:collection/collection.dart' show IterableExtension;
+import 'package:file_picker/file_picker.dart' show FilePicker, FileType;
+import 'package:flex_color_picker/flex_color_picker.dart' show ColorPicker, ColorPickerType;
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show TextInputFormatter;
+import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxBool, Trans;
+import 'package:glidea/components/Common/dialog.dart';
+import 'package:glidea/components/Common/dropdown.dart';
+import 'package:glidea/components/Common/list_item.dart';
+import 'package:glidea/controller/site/site.dart';
+import 'package:glidea/enum/enums.dart';
+import 'package:glidea/helpers/color.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
+import 'package:glidea/helpers/json.dart';
+import 'package:glidea/helpers/markdown.dart';
+import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/render.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
+
+part 'array.dart';
+part 'input.dart';
+part 'picture.dart';
+part 'radio.dart';
+part 'select.dart';
+part 'slider.dart';
+part 'toggle.dart';
 
 /// 渲染 [ConfigBase] 的抽象控件
 abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
@@ -25,6 +50,19 @@ abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
 
   /// 当值发生变化时调用 - 主要用于 ArrayWidget 中接收值的变化
   final ValueChanged<dynamic>? onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return ConfigLayoutWidget(
+      isVertical: isVertical,
+      config: config.value,
+      child: buildContent(context),
+    );
+  }
+
+  /// 构建布局下的内容
+  @protected
+  Widget buildContent(BuildContext context);
 }
 
 /// 对 [ConfigBaseWidget] 进行布局管控的控件
@@ -142,17 +180,11 @@ class ConfigLayoutWidget extends StatelessWidget {
       child = Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          child,
-          note,
-        ],
+        children: [child, note],
       );
     } else {
       // 对齐
-      child = Align(
-        alignment: Alignment.centerLeft,
-        child: child,
-      );
+      child = Align(alignment: Alignment.centerLeft, child: child);
     }
     // 水平布局
     return Row(

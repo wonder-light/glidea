@@ -2,8 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show BoolExtension, Get, Inst, Obx, Trans;
 import 'package:glidea/components/Common/loading.dart';
-import 'package:glidea/components/render/array.dart';
-import 'package:glidea/components/render/group.dart';
+import 'package:glidea/components/render/base.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';

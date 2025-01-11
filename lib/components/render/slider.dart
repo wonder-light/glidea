@@ -1,8 +1,4 @@
-﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Obx;
-import 'package:glidea/models/render.dart';
-
-import 'base.dart';
+﻿part of 'base.dart';
 
 /// 主题设置中的滑块控件
 class SliderWidget extends ConfigBaseWidget<SliderConfig> {
@@ -13,39 +9,38 @@ class SliderWidget extends ConfigBaseWidget<SliderConfig> {
     super.onChanged,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    return ConfigLayoutWidget(
-      isVertical: isVertical,
-      config: config.value,
-      child: SliderTheme(
-        data: const SliderThemeData(
-          showValueIndicator: ShowValueIndicator.always,
-          //  滑块形状，可以自定义
-          /*thumbShape: RoundSliderThumbShape(
+  /// 指定后代滑块小部件的颜色和形状值。
+  static const SliderThemeData _sliderData = SliderThemeData(
+    showValueIndicator: ShowValueIndicator.always,
+    //  滑块形状，可以自定义
+    /*thumbShape: RoundSliderThumbShape(
           // 滑块大小
           enabledThumbRadius: 10,
         ),*/
-          // thumbColor: Colors.white, // 滑块颜色
-          // 滑块外圈形状，可以自定义
-          overlayShape: RoundSliderOverlayShape(
-            // 滑块外圈大小
-            overlayRadius: 16,
-          ),
-        ),
-        child: Obx(() {
-          var maxValue = config.value.max;
-          var currentValue = config.value.value;
-          return Slider(
-            min: 0.0,
-            max: maxValue.ceilToDouble(),
-            value: currentValue.floorToDouble(),
-            divisions: maxValue.ceil(),
-            label: currentValue.toString(),
-            onChanged: change,
-          );
-        }),
-      ),
+    // thumbColor: Colors.white, // 滑块颜色
+    // 滑块外圈形状，可以自定义
+    overlayShape: RoundSliderOverlayShape(
+      // 滑块外圈大小
+      overlayRadius: 16,
+    ),
+  );
+
+  @override
+  Widget buildContent(BuildContext context) {
+    return SliderTheme(
+      data: _sliderData,
+      child: Obx(() {
+        var maxValue = config.value.max;
+        var currentValue = config.value.value;
+        return Slider(
+          min: 0.0,
+          max: maxValue.ceilToDouble(),
+          value: currentValue.floorToDouble(),
+          divisions: maxValue.ceil(),
+          label: currentValue.toString(),
+          onChanged: change,
+        );
+      }),
     );
   }
 
