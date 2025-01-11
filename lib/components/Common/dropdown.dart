@@ -159,7 +159,7 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   final _selectItems = <T>{}.obs;
 
   /// 主题
-  ThemeData get theme => Get.theme;
+  late ThemeData theme = Theme.of(Get.context!);
 
   /// 菜单控制器
   MenuController menuController = MenuController();
@@ -462,11 +462,10 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
 
   /// 更新 [textController] 的值
   void _updateTextEditor({DropdownWidget<T>? oldWidget}) {
-    final children = widget.children;
     // 数量
-    _itemsNum.value = children.length;
+    _itemsNum.value = widget.children.length;
     // 控制器
-    textController = widget.textController != null ? widget.textController! : TextEditingController();
+    textController = widget.textController ?? TextEditingController();
     if (oldWidget != null) {
       // 多选
       if (widget.enableMultiple) {
@@ -484,17 +483,16 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
         final items = widget.children.map((t) => t.value!).toSet();
         _selectItems.value = _selectItems.value.intersection(items);
       }
-      return;
     }
     // 初始化
     // 多选时的初始值
     if (widget.enableMultiple) {
-      if (widget.initMultipleValue?.isNotEmpty ?? false) {
+      if ((widget.initMultipleValue?.isNotEmpty ?? false) && _selectItems.value.isEmpty) {
         _selectItems.value.addAll(widget.initMultipleValue!);
         // 清空控制器
         _setTextField('');
       }
-    } else if (widget.initValue != null) {
+    } else if (widget.initValue != null && _selectItems.value.isEmpty) {
       // 非多选时的初始值
       T value = widget.initValue as T;
       _selectItems.value.clear();
