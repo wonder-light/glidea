@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Trans;
 import 'package:glidea/components/Common/tip.dart';
-import 'package:glidea/components/render/group.dart';
+import 'package:glidea/components/Common/group.dart';
 import 'package:glidea/components/theme/theme.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
