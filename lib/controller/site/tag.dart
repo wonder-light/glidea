@@ -18,8 +18,8 @@ mixin TagSite on DataProcess {
   }
 
   /// 创建标签, 需要保证 slug 唯一
-  Tag createTag() {
-    return Tag()..slug = Uid.shortId;
+  Tag createTag({String? slug}) {
+    return slug != null ? (Tag()..slug = slug) : Tag();
   }
 
   /// 从 [post.tags] 中获取对应的 [tags] 获取
@@ -38,10 +38,14 @@ mixin TagSite on DataProcess {
   Future<bool> updateTag({required Tag newData, Tag? oldData}) async {
     try {
       // 更新
-      state.tags.remove(oldData);
-      state.tags.add(newData);
+      final index = oldData == null ? -1 : state.tags.indexOf(oldData);
+      if (index >= 0) {
+        state.tags[index] = newData;
+      } else {
+        state.tags.add(newData);
+      }
+      // 更新标签
       _tagsMap.remove(oldData?.slug);
-      // 添加新的标签
       _tagsMap[newData.slug] = newData;
       await saveSiteData();
       return true;
@@ -73,11 +77,11 @@ mixin TagSite on DataProcess {
   /// false: 文章的 URL 与其他文章重复
   bool checkTag(Tag data, [Tag? oldData]) {
     // 不符合
-    if (data.name.trim().isEmpty || data.slug.trim().isEmpty) {
+    if (data.name.isEmpty || data.slug.isEmpty) {
       return false;
     }
     // 查找是否有重复的, 需要把 oldData 排除
-    return state.tags.any((t) => (t.slug == data.slug || t.name == data.name) && t != oldData);
+    return !state.tags.any((t) => (t.slug == data.slug || t.name == data.name) && t != oldData);
   }
 
   /// 更新标签中 [Tag.used] 字段的值

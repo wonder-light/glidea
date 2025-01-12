@@ -35,6 +35,16 @@ class TagEditorState extends DrawerEditorState<TagEditor> {
     // 初始化文本
     nameController.addListener(updateTagState);
     urlController.addListener(updateTagState);
+    updateTagState();
+  }
+
+  @override
+  void dispose() {
+    nameController.removeListener(updateTagState);
+    urlController.removeListener(updateTagState);
+    nameController.dispose();
+    urlController.dispose();
+    super.dispose();
   }
 
   @override
@@ -78,19 +88,19 @@ class TagEditorState extends DrawerEditorState<TagEditor> {
     var name = nameController.text;
     var url = urlController.text;
     // 确保都有效
-    var pop1 = name.isNotEmpty && url.isNotEmpty;
+    var pop = name.isNotEmpty && url.isNotEmpty;
     // 任意一个改变即可
-    var pop2 = pop1 && (name != widget.entity.name || url != widget.entity.name);
-    canSave.value = pop2;
+    pop = pop && (name != widget.entity.name || url != widget.entity.slug);
+    canSave.value = pop;
   }
 
   @override
   void onSave() {
     if (canSave.value) {
-      var newTag = Tag()
+      final newTag = widget.entity
         ..name = nameController.text
         ..slug = urlController.text;
-      if (!site.checkTag(newTag, widget.entity)) {
+      if (!site.checkTag(newTag, newTag)) {
         Get.error(Tran.tagUrlRepeatTip);
         return;
       }

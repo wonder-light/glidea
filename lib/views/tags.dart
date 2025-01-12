@@ -74,11 +74,9 @@ class _TagsViewState extends State<TagsView> {
     ];
     // 按钮
     return ToggleButtons(
-      isSelected: [false, if(!tag.used) false],
+      isSelected: [false, if (!tag.used) false],
       children: buttons,
-      onPressed: (index) {
-        (index <= 0 ? editorTag : deleteTag)(tag);
-      },
+      onPressed: (index) => index <= 0 ? editorTag(tag) : deleteTag(tag),
     );
   }
 
@@ -95,10 +93,9 @@ class _TagsViewState extends State<TagsView> {
       stepHeight: isPhone ? 20 : null,
       builder: (context) => TagEditor(
         entity: tag,
-        onSave: (data) {
-          site.updateTag(newData: data, oldData: tag).then((value){
-            value ? Get.success(Tran.tagSuccess) : Get.error(Tran.saveError);
-          });
+        onSave: (data) async {
+          final value = await site.updateTag(newData: data, oldData: tag);
+          value ? Get.success(Tran.tagSuccess) : Get.error(Tran.saveError);
         },
       ),
     );
@@ -108,13 +105,10 @@ class _TagsViewState extends State<TagsView> {
   void deleteTag(Tag tag) {
     // 弹窗
     Get.dialog(DialogWidget(
-      onCancel: () {
-        Get.backLegacy();
-      },
-      onConfirm: () {
-        site.removeTag(tag).then((value) {
-          value ? Get.success(Tran.tagDelete) : Get.error(Tran.tagDeleteFailure);
-        });
+      onCancel: () => Get.backLegacy(),
+      onConfirm: () async {
+        final value = await site.removeTag(tag);
+        value ? Get.success(Tran.tagDelete) : Get.error(Tran.tagDeleteFailure);
         Get.backLegacy();
       },
     ));
