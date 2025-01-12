@@ -1,8 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter_markdown_latex/flutter_markdown_latex.dart' show LatexBlockSyntax, LatexInlineSyntax;
-import 'package:glidea/helpers/uid.dart';
-import 'package:markdown/markdown.dart' as m
-    show HeaderSyntax, Node, BlockParser, SetextHeaderSyntax, Element, ExtensionSet, Resolver, BlockSyntax, renderToHtml, Document, InlineSyntax;
+import 'package:glidea/helpers/json.dart';
+import 'package:markdown/markdown.dart' as m show HeaderSyntax, Node, BlockParser, SetextHeaderSyntax, Element, ExtensionSet;
+import 'package:markdown/markdown.dart' as m show Resolver, BlockSyntax, renderToHtml, Document, InlineSyntax;
 
 /// 解析 ajax 样式的头，并将生成的id添加到生成的元素中
 ///
@@ -15,7 +15,7 @@ class HeaderWithId extends m.HeaderSyntax {
     final element = super.parse(parser) as m.Element;
 
     if (element.children?.isNotEmpty ?? false) {
-      element.generatedId = Uid.shortId;
+      element.generatedId = element.textContent.getBase64().substring(0, 12);
     }
 
     return element;
@@ -31,7 +31,7 @@ class SetextHeaderWithId extends m.SetextHeaderSyntax {
   @override
   m.Node parse(m.BlockParser parser) {
     final element = super.parse(parser) as m.Element;
-    element.generatedId = Uid.shortId;
+    element.generatedId = element.textContent.getBase64().substring(0, 12);
     return element;
   }
 }

@@ -43,7 +43,7 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
   ];
 
   /// 日期的控制器
-  TextEditingController? dateController;
+  late final TextEditingController dateController;
 
   /// 是否是隐藏的
   final isHide = false.obs;
@@ -55,14 +55,14 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
   void initState() {
     super.initState();
     final post = widget.entity;
-    dateController = TextEditingController(text: post.date.format(pattern: site.themeConfig.dateFormat));
+    dateController = TextEditingController(text: post.date.format(pattern: defaultDateFormat));
     isHide.value = post.hideInList;
     isTop.value = post.isTop;
   }
 
   @override
   void dispose() {
-    dateController?.dispose();
+    dateController.dispose();
     isHide.dispose();
     isTop.dispose();
     super.dispose();
@@ -175,13 +175,13 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
       is24HourMode: true,
       isShowSeconds: true,
       initialDate: date,
-      firstDate: date.copyWith(year: date.year - 25),
-      lastDate: date.copyWith(year: date.year + 25),
+      firstDate: date.copyWith(year: date.year - 5),
+      lastDate: date.copyWith(year: date.year + 5),
       constraints: const BoxConstraints(maxWidth: 400),
     );
     if (result != null) {
       widget.entity.date = result;
-      dateController?.text = result.format(pattern: site.themeConfig.dateFormat);
+      dateController.text = result.format(pattern: defaultDateFormat);
     }
   }
 

@@ -10,7 +10,7 @@ const String defaultPostPath = 'post';
 const String defaultTagPath = 'tag';
 const String defaultPostFeaturePath = '/post-images/post-feature.jpg';
 const String defaultRobotsPath = 'User-agent: *\nDisallow:';
-const String defaultDateFormat = 'yyyy-MM-dd';
+const String defaultDateFormat = 'yyyy-MM-dd HH:mm:ss';
 
 // 模板名称
 const homeTemplate = 'index.j2';

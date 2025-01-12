@@ -13,7 +13,7 @@ mixin class PostBase {
 
   /// 文件名
   @JsonProperty()
-  String fileName = Uid.v4;
+  String fileName = Uid.shortId;
 
   /// 摘要: 根据 [content] 中的摘要分隔符来生成的
   ///
@@ -30,7 +30,7 @@ mixin class PostDataBase {
   String title = '';
 
   /// 日期
-  @JsonProperty(converterParams: {'format': defaultDateFormat})
+  @JsonProperty()
   DateTime date = DateTime.now().setFormat(pattern: defaultDateFormat);
 
   /// 封面图

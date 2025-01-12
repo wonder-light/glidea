@@ -1,4 +1,5 @@
 ﻿import 'package:dart_json_mapper/dart_json_mapper.dart' show jsonSerializable, JsonProperty;
+import 'package:glidea/helpers/uid.dart';
 
 /// 标签
 @jsonSerializable
@@ -13,7 +14,7 @@ class Tag {
 
   /// 简链
   @JsonProperty()
-  String slug = '';
+  String slug = Uid.shortId;
 
   /// 标签索引
   @JsonProperty()

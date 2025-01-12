@@ -1,4 +1,5 @@
-﻿import 'package:uuid/uuid.dart' show Uuid, Namespace;
+﻿import 'package:glidea/helpers/json.dart';
+import 'package:uuid/uuid.dart' show Uuid, Namespace;
 
 /// 创建 Uuid 类的新实例
 class Uid {
@@ -24,5 +25,5 @@ class Uid {
   static String get v8 => Uid.uid.v8();
 
   /// 生成短 uid
-  static String get shortId => v4.replaceAll('-', '').substring(0, 13).toUpperCase();
+  static String get shortId => v4.getBase64().substring(0, 12);
 }
