@@ -74,7 +74,7 @@ class Responsive extends StatelessWidget {
   static Widget builder(BuildContext context, Widget? child) {
     final isMobile = Platform.isAndroid || Platform.isIOS;
     return ResponsiveBreakpoints(
-      useShortestSide: true,
+      useShortestSide: false,
       breakpoints: [
         if (isMobile) const Breakpoint(start: 0, end: windowMinWidth - 1, name: PHONE),
         if (isMobile) const Breakpoint(start: windowMinWidth, end: double.infinity, name: TABLET),
@@ -88,8 +88,8 @@ class Responsive extends StatelessWidget {
   Widget build(BuildContext context) {
     return ResponsiveScaledBox(
       width: ResponsiveValue<double?>(context, conditionalValues: [
-        const Condition.equals(name: PHONE, value: 600),
-        const Condition.equals(name: TABLET, value: 900),
+        const Condition.equals(name: PHONE, value: windowMinWidth * 0.7),
+        const Condition.equals(name: TABLET, value: windowMinWidth * 1.3),
         const Condition.equals(name: DESKTOP, value: null),
       ]).value,
       child: child,
