@@ -1,4 +1,5 @@
-﻿import 'package:file_picker/file_picker.dart' show FilePicker, FileType;
+﻿import 'package:emoji_picker_flutter/emoji_picker_flutter.dart' show BottomActionBarConfig, CategoryViewConfig, Config, EmojiPicker, EmojiViewConfig;
+import 'package:file_picker/file_picker.dart' show FilePicker, FileType;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Trans;
 import 'package:glidea/components/Common/tip.dart';
@@ -37,18 +38,28 @@ class _PostToolbarState extends State<PostToolbar> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
+  /// 主题数据
+  late final theme = Theme.of(Get.context!);
+
   /// 主题颜色
-  late final colorScheme = ColorScheme.of(Get.context!);
+  late final colorScheme = theme.colorScheme;
+
+  /// 表情图标的菜单控制器
+  final emojiController = MenuController();
+
+  /// 表情图标的宽度
+  final emojiWidth = 300.0;
 
   /// 右侧的工具栏按钮
   late final List<TActionData> toolbars = [
-    //(name: '', call: showPostStats, icon: PhosphorIconsRegular.warningCircle),
-    //(name: Tran.insertEmoji, call: showEmoji, icon: PhosphorIconsRegular.smiley),
     (name: Tran.insertImage, call: insertImage, icon: PhosphorIconsRegular.image),
     (name: Tran.insertMore, call: insertSeparator, icon: PhosphorIconsRegular.dotsThreeOutline),
     (name: Tran.postSettings, call: openPostSetting, icon: PhosphorIconsRegular.gear),
     (name: Tran.preview, call: previewPost, icon: PhosphorIconsRegular.eye),
   ];
+
+  /// 表情图标的配置
+  late final Config emojiConfig = _getEmojiConfig();
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +67,7 @@ class _PostToolbarState extends State<PostToolbar> {
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        buildEmoji(),
         for (var item in toolbars)
           TipWidget.left(
             message: item.name.tr,
@@ -68,6 +80,34 @@ class _PostToolbarState extends State<PostToolbar> {
     );
     // 位置
     return Positioned(right: 16, top: 0, bottom: 0, child: widget);
+  }
+
+  /// 显示表情图标
+  Widget buildEmoji() {
+    final offset = Offset(-(emojiWidth + 20), -(emojiConfig.height / 2));
+    return MenuAnchor(
+      //layerLink: LayerLink(),
+      alignmentOffset: offset,
+      crossAxisUnconstrained: false,
+      controller: emojiController,
+      style: MenuStyle(backgroundColor: WidgetStatePropertyAll(theme.scaffoldBackgroundColor)),
+      menuChildren: [
+        SizedBox(
+          width: emojiWidth,
+          child: EmojiPicker(
+            config: emojiConfig,
+            onEmojiSelected: (category, emoji) => insertSeparator(separator: emoji.emoji),
+          ),
+        ),
+      ],
+      child: TipWidget.left(
+        message: Tran.insertEmoji.tr,
+        child: IconButton(
+          onPressed: () => emojiController.isOpen ? emojiController.close() : emojiController.open(),
+          icon: Icon(PhosphorIconsRegular.smiley, color: colorScheme.outlineVariant),
+        ),
+      ),
+    );
   }
 
   /// 显示 post 统计信息
@@ -117,6 +157,27 @@ class _PostToolbarState extends State<PostToolbar> {
         entity: widget.entity,
         picture: widget.picture,
       ),
+    );
+  }
+
+  /// 获取标签符号的配置
+  Config _getEmojiConfig() {
+    // 表情符号配置
+    return Config(
+      emojiViewConfig: EmojiViewConfig(
+        columns: 8,
+        emojiSizeMax: 24,
+        backgroundColor: theme.scaffoldBackgroundColor,
+      ),
+      categoryViewConfig: CategoryViewConfig(
+        tabBarHeight: 32,
+        backgroundColor: theme.scaffoldBackgroundColor,
+        indicatorColor: colorScheme.primary,
+        iconColor: colorScheme.outlineVariant,
+        iconColorSelected: colorScheme.primary,
+        backspaceColor: colorScheme.primary,
+      ),
+      bottomActionBarConfig: const BottomActionBarConfig(enabled: false),
     );
   }
 }
