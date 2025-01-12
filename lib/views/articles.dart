@@ -52,6 +52,7 @@ class _ArticlesViewState extends State<ArticlesView> {
 
   @override
   Widget build(BuildContext context) {
+    final padding = kVerPadding4 * 1.25;
     return PageAction(
       actions: [
         MediaQuery(
@@ -81,31 +82,27 @@ class _ArticlesViewState extends State<ArticlesView> {
           ),
         ),
       ],
-      child: Obx(
-        () {
-          final filterPosts = site.filterPost(filterText.value);
-          return ListView.separated(
-            itemBuilder: (BuildContext context, int index) {
-              return _buildListItem(filterPosts[index]);
-            },
-            itemCount: filterPosts.length,
-            separatorBuilder: (BuildContext context, int index) {
-              return Container(height: listSeparated);
-            },
-          );
-        },
-      ),
+      child: Obx(() {
+        final filterPosts = site.filterPost(filterText.value);
+        return ListView.separated(
+          itemBuilder: (BuildContext context, int index) {
+            return _buildListItem(filterPosts[index]);
+          },
+          itemCount: filterPosts.length,
+          separatorBuilder: (BuildContext context, int index) => Padding(padding: padding),
+        );
+      }),
     );
   }
 
   /// 构建菜单项
   Widget _buildListItem(Post post) {
     // 头部组件
-    final leading = isDesktop ? ImageConfig.builderImg(site.getFeaturePath(post)) : null;
+    final leading = ImageConfig.builderImg(site.getFeaturePath(post));
     //内容边距
-    final contentPadding = isDesktop ? kRightPadding16 : null;
+    final contentPadding = kRightPadding16;
     // 大小
-    final constraints = isDesktop ? const BoxConstraints(maxHeight: 80) : const BoxConstraints(minHeight: 100);
+    final constraints = isDesktop ? const BoxConstraints(maxHeight: 80) : const BoxConstraints(maxHeight: 100);
     // 时间
     final date = dates[post.date.millisecondsSinceEpoch] ??= post.date.format(pattern: site.themeConfig.dateFormat);
 
