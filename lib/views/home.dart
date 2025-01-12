@@ -68,24 +68,26 @@ class _HomeViewState extends LifecycleState<HomeView> {
   Widget build(BuildContext context) {
     Get.responsive = ResponsiveBreakpoints.of(context);
     return Scaffold(
-      body: FutureBuilder(
-        future: site.initTask.future,
-        builder: (ctx, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: LoadingWidget());
-          }
-          if (Get.isPhone) {
-            return _buildBody();
-          }
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildLeftPanel(),
-              const VerticalDivider(thickness: 1, width: 1),
-              Expanded(child: _buildBody()),
-            ],
-          );
-        },
+      body: SafeArea(
+        child: FutureBuilder(
+          future: site.initTask.future,
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Center(child: LoadingWidget());
+            }
+            if (Get.isPhone) {
+              return _buildBody();
+            }
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildLeftPanel(),
+                const VerticalDivider(thickness: 1, width: 1),
+                Expanded(child: _buildBody()),
+              ],
+            );
+          },
+        ),
       ),
       bottomNavigationBar: _buildMobileBottomNav(),
     );
