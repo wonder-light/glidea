@@ -42,9 +42,22 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
   void initState() {
     super.initState();
     // 初始化文本
+    openType.addListener(updateTagState);
     nameController.addListener(updateTagState);
     urlController.addListener(updateTagState);
     linkData.addAll(site.getReferenceLink());
+    updateTagState();
+  }
+
+  @override
+  void dispose() {
+    openType.removeListener(updateTagState);
+    nameController.removeListener(updateTagState);
+    urlController.removeListener(updateTagState);
+    openType.dispose();
+    nameController.dispose();
+    urlController.dispose();
+    super.dispose();
   }
 
   @override
@@ -132,19 +145,20 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
     var name = nameController.text;
     var url = urlController.text;
     // 确保都有效
-    var pop1 = name.isNotEmpty && url.isNotEmpty;
+    var pop = name.isNotEmpty && url.isNotEmpty;
+    var menu = widget.entity;
     // 任意一个改变即可
-    var pop2 = pop1 && (name != widget.entity.name || url != widget.entity.name);
-    canSave.value = pop2;
+    pop = pop && (name != menu.name || url != menu.link || openType.value != menu.openType);
+    canSave.value = pop;
   }
 
   @override
   void onSave() {
     if (canSave.value) {
-      var newMenu = Menu()
+      widget.entity
         ..name = nameController.text
         ..link = urlController.text;
-      widget.onSave?.call(newMenu);
+      widget.onSave?.call(widget.entity);
     }
     super.onSave();
   }

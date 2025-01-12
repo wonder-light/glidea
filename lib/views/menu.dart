@@ -119,10 +119,9 @@ class _MenuViewState extends State<MenuView> {
       stepHeight: isPhone ? 20 : null,
       builder: (context) => MenuEditor(
         entity: menu,
-        onSave: (data) {
-          site.updateMenu(newData: data, oldData: menu).then((value) {
-            value ? Get.success(Tran.menuSuccess) : Get.error(Tran.saveError);
-          });
+        onSave: (data) async {
+          final value = await site.updateMenu(newData: data, oldData: menu);
+          value ? Get.success(Tran.menuSuccess) : Get.error(Tran.saveError);
         },
       ),
     );
@@ -132,13 +131,10 @@ class _MenuViewState extends State<MenuView> {
   void deleteMenu(Menu menu) {
     // 弹窗
     Get.dialog(DialogWidget(
-      onCancel: () {
-        Get.backLegacy();
-      },
-      onConfirm: () {
-        site.removeMenu(menu).then((value) {
-          value ? Get.success(Tran.menuDelete) : Get.error(Tran.menuDeleteFailure);
-        });
+      onCancel: () => Get.backLegacy(),
+      onConfirm: () async {
+        final value = await site.removeMenu(menu);
+        value ? Get.success(Tran.menuDelete) : Get.error(Tran.menuDeleteFailure);
         site.removeMenu(menu);
         Get.backLegacy();
       },
