@@ -116,7 +116,7 @@ class _MenuViewState extends State<MenuView> {
     final isPhone = Get.isPhone;
     Get.showDrawer(
       direction: isPhone ? DrawerDirection.center : DrawerDirection.rightToLeft,
-      stepHeight: isPhone ? 20 : null,
+      height: isPhone ? 400 : null,
       builder: (context) => MenuEditor(
         entity: menu,
         onSave: (data) async {

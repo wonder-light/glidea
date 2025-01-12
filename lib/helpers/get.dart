@@ -174,6 +174,7 @@ extension GetExt on GetInterface {
     double? stepWidth = 60,
     double? stepHeight,
     double? width = 304,
+    double? height,
     VoidCallback? onClose,
   }) {
     // 使用 [PopupRoute] 不会遮挡住下来选项中的选项弹出框
@@ -193,6 +194,7 @@ extension GetExt on GetInterface {
           stepWidth: stepWidth,
           stepHeight: stepHeight,
           width: width,
+          height: height,
           shape: shape,
           onClose: onClose,
         );

@@ -56,7 +56,8 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
     urlController.removeListener(updateTagState);
     openType.dispose();
     nameController.dispose();
-    urlController.dispose();
+    // urlController 传递给 DropdownWidget 后会被释放, 所以不需要再释放一次了
+    // urlController.dispose();
     super.dispose();
   }
 

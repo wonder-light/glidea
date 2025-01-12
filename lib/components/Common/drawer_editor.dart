@@ -67,6 +67,7 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
     // 头部
     Widget child = SliverAppBar(
       pinned: true,
+      primary: false,
       titleSpacing: 0,
       toolbarHeight: 40,
       automaticallyImplyLeading: false,
@@ -81,6 +82,7 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
     );
     // 自定义滚动
     child = CustomScrollView(
+      shrinkWrap: true,
       slivers: [
         child,
         const SliverPadding(padding: kTopPadding8),

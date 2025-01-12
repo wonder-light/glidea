@@ -89,7 +89,7 @@ class _TagsViewState extends State<TagsView> {
     final isPhone = Get.isPhone;
     Get.showDrawer(
       direction: isPhone ? DrawerDirection.center : DrawerDirection.rightToLeft,
-      stepHeight: isPhone ? 20 : null,
+      height: isPhone ? 350 : null,
       builder: (context) => TagEditor(
         entity: tag,
         onSave: (data) async {

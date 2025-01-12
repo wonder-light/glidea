@@ -140,8 +140,7 @@ class _PostToolbarState extends State<PostToolbar> {
   void previewPost() {
     final isPhone = Get.isPhone;
     Get.showDrawer(
-      stepWidth: isPhone ? null : (MediaQuery.sizeOf(context).width / 1.5),
-      width: isPhone ? double.infinity : 60.0,
+      stepWidth: isPhone ? double.infinity : (MediaQuery.sizeOf(context).width / 1.5),
       builder: (ctx) => PostPreview(
         entity: widget.entity,
         markdown: widget.controller.text,

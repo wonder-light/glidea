@@ -36,6 +36,7 @@ class DrawerWidget extends StatelessWidget {
     this.stepWidth = 60,
     this.stepHeight,
     this.width = 304,
+    this.height,
     this.shape,
     this.onClose,
   });
@@ -66,6 +67,9 @@ class DrawerWidget extends StatelessWidget {
 
   /// 抽屉宽度, 默认为 403
   final double? width;
+
+  /// 抽屉宽度, 默认为 null
+  final double? height;
 
   /// 抽屉宽度, 默认为 403
   final ShapeBorder? shape;
@@ -114,21 +118,24 @@ class DrawerWidget extends StatelessWidget {
       ),
     );
     // 创建抽屉内容
-    Widget drawer = Align(
+    Widget drawer = Drawer(
+      width: width,
+      shape: shape ?? const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+      child: builder(context),
+    );
+    // 高度
+    if (height != null) {
+      drawer = SizedBox(height: height, child: drawer);
+    }
+    // 对齐等等
+    drawer = Align(
       alignment: direction.toAlign,
       child: Material(
         elevation: elevation,
         child: IntrinsicWidth(
           stepWidth: stepWidth,
           stepHeight: stepHeight,
-          child: Drawer(
-            width: width,
-            shape: shape ??
-                const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                ),
-            child: builder(context),
-          ),
+          child: drawer,
         ),
       ),
     );
