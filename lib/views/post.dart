@@ -86,8 +86,36 @@ class _PostViewState extends State<PostView> {
 
   @override
   Widget build(BuildContext context) {
-    // 布局
-    return PageAction(
+    // 主体
+    Widget child = FutureBuilder(
+      future: initTask.future,
+      builder: (ctx, snapshot) {
+        // 加载
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: LoadingWidget());
+        }
+        // 标题
+        Widget childWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 标题
+            _buildInputField(),
+            // 内容
+            Expanded(child: PostContent(controller: contentCtr)),
+          ],
+        );
+        // 工具栏
+        return Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            FractionallySizedBox(widthFactor: 0.7, alignment: Alignment.center, child: childWidget),
+            PostToolbar(entity: currentPost, picture: picture, controller: contentCtr),
+          ],
+        );
+      },
+    );
+    // 顶部工具栏
+    child = PageAction(
       contentPadding: EdgeInsets.zero,
       actions: [
         for (var item in actions)
@@ -101,33 +129,12 @@ class _PostViewState extends State<PostView> {
             ),
           ),
       ],
-      child: FutureBuilder(
-        future: initTask.future,
-        builder: (ctx, snapshot) {
-          // 加载
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: LoadingWidget());
-          }
-          // 标题
-          Widget childWidget = Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 标题
-              _buildInputField(),
-              // 内容
-              Expanded(child: PostContent(controller: contentCtr)),
-            ],
-          );
-          // 工具栏
-          return Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              FractionallySizedBox(widthFactor: 0.7, alignment: Alignment.center, child: childWidget),
-              PostToolbar(entity: currentPost, picture: picture, controller: contentCtr),
-            ],
-          );
-        },
-      ),
+      child: child,
+    );
+    // 安全面板
+    return ColoredBox(
+      color: theme.scaffoldBackgroundColor,
+      child: SafeArea(child: child),
     );
   }
 
