@@ -8,14 +8,14 @@ class TipWidget extends StatefulWidget {
   const TipWidget({
     super.key,
     this.message,
-    this.richMessage,
+    this.tooltip,
     this.offset = Offset.zero,
     this.direction = AxisDirection.down,
     this.padding,
     this.style,
     this.decoration,
     required this.child,
-  }) : assert((message == null) != (richMessage == null), 'TipWidget: `message` or `richMessage` must be specified');
+  }) : assert((message == null) != (tooltip == null), 'TipWidget: `message` or `tooltip` must be specified');
 
   /// 提示出现在上方
   const TipWidget.up({
@@ -27,8 +27,8 @@ class TipWidget extends StatefulWidget {
     this.style,
     this.decoration,
   })  : direction = AxisDirection.up,
-        richMessage = null,
-        assert(message != null, 'TipWidget: `message` or `richMessage` must be specified');
+        tooltip = null,
+        assert(message != null, 'TipWidget: `message` or `tooltip` must be specified');
 
   /// 提示出现在下方
   const TipWidget.down({
@@ -40,8 +40,8 @@ class TipWidget extends StatefulWidget {
     this.style,
     this.decoration,
   })  : direction = AxisDirection.down,
-        richMessage = null,
-        assert(message != null, 'TipWidget: `message` or `richMessage` must be specified');
+        tooltip = null,
+        assert(message != null, 'TipWidget: `message` or `tooltip` must be specified');
 
   /// 提示出现在上方
   const TipWidget.left({
@@ -53,8 +53,8 @@ class TipWidget extends StatefulWidget {
     this.style,
     this.decoration,
   })  : direction = AxisDirection.left,
-        richMessage = null,
-        assert(message != null, 'TipWidget: `message` or `richMessage` must be specified');
+        tooltip = null,
+        assert(message != null, 'TipWidget: `message` or `tooltip` must be specified');
 
   /// 提示出现在下方
   const TipWidget.right({
@@ -66,21 +66,21 @@ class TipWidget extends StatefulWidget {
     this.style,
     this.decoration,
   })  : direction = AxisDirection.right,
-        richMessage = null,
-        assert(message != null, 'TipWidget: `message` or `richMessage` must be specified');
+        tooltip = null,
+        assert(message != null, 'TipWidget: `message` or `tooltip` must be specified');
 
   /// 子控件
   final Widget child;
 
   /// 要显示在工具提示中的文本
   ///
-  /// [message]和[richMessage]中只能有一个非空
+  /// [message]和[tooltip]中只能有一个非空
   final String? message;
 
   /// 要在工具提示中显示的富文本
   ///
-  /// [message]和[richMessage]中只能有一个非空
-  final InlineSpan? richMessage;
+  /// [message]和[tooltip]中只能有一个非空
+  final Widget? tooltip;
 
   /// 偏移
   final Offset offset;
@@ -102,29 +102,28 @@ class TipWidget extends StatefulWidget {
 }
 
 class _TipWidgetState extends State<TipWidget> {
-  /// 判断是否悬浮
-  final isHover = false.obs;
+  /// 控制控件是否可视
+  ///
+  /// true: 可视, false: 不可视
+  final isVisible = false.obs;
+
+  /// true: 动画完成
+  bool _animaFinish = true;
 
   /// [OverlayPortalController] 控制器
   final OverlayPortalController _overlayController = OverlayPortalController();
-
-  @override
-  void dispose() {
-    isHover.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     // 返回
     return OverlayPortal(
       controller: _overlayController,
-      overlayChildBuilder: _buildTooltipOverlay,
+      overlayChildBuilder: _buildrichMessageOverlay,
       child: Semantics(
-        tooltip: widget.message ?? widget.richMessage!.toPlainText(),
+        tooltip: widget.message,
         child: InkWell(
           onTap: () {},
-          onHover: onHover,
+          onHover: _onHover,
           focusColor: Colors.transparent,
           hoverColor: Colors.transparent,
           splashColor: Colors.transparent,
@@ -136,7 +135,7 @@ class _TipWidgetState extends State<TipWidget> {
   }
 
   /// 构建提示
-  Widget _buildTooltipOverlay(BuildContext context) {
+  Widget _buildrichMessageOverlay(BuildContext context) {
     final OverlayState overlayState = Overlay.of(context, debugRequiredFor: widget);
     final RenderBox box = this.context.findRenderObject()! as RenderBox;
     final Offset target = box.localToGlobal(
@@ -145,23 +144,19 @@ class _TipWidgetState extends State<TipWidget> {
     );
 
     // 主题
-    final theme = Get.theme;
-    final tooltipTheme = theme.tooltipTheme;
+    final tooltipTheme = Theme.of(context).tooltipTheme;
     // 提示
     Widget childWidget = Obx(
       () => AnimatedVisibility(
         duration: const Duration(milliseconds: 200),
-        visible: isHover.value,
-        onEnd: onEnd,
+        visible: isVisible.value,
+        onEnd: _onEnd,
         child: Semantics(
           container: true,
           child: Container(
             decoration: widget.decoration ?? tooltipTheme.decoration,
             padding: widget.padding ?? tooltipTheme.padding ?? (kVerPadding4 + kHorPadding8),
-            child: Text.rich(
-              widget.richMessage ?? TextSpan(text: widget.message),
-              style: widget.style ?? tooltipTheme.textStyle,
-            ),
+            child: widget.tooltip ?? Text.rich(TextSpan(text: widget.message), style: widget.style ?? tooltipTheme.textStyle),
           ),
         ),
       ),
@@ -171,7 +166,7 @@ class _TipWidgetState extends State<TipWidget> {
     return Positioned.fill(
       bottom: MediaQuery.maybeViewInsetsOf(context)?.bottom ?? 0.0,
       child: CustomSingleChildLayout(
-        delegate: _TooltipPositionDelegate(
+        delegate: _richMessagePositionDelegate(
           target: target,
           targetSize: box.size,
           offset: widget.offset,
@@ -182,27 +177,38 @@ class _TipWidgetState extends State<TipWidget> {
     );
   }
 
-  /// 悬浮式调用
-  void onHover(hover) {
-    if (hover) {
-      _overlayController.show();
-      WidgetsBinding.instance.addPostFrameCallback((duration) {
-        isHover.value = true;
-      });
+  /// 显示
+  void onShow() {
+    _overlayController.show();
+    // 先显示 overlay, 然后在从隐藏状态显现
+    WidgetsBinding.instance.addPostFrameCallback((duration) => isVisible.value = !(_animaFinish = false));
+  }
+
+  /// 隐藏
+  void onHide() {
+    if (isVisible.value) {
+      isVisible.value = false;
     } else {
-      isHover.value = false;
+      if (_animaFinish) {
+        _overlayController.hide();
+      }
     }
   }
 
-  void onEnd() {
-    if (isHover.value) return;
+  /// 悬浮式调用
+  void _onHover(hover) => hover ? onShow() : onHide();
+
+  /// 动画结束
+  void _onEnd() {
+    _animaFinish = true;
+    if (isVisible.value) return;
     _overlayController.hide();
   }
 }
 
-class _TooltipPositionDelegate extends SingleChildLayoutDelegate {
+class _richMessagePositionDelegate extends SingleChildLayoutDelegate {
   /// 创建用于计算工具提示布局的委托
-  _TooltipPositionDelegate({
+  _richMessagePositionDelegate({
     required this.target,
     required this.targetSize,
     required this.offset,
@@ -262,7 +268,7 @@ class _TooltipPositionDelegate extends SingleChildLayoutDelegate {
   }
 
   @override
-  bool shouldRelayout(_TooltipPositionDelegate oldDelegate) {
+  bool shouldRelayout(_richMessagePositionDelegate oldDelegate) {
     return target != oldDelegate.target || targetSize != oldDelegate.targetSize || offset != oldDelegate.offset || direction != oldDelegate.direction;
   }
 }
