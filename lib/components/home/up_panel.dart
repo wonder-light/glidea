@@ -68,13 +68,11 @@ class _HomeUpPanelState extends State<HomeUpPanel> {
 
   @override
   Widget build(BuildContext context) {
-    // 菜单列表高度
-    const itemHeight = 50.0;
-    final colorScheme = theme.colorScheme;
-    // 头像, 高度 kVerPadding16.top * 3 + kLogSize
+    // 头像
     Widget childWidget = Container(
       alignment: Alignment.center,
-      padding: kVerPadding16 + kTopPadding16,
+      color: theme.scaffoldBackgroundColor,
+      padding: kVerPadding16 * 1.6 + kTopPadding8,
       child: const ClipOval(
         child: Image(
           image: AssetImage('assets/images/logo.png'),
@@ -83,30 +81,46 @@ class _HomeUpPanelState extends State<HomeUpPanel> {
         ),
       ),
     );
-    return Column(
+    // 项目
+    List<Widget> children = [for (var item in menus) _buildItem(item)];
+    // 平板端使用滚动, [IntrinsicWidth] 与 [CustomScrollView] 不能同时使用
+    if (!Get.isDesktop) {
+      children = [
+        Expanded(
+          child: SingleChildScrollView(
+            child: Column(spacing: kTopPadding8.top, children: children),
+          ),
+        )
+      ];
+    }
+    // 放到一个列表中
+    childWidget = Column(
+      spacing: kTopPadding8.top,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        childWidget,
-        for (var item in menus)
-          Padding(
-            padding: kVerPadding4 + kHorPadding12,
-            child: Obx(
-              () => ListItem(
-                onTap: () => toName(item.route),
-                leading: Icon(item.icon),
-                title: Text(item.name.tr),
-                trailing: Text('${dataNum[item.name] ?? ''}'),
-                constraints: const BoxConstraints.expand(height: itemHeight),
-                selected: currentRouter.value == item.route,
-                selectedColor: colorScheme.surfaceContainerLow,
-                selectedTileColor: colorScheme.primary,
-                contentPadding: kHorPadding16,
-                dense: true,
-              ),
-            ),
-          ),
-      ],
+      children: [childWidget, ...children],
+    );
+    // 包裹水平边距
+    return Padding(padding: kHorPadding12, child: childWidget);
+  }
+
+  Widget _buildItem(TRouterData item) {
+    // 菜单列表高度
+    const itemHeight = 50.0;
+    final colorScheme = theme.colorScheme;
+    return Obx(
+      () => ListItem(
+        onTap: () => toName(item.route),
+        leading: Icon(item.icon),
+        title: Text(item.name.tr),
+        trailing: Text('${dataNum[item.name] ?? ''}'),
+        constraints: const BoxConstraints.expand(height: itemHeight),
+        selected: currentRouter.value == item.route,
+        selectedColor: colorScheme.surfaceContainerLow,
+        selectedTileColor: colorScheme.primary,
+        contentPadding: kHorPadding16,
+        dense: true,
+      ),
     );
   }
 

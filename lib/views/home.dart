@@ -96,18 +96,20 @@ class _HomeViewState extends LifecycleState<HomeView> {
   /// 构建左边面板
   Widget _buildLeftPanel() {
     // 使用 [IntrinsicWidth] 限制最大宽度, 并用 [ConstrainedBox] 限制最小宽度
+    Widget child = const HomeUpPanel();
+    // 桌面端加上 [Column]
+    if (Get.isDesktop) {
+      child = Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [child, const HomeDownPanel()],
+      );
+    }
     return IntrinsicWidth(
       stepWidth: 40,
       child: ConstrainedBox(
         constraints: const BoxConstraints(minWidth: kPanelWidth),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const HomeUpPanel(),
-            if (Get.isDesktop) const HomeDownPanel(),
-          ],
-        ),
+        child: child,
       ),
     );
   }
