@@ -37,7 +37,7 @@ class DropdownWidget<T> extends StatefulWidget {
     this.onSelected,
     this.decoration,
     this.inputFormatters,
-  });
+  }) : assert((initValue == null || initMultipleValue == null), 'Either initValue or initMultipleValue must be null');
 
   /// 确定是否启用了 [DropdownWidget]
   final bool enabled;
@@ -68,7 +68,7 @@ class DropdownWidget<T> extends StatefulWidget {
   /// 如果该值为空，则不使用 [Padding]
   final EdgeInsetsGeometry? itemPadding;
 
-  /// 确定是否可以通过文本输入筛选菜单列表
+  /// 确定是否可以通过文本输入筛选菜单列表, 必须在 [enableSearch] 为 true 时才可使用
   ///
   /// 默认 false
   final bool enableFilter;
@@ -173,8 +173,6 @@ class _DropdownWidgetState<T> extends State<DropdownWidget<T>> {
   @override
   void initState() {
     super.initState();
-    assert(widget.children.every((t) => t.value != null), 'DropdownButton 中有 child 的 value 为 null');
-    assert(widget.initValue == null || widget.children.any((t) => t.value == widget.initValue), 'initValue 不在 children 中');
     _updateTextEditor();
     _updateSelectItems();
   }

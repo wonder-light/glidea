@@ -39,6 +39,8 @@ class _HomeUpPanelState extends State<HomeUpPanel> {
     Tran.tag: site.tags.length,
   };
 
+  final theme = Theme.of(Get.context!);
+
   @override
   void initState() {
     super.initState();
@@ -68,7 +70,7 @@ class _HomeUpPanelState extends State<HomeUpPanel> {
   Widget build(BuildContext context) {
     // 菜单列表高度
     const itemHeight = 50.0;
-    var colorScheme = Get.theme.colorScheme;
+    final colorScheme = theme.colorScheme;
     // 头像, 高度 kVerPadding16.top * 3 + kLogSize
     Widget childWidget = Container(
       alignment: Alignment.center,

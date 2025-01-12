@@ -59,6 +59,7 @@ class _HomeViewState extends State<HomeView> with WindowListener {
 
   @override
   void onWindowClose() {
+    // TODO: 关闭
     print('onWindowClose');
     if (!site.isDisposed) {
       site.dispose();
@@ -95,23 +96,19 @@ class _HomeViewState extends State<HomeView> with WindowListener {
 
   /// 构建左边面板
   Widget _buildLeftPanel() {
-    // 放到列中
-    Widget childWidget = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const HomeUpPanel(),
-        if (Get.isDesktop) const HomeDownPanel(),
-      ],
-    );
     // 使用 [IntrinsicWidth] 限制最大宽度, 并用 [ConstrainedBox] 限制最小宽度
     return IntrinsicWidth(
       stepWidth: 40,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(
-          minWidth: kPanelWidth,
+        constraints: const BoxConstraints(minWidth: kPanelWidth),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const HomeUpPanel(),
+            if (Get.isDesktop) const HomeDownPanel(),
+          ],
         ),
-        child: childWidget,
       ),
     );
   }
