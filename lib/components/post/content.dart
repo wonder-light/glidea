@@ -12,16 +12,16 @@ import 'package:re_highlight/styles/base16/atelier-forest-light.dart';
 
 final _langMarkdown = Mode(
   refs: {
-    ...?langXml.refs,
     ...?langLatex.refs,
+    ...?langXml.refs,
     ...?langMarkdown.refs,
   },
   name: langMarkdown.name,
   aliases: langMarkdown.aliases,
   contains: [
+    ...?langMarkdown.contains,
     ...?langXml.contains,
     ...?langLatex.contains,
-    ...?langMarkdown.contains,
   ],
   caseInsensitive: true,
   unicodeRegex: true,
