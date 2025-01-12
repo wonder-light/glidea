@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Obx, RxT, Trans;
+import 'package:get/get.dart' show Obx, RxT, Trans;
 import 'package:glidea/components/Common/drawer_editor.dart';
 import 'package:glidea/components/Common/dropdown.dart';
 import 'package:glidea/components/Common/list_item.dart';
@@ -27,13 +27,13 @@ class MenuEditor extends DrawerEditor<Menu> {
 
 class MenuEditorState extends DrawerEditorState<MenuEditor> {
   /// 内链后或者外链类型
-  var openType = MenuTypes.internal.obs;
+  late final openType = widget.entity.openType.obs;
 
   /// 标签名控制器
-  final TextEditingController nameController = TextEditingController();
+  late final TextEditingController nameController = TextEditingController(text: widget.entity.name);
 
   /// 标签 URL 控制器
-  final TextEditingController urlController = TextEditingController();
+  late final TextEditingController urlController = TextEditingController(text: widget.entity.link);
 
   /// 可以引用的链接
   final List<TLinkData> linkData = [];
@@ -42,92 +42,89 @@ class MenuEditorState extends DrawerEditorState<MenuEditor> {
   void initState() {
     super.initState();
     // 初始化文本
-    nameController.text = widget.entity.name;
-    urlController.text = widget.entity.link;
     nameController.addListener(updateTagState);
     urlController.addListener(updateTagState);
-    openType.value = widget.entity.openType;
     linkData.addAll(site.getReferenceLink());
   }
 
   @override
-  List<Widget> buildContent(BuildContext context) {
-    final textTheme = Get.theme.textTheme;
-    final colorScheme = Get.theme.colorScheme;
-    // 高度
-    const itemHeight = 54.0;
-    // 名称控件
-    final nameWidget = wrapperField(
-      name: Tran.name,
-      child: TextFormField(
-        controller: nameController,
-        decoration: const InputDecoration(
-          isDense: true,
-          contentPadding: kVer8Hor12,
-          hoverColor: Colors.transparent, // 悬停时的背景色
-        ),
+  Widget? buildContent(BuildContext context, int index) {
+    return switch (index) {
+      0 => wrapperField(name: Tran.name, child: _buildName()),
+      1 => wrapperField(child: _buildSelect()),
+      2 => wrapperField(name: Tran.link, child: _buildLink()),
+      _ => null,
+    };
+  }
+
+  /// 修改名称
+  Widget _buildName() {
+    return TextFormField(
+      controller: nameController,
+      decoration: const InputDecoration(
+        isDense: true,
+        contentPadding: kVer8Hor12,
+        hoverColor: Colors.transparent, // 悬停时的背景色
       ),
     );
-    // 选择按钮
-    final selectWidget = wrapperField(
-      child: Obx(
-        () => ToggleButtons(
-          borderRadius: BorderRadius.circular(8),
-          constraints: const BoxConstraints.tightFor(height: kButtonHeight * 0.8),
-          // 取消最小高度
-          isSelected: [
-            openType.value == MenuTypes.internal,
-            openType.value == MenuTypes.external,
-          ],
-          children: [
-            for (var item in MenuTypes.values)
-              Container(
-                padding: kHorPadding16,
-                child: Text(item.name.tr),
-              ),
-          ],
-          onPressed: (index) {
-            openType.value = index <= 0 ? MenuTypes.internal : MenuTypes.external;
-          },
-        ),
-      ),
-    );
-    // 链接控件
-    final linkWidget = wrapperField(
-      name: Tran.link,
-      child: DropdownWidget(
-        itemHeight: itemHeight,
-        itemsMaxHeight: itemHeight * 3,
-        enableSearch: true,
-        enableFilter: true,
-        textController: urlController,
-        filterCallback: (item, text) {
-          return item.name.contains(text) || item.link.contains(text);
-        },
-        displayStringForItem: (item) => item.link,
+  }
+
+  /// 修改链接类型
+  Widget _buildSelect() {
+    return Obx(
+      () => ToggleButtons(
+        borderRadius: BorderRadius.circular(8),
+        constraints: const BoxConstraints.tightFor(height: kButtonHeight * 0.8),
+        // 取消最小高度
+        isSelected: [
+          openType.value == MenuTypes.internal,
+          openType.value == MenuTypes.external,
+        ],
         children: [
-          for (var item in linkData)
-            DropdownMenuItem(
-              value: item,
-              child: ListItem(
-                leading: const Icon(PhosphorIconsRegular.link),
-                title: Text(item.name),
-                subtitle: Text(item.link),
-                subtitleTextStyle: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.outline,
-                ),
-                constraints: const BoxConstraints.expand(height: itemHeight),
-                dense: true,
-              ),
+          for (var item in MenuTypes.values)
+            Container(
+              padding: kHorPadding16,
+              child: Text(item.name.tr),
             ),
         ],
+        onPressed: (index) {
+          openType.value = index <= 0 ? MenuTypes.internal : MenuTypes.external;
+        },
       ),
     );
-    return [
-      nameWidget,
-      selectWidget,
-      linkWidget,
-    ];
+  }
+
+  /// 修改选择的链接
+  Widget _buildLink() {
+    // 高度
+    const itemHeight = 54.0;
+    return DropdownWidget(
+      itemHeight: itemHeight,
+      itemsMaxHeight: itemHeight * 3,
+      enableSearch: true,
+      enableFilter: true,
+      textController: urlController,
+      filterCallback: (item, text) {
+        return item.name.contains(text) || item.link.contains(text);
+      },
+      displayStringForItem: (item) => item.link,
+      children: [
+        for (var item in linkData)
+          DropdownMenuItem(
+            value: item,
+            child: ListItem(
+              leading: const Icon(PhosphorIconsRegular.link),
+              title: Text(item.name),
+              subtitle: Text(item.link),
+              subtitleTextStyle: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.outline,
+              ),
+              constraints: const BoxConstraints.expand(height: itemHeight),
+              dense: true,
+            ),
+          ),
+      ],
+    );
   }
 
   /// 更新标签状态

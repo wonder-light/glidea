@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show BoolExtension, Get, Inst, Obx, Trans;
+import 'package:get/get.dart' show BoolExtension, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/Common/drawer.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
@@ -17,7 +17,6 @@ abstract class DrawerEditor<T> extends StatefulWidget {
     this.header = '',
     this.showAction = true,
     this.hideCancel = false,
-    this.enabledScroller = true,
   });
 
   /// 实体
@@ -41,9 +40,6 @@ abstract class DrawerEditor<T> extends StatefulWidget {
   /// 隐藏取消按钮
   final bool hideCancel;
 
-  /// 启用滚动
-  final bool enabledScroller;
-
   @override
   DrawerEditorState<DrawerEditor<T>> createState();
 }
@@ -56,66 +52,80 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
   /// 按钮样式
-  final actionStyle = const ButtonStyle(
+  static const _actionStyle = ButtonStyle(
     fixedSize: WidgetStatePropertyAll(Size(double.infinity, kButtonHeight)),
   );
 
   /// 抽屉控制器
   late final DraController controller = widget.controller ?? DraController();
 
+  /// 主题数据
+  final theme = Theme.of(Get.context!);
+
   @override
   Widget build(BuildContext context) {
-    // 头
-    Widget header = buildHeader(context);
-    // 内容
-    List<Widget> content = buildContent(context);
-    // 字段
-    Widget widgets = Container(
-      padding: kAllPadding16 + kVerPadding8,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          header,
-          ...content,
-        ],
-      ),
-    );
-    // 启用滚动
-    if(widget.enabledScroller) {
-      widgets = SingleChildScrollView(child: widgets);
-    }
-    // 上下两部分
-    if (widget.showAction) {
-      widgets = Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(child: widgets),
-          buildActions(context),
-        ],
-      );
-    }
-    // 返回控件
-    return widgets;
-  }
-
-  /// 构建菜单头部
-  Widget buildHeader(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(widget.header.tr, textScaler: const TextScaler.linear(1.2)),
+    // 头部
+    Widget child = SliverAppBar(
+      pinned: true,
+      titleSpacing: 0,
+      toolbarHeight: 40,
+      automaticallyImplyLeading: false,
+      backgroundColor: theme.drawerTheme.backgroundColor,
+      title: Text(widget.header.tr),
+      actions: [
         IconButton(
           onPressed: onClose,
           icon: const Icon(PhosphorIconsRegular.x),
         ),
       ],
     );
+    // 自定义滚动
+    child = CustomScrollView(
+      slivers: [
+        child,
+        const SliverPadding(padding: kTopPadding8),
+        // 内容
+        SliverList(delegate: SliverChildBuilderDelegate(buildContent)),
+        // 底部操作
+        if (widget.showAction) const SliverPadding(padding: kTopPadding8),
+        if (widget.showAction)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Container(
+              alignment: Alignment.bottomCenter,
+              child: buildActions(context),
+            ),
+          ),
+      ],
+    );
+    // 加上内边距
+    return Padding(padding: kAllPadding16 + kVerPadding8, child: child);
   }
 
   /// 构建菜单内容
-  List<Widget> buildContent(BuildContext context) {
-    return [];
+  Widget? buildContent(BuildContext context, int index) => null;
+
+  /// 构建底部操作按钮
+  Widget buildActions(BuildContext context) {
+    return Row(
+      spacing: kRightPadding8.right,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (!widget.hideCancel)
+          OutlinedButton(
+            style: _actionStyle,
+            onPressed: onClose,
+            child: Text(Tran.cancel.tr),
+          ),
+        Obx(
+          () => FilledButton(
+            style: _actionStyle,
+            onPressed: canSave.value ? onSave : null,
+            child: Text(Tran.save.tr),
+          ),
+        ),
+      ],
+    );
   }
 
   /// 包装字段
@@ -131,32 +141,6 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
               child: Text(name.tr),
             ),
           child,
-        ],
-      ),
-    );
-  }
-
-  /// 构建底部操作按钮
-  Widget buildActions(BuildContext context) {
-    return Container(
-      padding: kAllPadding16 + kVerPadding8,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          if (!widget.hideCancel)
-            OutlinedButton(
-              style: actionStyle,
-              onPressed: onClose,
-              child: Text(Tran.cancel.tr),
-            ),
-          if (!widget.hideCancel) Container(padding: kRightPadding8),
-          Obx(
-            () => FilledButton(
-              style: actionStyle,
-              onPressed: canSave.value ? onSave : null,
-              child: Text(Tran.save.tr),
-            ),
-          ),
         ],
       ),
     );

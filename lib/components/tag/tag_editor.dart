@@ -24,55 +24,53 @@ class TagEditor extends DrawerEditor<Tag> {
 
 class TagEditorState extends DrawerEditorState<TagEditor> {
   /// 标签名控制器
-  final TextEditingController nameController = TextEditingController();
+  late final TextEditingController nameController = TextEditingController(text: widget.entity.name);
 
   /// 标签 URL 控制器
-  final TextEditingController urlController = TextEditingController();
+  late final TextEditingController urlController = TextEditingController(text: widget.entity.slug);
 
   @override
   void initState() {
     super.initState();
     // 初始化文本
-    nameController.text = widget.entity.name;
-    urlController.text = widget.entity.slug;
     nameController.addListener(updateTagState);
     urlController.addListener(updateTagState);
   }
 
   @override
-  List<Widget> buildContent(BuildContext context) {
-    // 名称控件
-    final nameWidget = wrapperField(
-      name: Tran.tagName,
-      child: TextFormField(
-        controller: nameController,
-        decoration: const InputDecoration(
-          isDense: true,
-          contentPadding: kVer8Hor12,
-          hoverColor: Colors.transparent, // 悬停时的背景色
-        ),
-      ),
-    );
-    // 连接控件
-    final linkWidget = wrapperField(
-      name: Tran.tagUrl,
-      child: TextFormField(
-        controller: urlController,
-        decoration: const InputDecoration(
-          isDense: true,
-          contentPadding: kVer8Hor12,
-          hoverColor: Colors.transparent, // 悬停时的背景色
-        ),
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9-]+')),
-        ],
-      ),
-    );
+  Widget? buildContent(BuildContext context, int index) {
+    return switch (index) {
+      0 => wrapperField(name: Tran.tagName, child: _buildName()),
+      1 => wrapperField(name: Tran.tagUrl, child: _buildUrl()),
+      _ => null,
+    };
+  }
 
-    return [
-      nameWidget,
-      linkWidget,
-    ];
+  /// 修改名称
+  Widget _buildName() {
+    return TextFormField(
+      controller: nameController,
+      decoration: const InputDecoration(
+        isDense: true,
+        contentPadding: kVer8Hor12,
+        hoverColor: Colors.transparent, // 悬停时的背景色
+      ),
+    );
+  }
+
+  /// 修改 Url
+  Widget _buildUrl() {
+    return TextFormField(
+      controller: urlController,
+      decoration: const InputDecoration(
+        isDense: true,
+        contentPadding: kVer8Hor12,
+        hoverColor: Colors.transparent, // 悬停时的背景色
+      ),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9-]+')),
+      ],
+    );
   }
 
   /// 更新标签状态

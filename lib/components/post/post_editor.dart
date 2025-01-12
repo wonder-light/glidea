@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, Obx, Trans, BoolExtension;
+import 'package:get/get.dart' show Obx, Trans, BoolExtension;
 import 'package:glidea/components/Common/drawer_editor.dart';
 import 'package:glidea/components/Common/dropdown.dart';
 import 'package:glidea/components/render/base.dart';
@@ -32,7 +32,15 @@ class PostEditor extends DrawerEditor<Post> {
 }
 
 class PostEditorState extends DrawerEditorState<PostEditor> {
-  late final expansions = <({Widget Function() build, bool expanded, String header})>[].obs;
+  /// 扩展项
+  late final expansions = <({ValueGetter<Widget> build, String header})>[
+    (build: _buildUrl, header: 'URL'),
+    (build: _buildDate, header: Tran.createAt),
+    (build: _buildTags, header: Tran.tag),
+    (build: _buildImage, header: Tran.featureImage),
+    (build: _buildHide, header: Tran.hideInList),
+    (build: _buildTop, header: Tran.topArticles),
+  ];
 
   /// 日期的控制器
   TextEditingController? dateController;
@@ -47,14 +55,6 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
   void initState() {
     super.initState();
     final post = widget.entity;
-    expansions.value.addAll([
-      (expanded: true, build: _buildUrl, header: 'URL'),
-      (expanded: false, build: _buildDate, header: Tran.createAt),
-      (expanded: false, build: _buildTags, header: Tran.tag),
-      (expanded: false, build: _buildImage, header: Tran.featureImage),
-      (expanded: false, build: _buildHide, header: Tran.hideInList),
-      (expanded: false, build: _buildTop, header: Tran.topArticles),
-    ]);
     dateController = TextEditingController(text: post.date.format(pattern: site.themeConfig.dateFormat));
     isHide.value = post.hideInList;
     isTop.value = post.isTop;
@@ -69,42 +69,16 @@ class PostEditorState extends DrawerEditorState<PostEditor> {
   }
 
   @override
-  List<Widget> buildContent(BuildContext context) {
-    return [_buildSetting()];
-  }
-
-  /// 设置视图
-  Widget _buildSetting() {
-    var color = Get.theme.colorScheme.surfaceContainerHigh;
-    return Obx(() {
-      return ExpansionPanelList(
-        elevation: 0,
-        expandedHeaderPadding: EdgeInsets.zero,
-        expansionCallback: (index, exp) {
-          expansions.update((obj) {
-            final tar = obj[index];
-            obj[index] = (expanded: exp, build: tar.build, header: tar.header);
-            return obj;
-          });
-        },
-        children: [
-          for (var item in expansions.value)
-            ExpansionPanel(
-              headerBuilder: (ctx, exp) => Padding(
-                padding: kHorPadding16,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(item.header.tr),
-                ),
-              ),
-              body: Padding(padding: kHorPadding16, child: item.build()),
-              isExpanded: item.expanded,
-              canTapOnHeader: true,
-              backgroundColor: item.expanded ? null : color,
-            )
-        ],
-      );
-    });
+  Widget? buildContent(BuildContext context, int index) {
+    final item = expansions.elementAtOrNull(index);
+    if (item == null) return null;
+    // 项目
+    return ExpansionTile(
+      initiallyExpanded: item.header == 'URL',
+      title: Text(item.header.tr),
+      childrenPadding: kAllPadding16,
+      children: [item.build()],
+    );
   }
 
   /// 设置中的 fileName
