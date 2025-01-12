@@ -55,27 +55,26 @@ class _TagsViewState extends State<TagsView> {
     // 边距
     final padding = kHorPadding8 + kVerPadding4;
     // 按钮
-    final buttons = [
-      Container(
-        padding: padding * 1.5,
-        child: Row(
-          children: [
-            const Icon(PhosphorIconsRegular.tag),
-            Container(padding: kRightPadding4),
-            Text(tag.name),
-          ],
-        ),
-      ),
-      if (!tag.used)
-        Container(
-          padding: padding,
-          child: const Icon(PhosphorIconsRegular.trash),
-        ),
-    ];
-    // 按钮
     return ToggleButtons(
       isSelected: [false, if (!tag.used) false],
-      children: buttons,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      children: [
+        Padding(
+          padding: padding,
+          child: Row(
+            children: [
+              const Icon(PhosphorIconsRegular.tag),
+              Padding(padding: kRightPadding4),
+              Text(tag.name),
+            ],
+          ),
+        ),
+        if (!tag.used)
+          Padding(
+            padding: padding,
+            child: const Icon(PhosphorIconsRegular.trash),
+          ),
+      ],
       onPressed: (index) => index <= 0 ? editorTag(tag) : deleteTag(tag),
     );
   }
