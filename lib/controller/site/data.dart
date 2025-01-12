@@ -88,13 +88,13 @@ mixin DataProcess on StateController<Application> {
       FS.writeStringSync(appConfigPath, '{"$dirField": "${site.appDir}"}');
     } else {
       final appConfig = FS.readStringSync(appConfigPath).deserialize<TJsonMap>()!;
-      defaultSiteDir = FS.normalize(appConfig[dirField]);
+      defaultSiteDir = FS.normalize(appConfig[dirField] ?? site.appDir);
     }
     // 在刚打开应用时应该直接进行覆盖, 而不用进行其它操作
     if (isCreate) {
       site.appDir = defaultSiteDir;
       // 将不存在的文件解压到指定路径
-      FS.unzip(src: 'assets/public/default-files.zip', target: site.appDir, cover: false);
+      await FS.unzip(src: 'assets/public/default-files.zip', target: site.appDir, cover: false);
     }
     // 输出目录
     if (!FS.dirExistsSync(site.buildDir)) {

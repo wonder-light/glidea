@@ -1,6 +1,4 @@
-﻿import 'dart:ui' show AppExitResponse;
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, Trans;
 import 'package:glidea/components/Common/loading.dart';
 import 'package:glidea/components/home/down_panel.dart';
@@ -9,12 +7,13 @@ import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/log.dart';
+import 'package:glidea/helpers/windows.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
+import 'package:glidea/library/worker/worker.dart';
 import 'package:glidea/routes/router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:responsive_framework/responsive_framework.dart' show ResponsiveBreakpoints;
-import 'package:window_manager/window_manager.dart' show WindowListener;
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -23,10 +22,7 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> with WindowListener {
-  /// 侦听器，可用于侦听应用程序生命周期中的更改
-  late final AppLifecycleListener lifecycle;
-
+class _HomeViewState extends LifecycleState<HomeView> {
   /// 移动端的当前路由索引
   var mobileIndex = 0.obs;
 
@@ -45,26 +41,27 @@ class _HomeViewState extends State<HomeView> with WindowListener {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    lifecycle = AppLifecycleListener(onStateChange: handleStateChange, onExitRequested: handleExitRequested);
-  }
-
-  @override
   void dispose() {
     site.dispose();
-    lifecycle.dispose();
     super.dispose();
   }
 
   @override
-  void onWindowClose() {
-    // TODO: 关闭
-    print('onWindowClose');
+  void onWindowClose() async {
+    await onAppHide();
+    Background.instance.exit();
+    print('---------------onWindowClose----------------');
+  }
+
+  @override
+  Future<void> onAppHide() async {
     if (!site.isDisposed) {
-      site.dispose();
+      try {
+        await site.saveSiteData();
+      } catch (e, s) {
+        Log.e('failed to save data while APP is hidden', error: e, stackTrace: s);
+      }
     }
-    super.onWindowClose();
   }
 
   @override
@@ -146,22 +143,6 @@ class _HomeViewState extends State<HomeView> with WindowListener {
       anchorRoute: AppRouter.home,
       filterPages: filterPages,
     );
-  }
-
-  /// 应用程序生命周期更改时的回调
-  void handleStateChange(AppLifecycleState state) {}
-
-  /// 一个回调，用于询问应用程序是否允许在退出可以取消的情况下退出应用程序
-  Future<AppExitResponse> handleExitRequested() async {
-    Log.i('onExitRequested');
-    if (!site.isDisposed) {
-      try {
-        await site.saveSiteData();
-      } catch (e, s) {
-        Log.e('on exit request save site data failed', error: e, stackTrace: s);
-      }
-    }
-    return AppExitResponse.exit;
   }
 
   /// 过滤页面
