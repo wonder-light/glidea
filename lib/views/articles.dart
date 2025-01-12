@@ -8,7 +8,7 @@ import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/get.dart';
-import 'package:glidea/helpers/markdown.dart';
+import 'package:glidea/helpers/image.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/routes/router.dart';

@@ -20,7 +20,7 @@ const tagsTemplate = 'tags.j2';
 const tagTemplate = 'tag.j2';
 
 /// 加载 [Post] 中的本地图片的前缀
-const String featurePrefix = 'file://';
+const String featurePrefix = 'file:///';
 
 /// 摘要分隔符
 const String summarySeparator = '<!-- more -->';

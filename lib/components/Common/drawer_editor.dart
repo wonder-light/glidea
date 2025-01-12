@@ -130,20 +130,17 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
 
   /// 包装字段
   Widget wrapperField({required Widget child, String? name}) {
-    return Container(
-      margin: kTopPadding8 * 2.25,
-      child: Column(
+    final padding = kTopPadding8.flipped;
+    if (name != null) {
+      child = Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (name != null)
-            Padding(
-              padding: kTopPadding8.flipped,
-              child: Text(name.tr),
-            ),
+          Padding(padding: padding, child: Text(name.tr)),
           child,
         ],
-      ),
-    );
+      );
+    }
+    return Container(margin: padding * 2.25, child: child);
   }
 
   /// 关闭或者取消

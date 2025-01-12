@@ -42,7 +42,7 @@ class PostContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(Get.context!);
-    final style = theme.textTheme.bodyMedium;
+    final style = theme.textTheme.bodyMedium?.apply(fontSizeFactor: 1.1);
     return CodeEditor(
       scrollbarBuilder: buildScrollbar,
       controller: controller,

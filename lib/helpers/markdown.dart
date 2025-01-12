@@ -1,13 +1,8 @@
-﻿import 'dart:io';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart' show HtmlWidget;
-import 'package:glidea/helpers/constants.dart';
-import 'package:glidea/helpers/image.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:flutter_markdown_latex/flutter_markdown_latex.dart' show LatexBlockSyntax, LatexInlineSyntax;
 import 'package:glidea/helpers/uid.dart';
 import 'package:markdown/markdown.dart' as m
     show HeaderSyntax, Node, BlockParser, SetextHeaderSyntax, Element, ExtensionSet, Resolver, BlockSyntax, renderToHtml, Document, InlineSyntax;
-import 'package:markdown_widget/markdown_widget.dart' show ElementNode, ImgConfig, MarkdownConfig, SpanNode, TextNode, WidgetVisitor;
 
 /// 解析 ajax 样式的头，并将生成的id添加到生成的元素中
 ///
@@ -58,8 +53,9 @@ class Markdown {
       const HeaderWithId(),
       const SetextHeaderWithId(),
       ...m.ExtensionSet.gitHubWeb.blockSyntaxes.skip(3),
+      LatexBlockSyntax(),
     ],
-    m.ExtensionSet.gitHubWeb.inlineSyntaxes,
+    [...m.ExtensionSet.gitHubWeb.inlineSyntaxes, LatexInlineSyntax()],
   );
 
   /// 将给定的 Markdown 字符串转换为HTML
@@ -116,104 +112,5 @@ class Markdown {
 
     nodes = doc.parse(str);
     return '${m.renderToHtml(nodes, enableTagfilter: enableTagFilter)}\n';
-  }
-}
-
-class CustomTextNode extends ElementNode {
-  final m.Node element;
-
-  //final String nodeText;
-  final MarkdownConfig config;
-  final WidgetVisitor visitor;
-  bool isHtml = false;
-  static final RegExp tableRep = RegExp(r'<table[^>]*>', multiLine: true, caseSensitive: true);
-
-  static final RegExp htmlRep = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
-
-  CustomTextNode(this.element, this.config, this.visitor);
-
-  @override
-  InlineSpan build() {
-    try {
-      // HTML
-      if (isHtml) {
-        return WidgetSpan(child: buildHtml());
-      }
-      return super.build();
-    } catch (e) {
-      // 文本样式
-      final textStyle = config.p.textStyle.merge(parentStyle);
-      // 显示文本
-      return TextSpan(children: [
-        TextNode(text: element.textContent, style: textStyle).build(),
-      ]);
-    }
-  }
-
-  @override
-  void onAccepted(SpanNode parent) {
-    String nodeText = element.textContent;
-
-    children.clear();
-    // 没有 html 元素
-    isHtml = nodeText.contains(htmlRep);
-    if (isHtml) {
-      accept(parent);
-    }
-    if (!isHtml) {
-      // 文本样式
-      final textStyle = config.p.textStyle.merge(parentStyle);
-      accept(TextNode(text: nodeText, style: textStyle));
-    }
-  }
-
-  /// 构建 HTML
-  Widget buildHtml() {
-    return HtmlWidget(
-      element.textContent,
-      customStylesBuilder: (el) {
-        switch (el.localName) {
-          case 'table':
-            return {'border': '1px solid', 'border-collapse': 'collapse'};
-          case 'th':
-          case 'td':
-            return {'border': '1px solid', 'padding': '8px'};
-        }
-        return null;
-      },
-    );
-  }
-}
-
-/// config class for image, tag: img
-class ImageConfig extends ImgConfig {
-  const ImageConfig({super.builder = _defaultBuildImg, super.errorBuilder});
-
-  /// 默认构建图片
-  static Widget _defaultBuildImg(String url, Map<String, String>? attributes) => builderImg(url, attributes: attributes);
-
-  /// 构建图片
-  static Widget builderImg(String url, {Map<String, String>? attributes, BoxFit fit = BoxFit.cover}) {
-    if (url.isEmpty) {
-      return Image.asset('assets/images/upload_image.jpg', errorBuilder: buildError);
-    }
-    // 网络图片
-    if (url.startsWith('http')) {
-      return Image.network(url, fit: fit, errorBuilder: buildError);
-    }
-    // 网络图片
-    if (url.startsWith('assets')) {
-      Image.asset(url, fit: fit, errorBuilder: buildError);
-    }
-    // post 中的本地图片
-    if (url.startsWith(featurePrefix)) {
-      url = url.substring(featurePrefix.length);
-    }
-    return Image(image: FileImageExpansion.file(url), fit: fit, errorBuilder: buildError);
-  }
-
-  /// 图片加载失败时的占位图
-  static Widget buildError(BuildContext context, Object error, StackTrace? stacktrace) {
-    return Image.asset('assets/images/loading_error.png');
   }
 }

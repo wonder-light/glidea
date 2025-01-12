@@ -16,7 +16,7 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
-import 'package:glidea/helpers/markdown.dart';
+import 'package:glidea/helpers/image.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/render.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
