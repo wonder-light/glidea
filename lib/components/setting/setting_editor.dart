@@ -61,7 +61,11 @@ class SettingEditorState extends State<SettingEditor> {
     fixedSize: WidgetStatePropertyAll(Size(kButtonHeight * 3, kButtonHeight)),
   );
 
+  /// 配置
   final TMap<ConfigBase> configs = {};
+
+  /// 主题数据
+  final theme = Theme.of(Get.context!);
 
   @override
   void initState() {
@@ -76,6 +80,7 @@ class SettingEditorState extends State<SettingEditor> {
         Tran.preview: FieldType.input,
         Tran.publishSite: FieldType.input,
         Tran.visitSite: FieldType.input,
+        Tran.log: FieldType.input,
       },
       fieldValues: {
         Tran.language: app.language,
@@ -98,6 +103,7 @@ class SettingEditorState extends State<SettingEditor> {
       _buildFileSelect,
       _buildPreviewPort,
       _buildVersion,
+      _viewLogs,
       if (isMobile) _buildPreview,
       if (isMobile) _buildPublish,
       if (isMobile) _buildVisitSite,
@@ -151,7 +157,6 @@ class SettingEditorState extends State<SettingEditor> {
 
   /// 构建版本号
   Widget _buildVersion() {
-    final theme = Get.theme;
     final version = configs[Tran.version]!;
     return ConfigLayoutWidget(
       isVertical: widget.isVertical,
@@ -179,6 +184,18 @@ class SettingEditorState extends State<SettingEditor> {
         ),
       ),
     );
+  }
+
+  /// 查看日志
+  Widget _viewLogs() {
+    return ConfigLayoutWidget(
+        isVertical: widget.isVertical,
+        config: configs[Tran.log]!,
+        child: OutlinedButton(
+          style: _iconButtonStyle,
+          onPressed: openLogView,
+          child: const Icon(PhosphorIconsRegular.log),
+        ));
   }
 
   /// 发布
@@ -233,6 +250,31 @@ class SettingEditorState extends State<SettingEditor> {
     );
   }
 
+  /// 构建打开的日志视图
+  Widget _buildLogView(BuildContext context) {
+    final str = StringBuffer();
+    for (var item in Log.buffer) {
+      str.writeAll(item.lines, '\n');
+      str.write('\n\n');
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Tran.log.tr),
+        actions: [
+          TipWidget.down(
+            message: Tran.delete.tr,
+            child: IconButton(
+              onPressed: () => Log.buffer.clear(),
+              icon: const Icon(PhosphorIconsRegular.trash),
+            ),
+          ),
+          const Padding(padding: kRightPadding16),
+        ],
+      ),
+      body: Text.rich(TextSpan(text: str.toString())),
+    );
+  }
+
   /// 保存数据
   void onSave() async {
     try {
@@ -260,6 +302,18 @@ class SettingEditorState extends State<SettingEditor> {
     if (!success) {
       Log.w('github 打开失败');
     }
+  }
+
+  /// TODO: 检查更新
+  void checkUpdate() async {}
+
+  /// 打开日志视图
+  void openLogView() {
+    Get.showDrawer(
+      direction: DrawerDirection.center,
+      stepWidth: double.infinity,
+      builder: _buildLogView,
+    );
   }
 
   /// 点击按钮

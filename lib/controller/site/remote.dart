@@ -43,7 +43,7 @@ mixin RemoteSite on DataProcess, ThemeSite {
       Get.success(Tran.syncSuccess);
       return Notif(hint: Tran.syncSuccess);
     } catch (e, s) {
-      Log.i('publish site failed', error: e, stackTrace: s);
+      Log.e('publish site failed', error: e, stackTrace: s);
       return Notif(hint: Tran.syncError1);
     }
   }

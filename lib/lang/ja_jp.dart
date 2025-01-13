@@ -184,4 +184,5 @@
   'accessToken': 'アクセストークン',
   'previewPort': 'プレビュー港',
   'saveConfig': '構成が有効になるように保存してください。',
+  'log': 'ログ',
 };

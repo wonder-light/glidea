@@ -184,4 +184,5 @@
   'accessToken': 'Access token',
   'previewPort': 'Preview port',
   'saveConfig': 'Save the configuration for it to take effect',
+  'log': 'Log',
 };
