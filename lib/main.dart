@@ -8,6 +8,7 @@ import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
+import 'package:glidea/helpers/power.dart';
 import 'package:glidea/helpers/theme.dart';
 import 'package:glidea/helpers/windows.dart';
 import 'package:glidea/lang/translations.dart';
@@ -27,6 +28,7 @@ class App extends StatelessWidget {
   /// [App] 初始化
   static Future<void> initialized() async {
     WidgetsFlutterBinding.ensureInitialized();
+    await Power.request();
     Background.initialized();
     await Log.initialized();
     JsonHelp.initialized();

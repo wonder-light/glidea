@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   emoji_picker_flutter
+  permission_handler_windows
   screen_retriever_windows
   url_launcher_windows
   window_manager

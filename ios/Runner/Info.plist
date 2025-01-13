@@ -60,5 +60,9 @@
 		<string>Example usage description</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Example usage description</string>
+		<key>NSAppleMusicUsageDescription</key>
+		<string>Apple Music Usage Description</string>
+		<key>kTCCServiceMedia</key>
+		<string>kTCC Service Media</string>
 	</dict>
 </plist>
