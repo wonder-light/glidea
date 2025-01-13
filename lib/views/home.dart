@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, GetPage, GetRouterOutlet, Inst, IntExtension, Obx, Trans;
+import 'package:get/get.dart' show Get, GetNavigationExt, GetRouterOutlet, Inst, IntExtension, Obx, Trans;
 import 'package:glidea/components/Common/loading.dart';
 import 'package:glidea/components/home/down_panel.dart';
 import 'package:glidea/components/home/up_panel.dart';
@@ -50,7 +50,6 @@ class _HomeViewState extends LifecycleState<HomeView> {
   void onWindowClose() async {
     await onAppHide();
     Background.instance.exit();
-    print('---------------onWindowClose----------------');
   }
 
   @override
@@ -145,16 +144,8 @@ class _HomeViewState extends LifecycleState<HomeView> {
     return GetRouterOutlet(
       initialRoute: AppRouter.articles,
       anchorRoute: AppRouter.home,
-      filterPages: filterPages,
+      restorationScopeId: AppRouter.home,
     );
-  }
-
-  /// 过滤页面
-  Iterable<GetPage> filterPages(Iterable<GetPage> afterAnchor) {
-    if (afterAnchor.isNotEmpty) {
-      return afterAnchor.take(1);
-    }
-    return [];
   }
 
   /// 转到路由

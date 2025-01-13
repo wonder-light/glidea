@@ -1,11 +1,16 @@
 ﻿import 'package:flutter/material.dart';
 
 extension ColorExtensions on Color {
+  static int _floatToInt8(double x) {
+    return (x * 255.0).round() & 0xff;
+  }
+
   /// 返回颜色的大写 RGB 十六进制字符串，包括 alpha 通道
   ///
   ///     'FFF44336'
   ///     'FFD793D1'
   String get toHexAlpha {
+    final value = _floatToInt8(a) << 24 | _floatToInt8(r) << 16 | _floatToInt8(g) << 8 | _floatToInt8(b) << 0;
     return value.toRadixString(16).toUpperCase().padLeft(8, '0');
   }
 

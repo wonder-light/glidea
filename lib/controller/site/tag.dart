@@ -5,7 +5,7 @@ mixin TagSite on DataProcess {
   /// 标签
   List<Tag> get tags => state.tags;
 
-  /// 记录标签 <tag.slug, tag>
+  /// 记录标签 {tag.slug, tag}
   Map<String, Tag> _tagsMap = {};
 
   @override

@@ -44,8 +44,6 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
   Widget buildContent(BuildContext context) {
     /// 站点控制器
     final site = Get.find<SiteController>(tag: SiteController.tag);
-    // 颜色
-    final colorScheme = Get.theme.colorScheme;
     // 值
     final img = config.value;
     // 文件夹

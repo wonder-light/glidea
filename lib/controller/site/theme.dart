@@ -48,20 +48,17 @@ mixin ThemeSite on DataProcess {
   /// 主题下拉列表中的选项
   List<SelectOption>? _themeOptions;
 
-  /// URL 的格式选项
-  List<SelectOption>? _urlFormatOptions;
+  @override
+  void initState() {
+    super.initState();
+    // 主题列表
+    _themeOptions ??= state.themes.map((t) => SelectOption().setValues(label: t, value: t)).toList();
+  }
 
   /// 获取主题的控件配置
   ///
   /// 都需要 [ArrayConfig] 时, throw [Exception] exception
   List<ConfigBase> getThemeWidgetConfig() {
-    // 主题列表
-    _themeOptions ??= state.themes.map((t) => SelectOption().setValues(label: t, value: t)).toList();
-    // URL 默认格式
-    _urlFormatOptions ??= [
-      SelectOption().setValues(label: 'Slug'.tr, value: UrlFormats.slug.name),
-      SelectOption().setValues(label: 'Short ID'.tr, value: UrlFormats.shortId.name),
-    ];
     return createRenderConfig(
       fields: _fieldNames,
       fieldValues: state.themeConfig.toMap()!,

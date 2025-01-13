@@ -29,10 +29,11 @@ class AppRouter {
   /// 路由路线集合
   static final List<GetPage<Widget>> routes = [
     GetPage(
-      name: AppRouter.home,
       title: 'main',
+      name: home,
       page: () => const HomeView(),
       participatesInRootNavigator: true,
+      unknownRoute: GetPage(name: '/*', page: buildNotfound, participatesInRootNavigator: true),
       children: [
         GetPage(name: articles, page: buildArticles),
         GetPage(name: menu, page: buildMenu),
@@ -48,7 +49,6 @@ class AppRouter {
         GetPage(name: phoneOtherSetting, page: buildTabletSetting, participatesInRootNavigator: true),
         // post 页面
         GetPage(name: post, page: buildPost, participatesInRootNavigator: true),
-        GetPage(name: '/*', page: buildNotfound, participatesInRootNavigator: true),
       ],
     ),
   ];

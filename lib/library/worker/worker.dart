@@ -1,4 +1,4 @@
-﻿library worker;
+﻿library;
 
 import 'dart:async' show Completer;
 import 'dart:io' show Directory, HttpServer;

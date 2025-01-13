@@ -29,9 +29,9 @@ class App extends StatelessWidget {
   static Future<void> initialized() async {
     WidgetsFlutterBinding.ensureInitialized();
     await Power.request();
-    Background.initialized();
     await Log.initialized();
     JsonHelp.initialized();
+    Background.initialized();
     WindowsHelp.initialized();
     Get.put<SiteController>(SiteController(), tag: SiteController.tag, permanent: true);
   }

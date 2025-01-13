@@ -1,4 +1,4 @@
-﻿library render;
+﻿library;
 
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:file_picker/file_picker.dart' show FilePicker, FileType;

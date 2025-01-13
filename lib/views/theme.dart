@@ -31,11 +31,6 @@ class _ThemeViewState extends State<ThemeView> {
   final customKey = GlobalKey<ThemeCustomWidgetState>();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     // 手机端
     if (Get.isPhone) return buildPhone();

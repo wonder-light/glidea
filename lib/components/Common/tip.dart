@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show BoolExtension, Get, GetNavigationExt, Obx;
+import 'package:get/get.dart' show BoolExtension, Obx;
 import 'package:glidea/components/Common/visibility.dart';
 import 'package:glidea/helpers/constants.dart';
 
@@ -166,7 +166,7 @@ class _TipWidgetState extends State<TipWidget> {
     return Positioned.fill(
       bottom: MediaQuery.maybeViewInsetsOf(context)?.bottom ?? 0.0,
       child: CustomSingleChildLayout(
-        delegate: _richMessagePositionDelegate(
+        delegate: _TipPositionDelegate(
           target: target,
           targetSize: box.size,
           offset: widget.offset,
@@ -206,9 +206,9 @@ class _TipWidgetState extends State<TipWidget> {
   }
 }
 
-class _richMessagePositionDelegate extends SingleChildLayoutDelegate {
+class _TipPositionDelegate extends SingleChildLayoutDelegate {
   /// 创建用于计算工具提示布局的委托
-  _richMessagePositionDelegate({
+  _TipPositionDelegate({
     required this.target,
     required this.targetSize,
     required this.offset,
@@ -268,7 +268,7 @@ class _richMessagePositionDelegate extends SingleChildLayoutDelegate {
   }
 
   @override
-  bool shouldRelayout(_richMessagePositionDelegate oldDelegate) {
+  bool shouldRelayout(_TipPositionDelegate oldDelegate) {
     return target != oldDelegate.target || targetSize != oldDelegate.targetSize || offset != oldDelegate.offset || direction != oldDelegate.direction;
   }
 }

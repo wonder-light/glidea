@@ -1,4 +1,4 @@
-﻿library site;
+﻿library;
 
 import 'dart:async' show Completer;
 import 'dart:io' show Directory;
@@ -14,7 +14,6 @@ import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/image.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
-import 'package:glidea/helpers/uid.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:glidea/lang/translations.dart';

@@ -46,7 +46,6 @@ abstract class LifecycleState<T extends StatefulWidget> extends State<T> with Wi
 
   @override
   void dispose() {
-    print('------------------------dispose-------------------------------');
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       windowManager.removeListener(this);
     } else {

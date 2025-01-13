@@ -29,18 +29,15 @@ mixin RemoteSite on DataProcess, ThemeSite {
     try {
       // 检测主题是否有效
       if (!selectThemeValid) {
-        Get.error(Tran.noValidCurrentTheme);
         return Notif(hint: Tran.noValidCurrentTheme);
       }
       // 检测是否可以发布
       if (!checkPublish) {
-        Get.error(Tran.syncWarning);
         return Notif(hint: Tran.syncWarning);
       }
       // 在后台进行发布
       await Background.instance.publishSite(state);
       // 成功
-      Get.success(Tran.syncSuccess);
       return Notif(hint: Tran.syncSuccess);
     } catch (e, s) {
       Log.e('publish site failed', error: e, stackTrace: s);
