@@ -1,42 +1,18 @@
 ﻿import 'dart:math' show Random, cos, pi, sin;
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Trans;
-import 'package:glidea/helpers/constants.dart';
 
-class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({super.key, this.hint});
+class LoadingWidget extends StatefulWidget {
+  const LoadingWidget({super.key, this.maxSize = 80.0});
 
-  /// 提示文本
-  final String? hint;
+  /// 最大大小
+  final double maxSize;
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ConstrainedBox(
-          constraints: const BoxConstraints.expand(width: 80, height: 80),
-          child: const BallRotateChase(),
-        ),
-        const Padding(padding: kTopPadding16),
-        if (hint != null) Text(hint!.tr),
-      ],
-    );
-  }
+  State<LoadingWidget> createState() => _BallRotateChaseState();
 }
 
-/// BallRotateChase.
-class BallRotateChase extends StatefulWidget {
-  const BallRotateChase({super.key});
-
-  @override
-  State<BallRotateChase> createState() => _BallRotateChaseState();
-}
-
-class _BallRotateChaseState extends State<BallRotateChase> with SingleTickerProviderStateMixin {
+class _BallRotateChaseState extends State<LoadingWidget> with SingleTickerProviderStateMixin {
   static const _durationInMills = 1500;
   static const _ballNum = 5;
 
@@ -73,58 +49,67 @@ class _BallRotateChaseState extends State<BallRotateChase> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (ctx, constraint) {
-      final circleSize = constraint.maxWidth / 5;
+    final maxWidth = widget.maxSize;
 
-      final deltaX = (constraint.maxWidth - circleSize) / 2;
-      final deltaY = (constraint.maxHeight - circleSize) / 2;
+    final circleSize = maxWidth / 5;
 
-      final widgets = List<Widget>.filled(_ballNum, Container());
-      for (int i = 0; i < _ballNum; i++) {
-        widgets[i] = Positioned.fromRect(
-          rect: Rect.fromLTWH(deltaX, deltaY, circleSize, circleSize),
-          child: AnimatedBuilder(
-            animation: _animationController,
-            builder: (_, child) {
-              return Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.identity()
-                  ..translate(
-                    deltaX * sin(_translateAnimations[i].value),
-                    deltaY * -cos(_translateAnimations[i].value),
-                  ),
+    final deltaX = (maxWidth - circleSize) / 2;
+    final deltaY = (maxWidth - circleSize) / 2;
 
-                /// scale must in child, if upper would align topLeft.
-                child: ScaleTransition(
-                  scale: _scaleAnimations[i],
-                  child: child,
+    Widget child;
+    List<Widget> widgets = [];
+    // 圆圈
+    for (int i = 0; i < _ballNum; i++) {
+      child = Positioned.fromRect(
+        rect: Rect.fromLTWH(deltaX, deltaY, circleSize, circleSize),
+        child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (_, child) {
+            return Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..translate(
+                  deltaX * sin(_translateAnimations[i].value),
+                  deltaY * -cos(_translateAnimations[i].value),
                 ),
-              );
-            },
-            /*child: IndicatorShapeWidget(
+
+              /// scale must in child, if upper would align topLeft.
+              child: ScaleTransition(
+                scale: _scaleAnimations[i],
+                child: child,
+              ),
+            );
+          },
+          /*child: IndicatorShapeWidget(
               shape: Shape.circle,
               index: i,
             ),*/
-            child: Container(
-              constraints: const BoxConstraints(
-                minWidth: 36,
-                minHeight: 36,
-              ),
-              child: CustomPaint(
-                painter: _ShapePainter(
-                  Colors.accents[Random().nextInt(16)],
-                  Shape.circle,
-                  null,
-                  2,
-                  pathColor: null,
-                ),
+          child: Container(
+            constraints: const BoxConstraints(
+              minWidth: 36,
+              minHeight: 36,
+            ),
+            child: CustomPaint(
+              painter: _ShapePainter(
+                Colors.accents[Random().nextInt(16)],
+                Shape.circle,
+                null,
+                2,
+                pathColor: null,
               ),
             ),
           ),
-        );
-      }
-      return Stack(children: widgets);
-    });
+        ),
+      );
+      widgets.add(child);
+    }
+
+    return Container(
+      alignment: Alignment.center,
+      width: maxWidth,
+      height: maxWidth,
+      child: Stack(alignment: Alignment.center, children: widgets),
+    );
   }
 }
 
