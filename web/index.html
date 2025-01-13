@@ -36,7 +36,47 @@
   
   <script type="application/javascript" src="/assets/packages/flutter_inappwebview_web/assets/web/web_support.js" defer=""></script>
   
-  <script src="https://fastly.jsdelivr.net/npm/pica@9.0.1/dist/pica.min.js" ></script>
+  <script src="https://fastly.jsdelivr.net/npm/pica@9.0.1/dist/pica.min.js"></script>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   
@@ -56,8 +96,7 @@
       margin: 0;
       min-height: 100%;
       background-color: #ffffff;
-      background-image: url("splash/img/light-background.png");
-      background-size: 100% 100%;
+          background-size: 100% 100%;
     }
 
     .center {
@@ -108,9 +147,8 @@
 
     @media (prefers-color-scheme: dark) {
       body {
-        background-color: #000000;
-        background-image: url("splash/img/dark-background.png");
-      }
+        background-color: #121212;
+          }
     }
   </style>
   <script id="splash-screen-script">
@@ -122,6 +160,23 @@
   </script>
 </head>
 <body>
+  <picture id="splash">
+      <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
+      <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
+      <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
+  </picture>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   <script src="flutter_bootstrap.js" async=""></script>
 

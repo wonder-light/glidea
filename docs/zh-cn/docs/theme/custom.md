@@ -220,14 +220,14 @@
   "type": "array",
   "value": [
     {
-      "siteName": "海岛心hey",
-      "siteLink": "https://fehey.com",
+      "siteName": "海岛心",
+      "siteLink": "https://haidaoxin.com",
       "siteLogo": "",
       "description": "一个前端"
     },
     {
       "siteName": "Glidea 官网",
-      "siteLink": "https://glidea/nianian.cn",
+      "siteLink": "https://glidea.nianian.cn",
       "siteLogo": "",
       "description": "一个静态博客写作客户端"
     }

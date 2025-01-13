@@ -50,15 +50,15 @@
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
 		<key>LSApplicationQueriesSchemes</key>
-        <array>
-          <string>sms</string>
-          <string>tel</string>
-        </array>
-        <key>NSCameraUsageDescription</key>
-        <string>Example usage description</string>
-        <key>NSMicrophoneUsageDescription</key>
-        <string>Example usage description</string>
-        <key>NSPhotoLibraryUsageDescription</key>
-        <string>Example usage description</string>
+		<array>
+			<string>sms</string>
+			<string>tel</string>
+		</array>
+		<key>NSCameraUsageDescription</key>
+		<string>Example usage description</string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>Example usage description</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Example usage description</string>
 	</dict>
 </plist>

@@ -220,14 +220,14 @@ the format for each element is as follows：
   "type": "array",
   "value": [
     {
-      "siteName": "Heart of island hey",
-      "siteLink": "https://fehey.com",
+      "siteName": "Heart of island",
+      "siteLink": "https://haidaoxin.com",
       "siteLogo": "",
       "description": "A front end"
     },
     {
       "siteName": "Glidea Official website",
-      "siteLink": "https://glidea/nianian.cn",
+      "siteLink": "https://glidea.nianian.cn",
       "siteLogo": "",
       "description": "A static blog writing client"
     }

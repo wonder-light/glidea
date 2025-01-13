@@ -163,8 +163,15 @@ icons_launcher:
 # 应用闪屏页
 # dart run flutter_native_splash:create
 flutter_native_splash:
-  background_image: "assets/images/glidea-splash.png"
-  background_image_dark: "assets/images/glidea-splash.png"
+  color: "#ffffff"
+  color_dark: "#121212"
+  image: "assets/images/glidea-splash.png"
+  image_dark: "assets/images/glidea-splash.png"
+  android_12:
+    color: "#ffffff"
+    color_dark: "#121212"
+    image: "assets/images/glidea-splash.png"
+    image_dark: "assets/images/glidea-splash.png"
   android: true
   ios: true
   web: true
