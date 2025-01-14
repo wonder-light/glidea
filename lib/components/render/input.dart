@@ -29,10 +29,11 @@ class TextareaWidget<T extends TextareaConfig> extends ConfigBaseWidget<T> {
   @override
   Widget buildContent(BuildContext context) {
     final theme = Theme.of(Get.context!);
+    final controller = this.controller ?? TextEditingController(text: config.value.value);
     return Obx(() {
       return TextFormField(
         obscureText: hidePassword,
-        controller: this.controller ?? TextEditingController(text: config.value.value),
+        controller: controller,
         readOnly: isReadOnly,
         minLines: isTextarea ? 2 : null,
         maxLines: isTextarea ? 30 : 1,
