@@ -92,7 +92,7 @@ final class RemoteRender {
     tagsData.clear();
     _tagsMap.clear();
     for (var tag in site.tags) {
-      if(!tag.used) continue;
+      if (!tag.used) continue;
       // 创建 TagRender
       final link = FS.join(domain, themeConfig.tagPath, tag.slug, '/');
       final value = tag.copyWith<TagRender>({'link': link})!;
@@ -371,20 +371,25 @@ final class RemoteRender {
         sitemap.add(SitemapEntry(location: FS.join(domain, url)));
       }
     }
-
+    // 写入 sitemap.xml 文件
     FS.writeStringSync(FS.join(site.buildDir, 'sitemap.xml'), sitemap.generate());
-    if (themeConfig.useFeed) {
-      str = Feed(
-        id: domain,
-        title: 'Glidea',
-        link: domain,
-        subtitle: themeConfig.siteDescription,
-        logo: FS.join(domain, 'images/avatar.png'),
-        icon: FS.join(domain, 'favicon.ico'),
-        rights: 'All rights reserved 2025, Glidea',
-      ).generate();
-      FS.writeStringSync(FS.join(site.buildDir, 'atom.xml'), str);
+    // 不使用
+    if (!themeConfig.useFeed) return;
+    // RSS
+    final feed = Feed(
+      id: domain,
+      title: 'Glidea',
+      link: domain,
+      subtitle: themeConfig.siteDescription,
+      logo: FS.join(domain, 'images/avatar.png'),
+      icon: FS.join(domain, 'favicon.ico'),
+      rights: 'All rights reserved 2025, Glidea',
+    );
+    for (var item in postsData) {
+      final url = FS.join(domain, themeConfig.postPath, item.fileName, '/');
+      feed.add(FeedEntry(id: url, title: item.title, link: url, updated: item.date, content: item.content));
     }
+    FS.writeStringSync(FS.join(site.buildDir, 'atom.xml'), feed.generate());
   }
 
   /// 记录站点 URL
@@ -489,7 +494,7 @@ final class RemoteRender {
         if (isHomepage) 'site': {..._siteData, 'isHomepage': isHomepage}
       };
       // 更新
-      if(update != null) {
+      if (update != null) {
         renderData = update(renderData);
       }
       // 渲染模板
