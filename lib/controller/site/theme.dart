@@ -192,7 +192,7 @@ mixin ThemeSite on DataProcess {
   /// 保存主题配置中的图片
   Future<void> saveThemeImage(PictureConfig picture) async {
     final path = FS.join(picture.folder, picture.value);
-    if (picture.filePath == path) return;
+    if (picture.filePath.isEmpty || picture.filePath == path) return;
     // 保存并压缩
     await ImageExt.compress(picture.filePath, path);
     picture.filePath = path;
