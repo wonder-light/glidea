@@ -7,6 +7,7 @@ import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/markdown.dart';
+import 'package:glidea/helpers/render/filter.dart';
 import 'package:glidea/helpers/render/sitemap.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
@@ -45,6 +46,9 @@ final class RemoteRender {
   /// 渲染 tag 的数据
   final List<TagRender> tagsData = [];
   final Map<String, TagRender> _tagsMap = {};
+
+  /// 站点数据
+  late final TJsonMap _siteData;
 
   /// 菜单数据
   List<Menu> menusData = [];
@@ -88,6 +92,7 @@ final class RemoteRender {
     tagsData.clear();
     _tagsMap.clear();
     for (var tag in site.tags) {
+      if(!tag.used) continue;
       // 创建 TagRender
       final link = FS.join(domain, themeConfig.tagPath, tag.slug, '/');
       final value = tag.copyWith<TagRender>({'link': link})!;
@@ -120,7 +125,7 @@ final class RemoteRender {
       // 将文章中本地图片路径，变更为线上路径
       var content = FS.readStringSync(FS.join(site.appDir, 'posts', '${post.fileName}.md'));
       content = _changeImageUrlToDomain(content);
-      var abstract = Markdown.markdownToHtml(_changeImageUrlToDomain(post.abstract));
+      var abstract = summaryRegExp.stringMatch(content) ?? '';
       var html = Markdown.markdownToHtml(content, tocCallback: (data) => toc = data);
       // 渲染 MarkDown to HTML
       // 返回数据
@@ -128,7 +133,7 @@ final class RemoteRender {
         'tags': postTags,
         'toc': toc,
         'content': html,
-        'abstract': Markdown.markdownToHtml(_changeImageUrlToDomain(post.abstract)),
+        'abstract': abstract,
         'description': abstract.isNotEmpty ? abstract : _getSummaryForContent(content),
         'dateFormat': themeConfig.dateFormat.isNotEmpty ? post.date.format(pattern: themeConfig.dateFormat) : post.date,
         'feature': _getPostFeature(post.feature),
@@ -182,27 +187,27 @@ final class RemoteRender {
 
   /// 构建模板
   Future<void> buildTemplate() async {
-    final siteData = {
-      'site': {
-        'posts': postsData,
-        'tags': tagsData,
-        'menus': menusData,
-        'themeConfig': themeConfig,
-        'customConfig': customConfig,
-        'commentSetting': site.comment,
-        'utils': {
-          'now': DateTime.now().millisecondsSinceEpoch,
-        },
-        'isHomepage': false,
+    _siteData = {
+      'posts': postsData,
+      'tags': tagsData,
+      'menus': menusData,
+      'themeConfig': themeConfig,
+      'customConfig': customConfig,
+      'commentSetting': site.comment,
+      'utils': {
+        'now': DateTime.now().millisecondsSinceEpoch,
       },
-    };
+      'isHomepage': false,
+    }.toMap()!;
+    // 记录 URL
     await _recordSiteUrl();
-    if (await customBuildTemplate(siteData)) {
+    // 自定义构建
+    if (await customBuildTemplate(_siteData)) {
       return;
     }
-
+    // 创建环境
     env = Environment(
-      globals: siteData,
+      globals: {'site': _siteData},
       autoReload: true,
       loader: FileSystemLoader(
         paths: ['$themePath/templates'],
@@ -211,6 +216,7 @@ final class RemoteRender {
       ),
       leftStripBlocks: true,
       trimBlocks: true,
+      filters: RenderFilter.filters,
     );
     await buildCss();
     await buildHome();
@@ -280,11 +286,9 @@ final class RemoteRender {
     // tags 文件
     final renderPath = FS.join(tagsFolder, 'index.html');
     FS.createDirSync(tagsFolder);
-    final html = env.getTemplate(tagsTemplate).render({
-      'tags': tagsData,
-      'menus': menusData,
-      'themeConfig': themeConfig,
-    });
+    // 数据
+    final data = {'tags': tagsData, 'menus': menusData, 'themeConfig': themeConfig};
+    final html = env.getTemplate(tagsTemplate).render(data.toMap());
     FS.writeStringSync(renderPath, html);
   }
 
@@ -293,12 +297,9 @@ final class RemoteRender {
     void render(PostRender post) {
       // post 文件夹位置
       final renderFolderPath = FS.join(site.buildDir, themeConfig.postPath, post.fileName);
-      final html = env.getTemplate(postTemplate).render({
-        'menus': menusData,
-        'post': post,
-        'themeConfig': themeConfig,
-        'commentSetting': site.comment,
-      });
+      // 数据
+      final data = {'menus': menusData, 'post': post, 'themeConfig': themeConfig, 'commentSetting': site.comment};
+      final html = env.getTemplate(postTemplate).render(data.toMap());
       FS.createDirSync(renderFolderPath);
       FS.writeStringSync(FS.join(renderFolderPath, 'index.html'), html);
     }
@@ -308,6 +309,8 @@ final class RemoteRender {
       post.prevPost = i <= 0 ? null : showPosts[i - 1];
       post.nextPost = i + 1 < length ? showPosts[i + 1] : null;
       render(post);
+      // 防止循环引用
+      post.nextPost = post.prevPost = null;
     }
     for (var post in postsData.where((p) => p.hideInList)) {
       render(post);
@@ -327,16 +330,14 @@ final class RemoteRender {
     }
     for (var currentTag in usedTags) {
       // 从 showPosts 中筛选出含有 currentTag.slug 的文章
-      final postList = tagMap[currentTag.slug]!;
+      final postList = tagMap[currentTag.slug] ?? [];
       _buildPostList(
-          urlPath: FS.join(themeConfig.tagPath, currentTag.slug),
-          templatePath: tagTemplate,
-          pageSize: defaultPostPageSize,
-          postList: postList,
-          update: (data) {
-            data['tag'] = currentTag;
-            return data;
-          });
+        urlPath: FS.join(themeConfig.tagPath, currentTag.slug),
+        templatePath: tagTemplate,
+        pageSize: defaultPostPageSize,
+        postList: postList,
+        update: (data) => data..['tag'] = currentTag,
+      );
     }
   }
 
@@ -349,11 +350,9 @@ final class RemoteRender {
       } else {
         renderPath = FS.join(site.buildDir, name, 'index.html');
       }
-      final html = env.getTemplate('$name.j2').render({
-        'menus': menusData,
-        'themeConfig': themeConfig,
-        'commentSetting': site.comment,
-      });
+      // 数据
+      final data = {'menus': menusData, 'themeConfig': themeConfig, 'commentSetting': site.comment};
+      final html = env.getTemplate('$name.j2').render(data.toMap());
       FS.writeStringSync(renderPath, html);
     }
   }
@@ -475,26 +474,26 @@ final class RemoteRender {
       // i <= 1 => ''
       // i == 2 => {domain}/
       // i > 2 => {domain}/page/{i - 1}
-      final prev = i <= 1
-          ? ''
-          : i > 2
-              ? FS.join(domain, 'page', '$i/')
-              : FS.join(domain, '/');
+      final prev = i <= 1 ? '' : FS.join(domain, i > 2 ? 'page/${i - 1}/' : '/');
       final next = i * pageSize >= postList.length ? '' : FS.join(domain, 'page', '${i + 1}/');
       // 创建目录
       FS.createDirSync(FS.join(site.buildDir, currentUrlPath));
       // 渲染文件的路径
       final renderPath = FS.join(site.buildDir, currentUrlPath, 'index.html');
       // 渲染数据
-      final renderData = {
+      TJsonMap renderData = {
         'posts': posts,
         'menus': menusData,
         'pagination': {'prev': prev, 'next': next},
         'themeConfig': themeConfig,
-        'site': {'isHomepage': isHomepage}
+        if (isHomepage) 'site': {..._siteData, 'isHomepage': isHomepage}
       };
+      // 更新
+      if(update != null) {
+        renderData = update(renderData);
+      }
       // 渲染模板
-      final html = env.getTemplate(templatePath).render(update == null ? renderData : update(renderData));
+      final html = env.getTemplate(templatePath).render(renderData.toMap());
       // 写入文件
       FS.writeStringSync(renderPath, html);
     }
@@ -528,7 +527,7 @@ final class RemoteRender {
     // 网络图
     if (feature.startsWith('http')) return feature;
     // 图片
-    return FS.join(domain, 'post-images', feature.isNotEmpty ? feature : 'post-images/post-feature.jpg');
+    return FS.join(domain, feature.isNotEmpty ? feature : 'post-images/post-feature.jpg');
   }
 
   /// 获取 post stats 信息

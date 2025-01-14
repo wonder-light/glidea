@@ -26,7 +26,7 @@ const String featurePrefix = 'file:///';
 const String summarySeparator = '<!-- more -->';
 
 /// 摘要分隔符的正则匹配
-final RegExp summaryRegExp = RegExp(r'<!--\s*more\s*-->');
+final RegExp summaryRegExp = RegExp(r'[\S\s]*(?=(<!--\s*more\s*-->))');
 
 /// 主题设置图片显示的最大宽度
 const double kImageWidth = 100;

@@ -244,8 +244,8 @@ base mixin DataBack on RemoteBack {
     var themeConfig = site.themeConfig;
     var themes = site.themes = FS.subDir(FS.join(site.appDir, 'themes'));
     // 设置使用的主题名
-    if (themes.isNotEmpty && !themes.contains(themeConfig.selectTheme)) {
-      themeConfig.selectTheme = themes.first;
+    if (!themes.contains(themeConfig.selectTheme)) {
+      themeConfig.selectTheme = themes.firstOrNull ?? themeConfig.selectTheme;
     }
     // 使用选定主题数据
     var themePath = FS.join(configPath, 'theme.${themeConfig.selectTheme}.config.json');

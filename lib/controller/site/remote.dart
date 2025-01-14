@@ -38,7 +38,7 @@ mixin RemoteSite on DataProcess, ThemeSite {
       // 在后台进行发布
       await Background.instance.publishSite(state);
       // 成功
-      return Notif(hint: Tran.syncSuccess);
+      return Notif(hint: Tran.syncSuccess, success: true);
     } catch (e, s) {
       Log.e('publish site failed', error: e, stackTrace: s);
       return Notif(hint: Tran.syncError1);
@@ -54,7 +54,7 @@ mixin RemoteSite on DataProcess, ThemeSite {
       // 在后台进行操作
       await Background.instance.previewSite(state);
       // 成功
-      return Notif(hint: Tran.renderSuccess);
+      return Notif(hint: Tran.renderSuccess, success: true);
     } catch (e, s) {
       Log.e('preview site failed', error: e, stackTrace: s);
       return Notif(hint: Tran.renderError);

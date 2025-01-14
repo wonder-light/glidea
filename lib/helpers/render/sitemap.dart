@@ -2,7 +2,7 @@
 
 abstract class _Xml {
   /// 根级元素
-  Map<String, String> rootEntry = const {};
+  Map<String, String> rootEntry = {};
 
   /// 元素实体
   List<_XmlEntry> entries = [];

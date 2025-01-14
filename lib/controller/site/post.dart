@@ -70,7 +70,7 @@ mixin PostSite on DataProcess, TagSite {
       newData
         ..content = ''
         // 摘要, 以 <!--\s*more\s*--> 进行分割, 获取被分割的第一个字符串, 否则返回 ''
-        ..abstract = newData.content.split(summaryRegExp).firstOrNull ?? '';
+        ..abstract = summaryRegExp.stringMatch(newData.content) ?? '';
       // oldData 在 post 中存在
       if (index >= 0) {
         oldFileName = oldData!.fileName;
