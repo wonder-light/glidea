@@ -28,7 +28,7 @@ class GroupWidget extends StatefulWidget {
   /// 初始化索引
   final int initialIndex;
 
-  /// 是否可以水平滚动此选项卡栏
+  /// 是否可以滚动此选项卡栏
   final bool isScrollable;
 
   /// 添加到每个制表标签上的填充
@@ -88,7 +88,7 @@ class _GroupWidgetState extends State<GroupWidget> {
       itemBuilder: widget.itemBuilder,
     );
     // 内容边距
-    if(widget.contentPadding != null) {
+    if (widget.contentPadding != null) {
       content = Padding(padding: widget.contentPadding!, child: content);
     }
     // 大体布局
@@ -111,6 +111,23 @@ class _GroupWidgetState extends State<GroupWidget> {
   Widget _buildTabs() {
     // label 边距
     final labelPadding = widget.itemPadding ?? ((widget.isTop ? kVerPadding16 : kVerPadding8) + kHorPadding8);
+    final children = [
+      for (var i = 0; i < widget.groups.length; i++)
+        InkWell(
+          onTap: () {
+            currentIndex.value = i;
+            controller.animateToPage(i, duration: const Duration(milliseconds: 300), curve: Curves.ease);
+            widget.onTap?.call(i);
+          },
+          child: Container(
+            alignment: Alignment.center,
+            padding: labelPadding,
+            child: Obx(
+              () => Text(widget.groups[i].tr, style: currentIndex.value == i ? selectStyle : null),
+            ),
+          ),
+        ),
+    ];
     // 布局
     final layout = widget.isTop ? Row.new : Column.new;
     Widget content = layout(
@@ -122,38 +139,22 @@ class _GroupWidgetState extends State<GroupWidget> {
       },
       // 水平时需要居中,垂直时充满次轴
       crossAxisAlignment: widget.isTop ? CrossAxisAlignment.center : CrossAxisAlignment.stretch,
-      children: [
-        for (var i = 0; i < widget.groups.length; i++)
-          InkWell(
-            onTap: () {
-              currentIndex.value = i;
-              controller.animateToPage(i, duration: const Duration(milliseconds: 300), curve: Curves.ease);
-              widget.onTap?.call(i);
-            },
-            child: Container(
-              alignment: Alignment.center,
-              padding: labelPadding,
-              child: Obx(
-                () => Text(
-                  widget.groups[i].tr,
-                  style: currentIndex.value == i ? selectStyle : null,
-                ),
-              ),
-            ),
-          ),
-      ],
+      children: children,
     );
+    // 整体的边距
+    content = Padding(padding: widget.labelPadding ?? kHorPadding16, child: content);
     // Tab 垂直时, 限定宽度
     if (!widget.isTop) {
-      content = IntrinsicWidth(
-        stepWidth: 10,
+      content = IntrinsicWidth(stepWidth: 10, child: content);
+    }
+    // 滚动
+    if (widget.isScrollable) {
+      content = SingleChildScrollView(
+        scrollDirection: widget.isTop ? Axis.horizontal : Axis.vertical,
+        padding: widget.isTop ? null : kVerPadding8,
         child: content,
       );
     }
-    // 整体的边距
-    return Padding(
-      padding: widget.labelPadding ?? kHorPadding16,
-      child: content,
-    );
+    return content;
   }
 }
