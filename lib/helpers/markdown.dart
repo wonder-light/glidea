@@ -61,8 +61,8 @@ class Markdown {
   /// 将给定的 Markdown 字符串转换为HTML
   static String markdownToHtml(
     String markdown, {
-    Iterable<m.BlockSyntax> blockSyntaxes = const [],
-    Iterable<m.InlineSyntax> inlineSyntaxes = const [],
+    Iterable<m.BlockSyntax>? blockSyntaxes,
+    Iterable<m.InlineSyntax>? inlineSyntaxes,
     m.ExtensionSet? extensionSet,
     m.Resolver? linkResolver,
     m.Resolver? imageLinkResolver,
@@ -109,8 +109,12 @@ class Markdown {
         str += '${"  " * (rank - initRank)}* [${item.textContent}](#${item.generatedId})\n';
       }
     }
-
+    // 生成 nodes
     nodes = doc.parse(str);
+    // 添加 class
+    if (nodes.firstOrNull case m.Element ul) {
+      ul.attributes['class'] = 'markdown-toc';
+    }
     return '${m.renderToHtml(nodes, enableTagfilter: enableTagFilter)}\n';
   }
 }
