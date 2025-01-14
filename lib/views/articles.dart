@@ -105,7 +105,7 @@ class _ArticlesViewState extends State<ArticlesView> {
     final constraints = isDesktop ? const BoxConstraints(maxHeight: 80) : const BoxConstraints(maxHeight: 100);
     // 时间
     final date = dates[post.date.millisecondsSinceEpoch] ??= post.date.format(pattern: site.themeConfig.dateFormat);
-
+    // TODO: 隐藏时在右上角添加隐藏图标
     return ListItem(
       shape: shapeBorder,
       contentPadding: contentPadding,

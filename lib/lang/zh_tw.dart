@@ -185,4 +185,5 @@
   'previewPort': '預覽端口',
   'saveConfig': '請保存配置, 以使配置生效',
   'log': '日誌',
+  'siteAuthor': '網站作者',
 };

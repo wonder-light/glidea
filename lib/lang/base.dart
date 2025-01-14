@@ -185,4 +185,5 @@
   static const String previewPort = 'previewPort';
   static const String saveConfig = 'saveConfig';
   static const String log = 'log';
+  static const String siteAuthor = 'siteAuthor';
 }

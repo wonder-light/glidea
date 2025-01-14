@@ -27,6 +27,7 @@ mixin ThemeSite on DataProcess {
     'faviconSetting': FieldType.picture,
     'avatarSetting': FieldType.picture,
     'siteName': FieldType.input,
+    'siteAuthor': FieldType.input,
     'siteDescription': FieldType.textarea,
     'footerInfo': FieldType.textarea,
     'showFeatureImage': FieldType.toggle,
@@ -64,8 +65,6 @@ mixin ThemeSite on DataProcess {
       fieldValues: state.themeConfig.toMap()!,
       options: {
         'selectTheme': _themeOptions!,
-        //'postUrlFormat': _urlFormatOptions!,
-        //'tagUrlFormat': _urlFormatOptions!,
       },
       fieldNotes: {
         'siteDescription': 'htmlSupport',

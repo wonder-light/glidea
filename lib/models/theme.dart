@@ -28,6 +28,10 @@ class Theme {
   @JsonProperty()
   String siteName = '';
 
+  /// 站点作者
+  @JsonProperty()
+  String siteAuthor = '';
+
   /// 站点描述
   @JsonProperty()
   String siteDescription = '';

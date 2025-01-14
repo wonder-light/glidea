@@ -185,4 +185,5 @@
   'previewPort': 'Prévisualiser le port',
   'saveConfig': 'Veuillez sauvegarder la configuration pour qu’elle fonctionne',
   'log': 'Journal de bord',
+  'siteAuthor': 'Auteur du site',
 };
