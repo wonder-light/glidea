@@ -101,7 +101,7 @@ mixin ThemeSite on DataProcess {
         var value = values[base.name] ?? base.value;
         // 当 value 为 list 需要 cast value 的类型为 List<Map>
         if (value is List) {
-          base.value = (value).cast<TJsonMap>();
+          base.value = List.of((value).cast<TJsonMap>());
         } else {
           base.value = value;
         }
