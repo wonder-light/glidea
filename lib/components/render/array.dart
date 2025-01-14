@@ -11,31 +11,67 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
 
   @override
   Widget buildContent(BuildContext context) {
+    final colorScheme = ColorScheme.of(context);
+    final decoration = BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(
+        color: colorScheme.outlineVariant,
+        width: 0.6,
+      ),
+    );
     return Obx(() {
       var items = config.value.value;
       return Column(
+        spacing: kTopPadding8.top,
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (var i = 0, length = items.length; i < length; i++)
-            Card(
+            Container(
+              decoration: decoration,
+              padding: kAllPadding16,
               child: Column(
+                spacing: kTopPadding8.top,
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (var entity in config.value.arrayItems) createWidget(entity, items[i]),
+                  _buildActions(colorScheme, i),
                 ],
               ),
             ),
-          Card(
-            child: TextButton(
-              onPressed: () => config.update(addItem),
-              child: const Icon(PhosphorIconsRegular.plus),
-            ),
-          ),
+          _buildAddCard(decoration),
         ],
       );
     });
+  }
+
+  /// 卡片上的操作按钮
+  Widget _buildActions(ColorScheme colorScheme, int index) {
+    return Row(
+      spacing: kTopPadding8.top,
+      children: [
+        IconButton(
+          onPressed: () => config.update((obj) => addItem(obj, index: index)),
+          icon: Icon(PhosphorIconsRegular.plus, color: colorScheme.primary),
+        ),
+        IconButton(
+          onPressed: () => config.update((obj) => deleteItem(obj, index: index)),
+          icon: Icon(PhosphorIconsRegular.minus, color: colorScheme.primary),
+        )
+      ],
+    );
+  }
+
+  /// 构建添加按钮的卡片
+  Widget _buildAddCard([Decoration? decoration]) {
+    return Container(
+      decoration: decoration,
+      child: TextButton(
+        onPressed: () => config.update(addItem),
+        child: const Icon(PhosphorIconsRegular.plus),
+      ),
+    );
   }
 
   /// 在指定位置添加一系列字段的值
@@ -52,6 +88,16 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
       obj.value.insert(index, entity);
     }
     onChanged?.call(obj.value);
+    return obj;
+  }
+
+  /// 删除指定位置的字段, 如果 [index] = -1, 则删除最后的字段
+  T deleteItem<T extends ArrayConfig>(T obj, {int index = -1}) {
+    if (index < 0) {
+      obj.value.removeLast();
+    } else {
+      obj.value.removeAt(index);
+    }
     return obj;
   }
 
