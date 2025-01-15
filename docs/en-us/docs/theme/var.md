@@ -163,8 +163,8 @@ Tag field
 
 ```js
 tag: {
-  name: 'Glidea',
-  use: true,
+  name: 'Glidea', 
+  used: true,
   count: 1,
   slug: 'glidea',
   link: 'https://xxx.com/tag/glidea',
