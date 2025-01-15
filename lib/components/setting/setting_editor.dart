@@ -271,7 +271,9 @@ class SettingEditorState extends State<SettingEditor> {
           const Padding(padding: kRightPadding16),
         ],
       ),
-      body: Text.rich(TextSpan(text: str.toString())),
+      body: SingleChildScrollView(
+        child: Text.rich(TextSpan(text: str.toString())),
+      )
     );
   }
 
