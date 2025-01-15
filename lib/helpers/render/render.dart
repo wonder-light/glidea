@@ -12,6 +12,7 @@ import 'package:glidea/helpers/render/sitemap.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/menu.dart';
+import 'package:glidea/models/paging.dart';
 import 'package:glidea/models/post.dart';
 import 'package:glidea/models/tag.dart';
 import 'package:glidea/models/theme.dart';
@@ -458,6 +459,8 @@ final class RemoteRender {
     var domain = FS.join(this.domain, urlPath);
     // 当文章列表为空时是否跳过, tag 页面需要跳过
     var skipEmpty = templatePath == 'tag.j2';
+    // 进度
+    var pagination = Pagination().copyWith(base: domain, total: (postList.length / pageSize).ceil());
     // 条件判断函数
     bool condition(i) {
       // tag: 没有 post 时不需要需渲染
@@ -489,7 +492,7 @@ final class RemoteRender {
       TJsonMap renderData = {
         'posts': posts,
         'menus': menusData,
-        'pagination': {'prev': prev, 'next': next},
+        'pagination': pagination.copyWith(prev: prev, next: next, current: i),
         'themeConfig': themeConfig,
         if (isHomepage) 'site': {..._siteData, 'isHomepage': isHomepage}
       };

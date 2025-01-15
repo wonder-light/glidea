@@ -113,8 +113,11 @@ Page field for the article list
 
 ```js
 pagination: {
-  prev: '', // Link to previous page
-  next: '', // Link to next page
+  base: '',    // Current base link
+  prev: '',    // Link to previous page
+  next: '',    // Link to next page
+  total: 0,    // Total pages
+  current: 0,  // Current page count 
 }
 ```
 

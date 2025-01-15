@@ -3,7 +3,6 @@
 import 'dart:async' show Completer;
 import 'dart:io' show Directory;
 
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart' show AsyncCallback, protected;
 import 'package:flutter/material.dart' show Locale;
 import 'package:get/get.dart' show Get, GetNavigationExt, StateController, Trans;
