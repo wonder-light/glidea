@@ -19,7 +19,7 @@ class Log {
   static set level(Level logLevel) => Logger.level = logLevel;
 
   /// 初始化
-  static Future<void> initialized() async {
+  static Future<void> initialized({bool background = false}) async {
     Level level = kReleaseMode ? Level.info : Level.trace;
     // 流输出
     MemoryOutput memoryOutput = MemoryOutput(bufferSize: 50);
@@ -27,7 +27,7 @@ class Log {
     // 列表
     final lists = [if (!kReleaseMode) Logger.defaultOutput(), memoryOutput];
     // 文件输出
-    if (kReleaseMode) {
+    if (kReleaseMode && !background) {
       // 应用程序支持目录, 即配置所在的目录
       var path = FS.normalize((await getApplicationSupportDirectory()).path);
       path = FS.join(path, 'log');
@@ -45,32 +45,32 @@ class Log {
 
   /// 在级别记录消息 [Level.trace]
   static void t(dynamic message, {DateTime? time, Object? error, StackTrace? stackTrace}) {
-    Log.instance.t(message, time: time, error: error, stackTrace: stackTrace);
+    Log.instance.log(Level.trace, message, time: time, error: error, stackTrace: stackTrace);
   }
 
   /// 在级别记录消息 [Level.debug]
   static void d(dynamic message, {DateTime? time, Object? error, StackTrace? stackTrace}) {
-    Log.instance.d(message, time: time, error: error, stackTrace: stackTrace);
+    Log.instance.log(Level.debug, message, time: time, error: error, stackTrace: stackTrace);
   }
 
   /// 在级别记录消息 [Level.info]
   static void i(dynamic message, {DateTime? time, Object? error, StackTrace? stackTrace}) {
-    Log.instance.i(message, time: time, error: error, stackTrace: stackTrace);
+    Log.instance.log(Level.info, message, time: time, error: error, stackTrace: stackTrace);
   }
 
   /// 在级别记录消息 [Level.warning]
   static void w(dynamic message, {DateTime? time, Object? error, StackTrace? stackTrace}) {
-    Log.instance.w(message, time: time, error: error, stackTrace: stackTrace);
+    Log.instance.log(Level.warning, message, time: time, error: error, stackTrace: stackTrace);
   }
 
   /// 在级别记录消息 [Level.error]
   static void e(dynamic message, {DateTime? time, Object? error, StackTrace? stackTrace}) {
-    Log.instance.e(message, time: time, error: error, stackTrace: stackTrace);
+    Log.instance.log(Level.error, message, time: time, error: error, stackTrace: stackTrace);
   }
 
   /// 在级别记录消息 [Level.fatal]
   static void f(dynamic message, {DateTime? time, Object? error, StackTrace? stackTrace}) {
-    Log.instance.f(message, time: time, error: error, stackTrace: stackTrace);
+    Log.instance.log(Level.fatal, message, time: time, error: error, stackTrace: stackTrace);
   }
 
   /// 用 [Log.level] 级别记录消息

@@ -1,5 +1,7 @@
 ﻿import 'package:collection/collection.dart' show IterableExtension;
+import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/library/worker/worker.dart';
 
 /// jinja 使用的筛选器
 class RenderFilter {
@@ -9,6 +11,7 @@ class RenderFilter {
     'substring': _doSubstring,
     'sublist': _doSublist,
     'dedup': _doDeduplication,
+    'print': _doPrint,
   };
 
   /// sort 筛选器, 将列表进行排序
@@ -64,5 +67,10 @@ class RenderFilter {
     }
 
     return values.toSet() ?? {};
+  }
+
+  /// 打印 value
+  static void _doPrint(Object? value) {
+    BackgroundProcess.instance?.log(value.toString());
   }
 }

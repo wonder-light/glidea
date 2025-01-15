@@ -8,14 +8,15 @@ base mixin BackgroundAction on BackgroundWorker {
   static const Symbol _loadSiteData = Symbol('loadSiteData');
   static const Symbol _saveSiteData = Symbol('saveSiteData');
   static const Symbol _loadAsset = Symbol('loadAsset');
+  static const Symbol _log = Symbol('log');
 
   @override
-  Future<dynamic> invoke(Invocation invocation) async {
-    final post = invocation.positionalArguments;
-    return switch (invocation.memberName) {
-      BackgroundAction._loadAsset => _loadAssetBundle(post[0]),
-      _ => await super.invoke(invocation),
-    };
+  Future<void> onInit() async {
+    await super.onInit();
+    _invokes.addAll({
+      BackgroundAction._loadAsset: _loadAssetBundle,
+      BackgroundAction._log: _printLog,
+    });
   }
 
   /// 发布站点
@@ -51,24 +52,39 @@ base mixin BackgroundAction on BackgroundWorker {
   Future<Uint8List> _loadAssetBundle(String key) async {
     return (await rootBundle.load(key)).buffer.asUint8List();
   }
+
+  // 打印日志
+  Future<void> _printLog(Level level, dynamic message) async {
+    Log.log(level, message);
+  }
+}
+
+/// 用于调用前台的操作
+base mixin ActionBack on WorkerProcess {
+  /// 加载资源猫
+  Future<Uint8List> loadAssets(String path) async {
+    return await call<Uint8List>(BackgroundAction._loadAsset, [path]);
+  }
+
+  /// 打印消息
+  Future<void> log(dynamic message, {Level level = Level.info}) async {
+    await call(BackgroundAction._log, [level, message]);
+  }
 }
 
 /// 远程操作
-base mixin RemoteBack on WorkerProcess {
+base mixin RemoteBack on ActionBack {
   /// 今天文件服务
   HttpServer? fileServer;
 
   @override
-  Future<dynamic> invoke(Invocation invocation) async {
-    final post = invocation.positionalArguments;
-    switch (invocation.memberName) {
-      case BackgroundAction._publishSite:
-        await publishSite(post[0]);
-      case BackgroundAction._previewSite:
-        await previewSite(post[0]);
-      case BackgroundAction._remoteDetect:
-        await remoteDetect(post[0], post[1], post[2]);
-    }
+  Future<void> onInit() async {
+    await super.onInit();
+    _invokes.addAll({
+      BackgroundAction._publishSite: publishSite,
+      BackgroundAction._previewSite: previewSite,
+      BackgroundAction._remoteDetect: remoteDetect,
+    });
   }
 
   /// 发布站点
@@ -121,18 +137,17 @@ base mixin RemoteBack on WorkerProcess {
 }
 
 /// 加载本地数据
-base mixin DataBack on RemoteBack {
+base mixin DataBack on ActionBack {
   // 创建开始
   bool _isCreate = true;
 
   @override
-  Future<dynamic> invoke(Invocation invocation) async {
-    final post = invocation.positionalArguments;
-    return switch (invocation.memberName) {
-      BackgroundAction._loadSiteData => await loadSiteData(),
-      BackgroundAction._saveSiteData => await saveSiteData(post[0]),
-      _ => super.invoke(invocation),
-    };
+  Future<void> onInit() async {
+    await super.onInit();
+    _invokes.addAll({
+      BackgroundAction._loadSiteData: loadSiteData,
+      BackgroundAction._saveSiteData: saveSiteData,
+    });
   }
 
   /// 从 config/config.json 中加载配置
@@ -203,7 +218,7 @@ base mixin DataBack on RemoteBack {
     if (isCreate) {
       site.appDir = defaultSiteDir;
       // 在 Isolate 中无法使用 rootBundle.load
-      final bytes = await call<Uint8List>(BackgroundAction._loadAsset, ['assets/public/default-files.zip']);
+      final bytes = await loadAssets('assets/public/default-files.zip');
       // 将不存在的文件解压到指定路径
       FS.unzip(bytes: bytes, target: site.appDir, cover: false);
     }

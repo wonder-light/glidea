@@ -16,6 +16,7 @@ import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
 import 'package:glidea/models/setting.dart';
 import 'package:glidea/models/worker.dart';
+import 'package:logger/logger.dart' show Level;
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
 import 'package:path_provider/path_provider.dart' show getApplicationDocumentsDirectory, getApplicationSupportDirectory;
 import 'package:shelf/shelf_io.dart' as shelf_io show serve;
@@ -45,6 +46,9 @@ abstract class BaseWorker {
   final Map<int, Completer> _tasks = {};
 
   Map<int, Completer> get tasks => _tasks;
+
+  /// 记录自身需要被调用的函数
+  final Map<Symbol, Function> _invokes = {};
 
   /// 初始化数据
   @protected
@@ -100,7 +104,11 @@ abstract class BaseWorker {
 
   /// 调用自身的函数发送对应的数据
   @protected
-  Future<dynamic> invoke(Invocation invocation) async {}
+  Future<dynamic> invoke(Invocation invocation) async {
+    final fun = _invokes[invocation.memberName];
+    if (fun == null) return;
+    return Function.apply(fun, invocation.positionalArguments, invocation.namedArguments);
+  }
 }
 
 /// 管理后台进程
@@ -132,10 +140,10 @@ base class BackgroundWorker extends BaseWorker {
     isolate = await Isolate.spawn((params) async {
       // 初始化
       BackgroundIsolateBinaryMessenger.ensureInitialized(params.token);
-      await Log.initialized();
+      await Log.initialized(background: true);
       JsonHelp.initialized();
       // 创建 [_BackgroundProcess]
-      BackgroundProcess(send: params.send, id: initTaskId);
+      BackgroundProcess.instance = BackgroundProcess(send: params.send, id: initTaskId);
     }, initData);
     // 返回任务
     return initTask.future;
@@ -146,7 +154,7 @@ base class BackgroundWorker extends BaseWorker {
 final class Background extends BackgroundWorker with BackgroundAction {
   static Background? _instance;
 
-  /// 后台实例
+  /// 用于控制后台实例
   static Background get instance {
     if (_instance == null) {
       throw StateError('The Background.instance value is invalid ');
@@ -171,6 +179,9 @@ base class WorkerProcess extends BaseWorker {
 }
 
 /// 后台数据处理进程
-final class BackgroundProcess extends WorkerProcess with RemoteBack, DataBack {
+final class BackgroundProcess extends WorkerProcess with ActionBack, RemoteBack, DataBack {
   BackgroundProcess({required super.send, super.receive, super.id});
+
+  /// 先前台发送信息的实例
+  static BackgroundProcess? instance;
 }
