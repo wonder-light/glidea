@@ -21,27 +21,28 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
     );
     return Obx(() {
       var items = config.value.value;
-      return Column(
-        spacing: kTopPadding8.top,
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (var i = 0, length = items.length; i < length; i++)
-            Container(
-              decoration: decoration,
-              padding: kAllPadding16,
-              child: Column(
-                spacing: kTopPadding8.top,
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (var entity in config.value.arrayItems) createWidget(entity, items[i]),
-                  _buildActions(colorScheme, i),
-                ],
-              ),
+      return ListView.separated(
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          if (index >= items.length) {
+            return _buildAddCard(decoration);
+          }
+          return Container(
+            decoration: decoration,
+            padding: kAllPadding16,
+            child: Column(
+              spacing: kTopPadding8.top,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var entity in config.value.arrayItems) createWidget(entity, items[index]),
+                _buildActions(colorScheme, index),
+              ],
             ),
-          _buildAddCard(decoration),
-        ],
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) => Padding(padding: kTopPadding16),
+        itemCount: items.length + 1,
       );
     });
   }
