@@ -354,6 +354,7 @@ final class RemoteRender {
       // 数据
       final data = {'menus': menusData, 'themeConfig': themeConfig, 'commentSetting': site.comment};
       final html = env.getTemplate('$name.j2').render(data.toMap());
+      FS.createDirSync(FS.dirname(renderPath));
       FS.writeStringSync(renderPath, html);
     }
   }
