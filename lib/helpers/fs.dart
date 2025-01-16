@@ -66,7 +66,7 @@ class FS {
     for (var file in directory.listSync(recursive: true)) {
       var isFile = file is File;
       // 获取文件或者目录的相对路径
-      var relative = p.url.relative(file.path, from: src);
+      var relative = p.relative(file.path, from: src);
       var filePath = join(target, relative);
       var dir = isFile ? File(filePath).parent : Directory(filePath);
       dir.createSync(recursive: true);
@@ -105,8 +105,8 @@ class FS {
     if (dirExistsSync(target)) createDirSync(target);
     for (var item in Directory(src).listSync()) {
       // 获取文件的相对路径
-      var relative = p.url.relative(item.path, from: src);
-      item.renameSync(p.url.join(target, relative));
+      var relative = p.relative(item.path, from: src);
+      item.renameSync(join(target, relative));
     }
   }
 
@@ -141,7 +141,7 @@ class FS {
   ///
   ///     relative('/root/path/a/b.dart', from: '/root/path'); // -> 'a/b.dart'
   //      relative('/root/other.dart', from: '/root/path');    // -> '../other.dart'
-  static String relative(String path, String from) => normalize(p.url.relative(path, from: from));
+  static String relative(String path, String from) => normalize(p.relative(path, from: from));
 
   /// 获取最后一个分隔符之前的 [path] 部分
   ///
