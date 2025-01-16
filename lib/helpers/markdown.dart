@@ -15,7 +15,8 @@ class HeaderWithId extends m.HeaderSyntax {
     final element = super.parse(parser) as m.Element;
 
     if (element.children?.isNotEmpty ?? false) {
-      element.generatedId = element.textContent.getBase64().substring(0, 12);
+      final value = element.textContent.getBase64();
+      element.generatedId = value.substring(0, value.length >= 12 ? 12 : value.length);
     }
 
     return element;
@@ -31,7 +32,8 @@ class SetextHeaderWithId extends m.SetextHeaderSyntax {
   @override
   m.Node parse(m.BlockParser parser) {
     final element = super.parse(parser) as m.Element;
-    element.generatedId = element.textContent.getBase64().substring(0, 12);
+    final value = element.textContent.getBase64();
+    element.generatedId = value.substring(0, value.length >= 12 ? 12 : value.length);
     return element;
   }
 }
