@@ -38,6 +38,9 @@ class _PostViewState extends State<PostView> {
   /// 控制的初始化任务
   final initTask = Completer();
 
+  /// 当前 post 的 fileName
+  late String _fileName;
+
   /// 获取的当前 post 数据
   late Post postData;
 
@@ -72,6 +75,7 @@ class _PostViewState extends State<PostView> {
   @override
   void initState() {
     super.initState();
+    _fileName = Get.arguments;
     onInitData();
   }
 
@@ -194,9 +198,14 @@ class _PostViewState extends State<PostView> {
     // 发布或存草稿
     currentPost.published = published;
     final value = await site.updatePost(newData: currentPost, oldData: postData, fileContent: contentCtr.text);
-    value ? Get.success(published ? Tran.saved : Tran.draftSuccess) : Get.error(Tran.saveError);
-    // 更新数据
-    setState(updatePostData);
+    if (value) {
+      Get.success(published ? Tran.saved : Tran.draftSuccess);
+      _fileName = currentPost.fileName;
+      // 更新数据
+      setState(updatePostData);
+    } else {
+      Get.error(Tran.saveError);
+    }
   }
 
   /// 用于在开始时初始化数据
@@ -212,7 +221,7 @@ class _PostViewState extends State<PostView> {
   /// 更新 post 数据
   void updatePostData() {
     // 获取已有的数据或者新的数据
-    postData = site.getPostOrDefault(Get.arguments as String);
+    postData = site.getPostOrDefault(_fileName);
     // 复制
     currentPost = postData.copy<Post>()!;
     titleCtr.text = currentPost.title;
