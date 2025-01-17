@@ -29,7 +29,7 @@ const String summarySeparator = '<!-- more -->';
 final RegExp summaryRegExp = RegExp(r'[\S\s]*(?=(<!--\s*more\s*-->))');
 
 /// 主题设置图片显示的最大宽度
-const double kImageWidth = 100;
+const double kImageWidth = 200;
 
 /// 面板宽度
 const double kPanelWidth = 200;

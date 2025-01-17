@@ -21,10 +21,17 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
   final BoxConstraints? constraints;
 
   /// 图片默认大小
-  static const BoxConstraints _imageConstraints = BoxConstraints(
+  static const BoxConstraints _customImage = BoxConstraints(
     minWidth: kImageWidth / 1.5,
     maxWidth: kImageWidth,
     maxHeight: kImageWidth * 2,
+  );
+
+  /// 主题配置图片默认大小
+  static const BoxConstraints _themeImage = BoxConstraints(
+    minWidth: kImageWidth / 3,
+    maxWidth: kImageWidth / 2,
+    maxHeight: kImageWidth,
   );
 
   /// 图片的按钮样式
@@ -57,12 +64,18 @@ class PictureWidget extends ConfigBaseWidget<PictureConfig> {
     if (img.filePath.isEmpty) {
       img.filePath = img.value.isEmpty ? '' : FS.join(img.folder, img.value);
     }
+    // 边距
+    final cons = switch (scope) {
+      > 0 => _themeImage,
+      == 0 => _customImage,
+      _ => const BoxConstraints(),
+    };
     // 控件
     return OutlinedButton(
       onPressed: changeImage,
       style: _buttonStyle,
       child: ConstrainedBox(
-        constraints: constraints ?? (scope < 0 ? const BoxConstraints() : _imageConstraints),
+        constraints: constraints ?? cons,
         child: Obx(() => ImageConfig.builderImg(config.value.filePath, fit: BoxFit.contain)),
       ),
     );

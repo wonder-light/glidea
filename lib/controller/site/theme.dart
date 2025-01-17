@@ -81,6 +81,16 @@ mixin ThemeSite on DataProcess {
   /// 获取自定义主题的控件配置
   List<ConfigBase> getThemeCustomWidgetConfig() {
     try {
+      // 判断对象是否是空值
+      bool isNotValid(dynamic value) {
+        return switch (value) {
+          null => true,
+          String str => str.isEmpty,
+          Iterable list => list.isEmpty,
+          _ => false,
+        };
+      }
+
       List<ConfigBase> lists = [];
       // 自定义配置 - 字段的值
       var values = state.themeCustomConfig;
@@ -98,7 +108,8 @@ mixin ThemeSite on DataProcess {
         var base = (item as Object).deserialize<ConfigBase>()!;
 
         // 设置值
-        var value = values[base.name] ?? base.value;
+        var itemValue = values[base.name];
+        var value = isNotValid(itemValue) ? base.value : itemValue;
         // 当 value 为 list 需要 cast value 的类型为 List<Map>
         if (value is List) {
           base.value = List.of((value).cast<TJsonMap>());
