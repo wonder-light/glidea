@@ -106,7 +106,8 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
   Widget createWidget<T extends ConfigBase>(T entity, TJsonMap values) {
     // 复制对象
     assert(entity.copy<T>() != null, 'ArrayWidget: create widget failed');
-    final obj = entity.copy<T>()!..value = values[entity.name];
+    final obj = entity.copy<T>()!;
+    obj.value = values[entity.name] ??= obj.value;
     // 标量值变化时需要重新覆盖原值
     void change(value) {
       values[obj.name] = value;
