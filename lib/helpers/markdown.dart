@@ -55,10 +55,18 @@ class Markdown {
       const HeaderWithId(),
       const SetextHeaderWithId(),
       ...m.ExtensionSet.gitHubWeb.blockSyntaxes.skip(3),
-      LatexBlockSyntax(),
     ],
-    [...m.ExtensionSet.gitHubWeb.inlineSyntaxes, LatexInlineSyntax()],
+    m.ExtensionSet.gitHubWeb.inlineSyntaxes,
   );
+
+  /// 预览使用的自定义扩展集
+  static final m.ExtensionSet preview = m.ExtensionSet([
+    ...custom.blockSyntaxes,
+    LatexBlockSyntax(),
+  ], [
+    ...custom.inlineSyntaxes,
+    LatexInlineSyntax(),
+  ]);
 
   /// 将给定的 Markdown 字符串转换为HTML
   static String markdownToHtml(

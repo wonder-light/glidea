@@ -95,7 +95,7 @@ class _PostPreviewState extends DrawerEditorState<PostPreview> {
           textScaleFactor: 1.2,
         ),
       },
-      extensionSet: Markdown.custom,
+      extensionSet: Markdown.preview,
     );
   }
 
