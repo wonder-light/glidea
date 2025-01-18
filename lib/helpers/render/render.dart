@@ -6,6 +6,7 @@ import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/json.dart';
+import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/markdown.dart';
 import 'package:glidea/helpers/render/filter.dart';
 import 'package:glidea/helpers/render/sitemap.dart';
@@ -232,32 +233,32 @@ final class RemoteRender {
   /// 自定义构建模板
   Future<bool> customBuildTemplate(TJsonMap data) async {
     final processFilePath = FS.join(themePath, 'config.json');
-    final renderDataPath = FS.join(site.supportDir, 'render', 'config.json');
-    final renderPathData = FS.join(site.supportDir, 'render', 'paths.json');
+    final renderFolder = FS.join(site.supportDir, 'render');
+    final renderDataPath = FS.join(renderFolder, 'config.json');
+    final dataPath = FS.join(renderFolder, 'paths.json');
     // 检测 config.json 是否存在
     if (!FS.fileExistsSync(processFilePath)) return false;
     // 获取 process 字段
     final config = FS.readStringSync(processFilePath).deserialize<TJsonMap>();
     // 获取命令行
-    final exec = (config?['process'] as String?)?.split(RegExp(r'\s*')) ?? [];
+    final exec = (config?['process'] as String?)?.split(RegExp(r'\s+')) ?? [];
     if (exec.isEmpty) return false;
     // 写入渲染数据
+    FS.createDirSync(renderFolder);
     FS.writeStringSync(renderDataPath, data.toJson());
     // 模板的输出路径数据
     final pathData = {
-      for (var MapEntry(:key, :value) in siteUrls.entries)
-        key: [
-          for (var url in value) FS.join(site.buildDir, url == '404' ? '404.html' : url, 'index.html'),
-        ],
+      'dataPath': renderDataPath,
+      'appDir': site.appDir,
+      'buildDir': site.buildDir,
     };
-    FS.writeStringSync(renderPathData, pathData.toJson());
-    // 加入构建目录
-    exec.add(site.buildDir);
-    // 加入渲染数据的路径
-    exec.add(renderDataPath);
+    FS.writeStringSync(dataPath, pathData.toJson());
+    // 加入记录数据的路径
+    exec.add(dataPath);
     // 执行程序
-    final process = ProcessRunner(environment: {'buildDir': site.buildDir, 'renderData': renderDataPath, 'renderPath': renderPathData});
-    await process.runProcess(exec, workingDirectory: Directory(themePath));
+    final process = ProcessRunner(environment: {'dataPath': dataPath});
+    final result = await process.runProcess(exec, workingDirectory: Directory(themePath));
+    Log.i('process output: ${result.output}');
     return true;
   }
 

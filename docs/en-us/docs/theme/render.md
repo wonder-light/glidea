@@ -21,32 +21,30 @@ Add the `process` field to `config.json` and use the node.js example
 
 ### Argument :id=params
 
-The output path and the path to render data are injected \
+The path to the recorded data is injected \
 at the end of the command before starting the program, and also in 'env'
 
 ```shell
 node ./index.js  
 #=>
-node ./index.js C:/.../output C:/.../render/config.json
-# There is a path.json directory in the config.json sibling directory to refer to the path writing
+node ./index.js C:/.../render/paths.json
 ```
 
 ### Environment :id=env
 
 ```js
-console.log(process.argv[process.argv.length - 2]);
-// C:/.../output
-
 console.log(process.argv[process.argv.length - 1]);
-// C:/.../render/config.json
+// C:/.../render/paths.json
 
-console.log(process.env['buildDir']);
-// C:/.../output
-
-console.log(process.env['renderData']);
-// C:/.../render/config.json
-
-console.log(process.env['renderPath']);
+console.log(process.env['dataPath']);
 // C:/.../render/paths.json
 ```
 
+### Variable value :id=value
+
+```json
+{
+  "dataPath": "C:/.../render/config.json", // The path to the data needed to render the template
+  "buildDir": "C:/.../output", // The directory where the rendered file needs to be output
+  "appDir": "C:/.../site",   // The source directory where the site files are located
+}

@@ -21,31 +21,30 @@
 
 ### 参数 :id=params
 
-在启动程序前会在命令的后面注入输出路径和渲染数据所在路径, 也会在 `env` 中注入
+在启动程序前会在命令的后面注入记录数据的路径, 也会在 `env` 中注入
 
 ```shell
 node ./index.js  
 #=>
-node ./index.js C:/.../output C:/.../render/config.json
-# 在 config.json 同级目录下有一个 paths.json 可以参考路径的写法
+node ./index.js C:/.../render/paths.json
 ```
 
 ### 环境 :id=env
 
 ```js
-console.log(process.argv[process.argv.length - 2]);
-// C:/.../output
-
 console.log(process.argv[process.argv.length - 1]);
-// C:/.../render/config.json
+// C:/.../render/paths.json
 
-console.log(process.env['buildDir']);
-// C:/.../output
-
-console.log(process.env['renderData']);
-// C:/.../render/config.json
-
-console.log(process.env['renderPath']);
+console.log(process.env['dataPath']);
 // C:/.../render/paths.json
 ```
 
+### 变量值 :id=value
+
+```json
+{
+  "dataPath": "C:/.../render/config.json", // 渲染模板所需要的数据的路径
+  "buildDir": "C:/.../output", // 渲染完成后的文件需要输出的目录
+  "appDir": "C:/.../site",   // 站点文件所在的源目录
+}
+```
