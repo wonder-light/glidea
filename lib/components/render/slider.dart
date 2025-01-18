@@ -33,7 +33,7 @@ class SliderWidget extends ConfigBaseWidget<SliderConfig> {
         var maxValue = config.value.max;
         var currentValue = config.value.value;
         return Slider(
-          min: 0.0,
+          min: config.value.min.floorToDouble(),
           max: maxValue.ceilToDouble(),
           value: currentValue.floorToDouble(),
           divisions: maxValue.ceil(),

@@ -166,6 +166,10 @@ class SliderConfig extends ConfigInt {
 
   /// 滑动范围最大值, 必须大于 0
   @JsonProperty()
+  int min = 0;
+
+  /// 滑动范围最大值, 必须大于 0
+  @JsonProperty()
   int max = 100;
 }
 
