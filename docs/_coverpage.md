@@ -1,6 +1,6 @@
 ﻿<!-- _coverpage.md -->
 
-<img src="../assets/images/logo.png" width="80px" height="80px" alt="logo">
+<img src="assets/images/logo.png" width="80px" height="80px" alt="logo">
 
 # Glidea <small>1.0</small>
 

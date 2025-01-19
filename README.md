@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/public/app-icons/glidea.png"  width="80px" height="80px">
+  <img src="docs/assets/images/logo.png" alt="logo" width="80px" height="80px">
   <h1 align="center">Glidea</h1>
   <h3 align="center">一个静态博客写作客户端</h3>
 
@@ -89,11 +89,11 @@ Build Linux:
 
 ## 示例截图
 <div align="center">
-  <img src="assets/images/themes.png">
+  <img src="docs/assets/images/themes.png">
 </div>
 
 ## 支持
-<img src="assets/images/reward_qrcode.png" width="300px" height="300px">
+<img src="docs/assets/images/reward_qrcode.png" width="300px" height="300px">
 
 ## License
 [MIT](LICENSE). Copyright (c) 2024 wonder-light
