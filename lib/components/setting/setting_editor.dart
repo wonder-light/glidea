@@ -258,27 +258,28 @@ class SettingEditorState extends State<SettingEditor> {
       str.write('\n\n');
     }
     return Scaffold(
-      appBar: AppBar(
-        title: Text(Tran.log.tr),
-        actions: [
-          TipWidget.down(
-            message: Tran.delete.tr,
-            child: IconButton(
-              onPressed: () => Log.buffer.clear(),
-              icon: const Icon(PhosphorIconsRegular.trash),
+        appBar: AppBar(
+          title: Text(Tran.log.tr),
+          actions: [
+            TipWidget.down(
+              message: Tran.delete.tr,
+              child: IconButton(
+                onPressed: () => Log.buffer.clear(),
+                icon: const Icon(PhosphorIconsRegular.trash),
+              ),
             ),
-          ),
-          const Padding(padding: kRightPadding16),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Text.rich(TextSpan(text: str.toString())),
-      )
-    );
+            const Padding(padding: kRightPadding16),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Text.rich(TextSpan(text: str.toString())),
+        ));
   }
 
   /// 保存数据
   void onSave() async {
+    // 记录初始目录
+    final appDir = site.state.appDir;
     try {
       // 设置目录
       site.state.appDir = sourceFolder.value.value;
@@ -293,6 +294,8 @@ class SettingEditorState extends State<SettingEditor> {
       // 进行通知
       Get.success(Tran.saveSuccess);
     } catch (e, s) {
+      // 恢复原目录
+      site.state.appDir = appDir;
       Log.e('Failed to save data in the Settings screen on the large screen. Procedure', error: e, stackTrace: s);
       Get.error(Tran.saveError);
     }
