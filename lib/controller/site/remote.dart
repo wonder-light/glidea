@@ -24,6 +24,25 @@ mixin RemoteSite on DataProcess, ThemeSite {
     };
   }
 
+  /// 评论选项
+  final List<SelectOption> _commentOptions = [];
+
+  /// 评论选项
+  final TMapLists<SelectOption> _remoteOptions = {};
+
+  /// 远程的控件配置
+  final TMaps<Object, ConfigBase> remoteWidgetConfigs = {};
+
+  /// 评论的控件配置
+  final TMaps<Object, ConfigBase> commentWidgetConfigs = {};
+
+  @override
+  void initState() {
+    super.initState();
+    loadRemoteConfig();
+    loadCommentConfig();
+  }
+
   /// 发布站点
   Future<Notif> publishSite() async {
     try {
@@ -62,10 +81,12 @@ mixin RemoteSite on DataProcess, ThemeSite {
   }
 
   /// 更新远程配置
-  Future<bool> updateRemoteConfig({TJsonMap remotes = const {}, TJsonMap comments = const {}}) async {
+  Future<bool> saveRemoteConfig() async {
     try {
-      // 保存数据
       await saveSiteData(callback: () async {
+        // 获取配置
+        TJsonMap remotes = _getConfig(remoteWidgetConfigs);
+        TJsonMap comments = _getConfig(commentWidgetConfigs);
         // 远程
         state.remote = state.remote.copyWith<RemoteSetting>(remotes)!;
         // 合并
@@ -89,6 +110,68 @@ mixin RemoteSite on DataProcess, ThemeSite {
     }
   }
 
+  /// 加载远程设置
+  Future<void> loadRemoteConfig() async {
+    // 设置选项
+    if (_remoteOptions.isEmpty) {
+      _remoteOptions[platformField] = _getOptions(DeployPlatform.values);
+      _remoteOptions[enabledProxyField] = _getOptions(ProxyWay.values);
+    }
+    remoteWidgetConfigs.clear();
+    // 设置配置
+    final remote = state.remote.toMap()!;
+    // 字段的左下角提示
+    final notes = {privateKeyField: Tran.privateKeyTip, remotePathField: Tran.remotePathTip};
+    // 字段的内部提示
+    final hints = {branchField: Tran.branch, domainField: 'https://my_domain.com', cnameField: 'my_domain.com'};
+    // 各个平台
+    for (var key in DeployPlatform.values) {
+      final values = remote.remove(key.name) as TJsonMap;
+      remoteWidgetConfigs[key] = createRenderConfig(
+        fields: {for (var item in values.keys) item: FieldType.input},
+        fieldValues: values,
+        fieldHints: hints,
+        fieldNotes: notes,
+      );
+    }
+    remoteWidgetConfigs[RemoteProxy] = createRenderConfig(
+      fields: {enabledProxyField: FieldType.radio, proxyPortField: FieldType.input, proxyPathField: FieldType.input},
+      fieldValues: remote,
+      options: _remoteOptions,
+    );
+    remoteWidgetConfigs[RemoteBase] = createRenderConfig(
+      fields: {platformField: FieldType.select, domainField: FieldType.input},
+      fieldValues: remote,
+      fieldHints: hints,
+      options: _remoteOptions,
+    );
+  }
+
+  /// 加载评论设置
+  Future<void> loadCommentConfig() async {
+    // 添加选项
+    if (_commentOptions.isEmpty) {
+      _commentOptions.addAll(_getOptions(CommentPlatform.values));
+    }
+    commentWidgetConfigs.clear();
+    // 配置
+    final comment = state.comment.toMap()!;
+    // 各个评论
+    for (var key in CommentPlatform.values) {
+      final values = comment.remove(key.name) as TJsonMap;
+      commentWidgetConfigs[key] = createRenderConfig(
+        fields: {for (var item in values.keys) item: FieldType.input},
+        fieldValues: values,
+      );
+    }
+    // 基础
+    commentWidgetConfigs[CommentBase] = createRenderConfig(
+      fields: {commentPlatformField: FieldType.radio, showCommentField: FieldType.toggle},
+      fieldValues: comment,
+      options: {commentPlatformField: _commentOptions},
+    );
+  }
+
   /// 检测 github, gitee, coding
   bool _isCheckGitPublish(RemoteGithub github) {
     return github.username.isNotEmpty && github.branch.isNotEmpty && remote.domain.isNotEmpty && github.token.isNotEmpty && github.repository.isNotEmpty;
@@ -104,5 +187,26 @@ mixin RemoteSite on DataProcess, ThemeSite {
   bool _isCheckNetlifyPublish() {
     final netlify = remote.netlify;
     return netlify.siteId.isNotEmpty && netlify.accessToken.isNotEmpty;
+  }
+
+  /// 从枚举设置选项
+  List<SelectOption> _getOptions(List<Enum> enums) {
+    return [
+      for (var t in enums) SelectOption().setValues(label: t.name.tr, value: t.name),
+    ];
+  }
+
+  // 提取配置的值
+  TJsonMap _getConfig(Map<Object, TMap<ConfigBase>>? configs) {
+    if (configs?.isEmpty ?? true) return {};
+    return {
+      for (var MapEntry(:key, :value) in configs!.entries)
+        if (key is Enum)
+          key.name: {
+            for (var entry in value.entries) entry.key: entry.value.value,
+          }
+        else
+          for (var entry in value.entries) entry.key: entry.value.value,
+    };
   }
 }

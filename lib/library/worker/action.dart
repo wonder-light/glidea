@@ -94,70 +94,6 @@ base mixin ActionBack on WorkerProcess {
   }
 }
 
-/// 远程操作
-base mixin RemoteBack on ActionBack {
-  /// 今天文件服务
-  HttpServer? fileServer;
-
-  @override
-  Future<void> onInit() async {
-    await super.onInit();
-    _invokes.addAll({
-      BackgroundAction._publishSite: publishSite,
-      BackgroundAction._previewSite: previewSite,
-      BackgroundAction._remoteDetect: remoteDetect,
-    });
-  }
-
-  /// 发布站点
-  Future<void> publishSite(Application site) async {
-    // 设置域名
-    site.themeConfig.domain = site.remote.domain;
-    // render
-    await _renderAll(site);
-    await Deploy.create(site.remote, site.appDir, site.buildDir).publish();
-  }
-
-  /// 预览站点
-  Future<void> previewSite(Application site) async {
-    // 设置域名
-    site.themeConfig.domain = 'http://localhost:${site.previewPort}';
-    // render
-    await _renderAll(site);
-    // 启动静态文件服务
-    await _enableStaticServer(site);
-  }
-
-  /// 远程检测
-  Future<void> remoteDetect(RemoteSetting remote, String appDir, String buildDir) async {
-    await Deploy.create(remote, appDir, buildDir).remoteDetect();
-  }
-
-  /// 启动静态文件服务器
-  ///
-  /// 出错时抛出 [Exception] 异常
-  Future<void> _enableStaticServer(Application site) async {
-    if (fileServer == null) {
-      // 启动服务
-      var handler = createStaticHandler(site.buildDir, defaultDocument: 'index.html');
-      fileServer = await shelf_io.serve(handler, 'localhost', site.previewPort, shared: true);
-    }
-    // 打开网址
-    await launchUrlString(site.themeConfig.domain);
-  }
-
-  /// 渲染所有
-  ///
-  /// 当构建失败时抛出 [Exception] 错误
-  Future<void> _renderAll(Application site) async {
-    final render = RemoteRender(site: site);
-    await render.clearOutputFolder();
-    await render.formatDataForRender();
-    await render.copyFiles();
-    await render.buildTemplate();
-  }
-}
-
 /// 加载本地数据
 base mixin DataBack on ActionBack {
   // 创建开始
@@ -326,6 +262,70 @@ base mixin DataBack on ActionBack {
     // 保存并压缩
     await ImageExt.compress(picture.filePath, path);
     picture.filePath = path;
+  }
+}
+
+/// 远程操作
+base mixin RemoteBack on DataBack {
+  /// 今天文件服务
+  HttpServer? fileServer;
+
+  @override
+  Future<void> onInit() async {
+    await super.onInit();
+    _invokes.addAll({
+      BackgroundAction._publishSite: publishSite,
+      BackgroundAction._previewSite: previewSite,
+      BackgroundAction._remoteDetect: remoteDetect,
+    });
+  }
+
+  /// 发布站点
+  Future<void> publishSite(Application site) async {
+    // 设置域名
+    site.themeConfig.domain = site.remote.domain;
+    // render
+    await _renderAll(site);
+    await Deploy.create(site.remote, site.appDir, site.buildDir).publish();
+  }
+
+  /// 预览站点
+  Future<void> previewSite(Application site) async {
+    // 设置域名
+    site.themeConfig.domain = 'http://localhost:${site.previewPort}';
+    // render
+    await _renderAll(site);
+    // 启动静态文件服务
+    await _enableStaticServer(site);
+  }
+
+  /// 远程检测
+  Future<void> remoteDetect(RemoteSetting remote, String appDir, String buildDir) async {
+    await Deploy.create(remote, appDir, buildDir).remoteDetect();
+  }
+
+  /// 启动静态文件服务器
+  ///
+  /// 出错时抛出 [Exception] 异常
+  Future<void> _enableStaticServer(Application site) async {
+    if (fileServer == null) {
+      // 启动服务
+      var handler = createStaticHandler(site.buildDir, defaultDocument: 'index.html');
+      fileServer = await shelf_io.serve(handler, 'localhost', site.previewPort, shared: true);
+    }
+    // 打开网址
+    await launchUrlString(site.themeConfig.domain);
+  }
+
+  /// 渲染所有
+  ///
+  /// 当构建失败时抛出 [Exception] 错误
+  Future<void> _renderAll(Application site) async {
+    final render = RemoteRender(site: site);
+    await render.clearOutputFolder();
+    await render.formatDataForRender();
+    await render.copyFiles();
+    await render.buildTemplate();
   }
 }
 

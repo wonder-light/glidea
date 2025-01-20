@@ -182,7 +182,7 @@ base class WorkerProcess extends BaseWorker {
 }
 
 /// 后台数据处理进程
-final class BackgroundProcess extends WorkerProcess with ActionBack, RemoteBack, DataBack,ThemeBack {
+final class BackgroundProcess extends WorkerProcess with ActionBack, DataBack, RemoteBack, ThemeBack {
   BackgroundProcess({required super.send, super.receive, super.id});
 
   /// 先前台发送信息的实例

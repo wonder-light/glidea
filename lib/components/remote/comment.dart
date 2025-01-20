@@ -1,15 +1,10 @@
-﻿import 'dart:async' show Completer;
-
-import 'package:collection/collection.dart' show IterableExtension;
+﻿import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Inst, Obx, Trans;
-import 'package:glidea/components/Common/loading.dart';
+import 'package:get/get.dart' show Get, Inst, RxBool;
 import 'package:glidea/components/render/base.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
-import 'package:glidea/helpers/get.dart';
-import 'package:glidea/helpers/json.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/render.dart';
 import 'package:glidea/models/setting.dart';
@@ -19,24 +14,18 @@ class CommentSettingWidget extends StatefulWidget {
   const CommentSettingWidget({super.key});
 
   @override
-  State<CommentSettingWidget> createState() => CommentSettingWidgetState();
+  State<StatefulWidget> createState() => CommentSettingWidgetState();
 }
 
 class CommentSettingWidgetState extends State<CommentSettingWidget> {
-  static const _showComment = 'showComment';
-  static const _commentPlatform = 'commentPlatform';
-
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
-  /// 初始化时的任务
-  Completer initTask = Completer();
+  /// 平台
+  late Enum platform;
 
-  /// 当前选择的评论平台
-  late final platform = site.comment.commentPlatform.obs;
-
-  /// 字段配置
-  final configs = <Object, TMap<ConfigBase>>{}.obs;
+  /// 需要隐藏密码的字段
+  TMap<RxBool> hidePasswords = {};
 
   @override
   void initState() {
@@ -46,63 +35,50 @@ class CommentSettingWidgetState extends State<CommentSettingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: initTask.future,
-      builder: (ctx, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: LoadingWidget());
-        }
-        return Obx(() {
-          final items = {...?configs.value[CommentBase], ...?configs.value[platform.value]};
-          // 构建列表
-          return ListView.separated(
-            shrinkWrap: true,
-            padding: kVer12Hor24,
-            itemCount: items.length,
-            itemBuilder: (ctx, index) {
-              final key = items.keys.elementAt(index);
-              return ArrayWidget.create(
-                config: items[key] as ConfigBase,
-                isVertical: false,
-                onChanged: key == _commentPlatform ? _fieldChange : null,
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) => const Padding(padding: kVerPadding8),
-          );
-        });
+    final items = getConfigs();
+    // 构建列表
+    return ListView.separated(
+      shrinkWrap: true,
+      padding: kVer12Hor24,
+      itemCount: items.length,
+      itemBuilder: (ctx, index) {
+        final key = items.keys.elementAt(index);
+        return ArrayWidget.create(
+          config: items[key] as ConfigBase,
+          isVertical: false,
+          usePassword: hidePasswords[key],
+          onChanged: getChange(key),
+        );
       },
+      separatorBuilder: (BuildContext context, int index) => const Padding(padding: kVerPadding8),
     );
   }
 
+  /// 获取当前选项的配置
+  TMap<ConfigBase> getConfigs() {
+    final configs = site.commentWidgetConfigs;
+    return {...?configs[CommentBase], ...?configs[platform]};
+  }
+
+  /// 获取 [key] 对应的 onChange 事件
+  ValueChanged<dynamic>? getChange(String key) {
+    return key == commentPlatformField ? _fieldChange : null;
+  }
+
   /// 初始化字段
-  Future<void> initConfig() async {
-    initTask = Completer();
-    final comment = site.comment.toMap()!;
-    configs.value = {
-      for (var key in CommentPlatform.values)
-        key: site.createRenderConfig(
-          fields: {for (var item in (comment[key.name] as Map).keys) item: FieldType.input},
-          fieldValues: comment[key.name],
-        ),
-      CommentBase: site.createRenderConfig(
-        fields: {_commentPlatform: FieldType.radio, _showComment: FieldType.toggle},
-        fieldValues: comment,
-        options: {
-          _commentPlatform: [
-            for (var t in CommentPlatform.values)
-              SelectOption()
-                ..label = t.name.tr
-                ..value = t.name,
-          ],
-        },
-      ),
-    };
-    initTask.complete(true);
+  void initConfig() {
+    platform = site.comment.commentPlatform;
+  }
+
+  /// 重置字段
+  Future<void> resetConfig() async {
+    await site.loadThemeCustomConfig();
+    setState(initConfig);
   }
 
   /// 字段变化时调用
   void _fieldChange(dynamic str) {
-    platform.value = CommentPlatform.values.firstWhereOrNull((t) => t.name == str) ?? CommentPlatform.gitalk;
-    site.comment.commentPlatform = platform.value;
+    final value = CommentPlatform.values.firstWhereOrNull((t) => t.name == str) ?? CommentPlatform.gitalk;
+    setState(() => platform = value);
   }
 }

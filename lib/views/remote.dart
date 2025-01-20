@@ -1,16 +1,15 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, Trans, BoolExtension;
 import 'package:glidea/components/Common/animated.dart';
+import 'package:glidea/components/Common/group.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/remote/comment.dart';
 import 'package:glidea/components/remote/remote.dart';
-import 'package:glidea/components/Common/group.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
-import 'package:glidea/models/render.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 class RemoteView extends StatefulWidget {
@@ -47,31 +46,12 @@ class _RemoteViewState extends State<RemoteView> {
 
   @override
   Widget build(BuildContext context) {
-    Widget childWidget;
     // 手机端
     if (Get.isPhone) {
-      // arguments 参数来自 [package:glidea/views/setting.dart] 中的 [_SettingViewState.toRouter]
-      var arg = Get.arguments as String;
-      childWidget = arg == Tran.commentSetting ? CommentSettingWidget(key: commentKey) : RemoteSettingWidget(key: remoteKey);
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(arg.tr),
-          actions: [
-            for (var item in actions)
-              TipWidget.down(
-                message: item.name.tr,
-                child: IconButton(
-                  onPressed: item.call,
-                  icon: Icon(item.icon),
-                ),
-              ),
-          ],
-        ),
-        body: Padding(padding: kTopPadding16, child: childWidget),
-      );
+      return buildPhone();
     }
     // 远程和评论的分组
-    childWidget = GroupWidget(
+    Widget childWidget = GroupWidget(
       isTop: true,
       contentPadding: kTopPadding16,
       groups: const [Tran.basicSetting, Tran.commentSetting],
@@ -90,6 +70,29 @@ class _RemoteViewState extends State<RemoteView> {
           _buildBottom(),
         ],
       ),
+    );
+  }
+
+  /// 构建手机端
+  Widget buildPhone() {
+    // arguments 参数来自 [package:glidea/views/setting.dart] 中的 [_SettingViewState.toRouter]
+    final arg = Get.arguments as String;
+    final childWidget = arg == Tran.commentSetting ? CommentSettingWidget(key: commentKey) : RemoteSettingWidget(key: remoteKey);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(arg.tr),
+        actions: [
+          for (var item in actions)
+            TipWidget.down(
+              message: item.name.tr,
+              child: IconButton(
+                onPressed: item.call,
+                icon: Icon(item.icon),
+              ),
+            ),
+        ],
+      ),
+      body: childWidget,
     );
   }
 
@@ -131,26 +134,9 @@ class _RemoteViewState extends State<RemoteView> {
 
   /// 保持配置
   void _saveConfig() async {
-    // 提取配置的值
-    TJsonMap getConfig(Map<Object, TMap<ConfigBase>>? configs) {
-      if (configs?.isEmpty ?? true) return {};
-      return {
-        for (var MapEntry(:key, :value) in configs!.entries)
-          if (key is Enum)
-            key.name: {
-              for (var entry in value.entries) entry.key: entry.value.value,
-            }
-          else
-            for (var entry in value.entries) entry.key: entry.value.value,
-      };
-    }
-
-    // 获取配置
-    TJsonMap remotes = getConfig(remoteKey.currentState?.configs.value);
-    TJsonMap comments = getConfig(commentKey.currentState?.configs.value);
-    final value = await site.updateRemoteConfig(remotes: remotes, comments: comments);
-    await remoteKey.currentState?.initConfig();
-    await commentKey.currentState?.initConfig();
+    final value = await site.saveRemoteConfig();
+    await remoteKey.currentState?.resetConfig();
+    await commentKey.currentState?.resetConfig();
     value ? Get.success(Tran.themeConfigSaved) : Get.error(Tran.saveError);
   }
 

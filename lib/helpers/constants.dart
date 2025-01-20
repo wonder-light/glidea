@@ -69,3 +69,19 @@ const EdgeInsets kVer8Hor12 = EdgeInsets.symmetric(vertical: 8, horizontal: 12);
 const EdgeInsets kVer12Hor24 = EdgeInsets.symmetric(vertical: 12, horizontal: 24);
 const EdgeInsets kVer24Hor16 = EdgeInsets.symmetric(vertical: 24, horizontal: 16);
 const EdgeInsets kVer8Hor32 = EdgeInsets.symmetric(vertical: 8, horizontal: 32);
+
+// 字段
+const domainField = 'domain';
+const platformField = 'platform';
+const enabledProxyField = 'enabledProxy';
+const proxyPortField = 'proxyPort';
+const proxyPathField = 'proxyPath';
+const showCommentField = 'showComment';
+const commentPlatformField = 'commentPlatform';
+const privateKeyField = 'privateKey';
+const remotePathField = 'remotePath';
+const branchField = 'branch';
+const cnameField = 'cname';
+const passwordField = 'password';
+const accessTokenField = 'accessToken';
+const tokenField = 'token';
