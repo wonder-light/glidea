@@ -1,7 +1,7 @@
 ﻿part of 'base.dart';
 
 /// 主题设置中的开关控件
-class ToggleWidget extends ConfigBaseWidget<ToggleConfig> {
+class ToggleWidget extends BaseRenderWidget<ToggleConfig> {
   const ToggleWidget({
     super.key,
     required super.config,

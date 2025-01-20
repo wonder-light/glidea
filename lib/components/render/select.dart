@@ -1,7 +1,7 @@
 ﻿part of 'base.dart';
 
 /// 主题设置中的下拉选择按钮控件
-class SelectWidget extends ConfigBaseWidget<SelectConfig> {
+class SelectWidget extends BaseRenderWidget<SelectConfig> {
   const SelectWidget({
     super.key,
     required super.config,
@@ -15,7 +15,7 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
 
   @override
   Widget buildContent(BuildContext context) {
-    final theme = Get.theme;
+    final bodyMedium = TextTheme.of(context).bodyMedium;
     final entry = config.value;
     final initValue = entry.options.firstWhereOrNull((t) => t.value == entry.value);
     return DropdownWidget<SelectOption>(
@@ -26,10 +26,10 @@ class SelectWidget extends ConfigBaseWidget<SelectConfig> {
       onSelected: change,
       displayStringForItem: (item) => item.label,
       children: [
-        for (var option in config.value.options)
+        for (var option in entry.options)
           DropdownMenuItem(
             value: option,
-            child: Text(option.label.tr, style: theme.textTheme.bodyMedium),
+            child: Text(option.label.tr, style: bodyMedium),
           ),
       ],
     );

@@ -27,11 +27,12 @@ part 'picture.dart';
 part 'radio.dart';
 part 'select.dart';
 part 'slider.dart';
+part 'textarea.dart';
 part 'toggle.dart';
 
 /// 渲染 [ConfigBase] 的抽象控件
-abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
-  const ConfigBaseWidget({
+abstract class BaseRenderWidget<T extends ConfigBase> extends StatelessWidget {
+  const BaseRenderWidget({
     super.key,
     required this.config,
     this.isVertical = true,
@@ -53,7 +54,7 @@ abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ConfigLayoutWidget(
+    return RenderLayoutWidget(
       isVertical: isVertical,
       config: config.value,
       child: buildContent(context),
@@ -65,9 +66,9 @@ abstract class ConfigBaseWidget<T extends ConfigBase> extends StatelessWidget {
   Widget buildContent(BuildContext context);
 }
 
-/// 对 [ConfigBaseWidget] 进行布局管控的控件
-class ConfigLayoutWidget extends StatelessWidget {
-  const ConfigLayoutWidget({
+/// 对 [BaseRenderWidget] 进行布局管控的控件
+class RenderLayoutWidget extends StatelessWidget {
+  const RenderLayoutWidget({
     super.key,
     required this.config,
     required this.child,

@@ -1,6 +1,6 @@
 ﻿part of 'base.dart';
 
-class PictureWidget extends ConfigBaseWidget<PictureConfig> {
+class PictureWidget extends BaseRenderWidget<PictureConfig> {
   const PictureWidget({
     super.key,
     required super.config,

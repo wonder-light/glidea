@@ -1,7 +1,7 @@
 ﻿part of 'base.dart';
 
 /// 渲染 [ArrayConfig] 的控件
-class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
+class ArrayWidget extends BaseRenderWidget<ArrayConfig> {
   const ArrayWidget({
     super.key,
     required super.config,
@@ -76,7 +76,7 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
   }
 
   /// 在指定位置添加一系列字段的值
-  T addItem<T extends ArrayConfig>(T obj, {int index = -1}) {
+  ArrayConfig addItem(ArrayConfig obj, {int index = -1}) {
     TJsonMap entity = {};
     for (var item in obj.arrayItems) {
       entity[item.name] = item.value;
@@ -93,12 +93,13 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
   }
 
   /// 删除指定位置的字段, 如果 [index] = -1, 则删除最后的字段
-  T deleteItem<T extends ArrayConfig>(T obj, {int index = -1}) {
+  ArrayConfig deleteItem(ArrayConfig obj, {int index = -1}) {
     if (index < 0) {
       obj.value.removeLast();
     } else {
       obj.value.removeAt(index);
     }
+    onChanged?.call(obj.value);
     return obj;
   }
 
@@ -114,6 +115,7 @@ class ArrayWidget extends ConfigBaseWidget<ArrayConfig> {
     }
 
     if (entity.type == FieldType.array) {
+      // 用的是同一个对象, 不需要 change
       return ArrayWidget.create(config: obj);
     }
     return ArrayWidget.create(config: obj, onChanged: change);

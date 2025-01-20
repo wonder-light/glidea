@@ -158,7 +158,7 @@ class SettingEditorState extends State<SettingEditor> {
   /// 构建版本号
   Widget _buildVersion() {
     final version = configs[Tran.version]!;
-    return ConfigLayoutWidget(
+    return RenderLayoutWidget(
       isVertical: widget.isVertical,
       config: version,
       child: Padding(
@@ -188,7 +188,7 @@ class SettingEditorState extends State<SettingEditor> {
 
   /// 查看日志
   Widget _viewLogs() {
-    return ConfigLayoutWidget(
+    return RenderLayoutWidget(
         isVertical: widget.isVertical,
         config: configs[Tran.log]!,
         child: OutlinedButton(
@@ -239,7 +239,7 @@ class SettingEditorState extends State<SettingEditor> {
         return Icon(type > 0 ? PhosphorIconsRegular.cloudArrowUp : PhosphorIconsRegular.eye);
       });
     }
-    return ConfigLayoutWidget(
+    return RenderLayoutWidget(
       isVertical: widget.isVertical,
       config: config!,
       child: OutlinedButton(

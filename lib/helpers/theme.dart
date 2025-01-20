@@ -111,6 +111,20 @@ extension ThemeDataExt on ThemeData {
         thickness: const WidgetStatePropertyAll(4),
         thumbColor: WidgetStatePropertyAll(colorScheme.primaryContainer),
       ),
+      sliderTheme: SliderThemeData(
+        showValueIndicator: ShowValueIndicator.always,
+        //  滑块形状，可以自定义
+        /*thumbShape: RoundSliderThumbShape(
+          // 滑块大小
+          enabledThumbRadius: 10,
+        ),*/
+        // thumbColor: Colors.white, // 滑块颜色
+        // 滑块外圈形状，可以自定义
+        overlayShape: RoundSliderOverlayShape(
+          // 滑块外圈大小
+          overlayRadius: 16,
+        ),
+      ),
     );
   }
 }

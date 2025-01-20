@@ -1,7 +1,7 @@
 ﻿part of 'base.dart';
 
 /// 主题设置中的单选框控件
-class RadioWidget extends ConfigBaseWidget<RadioConfig> {
+class RadioWidget extends BaseRenderWidget<RadioConfig> {
   const RadioWidget({
     super.key,
     required super.config,
