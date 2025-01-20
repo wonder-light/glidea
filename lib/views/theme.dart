@@ -1,13 +1,12 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Trans;
-import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/Common/group.dart';
+import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/theme/theme.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/lang/base.dart';
-import 'package:glidea/models/render.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
 class ThemeView extends StatefulWidget {
@@ -21,12 +20,6 @@ class _ThemeViewState extends State<ThemeView> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
-  /// 主题配置
-  var themeConfig = <ConfigBase>[];
-
-  /// 自定义主题配置
-  var customConfig = <ConfigBase>[];
-
   final themeKey = GlobalKey<ThemeWidgetState>();
   final customKey = GlobalKey<ThemeCustomWidgetState>();
 
@@ -37,11 +30,12 @@ class _ThemeViewState extends State<ThemeView> {
     // 主题和自定义主题的分组
     Widget childWidget = GroupWidget(
       isTop: true,
+      allowImplicitScrolling: false,
       groups: const [Tran.basicSetting, Tran.customConfig],
       itemBuilder: (ctx, index) {
         final isThemePage = index <= 0;
         final build = isThemePage ? ThemeWidget.new : ThemeCustomWidget.new;
-        return build(key: isThemePage ? themeKey : customKey, loadData: () => loadData(isThemePage));
+        return build(key: isThemePage ? themeKey : customKey);
       },
     );
     // PC 端和平板端
@@ -68,7 +62,7 @@ class _ThemeViewState extends State<ThemeView> {
     final build = isThemePage ? ThemeWidget.new : ThemeCustomWidget.new;
     return Scaffold(
       appBar: AppBar(title: Text(arg.tr), actions: getActionButton()),
-      body: build(key: isThemePage ? themeKey : customKey, loadData: () => loadData(isThemePage)),
+      body: build(key: isThemePage ? themeKey : customKey),
     );
   }
 
@@ -107,25 +101,10 @@ class _ThemeViewState extends State<ThemeView> {
     ];
   }
 
-  /// 加载数据
-  Future<List<ConfigBase>> loadData(bool isThemePage) async {
-    if (isThemePage) {
-      if (themeConfig.isEmpty) {
-        themeConfig = site.getThemeWidgetConfig();
-      }
-      return themeConfig;
-    } else {
-      if (customConfig.isEmpty) {
-        customConfig = site.getThemeCustomWidgetConfig();
-      }
-      return customConfig;
-    }
-  }
-
   /// 重置配置
   void resetConfig() async {
-    themeConfig.clear();
-    customConfig.clear();
+    site.themeWidgetConfig.clear();
+    site.themeCustomWidgetConfig.clear();
     await themeKey.currentState?.loadData();
     await customKey.currentState?.loadData();
   }
@@ -133,7 +112,7 @@ class _ThemeViewState extends State<ThemeView> {
   /// 保存配置
   void saveConfig() async {
     // 保存前需要发出保存事件以便于图片进行保存
-    final value = await site.updateThemeConfig(themes: themeConfig, customs: customConfig);
+    final value = await site.saveThemeConfig(themes: site.themeWidgetConfig, customs: site.themeCustomWidgetConfig);
     value ? Get.success(Tran.themeConfigSaved) : Get.error(Tran.saveError);
     resetConfig();
   }

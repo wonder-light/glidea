@@ -9,12 +9,15 @@ import 'package:flutter/foundation.dart' show protected;
 import 'package:flutter/services.dart' show BackgroundIsolateBinaryMessenger, RootIsolateToken, rootBundle;
 import 'package:glidea/helpers/deploy/deploy.dart';
 import 'package:glidea/helpers/fs.dart';
+import 'package:glidea/helpers/image.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/helpers/render/render.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/application.dart';
+import 'package:glidea/models/render.dart';
 import 'package:glidea/models/setting.dart';
+import 'package:glidea/models/theme.dart';
 import 'package:glidea/models/worker.dart';
 import 'package:logger/logger.dart' show Level;
 import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
@@ -179,7 +182,7 @@ base class WorkerProcess extends BaseWorker {
 }
 
 /// 后台数据处理进程
-final class BackgroundProcess extends WorkerProcess with ActionBack, RemoteBack, DataBack {
+final class BackgroundProcess extends WorkerProcess with ActionBack, RemoteBack, DataBack,ThemeBack {
   BackgroundProcess({required super.send, super.receive, super.id});
 
   /// 先前台发送信息的实例

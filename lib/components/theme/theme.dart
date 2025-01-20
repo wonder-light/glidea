@@ -1,9 +1,9 @@
 ﻿import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show BoolExtension, Get, Inst, Obx, Trans;
+import 'package:glidea/components/Common/group.dart';
 import 'package:glidea/components/Common/loading.dart';
 import 'package:glidea/components/render/base.dart';
-import 'package:glidea/components/Common/group.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
@@ -14,10 +14,7 @@ typedef TAsync = ValueSetter<AsyncCallback>;
 
 /// 主题控件
 class ThemeWidget extends StatefulWidget {
-  const ThemeWidget({super.key, required this.loadData});
-
-  /// 加载数据
-  final AsyncValueGetter<List<ConfigBase>>? loadData;
+  const ThemeWidget({super.key});
 
   @override
   State<ThemeWidget> createState() => ThemeWidgetState();
@@ -69,15 +66,18 @@ class ThemeWidgetState extends State<ThemeWidget> {
 
   /// 加载主题
   Future<void> loadData() async {
-    isLoading.value = true;
-    configs.value = await widget.loadData?.call() ?? [];
+    if (site.themeWidgetConfig.isEmpty) {
+      isLoading.value = true;
+      site.themeWidgetConfig.addAll(site.getThemeWidgetConfig());
+    }
+    configs.value = site.themeWidgetConfig;
     isLoading.value = false;
   }
 }
 
 /// 自定义主题控件
 class ThemeCustomWidget extends ThemeWidget {
-  const ThemeCustomWidget({super.key, required super.loadData});
+  const ThemeCustomWidget({super.key});
 
   @override
   State<ThemeWidget> createState() => ThemeCustomWidgetState();
@@ -116,5 +116,24 @@ class ThemeCustomWidgetState extends ThemeWidgetState {
         itemBuilder: (ctx, index) => _buildContent(groups.values.elementAt(index)),
       );
     });
+  }
+
+  @override
+  Future<void> loadData() async {
+    if (site.themeCustomWidgetConfig.isEmpty) {
+      isLoading.value = true;
+      await Future.wait([
+        _loadConfig(),
+        Future.delayed(Duration(milliseconds: 200)),
+      ]);
+    }
+    configs.value = site.themeCustomWidgetConfig;
+    isLoading.value = false;
+  }
+
+  /// 加载配置
+  Future<void> _loadConfig() async {
+    final value = await site.loadThemeCustomConfig();
+    site.themeCustomWidgetConfig.addAll(value);
   }
 }

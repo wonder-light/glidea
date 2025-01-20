@@ -9,6 +9,9 @@ base mixin BackgroundAction on BackgroundWorker {
   static const Symbol _saveSiteData = Symbol('saveSiteData');
   static const Symbol _loadAsset = Symbol('loadAsset');
   static const Symbol _log = Symbol('log');
+  static const Symbol _loadThemeCustomConfig = Symbol('loadThemeCustomConfig');
+  static const Symbol _saveThemeImage = Symbol('saveThemeImage');
+  static const Symbol _saveThemeConfig = Symbol('saveThemeConfig');
 
   @override
   Future<void> onInit() async {
@@ -46,6 +49,25 @@ base mixin BackgroundAction on BackgroundWorker {
   /// 出错时掏出 [Exception] 异常
   Future<void> saveSiteData(Application site) async {
     return await call(_saveSiteData, [site]);
+  }
+
+  /// 获取自定义主题的控件配置
+  ///
+  /// [values] 是自定义主题配置
+  ///
+  /// [configPath] 自定义主题的配置文件路径
+  Future<List<ConfigBase>> loadThemeCustomConfig(TJsonMap values, String configPath) async {
+    return await call<List<ConfigBase>>(_loadThemeCustomConfig, [values, configPath]);
+  }
+
+  /// 保存主题的配置
+  Future<void> saveThemeConfig(Application site, List<ConfigBase> themes, List<ConfigBase> customs) async {
+    return await call<void>(_saveThemeConfig, [site, themes, customs]);
+  }
+
+  /// 保存主题配置中的图片
+  Future<void> saveThemeImage(PictureConfig picture) async {
+    return await call<void>(_saveThemeImage, [picture]);
   }
 
   /// 加载资源
@@ -294,5 +316,91 @@ base mixin DataBack on ActionBack {
     FS.writeStringSync(customThemePath, site.themeCustomConfig.toJson());
     // 更新应用配置
     FS.writeStringSync(FS.join(configPath, 'config.json'), site.copy<ApplicationDb>()!.toJson());
+  }
+
+  /// 保存主题配置中的图片
+  Future<void> saveThemeImage(PictureConfig picture) async {
+    // 路径
+    final path = FS.join(picture.folder, picture.value);
+    if (picture.filePath.isEmpty || picture.filePath == path) return;
+    // 保存并压缩
+    await ImageExt.compress(picture.filePath, path);
+    picture.filePath = path;
+  }
+}
+
+/// 加载主题数据
+base mixin ThemeBack on DataBack {
+  @override
+  Future<void> onInit() async {
+    await super.onInit();
+    _invokes.addAll({BackgroundAction._loadThemeCustomConfig: loadThemeCustomConfig});
+  }
+
+  /// 获取自定义主题的控件配置
+  ///
+  /// [values] 是自定义主题配置
+  ///
+  /// [configPath] 自定义主题的配置文件路径
+  List<ConfigBase> loadThemeCustomConfig(TJsonMap values, String configPath) {
+    // 判断对象是否是空值
+    bool isNotValid(dynamic value) {
+      return switch (value) {
+        null => true,
+        String str => str.isEmpty,
+        Iterable list => list.isEmpty,
+        _ => false,
+      };
+    }
+
+    // 基础配置列表
+    List<ConfigBase> lists = [];
+    if (!FS.fileExistsSync(configPath)) return [];
+    // 配置数据
+    final configs = FS.readStringSync(configPath).deserialize<TJsonMap>()!;
+    // 自定义配置中的 customConfig 字段
+    var customConfig = configs['customConfig'] as List<dynamic>;
+    if (customConfig.isEmpty) return [];
+    // 实例化字段
+    for (var item in customConfig) {
+      // 转换为字段配置实例
+      var base = (item as Object).deserialize<ConfigBase>()!;
+
+      // 设置值
+      var itemValue = values[base.name];
+      var value = isNotValid(itemValue) ? base.value : itemValue;
+      // 当 value 为 list 需要 cast value 的类型为 List<Map>
+      if (value is List) {
+        base.value = List.of((value).cast<TJsonMap>());
+      } else {
+        base.value = value;
+      }
+
+      lists.add(base);
+    }
+    return lists;
+  }
+
+  /// 保存主题的配置
+  Future<void> saveThemeConfig(Application site, List<ConfigBase> themes, List<ConfigBase> customs) async {
+    // 更新主题数据
+    TJsonMap items = {};
+    for (var config in themes) {
+      if (config is PictureConfig) {
+        await saveThemeImage(config);
+      }
+      items[config.name] = config.value;
+    }
+    site.themeConfig = site.themeConfig.copyWith<Theme>(items)!;
+    // 更新自定义主题数据
+    items = {};
+    for (var config in customs) {
+      if (config is PictureConfig) {
+        await saveThemeImage(config);
+      }
+      items[config.name] = config.value;
+    }
+    // Map 在合并后需要使用新的 Map 对象, 旧的 Map 对象在序列化时会报错
+    site.themeCustomConfig = site.themeCustomConfig.mergeMaps(items);
   }
 }

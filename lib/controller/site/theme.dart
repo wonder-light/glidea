@@ -2,6 +2,12 @@
 
 /// 混合 - 主题
 mixin ThemeSite on DataProcess {
+  /// 主题配置
+  final themeWidgetConfig = <ConfigBase>[];
+
+  /// 自定义主题配置
+  final themeCustomWidgetConfig = <ConfigBase>[];
+
   /// 拥有的主题名列表
   List<String> get themes => state.themes;
 
@@ -54,6 +60,7 @@ mixin ThemeSite on DataProcess {
     super.initState();
     // 主题列表
     _themeOptions ??= state.themes.map((t) => SelectOption().setValues(label: t, value: t)).toList();
+    themeWidgetConfig.addAll(getThemeWidgetConfig());
   }
 
   /// 获取主题的控件配置
@@ -79,48 +86,11 @@ mixin ThemeSite on DataProcess {
   }
 
   /// 获取自定义主题的控件配置
-  List<ConfigBase> getThemeCustomWidgetConfig() {
+  Future<List<ConfigBase>> loadThemeCustomConfig() async {
     try {
-      // 判断对象是否是空值
-      bool isNotValid(dynamic value) {
-        return switch (value) {
-          null => true,
-          String str => str.isEmpty,
-          Iterable list => list.isEmpty,
-          _ => false,
-        };
-      }
-
-      List<ConfigBase> lists = [];
-      // 自定义配置 - 字段的值
-      var values = state.themeCustomConfig;
       // 自定义主题的配置文件路径
       final configPath = FS.join(state.appDir, 'themes', state.themeConfig.selectTheme, 'config.json');
-      if (!FS.fileExistsSync(configPath)) return [];
-      // 配置数据
-      final configs = FS.readStringSync(configPath).deserialize<TJsonMap>()!;
-      // 自定义配置中的 customConfig 字段
-      var customConfig = configs['customConfig'] as List<dynamic>;
-      if (customConfig.isEmpty) return [];
-      // 实例化字段
-      for (var item in customConfig) {
-        // 转换为字段配置实例
-        var base = (item as Object).deserialize<ConfigBase>()!;
-
-        // 设置值
-        var itemValue = values[base.name];
-        var value = isNotValid(itemValue) ? base.value : itemValue;
-        // 当 value 为 list 需要 cast value 的类型为 List<Map>
-        if (value is List) {
-          base.value = List.of((value).cast<TJsonMap>());
-        } else {
-          base.value = value;
-        }
-
-        lists.add(base);
-      }
-
-      return lists;
+      return await Background.instance.loadThemeCustomConfig(state.themeCustomConfig, configPath);
     } catch (e, s) {
       Log.e('get custom theme render config failed', error: e, stackTrace: s);
       return [];
@@ -166,33 +136,12 @@ mixin ThemeSite on DataProcess {
     return children;
   }
 
-  /// 更新主题的配置
+  /// 保存并更新主题的配置
   ///
   /// throw [Exception] exception
-  Future<bool> updateThemeConfig({List<ConfigBase> themes = const [], List<ConfigBase> customs = const []}) async {
+  Future<bool> saveThemeConfig({List<ConfigBase> themes = const [], List<ConfigBase> customs = const []}) async {
     try {
-      // 保存数据
-      await saveSiteData(callback: () async {
-        // 更新主题数据
-        TJsonMap items = {};
-        for (var config in themes) {
-          if (config is PictureConfig) {
-            await saveThemeImage(config);
-          }
-          items[config.name] = config.value;
-        }
-        state.themeConfig = state.themeConfig.copyWith<Theme>(items)!;
-        // 更新自定义主题数据
-        items = {};
-        for (var config in customs) {
-          if (config is PictureConfig) {
-            await saveThemeImage(config);
-          }
-          items[config.name] = config.value;
-        }
-        // Map 在合并后需要使用新的 Map 对象, 旧的 Map 对象在序列化时会报错
-        state.themeCustomConfig = state.themeCustomConfig.mergeMaps(items);
-      });
+      await Background.instance.saveThemeConfig(state, themes, customs);
       return true;
     } catch (e, s) {
       Log.e('update or add theme config failed', error: e, stackTrace: s);
@@ -202,10 +151,6 @@ mixin ThemeSite on DataProcess {
 
   /// 保存主题配置中的图片
   Future<void> saveThemeImage(PictureConfig picture) async {
-    final path = FS.join(picture.folder, picture.value);
-    if (picture.filePath.isEmpty || picture.filePath == path) return;
-    // 保存并压缩
-    await ImageExt.compress(picture.filePath, path);
-    picture.filePath = path;
+    await Background.instance.saveThemeImage(picture);
   }
 }
