@@ -103,14 +103,14 @@ mixin ThemeSite on DataProcess {
   ///
   /// [fieldValues] 字段对应的值:  [字段名] - [字段值]
   Map<String, ConfigBase> createRenderConfig({
-    required Map<String, FieldType> fields,
-    Map<String, dynamic>? fieldValues,
-    Map<String, String>? fieldLabels,
-    Map<String, String>? fieldNotes,
-    Map<String, String>? fieldHints,
-    Map<String, int>? sliderMax,
-    Map<String, List<SelectOption>>? options,
-    Map<String, List<ConfigBase>>? arrayItems,
+    required TMap<FieldType> fields,
+    TMap<dynamic>? fieldValues,
+    TMap<String>? fieldLabels,
+    TMap<String>? fieldNotes,
+    TMap<String>? fieldHints,
+    TMap<int>? sliderMax,
+    TMapLists<SelectOption>? options,
+    TMapLists<ConfigBase>? arrayItems,
   }) {
     final Map<String, ConfigBase> children = {};
     for (var field in fields.entries) {
@@ -141,7 +141,9 @@ mixin ThemeSite on DataProcess {
   /// throw [Exception] exception
   Future<bool> saveThemeConfig({List<ConfigBase> themes = const [], List<ConfigBase> customs = const []}) async {
     try {
-      await Background.instance.saveThemeConfig(state, themes, customs);
+      final value = await Background.instance.saveThemeConfig(state, themes, customs);
+      state.themeConfig = value.theme;
+      state.themeCustomConfig = value.themeCustom;
       return true;
     } catch (e, s) {
       Log.e('update or add theme config failed', error: e, stackTrace: s);

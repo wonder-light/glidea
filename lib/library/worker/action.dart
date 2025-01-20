@@ -61,8 +61,8 @@ base mixin BackgroundAction on BackgroundWorker {
   }
 
   /// 保存主题的配置
-  Future<void> saveThemeConfig(Application site, List<ConfigBase> themes, List<ConfigBase> customs) async {
-    return await call<void>(_saveThemeConfig, [site, themes, customs]);
+  Future<ThemeCall> saveThemeConfig(Application site, List<ConfigBase> themes, List<ConfigBase> customs) async {
+    return await call<ThemeCall>(_saveThemeConfig, [site, themes, customs]);
   }
 
   /// 保存主题配置中的图片
@@ -334,7 +334,10 @@ base mixin ThemeBack on DataBack {
   @override
   Future<void> onInit() async {
     await super.onInit();
-    _invokes.addAll({BackgroundAction._loadThemeCustomConfig: loadThemeCustomConfig});
+    _invokes.addAll({
+      BackgroundAction._loadThemeCustomConfig: loadThemeCustomConfig,
+      BackgroundAction._saveThemeConfig: saveThemeConfig,
+    });
   }
 
   /// 获取自定义主题的控件配置
@@ -382,7 +385,7 @@ base mixin ThemeBack on DataBack {
   }
 
   /// 保存主题的配置
-  Future<void> saveThemeConfig(Application site, List<ConfigBase> themes, List<ConfigBase> customs) async {
+  Future<ThemeCall> saveThemeConfig(Application site, List<ConfigBase> themes, List<ConfigBase> customs) async {
     // 更新主题数据
     TJsonMap items = {};
     for (var config in themes) {
@@ -402,5 +405,8 @@ base mixin ThemeBack on DataBack {
     }
     // Map 在合并后需要使用新的 Map 对象, 旧的 Map 对象在序列化时会报错
     site.themeCustomConfig = site.themeCustomConfig.mergeMaps(items);
+    // 保存数据
+    await saveSiteData(site);
+    return (theme: site.themeConfig, themeCustom: site.themeCustomConfig);
   }
 }
