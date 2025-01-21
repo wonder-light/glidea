@@ -87,7 +87,7 @@ class TextareaConfig extends ConfigString {
 /// 输入字段配置
 @jsonSerializable
 @Json(discriminatorValue: FieldType.input)
-class InputConfig extends TextareaConfig {
+class InputConfig extends TextareaConfig with InputMixin {
   /// card 配置
   ///
   /// 可选值：
@@ -205,6 +205,11 @@ class SelectOption {
       ..label = label
       ..value = value;
   }
+}
+
+mixin class InputMixin {
+  /// 是否隐藏密码
+  bool hidePassword = false;
 }
 
 mixin class PictureMixin {

@@ -1,6 +1,5 @@
 ﻿import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show BoolExtension;
 import 'package:glidea/components/remote/comment.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
@@ -59,10 +58,10 @@ class RemoteSettingWidgetState extends CommentSettingWidgetState {
   void initConfig() {
     if (hidePasswords.isEmpty) {
       hidePasswords = {
-        passwordField: true.obs,
-        privateKeyField: true.obs,
-        accessTokenField: true.obs,
-        tokenField: true.obs,
+        passwordField: true,
+        privateKeyField: true,
+        accessTokenField: true,
+        tokenField: true,
       };
     }
     platform = site.remote.platform;

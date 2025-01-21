@@ -1,9 +1,8 @@
 ﻿part of 'base.dart';
 
-
 /// 主题设置中的文本控件
 class InputWidget extends TextareaWidget<InputConfig> {
-  const InputWidget({
+  InputWidget({
     super.key,
     required super.config,
     super.isVertical,
@@ -12,7 +11,9 @@ class InputWidget extends TextareaWidget<InputConfig> {
     super.inputFormatters,
     this.prefixIcon,
     this.usePassword,
-  });
+  }) {
+    config.value.hidePassword = usePassword ?? false;
+  }
 
   /// 在装饰的容器中, 出现在文本字段的可编辑部分之后和后缀或 suffixText 之后的图标
   final Widget? prefixIcon;
@@ -20,14 +21,12 @@ class InputWidget extends TextareaWidget<InputConfig> {
   /// 使用密码样式
   ///
   /// ```
-  /// null:  不使用密码
-  /// true:  隐藏密码
-  /// false: 显示密码
+  /// true:  使用隐藏密码
   /// ```
-  final RxBool? usePassword;
+  final bool? usePassword;
 
   @override
-  bool get hidePassword => usePassword?.value ?? false;
+  bool get hidePassword => config.value.hidePassword;
 
   @override
   bool get isTextarea => false;
@@ -37,15 +36,15 @@ class InputWidget extends TextareaWidget<InputConfig> {
 
   @override
   Widget? getPrefixIcon() {
-    var theme = Get.theme;
-    return switch (config.value.card) {
+    final obj = config.value;
+    return switch (obj.card) {
       InputCardType.post => IconButton(
-          color: theme.colorScheme.primary,
+          color: ColorScheme.of(Get.context!).primary,
           icon: const Icon(PhosphorIconsRegular.article),
           onPressed: postDialog,
         ),
-      InputCardType.card => IconButton(
-          color: config.value.value.toColorFromCss,
+      InputCardType.color => IconButton(
+          color: obj.value.toColorFromCss,
           icon: const Icon(PhosphorIconsRegular.palette),
           onPressed: colorDialog,
         ),
@@ -55,70 +54,58 @@ class InputWidget extends TextareaWidget<InputConfig> {
 
   @override
   Widget? getSuffixIcon() {
-    if (config.value.card == InputCardType.none && usePassword != null) {
-      return IconButton(
-        icon: hidePassword ? const Icon(PhosphorIconsRegular.eyeSlash) : const Icon(PhosphorIconsRegular.eye),
-        onPressed: () {
-          assert(usePassword != null, 'InputWidget.getSuffixIcon: usePassword != null is not true');
-          usePassword!.value = !usePassword!.value;
-          config.update((obj) => obj);
-        },
-      );
-    }
-    return super.getSuffixIcon();
+    final obj = config.value;
+    if (obj.card != InputCardType.none || usePassword != true) return null;
+    // 密码
+    return IconButton(
+      icon: obj.hidePassword ? const Icon(PhosphorIconsRegular.eyeSlash) : const Icon(PhosphorIconsRegular.eye),
+      onPressed: () {
+        config.update((obj) => obj..hidePassword = !obj.hidePassword);
+      },
+    );
   }
 
   /// 文章选择弹窗
   void postDialog() {
     final site = Get.find<SiteController>(tag: SiteController.tag);
+    final theme = Theme.of(Get.context!);
     // 数据
-    var links = site.getPostLink();
+    final links = site.getPostLink();
+    // 高度
+    final constraints = const BoxConstraints(maxHeight: 60);
+    // 子标题样式
+    final subtitleTextStyle = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline);
     // 列表
-    var index = 0;
-    Widget childWidget = Column(
-      children: [
-        for (var option in links) ...[
-          if (index++ > 0) const Divider(height: 1, thickness: 1),
-          ListItem(
-            leading: const Icon(PhosphorIconsRegular.link),
-            onTap: () {
-              config.update((obj) {
-                return obj..value = option.link;
-              });
-              Get.backLegacy();
-            },
-            title: Text(option.name),
-            subtitle: Text(option.link),
-            dense: true,
-          ),
-        ],
-      ],
+    Widget childWidget = ListView.separated(
+      shrinkWrap: true,
+      itemCount: links.length,
+      itemBuilder: (BuildContext context, int index) {
+        final option = links[index];
+        return ListItem(
+          dense: true,
+          constraints: constraints,
+          title: Text(option.name),
+          subtitle: Text(option.link),
+          subtitleTextStyle: subtitleTextStyle,
+          leadingMargin: kRightPadding16,
+          leading: const Icon(PhosphorIconsRegular.link),
+          onTap: () {
+            controller.text = config.value.value = option.link;
+            Get.backLegacy();
+          },
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) => const Divider(height: 1, thickness: 1),
     );
     // 约束
     childWidget = Container(
       padding: kHorPadding16,
-      constraints: const BoxConstraints(maxHeight: kPanelWidth * 1.4),
-      child: SingleChildScrollView(
-        child: childWidget,
-      ),
-    );
-    // 弹窗控件
-    childWidget = DialogWidget(
-      header: Padding(
-        padding: kAllPadding16,
-        child: Text('selectArticle'.tr, textScaler: const TextScaler.linear(1.2)),
-      ),
-      content: childWidget,
-      actions: const Padding(padding: kTopPadding16),
-      onCancel: () {
-        Get.backLegacy();
-      },
-      onConfirm: () {
-        Get.backLegacy();
-      },
+      width: kPanelWidth * 0.8,
+      height: kPanelWidth * 1.1,
+      child: childWidget,
     );
     // 弹窗
-    Get.dialog(childWidget);
+    _showDialog(Tran.selectArticle, childWidget);
   }
 
   /// 颜色选择器弹窗
@@ -126,6 +113,7 @@ class InputWidget extends TextareaWidget<InputConfig> {
     // 颜色选择器
     Widget childWidget = ColorPicker(
       width: 26,
+      color: config.value.value.toColorFromCss,
       pickersEnabled: const {
         ColorPickerType.primary: false,
         ColorPickerType.accent: false,
@@ -135,34 +123,32 @@ class InputWidget extends TextareaWidget<InputConfig> {
       enableOpacity: true,
       onColorChanged: (Color color) {},
       onColorChangeEnd: (Color color) {
-        config.update((obj) {
-          return obj..value = color.toCssHex;
-        });
-      },
-    );
-    // 弹窗控件
-    childWidget = DialogWidget(
-      header: Padding(
-        padding: kAllPadding16,
-        child: Text('selectColor'.tr, textScaler: const TextScaler.linear(1.2)),
-      ),
-      content: childWidget,
-      actions: const Padding(padding: kTopPadding16),
-      onCancel: () {
-        Get.backLegacy();
-      },
-      onConfirm: () {
-        Get.backLegacy();
+        config.update((obj) => obj..value = controller.text = '#${color.toCssHex}');
       },
     );
     // 弹窗
-    Get.dialog(childWidget);
+    _showDialog(Tran.selectColor, childWidget);
+  }
+
+  /// 显示弹窗
+  void _showDialog(String title, Widget child) {
+    // 显示弹窗控件
+    Get.dialog(DialogWidget(
+      header: Padding(
+        padding: kAllPadding16,
+        child: Text(title.tr, textScaler: const TextScaler.linear(1.2)),
+      ),
+      content: child,
+      actions: const Padding(padding: kTopPadding16),
+      onCancel: () => Get.backLegacy(),
+      onConfirm: () => Get.backLegacy(),
+    ));
   }
 }
 
 /// 文件选择器控件
 class FileSelectWidget extends TextareaWidget<InputConfig> {
-  const FileSelectWidget({
+  FileSelectWidget({
     super.key,
     required super.config,
     super.isVertical,
@@ -180,7 +166,6 @@ class FileSelectWidget extends TextareaWidget<InputConfig> {
   @override
   Widget? getSuffixIcon() {
     return IconButton(
-      color: config.value.value.toColorFromCss,
       icon: const Icon(PhosphorIconsRegular.folderOpen),
       onPressed: selectFile,
     );
@@ -190,8 +175,6 @@ class FileSelectWidget extends TextareaWidget<InputConfig> {
   void selectFile() async {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
     if (selectedDirectory == null) return;
-    config.update((obj) {
-      return obj..value = FS.normalize(selectedDirectory);
-    });
+    controller.text = config.value.value = FS.normalize(selectedDirectory);
   }
 }

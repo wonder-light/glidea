@@ -126,7 +126,7 @@ class ArrayWidget extends BaseRenderWidget<ArrayConfig> {
     required T config,
     bool isVertical = true,
     ValueChanged<dynamic>? onChanged,
-    RxBool? usePassword,
+    bool? usePassword,
     int scope = -1,
   }) {
     return switch (config.type) {

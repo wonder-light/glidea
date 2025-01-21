@@ -1,6 +1,6 @@
 ﻿import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Inst, RxBool;
+import 'package:get/get.dart' show Get, Inst;
 import 'package:glidea/components/render/base.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/enum/enums.dart';
@@ -25,7 +25,7 @@ class CommentSettingWidgetState extends State<CommentSettingWidget> {
   late Enum platform;
 
   /// 需要隐藏密码的字段
-  TMap<RxBool> hidePasswords = {};
+  TMap<bool> hidePasswords = {};
 
   @override
   void initState() {

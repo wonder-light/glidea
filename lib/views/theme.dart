@@ -95,18 +95,18 @@ class _ThemeViewState extends State<ThemeView> {
         message: Tran.save.tr,
         child: IconButton(
           onPressed: saveConfig,
-          icon: const Icon(PhosphorIconsRegular.boxArrowDown),
+          icon: const Icon(PhosphorIconsRegular.archive),
         ),
       ),
     ];
   }
 
   /// 重置配置
-  void resetConfig() async {
+  void resetConfig() {
     site.themeWidgetConfig.clear();
     site.themeCustomWidgetConfig.clear();
-    await themeKey.currentState?.loadData();
-    await customKey.currentState?.loadData();
+    themeKey.currentState?.loadData();
+    customKey.currentState?.loadData();
   }
 
   /// 保存配置

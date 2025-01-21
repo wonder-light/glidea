@@ -56,7 +56,7 @@ enum FieldType {
 /// InputCard 的类型
 @jsonSerializable
 enum InputCardType {
-  card,
+  color,
   post,
   none,
 }

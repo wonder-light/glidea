@@ -2,17 +2,17 @@
 
 /// 主题设置中的富文本控件
 class TextareaWidget<T extends TextareaConfig> extends BaseRenderWidget<T> {
-  const TextareaWidget({
+  TextareaWidget({
     super.key,
     required super.config,
     super.isVertical,
     super.onChanged,
-    this.controller,
+    TextEditingController? controller,
     this.inputFormatters,
-  });
+  }) : controller = controller ?? TextEditingController(text: config.value.value);
 
   /// text 控制器
-  final TextEditingController? controller;
+  final TextEditingController controller;
 
   /// 输入格式化
   final List<TextInputFormatter>? inputFormatters;
@@ -29,9 +29,8 @@ class TextareaWidget<T extends TextareaConfig> extends BaseRenderWidget<T> {
   @override
   Widget buildContent(BuildContext context) {
     final theme = Theme.of(Get.context!);
-    final controller = this.controller ?? TextEditingController(text: config.value.value);
-    return Obx(() {
-      return TextFormField(
+    return Obx(
+      () => TextFormField(
         obscureText: hidePassword,
         controller: controller,
         readOnly: isReadOnly,
@@ -50,13 +49,13 @@ class TextareaWidget<T extends TextareaConfig> extends BaseRenderWidget<T> {
         ),
         onChanged: change,
         inputFormatters: inputFormatters,
-      );
-    });
+      ),
+    );
   }
 
   /// 内容值变化时调用
   void change(String value) {
-    config.update((obj) => obj..value = value);
+    config.value.value = value;
     onChanged?.call(value);
   }
 

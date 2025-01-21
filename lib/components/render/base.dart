@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart' show FilePicker, FileType;
 import 'package:flex_color_picker/flex_color_picker.dart' show ColorPicker, ColorPickerType;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show TextInputFormatter;
-import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, RxBool, Trans;
+import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/Common/dialog.dart';
 import 'package:glidea/components/Common/dropdown.dart';
 import 'package:glidea/components/Common/list_item.dart';
@@ -18,6 +18,7 @@ import 'package:glidea/helpers/get.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/image.dart';
 import 'package:glidea/interfaces/types.dart';
+import 'package:glidea/lang/base.dart';
 import 'package:glidea/models/render.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
