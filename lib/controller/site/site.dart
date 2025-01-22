@@ -3,6 +3,7 @@
 import 'dart:async' show Completer;
 import 'dart:io' show Directory;
 
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart' show AsyncCallback, protected;
 import 'package:flutter/material.dart' show Locale;
 import 'package:get/get.dart' show Get, GetNavigationExt, StateController, Trans;
@@ -10,7 +11,6 @@ import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/fs.dart';
 import 'package:glidea/helpers/get.dart';
-import 'package:glidea/helpers/image.dart';
 import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';

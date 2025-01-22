@@ -38,15 +38,29 @@ mixin PostSite on DataProcess, TagSite {
   ///     false: 从 [Post.title] 中搜索数据
   ///     true: 从 [Post.title] 和 [Post.content] 中搜索数据
   List<Post> filterPost(String data, {bool include = false}) {
-    if (data.isEmpty) return [...state.posts];
-    // 比较
-    bool compare(Post p) {
-      final reg = RegExp(data, caseSensitive: false, multiLine: true);
-      return p.title.contains(reg) || (include && p.content.contains(reg));
+    Iterable<Post> posts;
+    if (data.isEmpty) {
+      posts = [...state.posts];
+    } else {
+      // 比较
+      bool compare(Post p) {
+        final reg = RegExp(data, caseSensitive: false, multiLine: true);
+        return p.title.contains(reg) || (include && p.content.contains(reg));
+      }
+
+      // 筛选
+      posts = state.posts.where(compare);
+    }
+    // 排序
+    int compare(Post p1, Post p2) {
+      // true==true || false==false
+      if (p2.isTop == p1.isTop) {
+        return p2.date.compareTo(p1.date);
+      }
+      return p2.isTop ? 1 : -1;
     }
 
-    // 筛选
-    return state.posts.where(compare).toList();
+    return posts.sorted(compare).toList();
   }
 
   /// 获取文章的链接
