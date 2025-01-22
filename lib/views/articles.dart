@@ -35,8 +35,9 @@ class _ArticlesViewState extends State<ArticlesView> {
   final isDesktop = !Get.isPhone;
 
   // 主题配置
-  final textTheme = Get.theme.textTheme;
-  final colorScheme = Get.theme.colorScheme;
+  late final theme = Theme.of(context);
+  late final textTheme = theme.textTheme;
+  late final colorScheme = theme.colorScheme;
 
   /// 记录时间
   final Map<int, String> dates = {};
@@ -97,31 +98,26 @@ class _ArticlesViewState extends State<ArticlesView> {
 
   /// 构建菜单项
   Widget _buildListItem(Post post) {
-    // 头部组件
-    final leading = ImageConfig.builderImg(site.getFeaturePath(post));
-    //内容边距
-    final contentPadding = kRightPadding16;
     // 大小
-    final constraints = isDesktop ? const BoxConstraints(maxHeight: 80) : const BoxConstraints(maxHeight: 100);
+    final constraints = BoxConstraints(maxHeight: isDesktop ? 80 : 100);
     // 时间
     final date = dates[post.date.millisecondsSinceEpoch] ??= post.date.format(pattern: site.themeConfig.dateFormat);
-    // TODO: 隐藏时在右上角添加隐藏图标
-    return ListItem(
+    // 头部组件
+    var child = ImageConfig.builderImg(site.getFeaturePath(post));
+    // 项
+    child = ListItem(
       shape: shapeBorder,
-      contentPadding: contentPadding,
+      contentPadding: kRightPadding16,
       constraints: constraints,
-      leading: leading,
+      leading: child,
       title: Text(post.title),
       subtitle: Wrap(
         spacing: kRightPadding4.right,
         children: [
-          const Icon(PhosphorIconsRegular.check),
-          Padding(
-            padding: kRightPadding4,
-            child: Text(post.published ? Tran.published.tr : Tran.draft.tr),
-          ),
+          Icon(PhosphorIconsRegular.check, color: post.published ? colorScheme.primary : null),
+          Text(post.published ? Tran.published.tr : Tran.draft.tr),
           const Icon(PhosphorIconsRegular.calendarDots),
-          Padding(padding: kRightPadding4, child: Text(date)),
+          Text(date),
           if (post.tags.isNotEmpty) const Icon(PhosphorIconsRegular.tag),
           if (post.tags.isNotEmpty)
             for (var tag in site.getTagsWithPost(post)) Text(tag.name),
@@ -132,6 +128,36 @@ class _ArticlesViewState extends State<ArticlesView> {
         icon: const Icon(PhosphorIconsRegular.trash),
       ),
       onTap: () => editorPost(fileName: post.fileName),
+    );
+    // 构建右上角的图标
+    if (post.isTop || post.hideInList) {
+      child = Stack(
+        children: [
+          child,
+          if (post.hideInList) _buildBadge(right: post.isTop ? 40 : 0, text: 'HIDE'),
+          if (post.isTop) _buildBadge(color: colorScheme.secondaryContainer),
+        ],
+      );
+    }
+    return child;
+  }
+
+  /// 构建右上角的图标
+  Widget _buildBadge({double right = 0, Color? color, String text = 'TOP'}) {
+    return Positioned(
+      top: 0,
+      right: right,
+      child: Container(
+        padding: kHorPadding8 / 2,
+        clipBehavior: Clip.antiAlias,
+        decoration: ShapeDecoration(
+          color: color ?? theme.colorScheme.primaryContainer,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        child: Text(text, style: textTheme.bodySmall),
+      ),
     );
   }
 

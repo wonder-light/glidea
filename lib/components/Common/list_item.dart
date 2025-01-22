@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt;
 import 'package:glidea/helpers/constants.dart';
 
 /// 列表项
@@ -105,9 +104,9 @@ class ListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 主题配置
-    final theme = Get.theme;
-    final colorScheme = Get.theme.colorScheme;
-    final textTheme = Get.theme.textTheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final ListTileThemeData defaults = theme.listTileTheme;
     // 标题样式
     var titleStyle = titleTextStyle ?? (dense ? textTheme.bodyMedium! : textTheme.bodyLarge!.apply(fontSizeFactor: 1.2));
