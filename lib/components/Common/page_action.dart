@@ -1,5 +1,4 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt;
 import 'package:glidea/helpers/constants.dart';
 
 /// 菜单和标签页面的公共部分
@@ -34,26 +33,21 @@ class PageAction extends StatelessWidget {
     Widget content = Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
+        // 标题
+        if (leading != null) Flexible(child: leading!),
         for (var item in actions) Padding(padding: kRightPadding8, child: item),
       ],
     );
-    // 标题
-    if (leading != null) {
-      content = Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [leading!, content],
-      );
-    }
     // 加上分割线, 以及内容
     // 使用 [Material] 在切换路由时可以将背景变不透明, 不至于让两个页面看起来重叠在了一起
-    final bgColor = Theme.of(Get.context!).scaffoldBackgroundColor;
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
     // 返回控件
     return Material(
       color: bgColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(padding: toolbarPadding, child: content),
+          Container(padding: toolbarPadding, color: bgColor, child: content),
           const Divider(thickness: 1, height: 1),
           Expanded(child: Padding(padding: contentPadding, child: child)),
         ],

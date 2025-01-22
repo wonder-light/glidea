@@ -83,23 +83,19 @@ class _HomeUpPanelState extends State<HomeUpPanel> {
     );
     // 项目
     List<Widget> children = [for (var item in menus) _buildItem(item)];
-    // 平板端使用滚动, [IntrinsicWidth] 与 [CustomScrollView] 不能同时使用
-    if (!Get.isDesktop) {
-      children = [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(spacing: kTopPadding8.top, children: children),
-          ),
-        )
-      ];
-    }
+    // 插入
+    children.insert(0, childWidget);
     // 放到一个列表中
     childWidget = Column(
       spacing: kTopPadding8.top,
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [childWidget, ...children],
+      children: children,
     );
+    // 平板端使用滚动, [IntrinsicWidth] 与 [CustomScrollView] 不能同时使用
+    if (!Get.isDesktop) {
+      childWidget = SingleChildScrollView(child: childWidget);
+    }
     // 包裹水平边距
     return Padding(padding: kHorPadding12, child: childWidget);
   }

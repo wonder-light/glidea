@@ -149,13 +149,10 @@ class _ArticlesViewState extends State<ArticlesView> {
   void deletePost(Post post) {
     // 弹窗
     Get.dialog(DialogWidget(
-      onCancel: () {
-        Get.backLegacy();
-      },
-      onConfirm: () {
-        site.removePost(post).then((value) {
-          value ? Get.success(Tran.articleDelete) : Get.error(Tran.articleDeleteFailure);
-        });
+      onCancel: () => Get.backLegacy(),
+      onConfirm: () async {
+        final value = await site.removePost(post);
+        value ? Get.success(Tran.articleDelete) : Get.error(Tran.articleDeleteFailure);
         Get.backLegacy();
       },
     ));

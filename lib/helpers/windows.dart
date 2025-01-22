@@ -16,7 +16,7 @@ class WindowsHelp {
       center: true,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
-      minimumSize: Size(windowMinWidth + 120, windowMinHeight),
+      minimumSize: Size(windowMinWidth + 120, windowMinHeight + 30),
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();

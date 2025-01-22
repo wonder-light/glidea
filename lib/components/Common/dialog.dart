@@ -54,16 +54,16 @@ class DialogWidget extends StatelessWidget {
     // 操作按钮
     Widget actionWidget = actions ??
         Padding(
-          padding: kAllPadding16 + kTopPadding8,
+          padding: kAllPadding16,
           child: Row(
+            spacing: 10,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               OutlinedButton(
                 onPressed: onCancel,
                 style: style,
-                child: Text("cancel".tr),
+                child: Text(Tran.cancel.tr),
               ),
-              Container(width: 10),
               FilledButton(
                 onPressed: onConfirm,
                 style: style,

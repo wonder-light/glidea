@@ -51,7 +51,7 @@ class _HomeDownPanelState extends State<HomeDownPanel> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: kVer8Hor32,
+      padding: kHor24bottom8,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

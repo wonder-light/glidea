@@ -68,7 +68,7 @@ const EdgeInsets kTopPadding16 = EdgeInsets.only(top: 16);
 const EdgeInsets kVer8Hor12 = EdgeInsets.symmetric(vertical: 8, horizontal: 12);
 const EdgeInsets kVer12Hor24 = EdgeInsets.symmetric(vertical: 12, horizontal: 24);
 const EdgeInsets kVer24Hor16 = EdgeInsets.symmetric(vertical: 24, horizontal: 16);
-const EdgeInsets kVer8Hor32 = EdgeInsets.symmetric(vertical: 8, horizontal: 32);
+const EdgeInsets kHor24bottom8 = EdgeInsets.only(right: 24, left: 24, bottom: 8);
 
 // 字段
 const domainField = 'domain';
