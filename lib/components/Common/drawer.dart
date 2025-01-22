@@ -130,10 +130,12 @@ class DrawerWidget extends StatelessWidget {
       alignment: direction.toAlign,
       child: Material(
         elevation: elevation,
-        child: IntrinsicWidth(
-          stepWidth: stepWidth,
-          stepHeight: stepHeight,
-          child: drawer,
+        child: SafeArea(
+          child: IntrinsicWidth(
+            stepWidth: stepWidth,
+            stepHeight: stepHeight,
+            child: drawer,
+          ),
         ),
       ),
     );

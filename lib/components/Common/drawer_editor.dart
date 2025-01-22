@@ -101,7 +101,7 @@ abstract class DrawerEditorState<T extends DrawerEditor> extends State<T> {
       ],
     );
     // 加上内边距
-    return Padding(padding: kAllPadding16 + kVerPadding8, child: child);
+    return Padding(padding: kAllPadding16, child: child);
   }
 
   /// 构建菜单内容
