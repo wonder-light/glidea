@@ -25,8 +25,9 @@ class _MenuViewState extends State<MenuView> {
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
   // 配色方案
-  final colors = Get.theme.colorScheme;
-  final textTheme = Get.theme.textTheme;
+  late final theme = Theme.of(context);
+  late final colors = theme.colorScheme;
+  late final textTheme = theme.textTheme;
 
   // 形状
   late final shapeBorder = ContinuousRectangleBorder(

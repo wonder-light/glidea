@@ -59,7 +59,7 @@ class _RemoteViewState extends State<RemoteView> {
     );
     // 返回
     return Material(
-      color: Get.theme.scaffoldBackgroundColor,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.max,

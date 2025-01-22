@@ -59,18 +59,18 @@ class _PostViewState extends State<PostView> {
   /// 标题的字段控制器
   final contentCtr = CodeLineEditingController();
 
+  /// 主题数据
+  late final theme = Theme.of(context);
+
   /// head 上的操作按钮
   late final List<TCallData> actions = [
     (call: backToArticlePage, dis: backToArticlePage, icon: PhosphorIconsRegular.arrowLeft, color: null, msg: Tran.back),
     (call: saveAsDraft, dis: null, icon: PhosphorIconsRegular.check, color: null, msg: Tran.saveDraft),
-    (call: savePost, dis: null, icon: PhosphorIconsRegular.check, color: Get.theme.colorScheme.primary, msg: Tran.save),
+    (call: savePost, dis: null, icon: PhosphorIconsRegular.check, color: theme.colorScheme.primary, msg: Tran.save),
   ];
 
   /// 图片配置
   final picture = PictureConfig();
-
-  /// 主题数据
-  final theme = Theme.of(Get.context!);
 
   @override
   void initState() {

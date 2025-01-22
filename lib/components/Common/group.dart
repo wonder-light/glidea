@@ -1,5 +1,5 @@
 ﻿import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, GetNavigationExt, IntExtension, Obx, Trans;
+import 'package:get/get.dart' show IntExtension, Obx, Trans;
 import 'package:glidea/helpers/constants.dart';
 
 /// 分组布局控件
@@ -65,9 +65,12 @@ class _GroupWidgetState extends State<GroupWidget> {
   /// 当前页面的索引
   late final currentIndex = widget.initialIndex.obs;
 
+  /// 主题样式
+  late final theme = Theme.of(context);
+
   /// 选择时的文字样式
-  late final selectStyle = Get.textTheme.bodyMedium!.copyWith(
-    color: Get.theme.colorScheme.primary,
+  late final selectStyle = theme.textTheme.bodyMedium!.copyWith(
+    color: theme.colorScheme.primary,
   );
 
   @override

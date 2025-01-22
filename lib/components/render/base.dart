@@ -119,7 +119,7 @@ class RenderLayoutWidget extends StatelessWidget {
     Widget childWidget = _buildContent(
       child: child,
       label: _buildLabel(),
-      note: _buildNote(),
+      note: _buildNote(context),
     );
 
     // 内容边距, 包裹所有控件的边距
@@ -142,11 +142,11 @@ class RenderLayoutWidget extends StatelessWidget {
   }
 
   /// 构建提示
-  Widget? _buildNote() {
+  Widget? _buildNote(BuildContext context) {
     // 如果是空的则返回 null
     if (config.note.isEmpty) return null;
     // 主题
-    var theme = Get.theme;
+    var theme = Theme.of(context);
     // 返回提示
     return Padding(
       padding: helperPadding ?? kVerPadding4,

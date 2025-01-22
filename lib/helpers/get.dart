@@ -101,7 +101,7 @@ extension GetExt on GetInterface {
     _snackbar(
       message: message,
       icon: Icons.close,
-      iconColor: theme.colorScheme.error,
+      iconColor: ColorScheme.of(context!).error,
     );
   }
 
@@ -114,6 +114,7 @@ extension GetExt on GetInterface {
     IconData? icon,
     Color? iconColor,
   }) {
+    final theme = Theme.of(context!);
     ElegantNotification(
       width: width ?? clampDouble(width ?? (this.width * 0.4), 240, 350),
       height: height ?? clampDouble(height ?? (this.height * 0.12), 60, 80),

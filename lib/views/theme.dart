@@ -40,7 +40,7 @@ class _ThemeViewState extends State<ThemeView> {
     );
     // PC 端和平板端
     return Material(
-      color: Get.theme.scaffoldBackgroundColor,
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         mainAxisSize: MainAxisSize.max,
