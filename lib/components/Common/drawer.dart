@@ -93,15 +93,13 @@ class DrawerWidget extends StatelessWidget {
     internalController._onClose = onClose;
     // 背景板
     final bgColor = opacityColor ?? ColorScheme.of(context).outlineVariant;
-    Widget backboard = Container(color: bgColor.withAlpha(Color.getAlphaFromOpacity(opacity)));
+    Widget backboard = Container(color: bgColor.withAlpha((opacity * 255).round()));
     // 模糊效果
     if (blur) {
-      backboard = ClipRRect(
-        borderRadius: BorderRadius.circular(8.0),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: backboard,
-        ),
+      // sigmaX 与 sigmaY 过大会导致背景产生扰动
+      backboard = BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+        child: backboard,
       );
     }
     // 背景
