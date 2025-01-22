@@ -130,7 +130,7 @@ class SettingEditorState extends State<SettingEditor> {
             message: Tran.save.tr,
             child: IconButton(
               onPressed: onSave,
-              icon: const Icon(PhosphorIconsRegular.downloadSimple),
+              icon: const Icon(PhosphorIconsRegular.boxArrowDown),
             ),
           ),
           const Padding(padding: kRightPadding16),

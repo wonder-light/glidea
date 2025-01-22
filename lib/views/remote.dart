@@ -39,7 +39,7 @@ class _RemoteViewState extends State<RemoteView> {
     if (Get.isPhone) {
       actions = [
         (name: Tran.testConnection, call: _testConnection, icon: PhosphorIconsRegular.clockCounterClockwise),
-        (name: Tran.save, call: _saveConfig, icon: PhosphorIconsRegular.downloadSimple),
+        (name: Tran.save, call: _saveConfig, icon: PhosphorIconsRegular.boxArrowDown),
       ];
     }
   }
