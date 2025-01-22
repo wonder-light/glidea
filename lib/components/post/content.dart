@@ -44,6 +44,7 @@ class PostContent extends StatelessWidget {
     final theme = Theme.of(Get.context!);
     final style = theme.textTheme.bodyMedium?.apply(fontSizeFactor: 1.1);
     return CodeEditor(
+      autofocus: false,
       scrollbarBuilder: buildScrollbar,
       controller: controller,
       padding: kTopPadding16.flipped,
