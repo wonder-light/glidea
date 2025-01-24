@@ -105,7 +105,7 @@ jobs:
       - name: Enable flutter_distributor
         run: |
           dart pub global activate flutter_distributor
-          set path=%PATH%;${{ env.PUB_CACHE }}\bin
+          setx "Path" "%Path%;${{ env.PUB_CACHE }}\bin;" /m
       - name: Build msix package
         run: |
           flutter_distributor package --platform windows --targets msix
