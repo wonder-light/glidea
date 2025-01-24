@@ -66,7 +66,7 @@ jobs:
     runs-on: windows-latest
     env:
       INNO_PATH: "./windows/packaging/exe/inno-setup.iss"
-      APP_FOLDER: "P:[/\\]Root[/\\]Project[/\\]app[/\\]glidea[/\\]glidea"
+      APP_FOLDER: "P:[/\\\\]Root[/\\\\]Project[/\\\\]app[/\\\\]glidea[/\\\\]glidea"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
