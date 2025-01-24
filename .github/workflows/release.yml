@@ -42,10 +42,11 @@ jobs:
         run: |
           flutter build apk --release
           flutter build apk --release --split-per-abi
-          cp ./build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk ./App/glidea-${{ github.ref_name }}-arm32v7.apk
-          cp ./build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ./App/glidea-${{ github.ref_name }}-arm64v8.apk
-          cp ./build/app/outputs/flutter-apk/app-x86_64-release.apk ./App/glidea-${{ github.ref_name }}-x64.apk
-          cp ./build/app/outputs/flutter-apk/app-release.apk ./App/glidea-${{ github.ref_name }}.apk
+          mkdir App
+          cp ./build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk ./App/Glidea-${{ github.ref_name }}-arm32v7.apk
+          cp ./build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ./App/Glidea-${{ github.ref_name }}-arm64v8.apk
+          cp ./build/app/outputs/flutter-apk/app-x86_64-release.apk ./App/Glidea-${{ github.ref_name }}-x64.apk
+          cp ./build/app/outputs/flutter-apk/app-release.apk ./App/Glidea-${{ github.ref_name }}.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -72,7 +73,25 @@ jobs:
           Copy-Item ../scripts/windows/x64/vcruntime140.dll ./build/windows/x64/runner/Release/
           Copy-Item ../scripts/windows/x64/vcruntime140_1.dll ./build/windows/x64/runner/Release/
       - name: Zip compiled files
-        run: Compress-Archive -Path ./build/windows/x64/runner/Release/* -DestinationPath ./App/glidea-${{ github.ref_name }}-windows.zip
+        run: | 
+          mkdir App
+          Compress-Archive -Path ./build/windows/x64/runner/Release/* -DestinationPath ./App/Glidea-${{ github.ref_name }}-windows.zip
+      - name: Compile .ISS to .EXE Installer
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: ./windows/packaging/exe/inno-setup.iss
+          options: /Q"${{ github.workspace }}/dist" /F"Glidea"
+      - name: Copy exe file
+        run: |
+          cp dist/Glidea.exe App/Glidea-${{ github.ref_name }}-windows.exe
+      - name: Enable flutter_distributor
+        run: | 
+          dart pub global activate flutter_distributor
+          set path=%PATH%;%AppData%\..\Local\Pub\Cache\bin
+      - name: Build msix package
+        run: |
+          flutter_distributor package --platform windows --targets msix
+          cp dist/*/*glidea*.msix App/Glidea-${{ github.ref_name }}-windows.msix
       - name: Upload Windows zip
         uses: actions/upload-artifact@v4
         with:
@@ -87,7 +106,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          sudo apt-get install libgtk-3-0 libblkid1 liblzma5
+          sudo apt-get update
           sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev libfuse2
       - uses: subosito/flutter-action@v2
         with:
@@ -98,8 +117,18 @@ jobs:
         run: flutter build linux
       - name: Create tar.gz archive
         run: |
+          mkdir App
           cd ./build/linux/x64/release/bundle
-          tar -czvf ../../../../../App/glidea-${{ github.ref_name }}-linux-x86-64.tar.gz *
+          tar -czvf ../../../../../App/Glidea-${{ github.ref_name }}-linux-x86-64.tar.gz *
+          cd ../../../../../
+      - name: Enable flutter_distributor
+        run: | 
+          dart pub global activate flutter_distributor
+          echo 'export PATH="$PATH:$HOME/.pub-cache/bin"' >> ~/.bashrc
+      - name: Build deb package
+        run: flutter_distributor package --platform linux --targets deb
+      - name: Copy file
+        run: cp dist/*/*glidea*.deb App/Glidea-${{ github.ref_name }}-linux-x86-64.deb
       - name: Upload tar.gz archive
         uses: actions/upload-artifact@v4
         with:
@@ -114,7 +143,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          sudo apt-get install libgtk-3-0 libblkid1 liblzma5
+          sudo apt-get update
           sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev libfuse2
       - uses: subosito/flutter-action@v2
         with:
@@ -125,8 +154,18 @@ jobs:
         run: flutter build linux
       - name: Create tar.gz archive
         run: |
+          mkdir App
           cd ./build/linux/arm64/release/bundle
-          tar -czvf ../../../../../App/glidea-${{ github.ref_name }}-linux-arm-64.tar.gz *
+          tar -czvf ../../../../../App/Glidea-${{ github.ref_name }}-linux-arm-64.tar.gz *
+          cd ../../../../../
+      - name: Enable flutter_distributor
+        run: | 
+          dart pub global activate flutter_distributor
+          echo 'export PATH="$PATH:$HOME/.pub-cache/bin"' >> ~/.bashrc
+      - name: Build deb package
+        run: flutter_distributor package --platform linux --targets deb
+      - name: Copy file
+        run: cp dist/*/*glidea*.deb App/Glidea-${{ github.ref_name }}-linux-arm-64.deb
       - name: Upload tar.gz archive
         uses: actions/upload-artifact@v4
         with:
@@ -141,6 +180,9 @@ jobs:
       - build_linux-x86_64
       - build_linux_arm_64
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      discussions: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4

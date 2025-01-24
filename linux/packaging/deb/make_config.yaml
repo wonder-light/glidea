@@ -1,0 +1,36 @@
+display_name: Glidea
+package_name: glidea
+maintainer:
+  name: wonder-light
+  email: wonder-light@163.com
+co_authors:
+  - name: wonder-light
+    email: wonder-light@163.com
+priority: optional
+section: x11
+installed_size: 30600
+essential: false
+icon: assets/images/logo.png
+
+postinstall_scripts:
+  - echo "Installed my awesome app"
+postuninstall_scripts:
+  - echo "Surprised Pickachu face"
+
+keywords:
+  - Blog
+  - Glidea
+  - Static_Blog
+  - Application
+
+generic_name: 一个静态博客写作客户端, 可以用来记录你的生活、心情、想法...
+
+categories:
+  - Tool
+  - Blog
+
+startup_notify: true
+
+# You can also specify [metainfo](https://freedesktop.org/software/appstream/docs/chap-Quickstart.html) file
+# which contains metadata of the app.
+# metainfo: linux/packaging/myappid.appdata.xml

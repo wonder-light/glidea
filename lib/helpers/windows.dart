@@ -7,16 +7,16 @@ import 'package:window_manager/window_manager.dart' show TitleBarStyle, WindowLi
 
 class WindowsHelp {
   static Future<void> initialized() async {
-    if (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia) return;
+    if (Platform.isAndroid || Platform.isIOS) return;
     // 初始化
     await windowManager.ensureInitialized();
     // 选项
-    WindowOptions windowOptions = const WindowOptions(
+    final windowOptions = WindowOptions(
       size: Size(1280, 720),
       center: true,
       skipTaskbar: false,
       titleBarStyle: TitleBarStyle.normal,
-      minimumSize: Size(windowMinWidth + 120, windowMinHeight + 30),
+      minimumSize: Size(windowMinWidth + 120, windowMinHeight + (Platform.isWindows ? 30 : 70)),
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
