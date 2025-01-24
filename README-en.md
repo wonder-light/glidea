@@ -6,10 +6,10 @@
 [Download](https://github.com/wonder-light/glidea/releases) | [HomePage](https://glidea.nianian.cn/)
 
   <a href="https://github.com/wonder-light/glidea/releases/latest">
-    <img src="https://img.shields.io/github/release/wonder-light/glidea.svg?style=flat-square" alt="">
+    <img src="https://img.shields.io/github/release/wonder-light/glidea.svg?style=flat-square" alt="release">
   </a>
   <a href="https://github.com/wonder-light/glidea/blob/master/LICENSE">
-    <img src="https://img.shields.io/github/license/wonder-light/glidea.svg?style=flat-square" alt="">
+    <img src="https://img.shields.io/github/license/wonder-light/glidea.svg?style=flat-square" alt="license">
   </a>
   <a href="https://github.com/wonder-light/glidea/releases/latest">
     <img src="https://img.shields.io/github/downloads/wonder-light/glidea/total.svg?color=%2312b886&style=flat-square" alt="GitHub All Releases">
@@ -22,9 +22,9 @@ English | [简体中文](README.md)
 
 👏  Welcome to use **Glidea** ！
 
-✍️  **Glidea** A static blog writing client. You can use it to record your life, mood, and ideas... ...
+✍️  **Glidea** A static blog writing client. You can use it to record your life, mood, and ideas...
 
-## Features👇
+# Features👇
 📝  Use the coolest **Markdown** editor to create quickly
 
 🌉  Insert pictures and article cover charts anywhere in the article
@@ -35,7 +35,7 @@ English | [简体中文](README.md)
 
 💻  You can use this client on a desktop or mobile device
 
-🌎  Use **Github Pages** or **Coding Pages** to show the world that more platforms will be supported in the future
+🌎  Use **Github Pages** to show the world that more platforms will be supported in the future
 
 <!--
 💬  Simply configure and access the [Gitalk](https://github.com/gitalk/gitalk) or [DisqusJS](https://github.com/SukkaW/DisqusJS) comment system
@@ -47,37 +47,100 @@ English | [简体中文](README.md)
 
 🖥  You can customize the source folder, using OneDrive, Baidu web disk and other multi-device synchronization
 
-🌱 Of course, **Glidea** may still be a little imperfect, but please believe that **Glidea** will continue to polish itself and strive to become your effective partner
+💪 Let us move forward hand in hand to embrace a better future!
 
-💪 Let us move forward hand in hand to embrace a better future！
-
-😘 Enjoy the journey with Glidea!
+# Sample screenshot
+<div align="center">
+  <img src="docs/assets/images/themes.png">
+</div>
 
 ## Development
 If you want to contribute code, please check the [Contribution Guide](https://github.com/wonder-light/glidea/wiki/%E8%B4%A1%E7%8C%AE%E6%8C%87%E5%8D%97) in advance
 
-### Flutter version
+## Start
+
 ```shell
->> flutter --version
-Flutter 3.24.5 • channel stable • https://github.com/flutter/flutter.git
-Framework • revision dec2ee5c1f (6 days ago) • 2024-11-13 11:13:06 -0800
-Engine • revision a18df97ca5
-Tools • Dart 3.5.4 • DevTools 2.37.3
+# Clone repository Glidea
+> git clone https://github.com/wonder-light/glidea.git
+
+# Run the download dependency
+> flutter pub get
+
+# Run to start the application
+> flutter run
 ```
-### Build application
 
-``` shell
->> git clone https://github.com/wonder-light/glidea.git
->> cd glidea
+## Flutter version
+```shell
+> flutter --version
 
-Build Android:
->>  flutter build apk --target-platform --split-per-abi
-Build iOS:
->>  flutter build ios
-Build Windows:
->>  flutter build windows  
-Build Linux:
->>  flutter build linux
+Flutter 3.27.3 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision c519ee916e (3 days ago) • 2025-01-21 10:32:23 -0800
+Engine • revision e672b006cb
+Tools • Dart 3.6.1 • DevTools 2.40.2
+```
+## Build
+
+### Android
+
+Traditional APK
+
+```shell
+> flutter build apk
+```
+
+AppBundle for Google Play
+
+```shell
+> flutter build appbundle
+```
+
+### Ios
+
+```shell
+> flutter build ipa
+```
+
+### MacOS
+
+```shell
+> flutter build macos
+```
+
+### Windows
+
+Traditional
+
+```shell
+> flutter build windows
+```
+
+Local MSIX App
+
+```shell
+# Install flutter_distributor
+> dart pub global activate flutter_distributor
+
+# Build MSIX
+> flutter_distributor package --platform windows --targets msix
+```
+
+### Linux
+
+Traditional
+
+```shell
+> flutter build linux
+```
+
+deb
+
+```shell
+# Install flutter_distributor
+> dart pub global activate flutter_distributor
+
+# Build deb
+> flutter_distributor package --platform linux --targets deb
 ```
 
 ---
@@ -87,13 +150,14 @@ Build Linux:
 
 ---
 
-## Sample screenshot
-<div align="center">
-  <img src="docs/assets/images/themes.png">
-</div>
-
 ## Support
-<img src="docs/assets/images/reward_qrcode.png" width="300px" height="300px">
+<img src="docs/assets/images/reward_qrcode.png" width="300px" height="300px" alt="reward qrcode">
 
 ## License
 [MIT](LICENSE). Copyright (c) 2024 wonder-light
+
+## Contributors
+
+<a href="https://github.com/wonder-light/glidea/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=wonder-light/glidea"  alt="Glidea Contributors"/>
+</a>
