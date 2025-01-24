@@ -66,7 +66,7 @@ jobs:
     runs-on: windows-latest
     env:
       INNO_PATH: "./windows/packaging/exe/inno-setup.iss"
-      APP_FOLDER: "P:\\Root\\Project\\app\\glidea\\glidea"
+      APP_FOLDER: "P:[\\/]Root[\\/]Project[\\/]app[\\/]glidea[\\/]glidea"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -164,10 +164,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev libfuse2
-          git config --global --add safe.directory /tmp/flutter/--
+          git config --global --add safe.directory /opt/hostedtoolcache/flutter/--
       - uses: subosito/flutter-action@v2
         with:
           cache: true
+          channel: master
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - name: Dependencies
         run: flutter pub get
