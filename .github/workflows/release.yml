@@ -211,6 +211,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Draft release
+        id: draft_release
+        uses: release-drafter/release-drafter@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Download apk files
         uses: actions/download-artifact@v4
         with:
@@ -237,3 +242,7 @@ jobs:
           draft: true
           generate_release_notes: true
           files: ./release/*
+          body_path: ./CHANGELOG.md
+          name: ${{ steps.draft_release.outputs.name }}
+          tag_name: ${{ steps.draft_release.outputs.tag_name }}
+          append_body: ${{ steps.draft_release.outputs.body }}
