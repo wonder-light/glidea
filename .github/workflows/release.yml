@@ -10,11 +10,12 @@ on:
   workflow_dispatch:
 
 env:
-  FLUTTER_VERSION: "3.27.3"
+  FLUTTER_VERSION: "3.27.2"
 
 jobs:
   # Android
   build_apk:
+    if: startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,6 +36,7 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
+          cache: true
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - name: Dependencies
         run: flutter pub get
@@ -60,6 +62,7 @@ jobs:
 
   # Windows
   build_windows:
+    # if: startsWith(github.ref, 'refs/tags')
     runs-on: windows-latest
     env:
       INNO_PATH: "./windows/packaging/exe/inno-setup.iss"
@@ -69,6 +72,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
+          cache: true
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - name: Dependencies
         run: flutter pub get
@@ -78,9 +82,9 @@ jobs:
         run: flutter build windows
       - name: Add DLL files
         run: |
-          Copy-Item ../scripts/windows/x64/msvcp140.dll ./build/windows/x64/runner/Release/
-          Copy-Item ../scripts/windows/x64/vcruntime140.dll ./build/windows/x64/runner/Release/
-          Copy-Item ../scripts/windows/x64/vcruntime140_1.dll ./build/windows/x64/runner/Release/
+          Copy-Item ./windows/packaging/lib/msvcp140.dll ./build/windows/x64/runner/Release/
+          Copy-Item ./windows/packaging/lib/vcruntime140.dll ./build/windows/x64/runner/Release/
+          Copy-Item ./windows/packaging/lib/vcruntime140_1.dll ./build/windows/x64/runner/Release/
           (Get-Content ${{ env.INNO_PATH }}) | ForEach-Object { $_ -replace '${{ env.APP_FOLDER }}', '${{ github.workspace }}' } | Set-Content inno-setup.iss
       - name: Zip compiled files
         run: |
@@ -110,6 +114,7 @@ jobs:
 
   # Linux_x64
   build_linux-x86_64:
+    if: startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -120,6 +125,7 @@ jobs:
           sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev libfuse2
       - uses: subosito/flutter-action@v2
         with:
+          cache: true
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - name: Dependencies
         run: flutter pub get
@@ -149,6 +155,7 @@ jobs:
 
   # Linux_arm64
   build_linux_arm_64:
+    # if: startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout
@@ -157,8 +164,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y clang cmake libgtk-3-dev ninja-build libayatana-appindicator3-dev libfuse2
+          git config --global --add safe.directory /tmp/flutter/--
       - uses: subosito/flutter-action@v2
         with:
+          cache: true
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - name: Dependencies
         run: flutter pub get
@@ -188,6 +197,7 @@ jobs:
 
   # 发行
   release:
+    if: startsWith(github.ref, 'refs/tags')
     needs:
       - build_apk
       - build_windows
