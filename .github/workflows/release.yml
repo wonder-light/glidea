@@ -57,6 +57,9 @@ jobs:
   # Windows
   build_windows:
     runs-on: windows-latest
+    env:
+      INNO_PATH: "./windows/packaging/exe/inno-setup.iss"
+      APP_FOLDER: "P:\\Root\\Project\\app\\glidea\\glidea"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,6 +75,7 @@ jobs:
           Copy-Item ../scripts/windows/x64/msvcp140.dll ./build/windows/x64/runner/Release/
           Copy-Item ../scripts/windows/x64/vcruntime140.dll ./build/windows/x64/runner/Release/
           Copy-Item ../scripts/windows/x64/vcruntime140_1.dll ./build/windows/x64/runner/Release/
+          (Get-Content ${{ env.INNO_PATH }}) | ForEach-Object { $_ -replace '${{ env.APP_FOLDER }}', '${{ github.workspace }}' } | Set-Content inno-setup.iss
       - name: Zip compiled files
         run: | 
           mkdir App
@@ -81,7 +85,7 @@ jobs:
         with:
           path: ./windows/packaging/exe/inno-setup.iss
           options: /Q"${{ github.workspace }}/dist" /F"Glidea"
-      - name: Copy exe file
+      - name: Copy and rename exe file
         run: |
           cp dist/Glidea.exe App/Glidea-${{ github.ref_name }}-windows.exe
       - name: Enable flutter_distributor

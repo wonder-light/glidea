@@ -1,0 +1,6 @@
+﻿display_name: Glidea
+publisher_display_name: wonder-light
+# msix_version: 1.0.0.1
+identity_name: com.nianian.glidea
+logo_path: assets/images/logo.png
+languages: zh-cn, zh-tw, en-us, ja-jp, fr-fr, ru-ru
