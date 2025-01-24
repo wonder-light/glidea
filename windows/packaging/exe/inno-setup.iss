@@ -34,7 +34,7 @@ DisableProgramGroupPage=yes
 LicenseFile={#AppFolder}\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-OutputDir=C:\Program Files\Glidea
+OutputDir={#AppFolder}\dist
 OutputBaseFilename=Glidea
 SetupIconFile={#AppFolder}\docs\assets\images\logo.ico
 SolidCompression=yes
