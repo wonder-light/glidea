@@ -6,11 +6,11 @@ on:
     branches:
       - 'main'
     tags:
-      - '*'
+      - 'v*'
   workflow_dispatch:
 
 env:
-  FLUTTER_VERSION: "3.24.5"
+  FLUTTER_VERSION: "3.27.3"
 
 jobs:
   # Android
