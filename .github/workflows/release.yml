@@ -85,7 +85,7 @@ jobs:
           Copy-Item ./windows/packaging/lib/msvcp140.dll ./build/windows/x64/runner/Release/
           Copy-Item ./windows/packaging/lib/vcruntime140.dll ./build/windows/x64/runner/Release/
           Copy-Item ./windows/packaging/lib/vcruntime140_1.dll ./build/windows/x64/runner/Release/
-          (Get-Content ${{ env.INNO_PATH }}) | ForEach-Object { $_ -replace '${{ env.APP_FOLDER }}', '${{ github.workspace }}' } | Set-Content inno-setup.iss
+          (Get-Content ${{ env.INNO_PATH }}) | ForEach-Object { $_ -replace '${{ env.APP_FOLDER }}', '${{ github.workspace }}' } | Set-Content ${{ env.INNO_PATH }}
       - name: Zip compiled files
         run: |
           mkdir App
@@ -101,7 +101,7 @@ jobs:
       - name: Enable flutter_distributor
         run: |
           dart pub global activate flutter_distributor
-          set path=%PATH%;%AppData%\..\Local\Pub\Cache\bin
+          set path=%PATH%;${{ env.PUB_CACHE }}\bin
       - name: Build msix package
         run: |
           flutter_distributor package --platform windows --targets msix
@@ -155,7 +155,7 @@ jobs:
 
   # Linux_arm64
   build_linux_arm_64:
-    # if: startsWith(github.ref, 'refs/tags')
+    if: startsWith(github.ref, 'refs/tags')
     runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout
