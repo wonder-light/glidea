@@ -93,14 +93,16 @@ jobs:
       - name: Zip compiled files
         run: |
           mkdir App
+          mkdir dist
           Compress-Archive -Path ./build/windows/x64/runner/Release/* -DestinationPath ./App/Glidea-${{ github.ref_name }}-windows.zip
       - name: Compile .ISS to .EXE Installer
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
         with:
-          path: ./windows/packaging/exe/inno-setup.iss
+          path: ${{ env.INNO_PATH }}
           options: /Q"${{ github.workspace }}/dist" /F"Glidea"
       - name: Copy and rename exe file
         run: |
+          ls {{ github.workspace }}/dist
           cp dist/Glidea.exe App/Glidea-${{ github.ref_name }}-windows.exe
       - name: Enable flutter_distributor
         run: |
