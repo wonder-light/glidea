@@ -42,11 +42,13 @@ jobs:
         run: |
           flutter build apk --release
           flutter build apk --release --split-per-abi
+          flutter build appbundle --release
           mkdir App
-          cp ./build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk ./App/Glidea-${{ github.ref_name }}-arm32v7.apk
-          cp ./build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ./App/Glidea-${{ github.ref_name }}-arm64v8.apk
-          cp ./build/app/outputs/flutter-apk/app-x86_64-release.apk ./App/Glidea-${{ github.ref_name }}-x64.apk
-          cp ./build/app/outputs/flutter-apk/app-release.apk ./App/Glidea-${{ github.ref_name }}.apk
+          cp ./build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk ./App/Glidea-${{ github.ref_name }}-android-arm32v7.apk
+          cp ./build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ./App/Glidea-${{ github.ref_name }}-android-arm64v8.apk
+          cp ./build/app/outputs/flutter-apk/app-x86_64-release.apk ./App/Glidea-${{ github.ref_name }}-android-x64.apk
+          cp ./build/app/outputs/flutter-apk/app-release.apk ./App/Glidea-${{ github.ref_name }}-android.apk
+          cp ./build/app/outputs/bundle/release/app-release.aab ./App/Glidea-${{ github.ref_name }}-android.aab
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

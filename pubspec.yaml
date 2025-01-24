@@ -207,6 +207,7 @@ targets:
 # Android: flutter build apk --release   合并所有架构, 兼容好
 #          flutter build apk --split-per-abi [--target-platform android-arm,android-arm64,android-x64]   分开打包, 体积小
 #          flutter build apk --release --obfuscate --split-debug-info=P:/glidea/build/info   使用混淆进行打包, 可以减少一点体积
+#          flutter build appbundle --release  aab 安装包
 # windows: flutter build windows --release [--analyze-size]
 #          dart run msix:create 需要安装 MSIX, flutter pub add --dev msix
 #          使用 Inno 打包 https://medium.com/@fluttergems/packaging-and-distributing-flutter-desktop-apps-the-missing-guide-part-2-windows-0b468d5e9e70
