@@ -38,6 +38,8 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - name: Dependencies
         run: flutter pub get
+      - name: Build Json
+        run: dart run build_runner build
       - name: Build APK
         run: |
           flutter build apk --release
@@ -70,6 +72,8 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - name: Dependencies
         run: flutter pub get
+      - name: Build Json
+        run: dart run build_runner build
       - name: Compile for Windows
         run: flutter build windows
       - name: Add DLL files
@@ -79,7 +83,7 @@ jobs:
           Copy-Item ../scripts/windows/x64/vcruntime140_1.dll ./build/windows/x64/runner/Release/
           (Get-Content ${{ env.INNO_PATH }}) | ForEach-Object { $_ -replace '${{ env.APP_FOLDER }}', '${{ github.workspace }}' } | Set-Content inno-setup.iss
       - name: Zip compiled files
-        run: | 
+        run: |
           mkdir App
           Compress-Archive -Path ./build/windows/x64/runner/Release/* -DestinationPath ./App/Glidea-${{ github.ref_name }}-windows.zip
       - name: Compile .ISS to .EXE Installer
@@ -91,7 +95,7 @@ jobs:
         run: |
           cp dist/Glidea.exe App/Glidea-${{ github.ref_name }}-windows.exe
       - name: Enable flutter_distributor
-        run: | 
+        run: |
           dart pub global activate flutter_distributor
           set path=%PATH%;%AppData%\..\Local\Pub\Cache\bin
       - name: Build msix package
@@ -119,6 +123,8 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - name: Dependencies
         run: flutter pub get
+      - name: Build Json
+        run: dart run build_runner build
       - name: Compile for Linux
         run: flutter build linux
       - name: Create tar.gz archive
@@ -128,7 +134,7 @@ jobs:
           tar -czvf ../../../../../App/Glidea-${{ github.ref_name }}-linux-x86-64.tar.gz *
           cd ../../../../../
       - name: Enable flutter_distributor
-        run: | 
+        run: |
           dart pub global activate flutter_distributor
           echo 'export PATH="$PATH:$HOME/.pub-cache/bin"' >> ~/.bashrc
       - name: Build deb package
@@ -143,7 +149,7 @@ jobs:
 
   # Linux_arm64
   build_linux_arm_64:
-    runs-on: [ self-hosted, linux, arm64 ]
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -156,6 +162,8 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
       - name: Dependencies
         run: flutter pub get
+      - name: Build Json
+        run: dart run build_runner build
       - name: Compile for Linux
         run: flutter build linux
       - name: Create tar.gz archive
@@ -165,7 +173,7 @@ jobs:
           tar -czvf ../../../../../App/Glidea-${{ github.ref_name }}-linux-arm-64.tar.gz *
           cd ../../../../../
       - name: Enable flutter_distributor
-        run: | 
+        run: |
           dart pub global activate flutter_distributor
           echo 'export PATH="$PATH:$HOME/.pub-cache/bin"' >> ~/.bashrc
       - name: Build deb package
