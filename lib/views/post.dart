@@ -197,7 +197,8 @@ class _PostViewState extends State<PostView> {
     }
     // 发布或存草稿
     currentPost.published = published;
-    final value = await site.updatePost(newData: currentPost, oldData: postData, fileContent: contentCtr.text);
+    final pict = picture.filePath.isEmpty || picture.filePath.contains(picture.value) ? null : picture;
+    final value = await site.updatePost(newData: currentPost, oldData: postData, fileContent: contentCtr.text, picture: pict);
     if (value) {
       Get.success(published ? Tran.saved : Tran.draftSuccess);
       _fileName = currentPost.fileName;

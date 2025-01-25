@@ -75,7 +75,7 @@ mixin PostSite on DataProcess, TagSite {
   }
 
   /// 更新或者添加 post
-  Future<bool> updatePost({required Post newData, Post? oldData, String fileContent = ''}) async {
+  Future<bool> updatePost({required Post newData, Post? oldData, String fileContent = '', PictureConfig? picture}) async {
     try {
       // 旧文件名
       String? oldFileName;
@@ -96,6 +96,9 @@ mixin PostSite on DataProcess, TagSite {
       // 更新标签
       updateTagUsedField();
       // 保存
+      if(picture != null) {
+        await Background.instance.saveThemeImage(picture);
+      }
       await saveSiteData();
       // 路径
       final path = FS.join(state.appDir, 'posts');

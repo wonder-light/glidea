@@ -105,6 +105,7 @@ base mixin DataBack on ActionBack {
     _invokes.addAll({
       BackgroundAction._loadSiteData: loadSiteData,
       BackgroundAction._saveSiteData: saveSiteData,
+      BackgroundAction._saveThemeImage: saveThemeImage,
     });
   }
 
