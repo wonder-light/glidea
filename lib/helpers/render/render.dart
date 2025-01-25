@@ -108,7 +108,7 @@ final class RemoteRender {
       // 未发布的不要
       if (!post.published) continue;
       // 序列化后的标签
-      final List<TJsonMap?> postTags = [];
+      final List<TagRender> postTags = [];
       // 文章的标签
       for (var i = post.tags.length - 1; i >= 0; i--) {
         var tagSlug = post.tags[i];
@@ -117,9 +117,9 @@ final class RemoteRender {
         if (tag == null) {
           post.tags.removeAt(i);
         } else {
-          postTags.add(tag.toMap());
           // 未隐藏则数量加一
           if (!post.hideInList) tag.count++;
+          postTags.add(tag);
         }
       }
       // TOC 目录
@@ -132,7 +132,6 @@ final class RemoteRender {
       // 渲染 MarkDown to HTML
       // 返回数据
       final postRender = post.copyWith<PostRender>({
-        'tags': postTags,
         'toc': toc,
         'content': html,
         'abstract': abstract,
@@ -142,7 +141,11 @@ final class RemoteRender {
         'link': FS.join(domain, themeConfig.postPath, post.fileName, '/'),
         'stats': _statsCalc(content).toMap(),
       })!;
-      postsData.add(postRender);
+      postsData.add(postRender..tags = postTags);
+    }
+    // 将 post 的 tags 复制一份, 防止循环引用
+    for(var post in postsData) {
+      post.tags = post.tags.copy<List<TagRender>>()!;
     }
     // 对 post 进行排序, 置顶优先, 其次新发布的在前
     // compareFn(a, b) 返回值    排序顺序
