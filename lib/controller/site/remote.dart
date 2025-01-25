@@ -120,8 +120,10 @@ mixin RemoteSite on DataProcess, ThemeSite {
     remoteWidgetConfigs.clear();
     // 设置配置
     final remote = state.remote.toMap()!;
+    // domain 提示
+    final domainNote = 'netlify: https://{site}.netlify.app    Github: https://<user>.github.io/<repo>';
     // 字段的左下角提示
-    final notes = {privateKeyField: Tran.privateKeyTip, remotePathField: Tran.remotePathTip};
+    final notes = {privateKeyField: Tran.privateKeyTip, remotePathField: Tran.remotePathTip, domainField: domainNote};
     // 字段的内部提示
     final hints = {branchField: Tran.branch, domainField: 'https://my_domain.com', cnameField: 'my_domain.com'};
     // 各个平台
@@ -142,6 +144,7 @@ mixin RemoteSite on DataProcess, ThemeSite {
     remoteWidgetConfigs[RemoteBase] = createRenderConfig(
       fields: {platformField: FieldType.select, domainField: FieldType.input},
       fieldValues: remote,
+      fieldNotes: notes,
       fieldHints: hints,
       options: _remoteOptions,
     );
