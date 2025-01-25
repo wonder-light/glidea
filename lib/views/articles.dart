@@ -103,7 +103,7 @@ class _ArticlesViewState extends State<ArticlesView> {
     // 时间
     final date = dates[post.date.millisecondsSinceEpoch] ??= post.date.format(pattern: site.themeConfig.dateFormat);
     // 头部组件
-    var child = ImageConfig.builderImg(site.getFeaturePath(post));
+    var child = ImageConfig.builderImg(site.getFeaturePath(post), aspectRatio: 1.775);
     // 项
     child = ListItem(
       shape: shapeBorder,

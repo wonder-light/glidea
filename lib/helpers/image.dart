@@ -55,23 +55,24 @@ extension ImageExt on img.Image {
 /// config class for image, tag: img
 class ImageConfig {
   /// 构建图片
-  static Widget builderImg(String url, {Map<String, String>? attributes, BoxFit fit = BoxFit.cover}) {
+  static Widget builderImg(String url, {BoxFit fit = BoxFit.cover, double? aspectRatio}) {
+    Widget child;
     if (url.isEmpty) {
-      return Image.asset('assets/images/upload_image.jpg', errorBuilder: buildError);
+      child = Image.asset('assets/images/upload_image.jpg', errorBuilder: buildError);
+    } else if (url.startsWith('http')) {
+      child = Image.network(url, fit: fit, errorBuilder: buildError);
+    } else if (url.startsWith('assets')) {
+      child = Image.asset(url, fit: fit, errorBuilder: buildError);
+    } else {
+      if (url.startsWith(featurePrefix)) {
+        url = url.substring(featurePrefix.length);
+      }
+      child = Image(image: FileImageExpansion.file(url), fit: fit, errorBuilder: buildError);
     }
-    // 网络图片
-    if (url.startsWith('http')) {
-      return Image.network(url, fit: fit, errorBuilder: buildError);
+    if (aspectRatio != null) {
+      child = AspectRatio(aspectRatio: aspectRatio, child: child);
     }
-    // 网络图片
-    if (url.startsWith('assets')) {
-      Image.asset(url, fit: fit, errorBuilder: buildError);
-    }
-    // post 中的本地图片
-    if (url.startsWith(featurePrefix)) {
-      url = url.substring(featurePrefix.length);
-    }
-    return Image(image: FileImageExpansion.file(url), fit: fit, errorBuilder: buildError);
+    return child;
   }
 
   /// 图片加载失败时的占位图
