@@ -42,7 +42,7 @@ class App extends StatelessWidget {
     // 滚动行为
     final scrollBehavior = const MaterialScrollBehavior().copyWith(
       dragDevices: PointerDeviceKind.values.toSet(),
-      physics: const BouncingScrollPhysics(),
+      physics: const BouncingScrollPhysics(parent: NeverScrollableScrollPhysics()),
     );
     return GetMaterialApp(
       title: 'Glidea',
