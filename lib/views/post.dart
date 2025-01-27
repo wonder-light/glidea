@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' show BoolExtension, ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/Common/dialog.dart';
+import 'package:glidea/components/Common/group.dart';
 import 'package:glidea/components/Common/loading.dart';
-import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/post/content.dart';
 import 'package:glidea/components/post/toolbar.dart';
@@ -119,7 +119,7 @@ class _PostViewState extends State<PostView> {
       },
     );
     // 顶部工具栏
-    child = PageAction(
+    child = PageWidget(
       contentPadding: EdgeInsets.zero,
       actions: [
         for (var item in actions)

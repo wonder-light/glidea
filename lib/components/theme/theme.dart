@@ -111,7 +111,8 @@ class ThemeCustomWidgetState extends ThemeWidgetState {
         return _buildContent(groups.values.first, isTop: false);
       }
       // 分组布局
-      return GroupWidget(
+      return PageWidget(
+        isTop: false,
         groups: groups.keys.toList(),
         itemBuilder: (ctx, index) => _buildContent(groups.values.elementAt(index)),
       );

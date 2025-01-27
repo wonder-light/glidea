@@ -127,6 +127,8 @@ class RemoteSetting with RemoteBase, RemoteProxy {
   /// sftp 配置
   @JsonProperty()
   RemoteSftp sftp = RemoteSftp();
+
+  // TODO: 看情况, 可以添加一个 zip 导出
 }
 
 /// disqus 评论设置

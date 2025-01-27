@@ -1,8 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/Common/dialog.dart';
+import 'package:glidea/components/Common/group.dart';
 import 'package:glidea/components/Common/list_item.dart';
-import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
@@ -54,7 +54,8 @@ class _ArticlesViewState extends State<ArticlesView> {
   @override
   Widget build(BuildContext context) {
     final padding = kVerPadding4 * 1.25;
-    return PageAction(
+    return PageWidget(
+      contentPadding: kAllPadding16,
       actions: [
         MediaQuery(
           data: Get.mediaQuery.copyWith(textScaler: const TextScaler.linear(0.8)),

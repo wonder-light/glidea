@@ -28,8 +28,7 @@ class _ThemeViewState extends State<ThemeView> {
     // 手机端
     if (Get.isPhone) return buildPhone();
     // 主题和自定义主题的分组
-    Widget childWidget = GroupWidget(
-      isTop: true,
+    Widget childWidget = PageWidget(
       allowImplicitScrolling: false,
       groups: const [Tran.basicSetting, Tran.customConfig],
       itemBuilder: (ctx, index) {

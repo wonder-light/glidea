@@ -3,24 +3,36 @@ import 'package:get/get.dart' show IntExtension, Obx, Trans;
 import 'package:glidea/helpers/constants.dart';
 
 /// 分组布局控件
-class GroupWidget extends StatefulWidget {
-  const GroupWidget({
+class PageWidget extends StatefulWidget {
+  /// [groups.isEmpty] 时不创建 [PageView], 同时 [child] 不能为 null
+  ///
+  /// [groups.isNotEmpty] 时, [itemBuilder] 不能为 null
+  const PageWidget({
     super.key,
-    required this.groups,
-    required this.itemBuilder,
-    this.isTop = false,
+    this.groups = const [],
+    this.itemBuilder,
+    this.child,
+    this.actions = const [],
+    this.isTop = true,
     this.isScrollable = true,
     this.allowImplicitScrolling = true,
     this.initialIndex = 0,
     this.itemPadding,
     this.labelPadding,
     this.contentPadding,
+    this.toolbarPadding,
     this.tabAlignment = TabAlignment.start,
     this.onTap,
   });
 
   /// 配置
   final List<String> groups;
+
+  /// 后面的操作按钮
+  final List<Widget> actions;
+
+  /// 分割线下的内容控件
+  final Widget? child;
 
   /// 是否是最顶级的标签页
   final bool isTop;
@@ -32,13 +44,16 @@ class GroupWidget extends StatefulWidget {
   final bool isScrollable;
 
   /// 添加到每个制表标签上的填充
-  final EdgeInsets? itemPadding;
+  final EdgeInsetsGeometry? itemPadding;
 
-  /// 整个 Tab 的内容边距
-  final EdgeInsets? labelPadding;
+  /// 整个 Tabs 的内容边距
+  final EdgeInsetsGeometry? labelPadding;
 
-  /// 整个 Tab 的内容边距
-  final EdgeInsets? contentPadding;
+  /// 整个内容的内容边距
+  final EdgeInsetsGeometry? contentPadding;
+
+  /// 工具栏的内边距, 默认是 [kAllPadding8]
+  final EdgeInsetsGeometry? toolbarPadding;
 
   /// 指定选项卡内选项卡的对齐方式
   final TabAlignment? tabAlignment;
@@ -52,18 +67,18 @@ class GroupWidget extends StatefulWidget {
   final ValueChanged<int>? onTap;
 
   /// 构建子控件
-  final Widget? Function(BuildContext, int) itemBuilder;
+  final NullableIndexedWidgetBuilder? itemBuilder;
 
   @override
-  State<StatefulWidget> createState() => _GroupWidgetState();
+  State<StatefulWidget> createState() => _PageWidgetState();
 }
 
-class _GroupWidgetState extends State<GroupWidget> {
+class _PageWidgetState extends State<PageWidget> {
   /// 页面控制器
-  late final PageController controller = PageController(initialPage: widget.initialIndex);
+  late final PageController? controller = isGroup ? PageController(initialPage: widget.initialIndex) : null;
 
   /// 当前页面的索引
-  late final currentIndex = widget.initialIndex.obs;
+  late final currentIndex = isGroup ? widget.initialIndex.obs : null;
 
   /// 主题样式
   late final theme = Theme.of(context);
@@ -73,34 +88,41 @@ class _GroupWidgetState extends State<GroupWidget> {
     color: theme.colorScheme.primary,
   );
 
+  /// 是否使用 Group
+  bool get isGroup => widget.groups.isNotEmpty;
+
   @override
   void dispose() {
-    currentIndex.dispose();
-    controller.dispose();
+    currentIndex?.dispose();
+    controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     // 主题内容
-    Widget content = PageView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      controller: controller,
-      allowImplicitScrolling: widget.allowImplicitScrolling,
-      itemCount: widget.groups.length,
-      itemBuilder: widget.itemBuilder,
-    );
+    Widget content = isGroup
+        ? PageView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: controller,
+            allowImplicitScrolling: widget.allowImplicitScrolling,
+            itemCount: widget.groups.length,
+            itemBuilder: widget.itemBuilder!,
+          )
+        : widget.child!;
+
     // 内容边距
     if (widget.contentPadding != null) {
       content = Padding(padding: widget.contentPadding!, child: content);
     }
     // 大体布局
-    final layout = widget.isTop ? Column.new : Row.new;
-    return layout(
+    final isColumn = !isGroup || widget.isTop;
+    final layout = isColumn ? Column.new : Row.new;
+    content = layout(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildTabs(),
-        if (widget.isTop)
+        _buildBar(),
+        if (isColumn)
           const Divider(thickness: 1, height: 1)
         // 垂直线
         else
@@ -108,6 +130,34 @@ class _GroupWidgetState extends State<GroupWidget> {
         Expanded(child: content),
       ],
     );
+    // 添加 Material
+    return Material(
+      color: theme.scaffoldBackgroundColor,
+      child: content,
+    );
+  }
+
+  /// 构建 AppBar
+  Widget _buildBar() {
+    // actions
+    Widget toolbar = Padding(
+      padding: widget.toolbarPadding ?? (kAllPadding8 + kRightPadding8),
+      child: Row(
+        spacing: kRightPadding8.right,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: widget.actions,
+      ),
+    );
+    if (!isGroup) return toolbar;
+    // tab + toolbar
+    Widget content = _buildTabs();
+    // 添加 actions
+    if (widget.isTop && widget.actions.isNotEmpty) {
+      content = Row(
+        children: [Expanded(child: content), toolbar],
+      );
+    }
+    return content;
   }
 
   /// 构建 tabs 中的内容
@@ -118,15 +168,15 @@ class _GroupWidgetState extends State<GroupWidget> {
       for (var i = 0; i < widget.groups.length; i++)
         InkWell(
           onTap: () {
-            currentIndex.value = i;
-            controller.animateToPage(i, duration: const Duration(milliseconds: 300), curve: Curves.ease);
+            currentIndex?.value = i;
+            controller?.animateToPage(i, duration: const Duration(milliseconds: 300), curve: Curves.ease);
             widget.onTap?.call(i);
           },
           child: Container(
             alignment: Alignment.center,
             padding: labelPadding,
             child: Obx(
-              () => Text(widget.groups[i].tr, style: currentIndex.value == i ? selectStyle : null),
+              () => Text(widget.groups[i].tr, style: currentIndex?.value == i ? selectStyle : null),
             ),
           ),
         ),

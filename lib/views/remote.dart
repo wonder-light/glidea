@@ -51,8 +51,7 @@ class _RemoteViewState extends State<RemoteView> {
       return buildPhone();
     }
     // 远程和评论的分组
-    Widget childWidget = GroupWidget(
-      isTop: true,
+    Widget childWidget = PageWidget(
       contentPadding: kTopPadding16,
       groups: const [Tran.basicSetting, Tran.commentSetting],
       itemBuilder: (ctx, index) => index > 0 ? CommentSettingWidget(key: commentKey) : RemoteSettingWidget(key: remoteKey),

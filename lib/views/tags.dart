@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, StringExtension, Trans;
 import 'package:glidea/components/Common/dialog.dart';
-import 'package:glidea/components/Common/page_action.dart';
+import 'package:glidea/components/Common/group.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/tag/tag_editor.dart';
 import 'package:glidea/controller/site/site.dart';
@@ -28,7 +28,8 @@ class _TagsViewState extends State<TagsView> {
 
   @override
   Widget build(BuildContext context) {
-    return PageAction(
+    return PageWidget(
+      contentPadding: kAllPadding16,
       actions: [
         TipWidget.down(
           message: Tran.newTag.tr,

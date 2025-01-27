@@ -1,8 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart' show ExtensionDialog, Get, GetNavigationExt, Inst, Obx, Trans;
 import 'package:glidea/components/Common/dialog.dart';
+import 'package:glidea/components/Common/group.dart';
 import 'package:glidea/components/Common/list_item.dart';
-import 'package:glidea/components/Common/page_action.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/menu/menu_editor.dart';
 import 'package:glidea/controller/site/site.dart';
@@ -52,7 +52,8 @@ class _MenuViewState extends State<MenuView> {
 
   @override
   Widget build(BuildContext context) {
-    return PageAction(
+    return PageWidget(
+      contentPadding: kAllPadding16,
       actions: [
         TipWidget.down(
           message: Tran.newMenu.tr,
@@ -77,11 +78,12 @@ class _MenuViewState extends State<MenuView> {
   /// 构建菜单项
   Widget _buildMenuItem(BuildContext context, int index) {
     final menu = site.menus[index];
+    final contentPadding = kVerPadding8 + kRightPadding16.flipped;
     // 菜单项目
     return ListItem(
       shape: shapeBorder,
       constraints: const BoxConstraints(maxHeight: 80),
-      contentPadding: kVerPadding8 + kHorPadding16,
+      contentPadding: contentPadding,
       leadingMargin: kRightPadding16,
       leading: const Icon(PhosphorIconsRegular.starFour),
       title: Text(menu.name),
