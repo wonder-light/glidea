@@ -39,18 +39,12 @@ class App extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // 滚动行为
-    final scrollBehavior = const MaterialScrollBehavior().copyWith(
-      dragDevices: PointerDeviceKind.values.toSet(),
-      physics: const BouncingScrollPhysics(parent: NeverScrollableScrollPhysics()),
-    );
     return GetMaterialApp(
       title: 'Glidea',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
       useInheritedMediaQuery: true,
-      scrollBehavior: scrollBehavior,
       locale: Get.deviceLocale,
       translations: TranslationsService(),
       fallbackLocale: TranslationsService.fallbackLocale,
