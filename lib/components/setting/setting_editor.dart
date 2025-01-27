@@ -189,13 +189,14 @@ class SettingEditorState extends State<SettingEditor> {
   /// 查看日志
   Widget _viewLogs() {
     return RenderLayoutWidget(
-        isVertical: widget.isVertical,
-        config: configs[Tran.log]!,
-        child: OutlinedButton(
-          style: _iconButtonStyle,
-          onPressed: openLogView,
-          child: const Icon(PhosphorIconsRegular.log),
-        ));
+      isVertical: widget.isVertical,
+      config: configs[Tran.log]!,
+      child: OutlinedButton(
+        style: _iconButtonStyle,
+        onPressed: openLogView,
+        child: const Icon(PhosphorIconsRegular.log),
+      ),
+    );
   }
 
   /// 发布
@@ -258,22 +259,24 @@ class SettingEditorState extends State<SettingEditor> {
       str.write('\n\n');
     }
     return Scaffold(
-        appBar: AppBar(
-          title: Text(Tran.log.tr),
-          actions: [
-            TipWidget.down(
-              message: Tran.delete.tr,
-              child: IconButton(
-                onPressed: () => Log.buffer.clear(),
-                icon: const Icon(PhosphorIconsRegular.trash),
-              ),
+      appBar: AppBar(
+        title: Text(Tran.log.tr),
+        actions: [
+          TipWidget.down(
+            message: Tran.delete.tr,
+            child: IconButton(
+              onPressed: () => Log.buffer.clear(),
+              icon: const Icon(PhosphorIconsRegular.trash),
             ),
-            const Padding(padding: kRightPadding16),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Text.rich(TextSpan(text: str.toString())),
-        ));
+          ),
+          const Padding(padding: kRightPadding16),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: kAllPadding16 - kTopPadding16,
+        child: Text.rich(TextSpan(text: str.toString())),
+      ),
+    );
   }
 
   /// 保存数据
