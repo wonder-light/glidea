@@ -1,11 +1,4 @@
-﻿import 'dart:io' show Directory, File;
-
-import 'package:dartssh2/dartssh2.dart' show SSHClient, SSHSocket, SftpClient, SftpFileOpenMode;
-import 'package:glidea/helpers/error.dart';
-import 'package:glidea/helpers/fs.dart';
-import 'package:glidea/lang/base.dart';
-
-import 'deploy.dart';
+﻿part of 'deploy.dart';
 
 /// SFTP 部署
 class SftpDeploy extends Deploy {
@@ -13,28 +6,20 @@ class SftpDeploy extends Deploy {
 
   @override
   Future<void> remoteDetect() async {
-    try {
-      final client = await getSftpClient();
-      final ftp = await client.sftp();
-      await ftp.absolute('/');
-      client.close();
-    } catch (e) {
-      throw Mistake.add(message: 'sftp remote detect failed: ', hint: Tran.connectFailed, error: e);
-    }
+    final client = await getSftpClient();
+    final ftp = await client.sftp();
+    await ftp.absolute('/');
+    client.close();
   }
 
   @override
   Future<void> publish() async {
-    try {
-      var remotePath = remote.sftp.remotePath;
-      if (remotePath.trim().isEmpty) remotePath = '/';
-      final client = await getSftpClient();
-      final ftp = await client.sftp();
-      await ftp.uploadDirectory(buildDir, remotePath);
-      client.close();
-    } catch (e) {
-      throw Mistake.add(message: 'sftp publish failed: ', hint: Tran.connectFailed, error: e);
-    }
+    var remotePath = remote.sftp.remotePath;
+    if (remotePath.trim().isEmpty) remotePath = '/';
+    final client = await getSftpClient();
+    final ftp = await client.sftp();
+    await ftp.uploadDirectory(buildDir, remotePath);
+    client.close();
   }
 
   /// 获取 FTP 客户端

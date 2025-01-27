@@ -1,23 +1,24 @@
-﻿import 'dart:convert' show ascii, utf8;
-import 'dart:io' show HttpClient;
+﻿library;
 
-import 'package:dio/dio.dart' show BaseOptions, Dio, InterceptorsWrapper, Response;
+import 'dart:convert' show ascii, utf8;
+import 'dart:io' show Directory, File, HttpClient;
+
+import 'package:collection/collection.dart' show IterableExtension;
+import 'package:dartssh2/dartssh2.dart' show SSHClient, SSHSocket, SftpClient, SftpFileOpenMode;
+import 'package:dio/dio.dart' show BaseOptions, Dio, InterceptorsWrapper, Response, Options;
 import 'package:dio/io.dart' show IOHttpClientAdapter;
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/crypto.dart';
-import 'package:glidea/helpers/deploy/gitee.dart';
-import 'package:glidea/helpers/error.dart';
 import 'package:glidea/helpers/fs.dart';
+import 'package:glidea/helpers/json.dart';
+import 'package:glidea/helpers/log.dart';
+import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/setting.dart';
 
-import 'github.dart';
-import 'netlify.dart';
-import 'sftp.dart';
-
-export 'gitee.dart';
-export 'github.dart';
-export 'netlify.dart';
-export 'sftp.dart';
+part 'gitee.dart';
+part 'github.dart';
+part 'netlify.dart';
+part 'sftp.dart';
 
 /// 部署抽象类
 abstract class Deploy {
@@ -61,7 +62,7 @@ abstract class Deploy {
   /// 远程检测
   ///
   /// 检测出错时抛出 [Mistake] 异常类
-  Future<void> remoteDetect() async => throw Mistake(message: 'Deploy.remoteDetect no corresponding implementation');
+  Future<void> remoteDetect() async => throw UnimplementedError('Deploy.remoteDetect no corresponding implementation');
 
   /// 创建部署
   static Deploy create(RemoteSetting remote, String appDir, String buildDir) {
@@ -161,13 +162,13 @@ extension ResponseExt<T> on Response<T> {
   /// 检测状态代码是否异常, 如果有异常, 则抛出 [Mistake] 错误
   void checkStateCode({int? equal, List<int>? exclude, bool normal = true}) {
     if (equal != null && statusCode != equal) {
-      throw Mistake(message: 'current state code is $statusCode, but it is not equal $equal}');
+      throw 'current state code is $statusCode, but it is not equal $equal}';
     }
     if (exclude != null && exclude.any((t) => t == statusCode)) {
-      throw Mistake(message: 'current state code is $statusCode, but it is not in $exclude}');
+      throw 'current state code is $statusCode, but it is not in $exclude}';
     }
     if (statusCode case int code when normal && (code < 200 || code > 299)) {
-      throw Mistake.add(message: 'current state code is $statusCode, it is not error code', error: data.toString());
+      throw 'current state code is $statusCode, it is error status code\n$data';
     }
   }
 }
