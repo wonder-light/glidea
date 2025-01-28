@@ -4,7 +4,6 @@ import 'package:glidea/components/Common/group.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/theme/theme.dart';
 import 'package:glidea/controller/site/site.dart';
-import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
@@ -28,7 +27,7 @@ class _ThemeViewState extends State<ThemeView> {
     // 手机端
     if (Get.isPhone) return buildPhone();
     // 主题和自定义主题的分组
-    Widget childWidget = PageWidget(
+    return PageWidget(
       allowImplicitScrolling: false,
       groups: const [Tran.basicSetting, Tran.customConfig],
       itemBuilder: (ctx, index) {
@@ -36,20 +35,7 @@ class _ThemeViewState extends State<ThemeView> {
         final build = isThemePage ? ThemeWidget.new : ThemeCustomWidget.new;
         return build(key: isThemePage ? themeKey : customKey);
       },
-    );
-    // PC 端和平板端
-    return Material(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(child: childWidget),
-          const Divider(thickness: 1, height: 1),
-          buildBottom(),
-        ],
-      ),
+      actions: getActionButton(),
     );
   }
 
@@ -65,22 +51,7 @@ class _ThemeViewState extends State<ThemeView> {
     );
   }
 
-  /// 构建底部按钮
-  Widget buildBottom() {
-    return Padding(
-      padding: kVer8Hor12,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          OutlinedButton(onPressed: resetConfig, child: Text(Tran.reset.tr)),
-          FilledButton(onPressed: saveConfig, child: Text(Tran.save.tr)),
-        ],
-      ),
-    );
-  }
-
-  /// 手机端的 action 按钮
+  /// 构建 action 按钮
   List<Widget> getActionButton() {
     return [
       TipWidget.down(

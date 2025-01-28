@@ -67,7 +67,7 @@ class RenderFilter {
       return value[attribute];
     }
 
-    return values.groupListsBy((dynamic item) => getGroup(getValue(item))) ?? {};
+    return values.groupListsBy((dynamic item) => getGroup(getValue(item)));
   }
 
   /// 如果 value 是字符串, 则返回这个字符串的子字符串从 start 开始（包括）到 end 结束
@@ -102,7 +102,7 @@ class RenderFilter {
       values = lists;
     }
 
-    return values.toSet() ?? {};
+    return values.toSet();
   }
 
   /// 打印 value

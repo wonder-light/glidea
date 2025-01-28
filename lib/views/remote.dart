@@ -8,7 +8,6 @@ import 'package:glidea/components/remote/remote.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
 import 'package:glidea/helpers/get.dart';
-import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 
@@ -23,26 +22,11 @@ class _RemoteViewState extends State<RemoteView> {
   /// 站点控制器
   final site = Get.find<SiteController>(tag: SiteController.tag);
 
-  /// 手机端的操作数据
-  late final List<TActionData> actions;
-
   /// 正在进行远程检测中
   final inRemoteDetect = false.obs;
 
   final remoteKey = GlobalKey<RemoteSettingWidgetState>();
   final commentKey = GlobalKey<CommentSettingWidgetState>();
-
-  @override
-  void initState() {
-    super.initState();
-    // 初始化配置
-    if (Get.isPhone) {
-      actions = [
-        (name: Tran.testConnection, call: _testConnection, icon: PhosphorIconsRegular.clockCounterClockwise),
-        (name: Tran.save, call: _saveConfig, icon: PhosphorIconsRegular.boxArrowDown),
-      ];
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,24 +35,11 @@ class _RemoteViewState extends State<RemoteView> {
       return buildPhone();
     }
     // 远程和评论的分组
-    Widget childWidget = PageWidget(
+    return PageWidget(
       contentPadding: kTopPadding16,
       groups: const [Tran.basicSetting, Tran.commentSetting],
       itemBuilder: (ctx, index) => index > 0 ? CommentSettingWidget(key: commentKey) : RemoteSettingWidget(key: remoteKey),
-    );
-    // 返回
-    return Material(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(child: childWidget),
-          const VerticalDivider(thickness: 1, width: 1),
-          _buildBottom(),
-        ],
-      ),
+      actions: getActionButton(),
     );
   }
 
@@ -80,55 +51,34 @@ class _RemoteViewState extends State<RemoteView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(arg.tr),
-        actions: [
-          for (var item in actions)
-            TipWidget.down(
-              message: item.name.tr,
-              child: IconButton(
-                onPressed: item.call,
-                icon: Icon(item.icon),
-              ),
-            ),
-        ],
+        actions: getActionButton(),
       ),
       body: childWidget,
     );
   }
 
-  /// 构建底部按钮
-  Widget _buildBottom() {
-    return Padding(
-      padding: kVer8Hor12,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Obx(() {
-            Widget child = Text(Tran.testConnection.tr);
-            if (inRemoteDetect.value) {
-              child = Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const AutoAnimatedRotation(child: Icon(PhosphorIconsRegular.arrowsClockwise)),
-                  child,
-                ],
-              );
-            }
-            return TipWidget.up(
-              message: Tran.saveConfig.tr,
-              child: OutlinedButton(
-                onPressed: inRemoteDetect.value ? null : _testConnection,
-                child: child,
-              ),
-            );
-          }),
-          FilledButton(
-            onPressed: _saveConfig,
-            child: Text(Tran.save.tr),
+  /// 构建 action 按钮
+  List<Widget> getActionButton() {
+    return [
+      Obx(() {
+        final detect = inRemoteDetect.value;
+        final icon = detect ? Icon(PhosphorIconsRegular.arrowsClockwise) : Icon(PhosphorIconsRegular.clockCounterClockwise);
+        return TipWidget.down(
+          message: Tran.testConnection.tr,
+          child: IconButton(
+            onPressed: inRemoteDetect.value ? null : _testConnection,
+            icon: inRemoteDetect.value ? AutoAnimatedRotation(child: icon) : icon,
           ),
-        ],
+        );
+      }),
+      TipWidget.down(
+        message: Tran.save.tr,
+        child: IconButton(
+          onPressed: _saveConfig,
+          icon: Icon(PhosphorIconsRegular.boxArrowDown),
+        ),
       ),
-    );
+    ];
   }
 
   /// 保持配置

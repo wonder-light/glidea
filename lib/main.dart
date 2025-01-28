@@ -1,5 +1,4 @@
 import 'dart:io' show Platform;
-import 'dart:ui' show PointerDeviceKind;
 
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:flutter/material.dart';
