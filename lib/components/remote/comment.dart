@@ -1,6 +1,7 @@
 ﻿import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart' show Get, Inst;
+import 'package:get/get.dart' show Get, GetStringUtils, Inst;
+import 'package:glidea/components/Common/link.dart';
 import 'package:glidea/components/render/base.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/enum/enums.dart';
@@ -27,6 +28,9 @@ class CommentSettingWidgetState extends State<CommentSettingWidget> {
   /// 需要隐藏密码的字段
   TMap<bool> hidePasswords = {};
 
+  /// 文档配置
+  late final document = InputConfig();
+
   @override
   void initState() {
     super.initState();
@@ -43,8 +47,11 @@ class CommentSettingWidgetState extends State<CommentSettingWidget> {
       itemCount: items.length,
       itemBuilder: (ctx, index) {
         final key = items.keys.elementAt(index);
+        final item = items[key] as ConfigBase;
+        final child = buildOverride(item, key, index);
+        if (child != null) return child;
         return ArrayWidget.create(
-          config: items[key] as ConfigBase,
+          config: item,
           isVertical: false,
           usePassword: hidePasswords[key],
           onChanged: getChange(key),
@@ -54,10 +61,25 @@ class CommentSettingWidgetState extends State<CommentSettingWidget> {
     );
   }
 
+  /// 构建覆盖
+  @protected
+  Widget? buildOverride(ConfigBase item, String key, int index) {
+    if (key != 'doc') return null;
+    final isGitalk = platform == CommentPlatform.gitalk;
+    return RenderLayoutWidget(
+      isVertical: false,
+      config: item,
+      child: LinkWidget(
+        url: 'https://github.com/${isGitalk ? 'gitalk/gitalk' : 'SukkaW/DisqusJS'}',
+        text: '${platform.name.capitalizeFirst} Document',
+      ),
+    );
+  }
+
   /// 获取当前选项的配置
   TMap<ConfigBase> getConfigs() {
     final configs = site.commentWidgetConfigs;
-    return {...?configs[CommentBase], ...?configs[platform]};
+    return {...?configs[CommentBase], 'doc': document, ...?configs[platform]};
   }
 
   /// 获取 [key] 对应的 onChange 事件

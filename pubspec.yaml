@@ -47,7 +47,6 @@ dependencies:
   logger: ^2.5.0
   responsive_framework: ^1.5.1
   image: ^4.5.2
-  upgrader: ^11.3.1           # TODO: 升级
   markdown: ^7.2.2            # 一个用 Dart 编写的可移植 Markdown 库
   flutter_markdown: ^0.7.5
   flutter_markdown_latex: ^0.3.4
