@@ -12,13 +12,14 @@ base mixin BackgroundAction on BackgroundWorker {
   static const Symbol _loadThemeCustomConfig = Symbol('loadThemeCustomConfig');
   static const Symbol _saveThemeImage = Symbol('saveThemeImage');
   static const Symbol _saveThemeConfig = Symbol('saveThemeConfig');
+  static const Symbol _exportZipFile = Symbol('exportZipFile');
 
   @override
   Future<void> onInit() async {
     await super.onInit();
     _invokes.addAll({
-      BackgroundAction._loadAsset: _loadAssetBundle,
-      BackgroundAction._log: _printLog,
+      _loadAsset: _loadAssetBundle,
+      _log: _printLog,
     });
   }
 
@@ -78,6 +79,11 @@ base mixin BackgroundAction on BackgroundWorker {
   // 打印日志
   Future<void> _printLog(Level level, dynamic message) async {
     Log.log(level, message);
+  }
+
+  /// 导出渲染完成的的 zip 文件到指定文件夹
+  Future<bool> exportZipFile(String path, Application site) async {
+    return await call<bool>(_exportZipFile, [path, site]);
   }
 }
 
@@ -278,6 +284,7 @@ base mixin RemoteBack on DataBack {
       BackgroundAction._publishSite: publishSite,
       BackgroundAction._previewSite: previewSite,
       BackgroundAction._remoteDetect: remoteDetect,
+      BackgroundAction._exportZipFile: exportZipFile,
     });
   }
 
@@ -327,6 +334,15 @@ base mixin RemoteBack on DataBack {
     await render.formatDataForRender();
     await render.copyFiles();
     await render.buildTemplate();
+  }
+
+  /// 导出渲染完成的的 zip 文件到指定文件夹
+  Future<bool> exportZipFile(String path, Application site) async {
+    // 设置域名
+    site.themeConfig.domain = site.remote.domain;
+    await _renderAll(site);
+    await FS.zipDir(src: site.buildDir, target: path);
+    return true;
   }
 }
 

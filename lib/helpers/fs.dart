@@ -1,7 +1,7 @@
 ﻿import 'dart:convert' show base64;
 import 'dart:io' show Directory, File, FileMode, FileSystemEntity;
 
-import 'package:archive/archive_io.dart' show Archive, InputFileStream, OutputFileStream, ZipDecoder;
+import 'package:archive/archive_io.dart' show Archive, InputFileStream, OutputFileStream, ZipDecoder, ZipEncoder, createArchiveFromDirectory;
 import 'package:flutter/services.dart' show Uint8List, rootBundle;
 import 'package:glidea/helpers/crypto.dart';
 import 'package:path/path.dart' as p;
@@ -236,6 +236,18 @@ class FS {
       }
     }
     await archive.clear();
+  }
+
+  /// 压缩文件夹到指定路径
+  static Future<void> zipDir({required String src, required String target}) async {
+    // 创建存档
+    final result = createArchiveFromDirectory(Directory(src), includeDirName: false);
+    // 创建文件
+    await File(target).create(recursive: true);
+    final out = OutputFileStream(target);
+    // 输出 zip
+    ZipEncoder().encodeStream(result, out, autoClose: true);
+    await out.close();
   }
 }
 

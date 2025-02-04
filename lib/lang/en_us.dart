@@ -186,4 +186,5 @@
   'saveConfig': 'Save the configuration for it to take effect',
   'log': 'Log',
   'siteAuthor': 'Site author',
+  'export': 'Export',
 };

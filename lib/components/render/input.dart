@@ -146,7 +146,7 @@ class InputWidget extends TextareaWidget<InputConfig> {
   }
 }
 
-/// 文件选择器控件
+/// 文件夹选择器控件
 class FileSelectWidget extends TextareaWidget<InputConfig> {
   FileSelectWidget({
     super.key,
@@ -171,7 +171,7 @@ class FileSelectWidget extends TextareaWidget<InputConfig> {
     );
   }
 
-  /// 选择文件
+  /// 选择文件夹
   void selectFile() async {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
     if (selectedDirectory == null) return;

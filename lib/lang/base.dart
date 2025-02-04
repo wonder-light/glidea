@@ -186,4 +186,5 @@
   static const String saveConfig = 'saveConfig';
   static const String log = 'log';
   static const String siteAuthor = 'siteAuthor';
+  static const String export = 'export';
 }

@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:file_picker/file_picker.dart' show FilePicker;
+import 'package:flutter/material.dart';
 import 'package:get/get.dart' show Get, GetNavigationExt, Inst, Obx, Trans, BoolExtension;
 import 'package:glidea/components/Common/animated.dart';
 import 'package:glidea/components/Common/group.dart';
@@ -7,6 +8,7 @@ import 'package:glidea/components/remote/comment.dart';
 import 'package:glidea/components/remote/remote.dart';
 import 'package:glidea/controller/site/site.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/helpers/date.dart';
 import 'package:glidea/helpers/get.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
@@ -47,19 +49,28 @@ class _RemoteViewState extends State<RemoteView> {
   Widget buildPhone() {
     // arguments 参数来自 [package:glidea/views/setting.dart] 中的 [_SettingViewState.toRouter]
     final arg = Get.arguments as String;
-    final childWidget = arg == Tran.commentSetting ? CommentSettingWidget(key: commentKey) : RemoteSettingWidget(key: remoteKey);
+    final isRemote = arg != Tran.commentSetting;
+    final childWidget = isRemote ? RemoteSettingWidget(key: remoteKey) : CommentSettingWidget(key: commentKey);
     return Scaffold(
       appBar: AppBar(
         title: Text(arg.tr),
-        actions: getActionButton(),
+        actions: getActionButton(hasExport: isRemote),
       ),
       body: childWidget,
     );
   }
 
   /// 构建 action 按钮
-  List<Widget> getActionButton() {
+  List<Widget> getActionButton({bool hasExport = true}) {
     return [
+      if (hasExport)
+        TipWidget.down(
+          message: Tran.export.tr,
+          child: IconButton(
+            onPressed: _exportZipFile,
+            icon: Icon(PhosphorIconsRegular.export),
+          ),
+        ),
       Obx(() {
         final detect = inRemoteDetect.value;
         final icon = detect ? Icon(PhosphorIconsRegular.arrowsClockwise) : Icon(PhosphorIconsRegular.clockCounterClockwise);
@@ -95,5 +106,17 @@ class _RemoteViewState extends State<RemoteView> {
     final value = await site.remoteDetect();
     value ? Get.success(Tran.connectSuccess) : Get.error(Tran.connectFailed);
     inRemoteDetect.value = false;
+  }
+
+  /// 导出 zip 文件
+  void _exportZipFile() async {
+    // 选择的目录
+    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+    if (selectedDirectory == null) return;
+    // 时间
+    final time = DateTime.now().format(pattern: 'yyyy-MM-dd HH-mm-ss');
+    // 创建 zip 文件
+    final value = await site.exportZipFile('$selectedDirectory/Glidea-$time.zip');
+    value ? Get.success(Tran.saved) : Get.error(Tran.saveError);
   }
 }

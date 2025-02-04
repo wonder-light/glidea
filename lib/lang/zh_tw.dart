@@ -186,4 +186,5 @@
   'saveConfig': '請保存配置, 以使配置生效',
   'log': '日誌',
   'siteAuthor': '網站作者',
+  'export': '導出',
 };

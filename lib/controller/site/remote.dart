@@ -80,6 +80,17 @@ mixin RemoteSite on DataProcess, ThemeSite {
     }
   }
 
+  /// 远程检测
+  Future<bool> remoteDetect() async {
+    try {
+      await Background.instance.remoteDetect(state.remote, state.appDir, state.buildDir);
+      return true;
+    } catch (e, s) {
+      Log.e('remote detect failed', error: e, stackTrace: s);
+      return false;
+    }
+  }
+
   /// 更新远程配置
   Future<bool> saveRemoteConfig() async {
     try {
@@ -99,13 +110,12 @@ mixin RemoteSite on DataProcess, ThemeSite {
     }
   }
 
-  /// 远程检测
-  Future<bool> remoteDetect() async {
+  /// 导出渲染完成的的 zip 文件到指定文件夹
+  Future<bool> exportZipFile(String str) async {
     try {
-      await Background.instance.remoteDetect(state.remote, state.appDir, state.buildDir);
-      return true;
+      return await Background.instance.exportZipFile(FS.normalize(str), state);
     } catch (e, s) {
-      Log.e('remote detect failed', error: e, stackTrace: s);
+      Log.e('export zip files failed', error: e, stackTrace: s);
       return false;
     }
   }
