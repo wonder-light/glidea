@@ -2,6 +2,7 @@
 import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 import 'package:get/get.dart' show Get, GetNavigationExt, GetStringUtils, Inst, Obx, Trans, WidgetCallback;
 import 'package:glidea/components/Common/animated.dart';
+import 'package:glidea/components/Common/link.dart';
 import 'package:glidea/components/Common/tip.dart';
 import 'package:glidea/components/render/base.dart';
 import 'package:glidea/controller/site/site.dart';
@@ -161,27 +162,14 @@ class SettingEditorState extends State<SettingEditor> {
     return RenderLayoutWidget(
       isVertical: widget.isVertical,
       config: version,
-      child: Padding(
-        padding: kTopPadding8,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(version.value),
-            const Padding(padding: kRightPadding8),
-            GestureDetector(
-              onTap: openUrl,
-              child: MouseRegion(
-                cursor: WidgetStateMouseCursor.clickable,
-                child: Text(
-                  site.state.appName.capitalizeFirst,
-                  style: theme.textTheme.bodyMedium!.copyWith(
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+      contentPadding: kTopPadding8,
+      child: Row(
+        spacing: kRightPadding8.right,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(version.value),
+          LinkWidget(url: 'https://github.com/wonder-light/glidea', text: site.state.appName.capitalizeFirst),
+        ],
       ),
     );
   }
@@ -304,17 +292,6 @@ class SettingEditorState extends State<SettingEditor> {
     }
   }
 
-  /// 打开 URL
-  void openUrl() async {
-    final success = await launchUrlString('https://github.com/wonder-light/glidea');
-    if (!success) {
-      Log.w('github 打开失败');
-    }
-  }
-
-  /// TODO: 检查更新
-  void checkUpdate() async {}
-
   /// 打开日志视图
   void openLogView() {
     Get.showDrawer(
@@ -340,8 +317,8 @@ class SettingEditorState extends State<SettingEditor> {
     final run = type > 0 ? inPublish : inPreview;
     run.value = true;
     // 执行
-    final notif = type > 0 ? await site.publishSite() : await site.previewSite();
-    notif.exec();
+    final notifier = type > 0 ? await site.publishSite() : await site.previewSite();
+    notifier.exec();
     // 还原 Icon
     run.value = false;
   }

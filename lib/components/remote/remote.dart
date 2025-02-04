@@ -1,5 +1,5 @@
-﻿import 'package:collection/collection.dart' show IterableExtension;
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:glidea/components/remote/comment.dart';
 import 'package:glidea/enum/enums.dart';
 import 'package:glidea/helpers/constants.dart';
@@ -27,6 +27,9 @@ class RemoteSettingWidgetState extends CommentSettingWidgetState {
     domainController.dispose();
     super.dispose();
   }
+
+  @override
+  Widget? buildOverride(ConfigBase item, String key, int index) => null;
 
   @override
   TMap<ConfigBase> getConfigs() {
