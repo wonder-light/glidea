@@ -6,13 +6,11 @@ class NetlifyDeploy extends Deploy {
     required super.remote,
     super.appDir,
     super.buildDir,
-    super.api = null,
-    super.token = null,
-  }) {
-    api = 'https://api.netlify.com/api/v1/';
-    siteId = remote.netlify.siteId;
-    token = 'Bearer ${remote.netlify.accessToken}';
-    deployId = '';
+    super.api = 'https://api.netlify.com/api/v1',
+    String? token,
+    String? siteId,
+  }) : super(token: token ?? 'Bearer ${remote.netlify.accessToken}') {
+    this.siteId = siteId ?? remote.netlify.siteId;
     header = {
       'User-Agent': 'Glidea',
       'Authorization': token,
@@ -26,7 +24,7 @@ class NetlifyDeploy extends Deploy {
   late final Map<String, dynamic> header;
 
   /// 部署的 id
-  late String deployId;
+  late String deployId = '';
 
   @override
   Future<void> publish() async {
@@ -50,13 +48,17 @@ class NetlifyDeploy extends Deploy {
 
   @override
   Future<void> remoteDetect() async {
-    final result = await Deploy.dio.get('${api}sites/$siteId', options: Options(headers: header));
+    final result = await Deploy.dio.get('$api/sites/$siteId', options: Options(headers: header));
     result.checkStateCode();
   }
 
   /// 准备本地文件列表
   ///
   /// throw [Exception] exception
+  ///
+  ///       {
+  ///         '/index.html': 'sha',
+  ///       }
   Future<TMap<String>> prepareLocalFilesList() async {
     final TMap<String> fileList = {};
     for (var item in FS.getFilesSync(buildDir)) {
@@ -76,7 +78,7 @@ class NetlifyDeploy extends Deploy {
   Future<List<String>> requestFiles(TMap<String> fileList) async {
     final options = Options(headers: header);
     final data = {'files': fileList};
-    final result = await Deploy.dio.post('${api}sites/$siteId/deploys', data: data, options: options);
+    final result = await Deploy.dio.post('$api/sites/$siteId/deploys', data: data, options: options);
     // 设置 _deployId
     deployId = result.data['id'];
     List<String> lists = (result.data['required'] as List).cast<String>();
@@ -92,6 +94,6 @@ class NetlifyDeploy extends Deploy {
     final options = Options(headers: {...header, 'Content-Type': 'application/octet-stream'});
     final fileContent = await File(FS.join(buildDir, filePath)).readAsBytes();
     // 上传
-    return await Deploy.dio.put('${api}deploys/$deployId/files$filePath', data: fileContent, options: options);
+    return await Deploy.dio.put('$api/deploys/$deployId/files$filePath', data: fileContent, options: options);
   }
 }

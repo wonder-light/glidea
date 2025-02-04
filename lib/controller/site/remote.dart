@@ -18,9 +18,9 @@ mixin RemoteSite on DataProcess, ThemeSite {
     return switch (remote.platform) {
       DeployPlatform.github => _isCheckGitPublish(remote.github),
       DeployPlatform.gitee => _isCheckGitPublish(remote.gitee),
-      DeployPlatform.coding => _isCheckGitPublish(remote.coding),
+      DeployPlatform.vercel => _isCheckNetlifyPublish(remote.vercel),
+      DeployPlatform.netlify => _isCheckNetlifyPublish(remote.netlify),
       DeployPlatform.sftp => _isCheckSftpPublish(),
-      DeployPlatform.netlify => _isCheckNetlifyPublish(),
     };
   }
 
@@ -177,7 +177,7 @@ mixin RemoteSite on DataProcess, ThemeSite {
 
   /// 检测 github, gitee, coding
   bool _isCheckGitPublish(RemoteGithub github) {
-    return github.username.isNotEmpty && github.branch.isNotEmpty && remote.domain.isNotEmpty && github.token.isNotEmpty && github.repository.isNotEmpty;
+    return github.username.isNotEmpty && github.branch.isNotEmpty && github.token.isNotEmpty && github.repository.isNotEmpty;
   }
 
   /// 检测 sftp
@@ -187,9 +187,8 @@ mixin RemoteSite on DataProcess, ThemeSite {
   }
 
   /// 检测 netlify
-  bool _isCheckNetlifyPublish() {
-    final netlify = remote.netlify;
-    return netlify.siteId.isNotEmpty && netlify.accessToken.isNotEmpty;
+  bool _isCheckNetlifyPublish(RemoteNetlify config) {
+    return config.siteId.isNotEmpty && config.accessToken.isNotEmpty;
   }
 
   /// 从枚举设置选项

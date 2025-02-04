@@ -6,10 +6,10 @@ import 'package:flutter/material.dart' show Offset, Alignment;
 @jsonSerializable
 enum DeployPlatform {
   github,
-  coding,
-  sftp,
   gitee,
   netlify,
+  vercel,
+  sftp,
 }
 
 /// 评论平台

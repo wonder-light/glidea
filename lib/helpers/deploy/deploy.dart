@@ -14,11 +14,13 @@ import 'package:glidea/helpers/json.dart';
 import 'package:glidea/helpers/log.dart';
 import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/models/setting.dart';
+import 'package:intl/intl.dart';
 
 part 'gitee.dart';
 part 'github.dart';
 part 'netlify.dart';
 part 'sftp.dart';
+part 'vercel.dart';
 
 /// 部署抽象类
 abstract class Deploy {
@@ -67,12 +69,11 @@ abstract class Deploy {
   /// 创建部署
   static Deploy create(RemoteSetting remote, String appDir, String buildDir) {
     final build = switch (remote.platform) {
-      DeployPlatform.netlify => NetlifyDeploy.new,
       DeployPlatform.github => GithubDeploy.new,
       DeployPlatform.gitee => GiteeDeploy.new,
+      DeployPlatform.netlify => NetlifyDeploy.new,
+      DeployPlatform.vercel => VercelDeploy.new,
       DeployPlatform.sftp => SftpDeploy.new,
-      // TODO: Handle this case.
-      DeployPlatform.coding => throw UnimplementedError(),
     };
     // 构建
     return build(remote: remote, appDir: appDir, buildDir: buildDir);

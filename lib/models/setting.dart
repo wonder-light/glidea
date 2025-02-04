@@ -61,14 +61,6 @@ class RemoteGithub {
 @jsonSerializable
 class RemoteGitee extends RemoteGithub {}
 
-/// coding pages 的远程设置
-@jsonSerializable
-class RemoteCoding extends RemoteGitee {
-  /// token 用户名
-  @JsonProperty()
-  String tokenUsername = '';
-}
-
 /// netlify 的远程设置
 @jsonSerializable
 mixin class RemoteNetlify {
@@ -80,6 +72,10 @@ mixin class RemoteNetlify {
   @JsonProperty()
   String siteId = '';
 }
+
+/// Vercel 的远程设置
+@jsonSerializable
+class RemoteVercel extends RemoteNetlify {}
 
 /// Sftp 的远程设置
 @jsonSerializable
@@ -118,7 +114,7 @@ class RemoteSetting with RemoteBase, RemoteProxy {
 
   /// coding 配置
   @JsonProperty()
-  RemoteCoding coding = RemoteCoding();
+  RemoteVercel vercel = RemoteVercel();
 
   /// netlify 配置
   @JsonProperty()
@@ -128,7 +124,7 @@ class RemoteSetting with RemoteBase, RemoteProxy {
   @JsonProperty()
   RemoteSftp sftp = RemoteSftp();
 
-  // TODO: 看情况, 可以添加一个 zip 导出
+// TODO: 看情况, 可以添加一个 zip 导出
 }
 
 /// disqus 评论设置

@@ -78,7 +78,6 @@ final class RemoteRender {
   String get cname => switch (site.remote.platform) {
         DeployPlatform.github => site.remote.github.cname,
         DeployPlatform.gitee => site.remote.gitee.cname,
-        DeployPlatform.coding => site.remote.coding.cname,
         _ => '',
       };
 
