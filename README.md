@@ -66,6 +66,9 @@
 # 运行下载依赖项
 > flutter pub get
 
+# 构建 json 反射数据
+> dart run build_runner build --delete-conflicting-outputs
+
 # 运行以启动应用程序
 > flutter run
 ```

@@ -66,6 +66,9 @@ If you want to contribute code, please check the [Contribution Guide](https://gi
 # Run the download dependency
 > flutter pub get
 
+# Build json reflection data
+> dart run build_runner build --delete-conflicting-outputs
+
 # Run to start the application
 > flutter run
 ```
