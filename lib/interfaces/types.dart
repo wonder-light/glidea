@@ -6,6 +6,8 @@ typedef TActions = ({String name, VoidCallback call});
 
 typedef TActionIcon = ({String name, VoidCallback call, IconData icon});
 
+typedef TActionKey = ({String name, VoidCallback call, String key});
+
 typedef TIconData = ({String name, IconData icon});
 
 typedef TLinkData = ({String name, String link});

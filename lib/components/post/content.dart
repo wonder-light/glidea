@@ -1,6 +1,10 @@
-﻿import 'package:flutter/material.dart';
+﻿import 'package:collection/collection.dart' show IterableExtension;
+import 'package:flutter/material.dart';
 import 'package:get/get.dart' show BoolExtension, RxBool, Trans;
+import 'package:glidea/components/Common/list_item.dart';
+import 'package:glidea/components/post/context_menu.dart';
 import 'package:glidea/helpers/constants.dart';
+import 'package:glidea/interfaces/types.dart';
 import 'package:glidea/lang/base.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart' show PhosphorIconsRegular;
 import 'package:re_editor/re_editor.dart' show CodeEditor, CodeEditorStyle, CodeHighlightTheme, CodeHighlightThemeMode;
@@ -62,6 +66,12 @@ class PostContentState extends State<PostContent> {
   /// 查找模式
   final Map<Widget, RxBool> modes = {};
 
+  /// 查找控制器
+  late final CodeFindController findController = CodeFindController(widget.controller);
+
+  /// 上下文菜单的标题样式
+  late final titleStyle = theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.outline);
+
   @override
   void initState() {
     super.initState();
@@ -74,12 +84,14 @@ class PostContentState extends State<PostContent> {
     final style = theme.textTheme.bodyMedium?.apply(fontSizeFactor: 1.1);
     return CodeEditor(
       autofocus: false,
-      scrollbarBuilder: buildScrollbar,
       controller: widget.controller,
-      padding: kTopPadding16.flipped,
+      findController: findController,
       hint: Tran.startWriting.tr,
+      padding: kTopPadding16.flipped,
       onChanged: widget.onChanged,
       findBuilder: buildFind,
+      scrollbarBuilder: buildScrollbar,
+      toolbarController: PostContextMenuController.create(builder: buildContextMenu),
       style: CodeEditorStyle(
         fontSize: style?.fontSize,
         fontFamily: style?.fontFamily,
@@ -204,5 +216,58 @@ class PostContentState extends State<PostContent> {
       style: ButtonStyle(iconColor: prop, foregroundColor: prop),
       child: child,
     );
+  }
+
+  /// 构建上下文菜单
+  Widget buildContextMenu({
+    required BuildContext context,
+    required TextSelectionToolbarAnchors anchors,
+    required CodeLineEditingController controller,
+    required VoidCallback onDismiss,
+    required VoidCallback onRefresh,
+  }) {
+    final colors = theme.colorScheme;
+    final padding = kHorPadding8 + kVerPadding4;
+    final constraints = const BoxConstraints.expand(height: 30);
+    // 构建子项控件
+    Widget buildItem(TActionKey item) {
+      return ListItem(
+        dense: true,
+        title: Text(item.name, style: titleStyle),
+        trailing: Text(item.key, style: titleStyle),
+        constraints: constraints,
+        contentPadding: padding,
+        selectedTileColor: colors.primary,
+        selectedColor: colors.surfaceContainerLow,
+        onTap: () {
+          item.call();
+          onDismiss();
+        },
+      );
+    }
+
+    // 选项
+    final List<List<TActionKey>> items = [
+      [
+        (name: '剪切', key: 'Ctrl+X', call: controller.cut),
+        (name: '复制', key: 'Ctrl+C', call: controller.copy),
+        (name: '粘贴', key: 'Ctrl+V', call: controller.paste),
+      ],
+      [
+        (name: '查找', key: 'Ctrl+F', call: findController.findMode),
+        (name: '替换', key: 'Ctrl+Alt+F', call: findController.replaceMode),
+      ],
+    ];
+    Widget child = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: items.expandIndexed((index, item) {
+        return [
+          if (index > 0) Padding(padding: kVerPadding4, child: const Divider(height: 1, thickness: 1)),
+          for (var value in item) buildItem(value),
+        ];
+      }).toList(),
+    );
+    child = SizedBox(width: 200, child: child);
+    return child;
   }
 }
