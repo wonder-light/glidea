@@ -51,7 +51,7 @@ class _PostToolbarState extends State<PostToolbar> {
   final emojiWidth = 300.0;
 
   /// 右侧的工具栏按钮
-  late final List<TActionData> toolbars = [
+  late final List<TActionIcon> toolbars = [
     (name: Tran.insertImage, call: insertImage, icon: PhosphorIconsRegular.image),
     (name: Tran.insertMore, call: insertSeparator, icon: PhosphorIconsRegular.dotsThreeOutline),
     (name: Tran.postSettings, call: openPostSetting, icon: PhosphorIconsRegular.gear),

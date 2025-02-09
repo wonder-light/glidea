@@ -36,13 +36,13 @@ class _HomeDownPanelState extends State<HomeDownPanel> {
   );
 
   /// 预览和发布
-  late final Map<bool, TActionData> buttons = {
+  late final Map<bool, TActionIcon> buttons = {
     false: (name: Tran.preview, call: preview, icon: PhosphorIconsRegular.eye),
     true: (name: Tran.publishSite, call: publish, icon: PhosphorIconsRegular.cloudArrowUp),
   };
 
   /// icon 按钮
-  late final List<TActionData> iconActions = [
+  late final List<TActionIcon> iconActions = [
     (name: Tran.setting, call: openSetting, icon: PhosphorIconsRegular.slidersHorizontal),
     (name: Tran.visitSite, call: openWebSite, icon: PhosphorIconsRegular.globe),
     (name: Tran.starSupport, call: starSupport, icon: PhosphorIconsRegular.githubLogo),
@@ -79,7 +79,7 @@ class _HomeDownPanelState extends State<HomeDownPanel> {
   }
 
   /// 预览和发布按钮
-  Widget _buildButton({required TActionData item, bool isFilled = false}) {
+  Widget _buildButton({required TActionIcon item, bool isFilled = false}) {
     final build = isFilled ? FilledButton.new : OutlinedButton.new;
     // 内容
     Widget contentWidget = Row(

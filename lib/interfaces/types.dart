@@ -4,7 +4,7 @@ typedef TRouterData = ({String route, String name, IconData icon});
 
 typedef TActions = ({String name, VoidCallback call});
 
-typedef TActionData = ({String name, VoidCallback call, IconData icon});
+typedef TActionIcon = ({String name, VoidCallback call, IconData icon});
 
 typedef TIconData = ({String name, IconData icon});
 
